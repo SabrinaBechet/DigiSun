@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Digisun NextGen</title>
+		<!--  <input type="text" id="txtbox_login_email" name="txtbox_login_email" value="" size="30" />  -->
+		<link class="include" rel="stylesheet" type="text/css" href="./Scripts/jquery-ui-1.11.4.custom/jquery-ui.min.css" />
+		<!--<script src="//code.jquery.com/jquery-1.10.2.js"></script>-->
+		<script src="./Scripts/jquery-1.11.3.min.js"></script>
+  		<script src="./Scripts/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+		
+		<link class="include" rel="stylesheet" type="text/css" href="./Styles/digisun.css" />
+		<script type="text/javascript" src="./Scripts/digisun.js" ></script>
+		
+		<script>
+			$(function(){
+				$("#filemenu").menu();
+				$("#reportmenu").menu();
+				$("#toolsmenu").menu();
+				$("#helpmenu").menu();
+			});
+			/* Alternative menu
+			$(function() {
+				$.widget( "custom.iconselectmenu", $.ui.selectmenu, {
+			  		_renderItem: function( ul, item ) {
+			    		var li = $( "<li>", { text: item.label } );
+			        	if ( item.disabled ) {
+			          		li.addClass( "ui-state-disabled" );
+			        	}
+			 	        $( "<span>", {
+			  				style: item.element.attr( "data-style" ),
+			  				"class": "ui-icon " + item.element.attr( "data-class" )
+					    }).appendTo( li );
+						return li.appendTo( ul );
+					}
+				});
+			 
+				$( "#filemenu" ).iconselectmenu().iconselectmenu( "menuWidget" ).addClass( "ui-menu-icons customicons" );
+				$( "#reportmenu" ).iconselectmenu().iconselectmenu( "menuWidget" ).addClass( "ui-menu-icons customicons" );
+				$( "#toolsmenu" ).iconselectmenu().iconselectmenu( "menuWidget" ).addClass( "ui-menu-icons customicons" );
+				$( "#helpmenu" ).iconselectmenu().iconselectmenu( "menuWidget" ).addClass( "ui-menu-icons customicons" );
+				
+			});
+			*/
+			$(function() {
+				var iconscal = {
+					header: "ui-icon calibration",
+			    	activeHeader: "ui-icon calibration"
+			  	};
+			  	var iconsana = {
+					header: "ui-icon analysis",
+			    	activeHeader: "ui-icon analysis"
+			  	};
+			  	var iconsdra = {
+					header: "ui-icon drawing",
+			    	activeHeader: "ui-icon drawing"			  		
+			  	}
+			  	$( "#accordioncalibration" ).accordion({
+			    	icons: iconscal,
+			    	collapsible: true,
+			    	active:false,
+			    	autoHeight:false,
+			    	heightStyle:"content"
+			  	});
+			  	$( "#accordionanalysis" ).accordion({
+			    	icons: iconsana,
+			    	collapsible: true,
+			    	active:false,
+			    	autoHeight:false,
+			    	heightStyle:"content"
+			  	});
+			   	$( "#accordiondrawing" ).accordion({
+			    	icons: iconsdra,
+			    	collapsible: true,
+			    	active:false,
+			    	autoHeight:false,
+			    	heightStyle:"content"
+			  	});
+			   	$( "#accordiongroup1" ).accordion({
+			    	collapsible: true,
+			    	active:false,
+			    	autoHeight:false,
+			    	heightStyle:"content"
+			  	});
+			  	$( "#accordiongroup2" ).accordion({
+			    	collapsible: true,
+			    	active:false,
+			    	autoHeight:false,
+			    	heightStyle:"content"
+			  	});
+/*			  	$( "#toggle" ).button().click(function() {
+			    	if ( $( "#accordioncalibration" ).accordion( "option", "icons" ) ) {
+			      	$( "#accordioncalibration" ).accordion( "option", "icons", null );
+			    	}
+			    	else {
+			      		$( "#accordioncalibration" ).accordion( "option", "icons", icons );
+			    	}
+			  	});
+*/			  	
+			});
+			$(function() {
+				$( "#tab_fake" ).tabs();
+			});
+		</script>
+		<script>	
+			$(function(){
+				$('#dlg_detailscalibration').dialog({
+					autoOpen: false,
+					height: 285,
+					width: 350,
+					modal: false,
+					title:"details calibration",
+					show:{effect:"clip",speed:"slow"}
+			    });
+		 	    $("#dlg_detailscalibration").effect({effect:"blind",speed:"slow"});
+		 	    
+		 	    $('#dlg_detailsanalysis').dialog({
+					autoOpen: false,
+					height: 320,
+					width: 350,
+					modal: false,
+					title:"details analysis",
+					show:{effect:"clip",speed:"slow"}
+			    });
+		 	    $("#dlg_detailsanalysis").effect({effect:"blind",speed:"slow"});
+		 	   
+		 	   	$('#dlg_detailsdrawing').dialog({
+					autoOpen: false,
+					height: 330,
+					width: 350,
+					modal: false,
+					title:"details drawing",
+					show:{effect:"clip",speed:"slow"}
+			    });
+		 	    $("#dlg_detailsdrawing").effect({effect:"blind",speed:"slow"});
+		 	    
+				$('#dlg_detailsgroup1').dialog({
+					autoOpen: false,
+					height: 420,
+					width: 350,
+					modal: true,
+					title:"details group 1",
+					show:{effect:"clip",speed:"slow"}
+			    });
+		 	    $("#dlg_detailsgroup1").effect({effect:"blind",speed:"slow"});
+		 	    
+		 	    $('#dlg_detailsgroup2').dialog({
+					autoOpen: false,
+					height: 420,
+					width: 350,
+					modal: true,
+					title:"details group 2",
+					show:{effect:"clip",speed:"slow"}
+			    });
+		 	    $("#dlg_detailsgroup2").effect({effect:"blind",speed:"slow"});
+		 	});
+		</script>
+	</head>
+	<body>
+		<div class="main">
+			<div class="menubar">
+				<table>
+					<tr>
+						<td class="mainmenuitem">
+							<div><div style="float:left" >&nbsp;</div><div style="float:right">File</div></div>
+							<div class="contextmenu">
+								<ul id="filemenu">
+									<li><div class="ui-icon login">&nbsp;</div>Login</li>
+									<li><div class="ui-icon logout">&nbsp;</div>Logout</li>
+									<li><div class="ui-icon load">&nbsp;</div>Load</li>
+									<li><div class="ui-icon save">&nbsp;</div>Save</li>
+									<li><div class="ui-icon exit">&nbsp;</div>Exit</li>
+								</ul>
+							</div>
+						</td>
+						<td class="mainmenuitem">
+							<div><div style="float:left">&nbsp;</div><div style="float:right">Reports</div></div>
+							<div class="contextmenu">
+								<ul id="reportmenu">
+									<li><div class="ui-icon leroy">&nbsp;</div>Leroy</li>
+									<li><div class="ui-icon listingpermonth">&nbsp;</div>Listing Per Month</li>
+								</ul>
+							</div>
+							</td>
+						<td class="mainmenuitem">
+							<div><div style="float:left">&nbsp;</div><div style="float:right">Tools</div></div>
+							<div class="contextmenu">
+								<ul id="toolsmenu">
+									<li><div class="ui-icon history">&nbsp;</div>History</li>
+									<li><div class="ui-icon dailyscan">&nbsp;</div>Daily Scan</li>
+									<li><div class="ui-icon bulkscan">&nbsp;</div>Bulk Scan Scan</li>
+									<li><div class="ui-icon bulkanalyze">&nbsp;</div>Bulk Analyze</li>
+								</ul>
+							</div>
+						</td>
+						<td class="mainmenuitem">
+							<div><div style="float:left">&nbsp;</div><div style="float:right">Help</div></div>
+							<div class="contextmenu">
+								<ul id="helpmenu">
+									<li><div class="ui-icon logs">&nbsp;</div>Logs</li>
+									<li><div class="ui-icon about">&nbsp;</div>About</li>
+
+								</ul>
+							</div>
+						</td>
+					</tr>
+				</table>
+				<!-- alternative menu.
+				<table>
+					<tr>
+						<td class="mainmenuitem">
+							<form action="#">
+							<fieldset>
+								<select class="menuoption" name="filemenu" id="filemenu">
+									<option value="menufile" data-class="file">file</option>
+									<option value="menusave" data-class="save">save</option>
+									<option value="menuload" data-class="load">load</option>
+									<option value="menuexit" data-class="exit">exit</option>
+								</select>
+							</fieldset>
+							</form>
+						</td>
+						<td class="mainmenuitem">
+							<form action="#">
+							<fieldset>
+								<select class="menuoption" name="reportmenu" id="reportmenu">
+									<option value="menureports" data-class="report">reports</option>
+									<option value="menuleroy" data-class="leroy">leroy</option>
+									<option value="menulistingpermonth" data-class="listingpermonth">listing per month</option>
+								</select>
+							</fieldset>
+							</form>
+						</td>
+						<td class="mainmenuitem">
+							<form action="#">
+							<fieldset>
+								<select class="menuoption" name="toolsmenu" id="toolsmenu">
+									<option value="menutools" data-class="tools">tools</option>
+									<option value="menuoverview" data-class="overview">overview</option>
+									<option value="menudailyscan" data-class="dailyscan">daily scan</option>
+									<option value="menubulkscan" data-class="bulkscan">bulk scan</option>
+									<option value="menubulkanalyze" data-class="bulkanalyze">bulk analyze</option>
+								</select>
+							</fieldset>
+							</form>
+						</td>
+						<td class="mainmenuitem">
+							<form action="#">
+							<fieldset>
+								<select class="menuoption" name="helpmenu" id="helpmenu">
+									<option value="menuhelp" data-class="help">help</option>
+									<option value="menulogs" data-class="logs">logs</option>
+									<option value="menuabout" data-class="about">about</option>
+								</select>
+							</fieldset>
+							</form>
+
+						</td>
+					</tr>
+				</table>
+				-->
+			</div>
+			<div class="iconbar">
+				<table>
+					<tr>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Login_24.png" title="login" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Logout_24.png" title="logout" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Open_24.png" title="Open record" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Save_24.png" title="Save" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/ScannerDaily_24.png" title="Daily Scan" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/ScannerBulk_24.png" title="Bulk Scan" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Analysis_24.png" title="Bulk Analyze" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Zoom-In_24.png" title="Zoom in" /></td>
+						<td class="iconbaritem"><img class="btn" src="./Styles/images/icons/Zoom-Out_24.png" title="Zoom out" /></td>
+					</tr>
+				</table>
+			</div>
+			<!--<div class="informationbar">
+				<table>
+					<tr><td id="info_icon"><img src="./Styles/images/icons/Info_32.png" /></td><td>This panel contains Error / Warning / information messages.  Could automatically appear / dissappear.</td></tr>
+				</table>
+			</div>
+		-->
+			<div class="progresspanel">
+				<div style="float:left">
+					<div class="calibrationstatus" id="accordioncalibration">
+						<h3 style="height:15px;">Calibration</h3>
+						<div style="overflow-y: hidden;">
+							<div style="float:left;"><img class="btn" src="./Styles/images/icons/Arrow_Left_24.png" /></div>
+							<div style="float:right;"><img class="btn" src="./Styles/images/icons/Arrow_right_24.png" /></div>
+							<div class="disabledinfo">
+								<table>
+									<!--<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:32:45" size="20" />	</td></tr>-->
+									<!--<tr><td class="label">north (x,y): </td><td><input type="text" value="456 : 175" size="20" /></td></tr>
+									<tr><td class="label">center (x,y): </td><td><input type="text" value="453 : 628" size="20" /></td></tr>-->
+									<tr><td class="label">radius: </td><td><input type="text" value="453" size="20" /></td></tr>
+									<tr><td class="label">quality: </td><td><input type="text" value="4" size="20" /></td></tr>
+									<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+									<!--<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>-->
+								</table>
+							</div>
+							<table class="buttonbar">
+								<tr>
+									<td><div class="btn_visualize"><img class="btn" src="./Styles/images/icons/Eye_32.png"  id="btn_visualize_calibration" onclick="btn_visualize_click('btn_visualize_calibration');"/></div></td>
+									<td><div class="btn_edit"><img class="btn" src="./Styles/images/icons/Edit_32.png"  id="btn_edit_calibration" onclick="btn_edit_click('dlg_detailscalibration');"/></div>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div style="float:right">
+					<div style="float:left">
+						<div class="analysisstatus" id="accordionanalysis">
+						<h3 style="height:15px;">Analysis</h3>
+						<div style="overflow-y: hidden;">
+							<div style="float:left;"><img class="btn" src="./Styles/images/icons/Arrow_Left_24.png" /></div>
+							<div style="float:right;"><img class="btn" src="./Styles/images/icons/Arrow_right_24.png" /></div>
+							<div class="disabledinfo">
+								<table>
+									<!--<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:54:27" size="20" /></td></tr>
+									<tr><td class="label">carrington rotation: </td><td><input type="text" value="2167" size="20" /></td></tr>
+									<tr><td class="label">julian date: </td><td><input type="text" value="2457246" size="20" /></td></tr>-->
+									<tr><td class="label">groupcount / spotcount: </td><td><input type="text" value="3 / 14" size="20" /></td></tr>
+									<tr><td class="label">wolf number: </td><td><input type="text" value="N/A" size="20" /></td></tr>
+									<tr><td class="label">angle P / angle B / angle L: </td><td><input type="text" value="17 / 28 / 16" size="20" /></td></tr>
+									<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+									<!--<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>-->
+								</table>
+							</div>
+							<table class="buttonbar">
+								<tr>
+									<td><div class="btn_edit"><img class="btn" src="./Styles/images/icons/Edit_32.png"  id="btn_edit_analysis" onclick="btn_edit_click('dlg_detailsanalysis');"/></div>
+								</tr>
+							</table>
+						</div>
+						</div>
+					</div>
+					<div style="float:right">
+						<div class="drawingstatus" id="accordiondrawing">
+							<h3 style="height:15px;">Drawing</h3>
+							<div style="overflow-y: hidden;">
+								<div style="float:left;"><img class="btn" src="./Styles/images/icons/Arrow_Left_24.png" /></div>
+								<div style="float:right;"><img class="btn" src="./Styles/images/icons/Arrow_right_24.png" /></div>
+								<div class="disabledinfo">
+									<table>
+										<tr><td class="label">path: </td><td><input type="text" value="./Drawings/2013/09/usd201309020800.jpg" size="20" /></td></tr>
+										<!--<tr><td class="label">type of drawing: </td><td><input type="text" value="USET" size="20" /></td></tr>-->
+										<tr><td class="label">calibration status: </td><td><img src="./Styles/images/icons/4.Globe_24I.png" /></td></tr>
+										<tr><td class="label">analysis status: </td><td><img src="./Styles/images/icons/2.Instrument Telescope_24I.png" /></td></tr>
+										<tr><td class="label">overall status: </td><td><img src="./Styles/images/icons/2.File Ok_24I.png" /></td></tr>
+										<!--<tr><td class="label">Angle P / Angle B / Angle L: </td><td><input type="text" value="17 / 28 / 16" size="20" /></td></tr>-->
+										<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+										<!-- <tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr> -->
+									</table>
+								</div>
+								<table class="buttonbar">
+									<tr>
+										<td><div class="btn_edit"><img class="btn" src="./Styles/images/icons/Edit_32.png"  id="btn_edit_drawing" onclick="btn_edit_click('dlg_detailsdrawing');"/></div>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="workingpanel">
+				<div class="groupspanel">
+					<div id="tab_fake"><ul>
+						<li>
+							<div>
+								<a href="#groupstab">
+										<div style="float:left;margin:-5px 10px 0px 0px;padding: 0px 0px 0px 0px;">Groups</div>
+								</a>
+								<div class="btn_visualize"  style="float:right;margin:0px 30px 0px 0px;"><img class="btn" title="Visualize all groups" src="./Styles/images/icons/Eye_32.png" id="btn_visualize_groupALL" onclick="btn_visualize_click('btn_visualize_groupALL');" /></div>
+							</div>
+						</li>
+						</ul>
+					</div>
+					<div id="groupstab">
+					<div class="groupbox" id="accordiongroup1">
+						<h3>Group 1</h3>
+						<div style="overflow-y: hidden;">
+							<div style="float:left;"><img class="btn" src="./Styles/images/icons/Arrow_Left_24.png" /></div>
+							<div style="float:right;"><img class="btn" src="./Styles/images/icons/Arrow_right_24.png" /></div>					
+							<table>
+								<!--<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:54:27" size="20" /></td></tr>-->
+								<tr><td class="label">Number: </td><td><input type="text" value="1" size="20" /></td></tr>
+								<tr><td class="label">Location (x,y): </td><td><input type="text" value="325 : 706" size="20" /></td></tr>
+								<tr><td class="label">Location (long,lat): </td><td><input type="text" value="325 : 706" size="20" /></td></tr>
+								<tr><td class="label">Zurich class / McIntosh: </td><td><select id="select_zurich1"><script>FillCombos("Zurich");</script></select>&nbsp;<select id="select_mcintosh1"><script>FillCombos("McIntosh");</script></select></td></tr>
+								<tr><td class="label">Spots: </td><td><input type="text" value="3" size="20" /></td></tr>
+								<!--<tr><td class="label">Dipole 1 (x,y): </td><td><input type="text" value="320 : 715" size="20" /></td></tr>
+								<tr><td class="label">Dipole 2 (x,y): </td><td><input type="text" value="334 : 695" size="20" /></td></tr>
+								<tr><td class="label">Dipole 1 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>
+								<tr><td class="label">Dipole 2 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>-->
+								<tr><td class="label">Surface: </td><td><input type="text" value="3.16" size="15" /> msh</td></tr>
+								<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+								<!--<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>-->
+							</table>
+							<table class="buttonbar">
+								<tr>
+									<td><div class="btn_visualize"><img class="btn" src="./Styles/images/icons/Eye_32.png" id="btn_visualize_group1" onclick="btn_visualize_click('btn_visualize_group1');" /></div></td>
+									<td><div class="btn_edit"><img class="btn" src="./Styles/images/icons/Edit_32.png"  id="btn_edit_group1" onclick="btn_edit_click('dlg_detailsgroup1');"/></div>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<script>
+						document.getElementById('select_mcintosh1').selectedIndex = 15;
+						document.getElementById('select_zurich1').selectedIndex = 3;
+					</script>
+					<div class="groupbox"  id="accordiongroup2">
+						<h3>Group 2</h3>
+						<div style="overflow-y: hidden;">
+							<div style="float:left;"><img class="btn" src="./Styles/images/icons/Arrow_Left_24.png" /></div>
+							<div style="float:right;"><img class="btn" src="./Styles/images/icons/Arrow_right_24.png" /></div>				
+							<table>
+								<!--<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:54:27" size="20" /></td></tr>-->
+								<tr><td class="label">Number: </td><td><input type="text" value="2" size="20" /></td></tr>
+								<tr><td class="label">Location (x,y): </td><td><input type="text" value="541 : 274" size="20" /></td></tr>
+								<tr><td class="label">Location (long,lat): </td><td><input type="text" value="325 : 706" size="20" /></td></tr>
+								<tr><td class="label">Zurich class / McIntosh: </td><td><select id="select_zurich2"><script>FillCombos("Zurich");</script></select>&nbsp;<select id="select_mcintosh2"><script>FillCombos("McIntosh");</script></select></td></tr>
+								<tr><td class="label">Spots: </td><td><input type="text" value="6" size="20" /></td></tr>
+								<!--<tr><td class="label">Dipole 1 (x,y): </td><td><input type="text" value="521 : 264" size="20" /></td></tr>
+								<tr><td class="label">Dipole 2 (x,y): </td><td><input type="text" value="566 : 291" size="20" /></td></tr>
+								<tr><td class="label">Dipole 1 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>
+								<tr><td class="label">Dipole 2 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>-->
+								<tr><td class="label">Surface: </td><td><input type="text" value="6.47" size="15" /> msh</td></tr>
+								<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+								<!--<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>-->
+							</table>
+							<table class="buttonbar">
+								<tr>
+									<td><div class="btn_visualize"><img class="btn" src="./Styles/images/icons/Eye_32.png" id="btn_visualize_group2" onclick="btn_visualize_click('btn_visualize_group2');" /></div></td>
+									<td><div class="btn_edit"><img class="btn" src="./Styles/images/icons/Edit_32.png"  id="btn_edit_group2" onclick="btn_edit_click('dlg_detailsgroup2');"/></div>
+								</tr>
+							</table>							
+						</div>
+					</div>	
+					<script>
+						document.getElementById('select_mcintosh2').selectedIndex = 47;
+						document.getElementById('select_zurich2').selectedIndex = 7;
+					</script>
+					</div>
+				</div>
+				<div class="imagepanel">
+					<img src="./Drawings/2013/09/usd201309020800.jpg" style="max-width: 100%;" />
+				</div>
+			</div>
+			<div class="statusbar">This panel contains status information - database connection, etc ...</div>
+		</div>
+	</body>
+	
+	<!-- Dialogs -->		
+	<div id="dlg_detailscalibration" title="calibration details">
+		<div>
+			<table>
+				<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:32:45" size="20" /></td></tr>
+				<tr><td class="label">north (x,y): </td><td><input type="text" value="456 : 175" size="20" /></td></tr>
+				<tr><td class="label">center (x,y): </td><td><input type="text" value="453 : 628" size="20" /></td></tr>
+				<tr><td class="label">radius: </td><td><input type="text" value="453" size="20" /></td></tr>
+				<tr><td class="label">quality: </td><td><input type="text" value="4" size="20" /></td></tr>
+				<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+				<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>
+			</table>
+		</div>
+		<div>
+			<div class="okcancel">
+				<table>
+					<tr>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/OK_32.png"  id="btn_edit_calibration_ok" onclick="btn_okcancel_clicked('dlg_detailscalibration', 'OK')"/></td>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/Cancel_32.png"  id="btn_edit_calibration_cancel" onclick="btn_okcancel_clicked('dlg_detailscalibration', 'Cancel')"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="dlg_detailsanalysis" title="analysis details">
+		<div>
+			<table>
+				<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:54:27" size="20" /></td></tr>
+				<tr><td class="label">carrington rotation: </td><td><input type="text" value="2167" size="20" /></td></tr>
+				<tr><td class="label">julian date: </td><td><input type="text" value="2457246" size="20" /></td></tr>
+				<tr><td class="label">groupcount / spotcount: </td><td><input type="text" value="3 / 14" size="20" /></td></tr>
+				<tr><td class="label">wolf number: </td><td><input type="text" value="N/A" size="20" /></td></tr>
+				<tr><td class="label">angle P / angle B / angle L: </td><td><input type="text" value="17 / 28 / 16" size="20" /></td></tr>
+				<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+				<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>
+			</table>
+		</div>
+		<div>
+			<div class="okcancel">
+				<table>
+					<tr>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/OK_32.png"  id="btn_edit_analysis_ok" onclick="btn_okcancel_clicked('dlg_detailsanalysis', 'OK')"/></td>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/Cancel_32.png"  id="btn_edit_analysis_cancel" onclick="btn_okcancel_clicked('dlg_detailsanalysis', 'Cancel')"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="dlg_detailsdrawing" title="drawing details">
+		<div>
+			<table>
+				<tr><td class="label">path: </td><td><input type="text" value="./Drawings/2013/09/usd201309020800.jpg" size="20" /></td></tr>
+				<tr><td class="label">type of drawing: </td><td><input type="text" value="USET" size="20" /></td></tr>
+				<tr><td class="label">calibration status: </td><td><img src="./Styles/images/icons/4.Globe_24I.png" /></td></tr>
+				<tr><td class="label">analysis status: </td><td><img src="./Styles/images/icons/2.Instrument Telescope_24I.png" /></td></tr>
+				<tr><td class="label">overall status: </td><td><img src="./Styles/images/icons/2.File Ok_24I.png" /></td></tr>
+				<tr><td class="label">Angle P / Angle B / Angle L: </td><td><input type="text" value="17 / 28 / 16" size="20" /></td></tr>
+				<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+				<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>
+			</table>
+		</div>
+		<div>
+			<div class="okcancel">
+				<table>
+					<tr>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/OK_32.png"  id="btn_edit_drawing_ok" onclick="btn_okcancel_clicked('dlg_detailsdrawing', 'OK')"/></td>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/Cancel_32.png"  id="btn_edit_drawing_cancel" onclick="btn_okcancel_clicked('dlg_detailsdrawing', 'Cancel')"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="dlg_detailsgroup1" title="group 1 details">
+		<div>
+			<table>
+				<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:54:27" size="20" /></td></tr>
+				<tr><td class="label">Number: </td><td><input type="text" value="1" size="20" /></td></tr>
+				<tr><td class="label">Location (x,y): </td><td><input type="text" value="325 : 706" size="20" /></td></tr>
+				<tr><td class="label">Location (long,lat): </td><td><input type="text" value="325 : 706" size="20" /></td></tr>
+				<tr><td class="label">Zurich class / McIntosh: </td><td><select id="select_zurich1"><script>FillCombos("Zurich");</script></select>&nbsp;<select id="select_mcintosh1"><script>FillCombos("McIntosh");</script></select></td></tr>
+				<tr><td class="label">Spots: </td><td><input type="text" value="3" size="20" /></td></tr>
+				<tr><td class="label">Dipole 1 (x,y): </td><td><input type="text" value="320 : 715" size="20" /></td></tr>
+				<tr><td class="label">Dipole 2 (x,y): </td><td><input type="text" value="334 : 695" size="20" /></td></tr>
+				<tr><td class="label">Dipole 1 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>
+				<tr><td class="label">Dipole 2 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>
+				<tr><td class="label">Surface: </td><td><input type="text" value="3.16" size="15" /> msh</td></tr>
+				<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+				<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>
+			</table>
+		</div>
+		<div>
+			<div class="okcancel">
+				<table>
+					<tr>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/OK_32.png"  id="btn_edit_group1_ok" onclick="btn_okcancel_clicked('dlg_detailsgroup1', 'OK')"/></td>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/Cancel_32.png"  id="btn_edit_group1_cancel" onclick="btn_okcancel_clicked('dlg_detailsgroup1', 'Cancel')"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="dlg_detailsgroup2" title="group 2 details">
+		<div>
+			<table>
+				<tr><td class="label">datetime: </td><td><input type="text" value="11/08/2015 12:54:27" size="20" /></td></tr>
+				<tr><td class="label">Number: </td><td><input type="text" value="2" size="20" /></td></tr>
+				<tr><td class="label">Location (x,y): </td><td><input type="text" value="541 : 274" size="20" /></td></tr>
+				<tr><td class="label">Location (long,lat): </td><td><input type="text" value="325 : 706" size="20" /></td></tr>
+				<tr><td class="label">Zurich class / McIntosh: </td><td><select id="select_zurich2"><script>FillCombos("Zurich");</script></select>&nbsp;<select id="select_mcintosh2"><script>FillCombos("McIntosh");</script></select></td></tr>
+				<tr><td class="label">Spots: </td><td><input type="text" value="6" size="20" /></td></tr>
+				<tr><td class="label">Dipole 1 (x,y): </td><td><input type="text" value="521 : 264" size="20" /></td></tr>
+				<tr><td class="label">Dipole 2 (x,y): </td><td><input type="text" value="566 : 291" size="20" /></td></tr>
+				<tr><td class="label">Dipole 1 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>
+				<tr><td class="label">Dipole 2 (long,lat): </td><td><input type="text" value="" size="20" /></td></tr>
+				<tr><td class="label">Surface: </td><td><input type="text" value="6.47" size="15" /> msh</td></tr>
+				<tr><td class="label">version / active: </td><td><input type="text" value="2 / true" size="20" /></td></tr>
+				<tr><td class="label">udts / upers: </td><td><input type="text" value="- / Olivier Lemaitre" size="20" /></td></tr>
+			</table>
+		</div>
+		<div>
+			<div class="okcancel">
+				<table>
+					<tr>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/OK_32.png"  id="btn_edit_group2_ok" onclick="btn_okcancel_clicked('dlg_detailsgroup2', 'OK')"/></td>
+						<td class="okcancel"><img class="btn" src="./Styles/images/icons/Cancel_32.png"  id="btn_edit_group2_cancel" onclick="btn_okcancel_clicked('dlg_detailsgroup2', 'Cancel')"/></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</html>

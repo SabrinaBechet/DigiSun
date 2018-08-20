@@ -1,0 +1,9 @@
+import math
+
+def from_spherical_to_cartesian(r, theta, phi):
+
+    x = r * math.sin(theta*3.14/180) * math.cos(phi*3.14/180)
+    y = r * math.sin(theta*3.14/180) * math.sin(phi*3.14/180)
+    z = r * math.cos(theta*3.14/180)
+
+    return x, y, z
