@@ -207,6 +207,16 @@ class GroupBox(QtGui.QWidget):
         self.surface_linedit.setText('{0:.2f}'.format(surface))
         if surface==0.:
             self.surface_linedit.setStyleSheet("background-color: rgb(255, 165, 84)")
+    
+    def set_empty(self):
+        #Empty the layout
+        for i in reversed(range(self.grid_layout.count())): 
+            self.grid_layout.itemAt(i).widget().setParent(None)
+        
+        
+    def set_welcome(self):
+        label = QtGui.QLabel("Click on a group to see more informations")
+        self.grid_layout.addWidget(label)
 
             
 class QLabelDrawing(QtGui.QLabel):
@@ -532,6 +542,8 @@ class DrawingViewPage(QtGui.QWidget):
     - label_right (the drawing) 
     There is a splitter that divides the right/left columns.
     """
+
+    
     def __init__(self):
         super(DrawingViewPage, self).__init__()
 
@@ -540,7 +552,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_up = QtGui.QWidget()
         self.widget_left_up.setMinimumWidth(300)
         self.widget_left_up.setMaximumHeight(300)
-        self.widget_left_up.setStyleSheet("background-color:lightgray;")   
+        self.widget_left_up.setStyleSheet("background-color:darkred;")   
         self.widget_left_up_layout = QtGui.QVBoxLayout()
         self.widget_left_up_layout.setContentsMargins(0, 0, 0, 0) # this line
         self.widget_left_up_layout.setSpacing(0)
@@ -550,7 +562,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(300)
         self.widget_left_middle.setMaximumHeight(200)
-        self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
+        self.widget_left_middle.setStyleSheet("background-color:green;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) # this line
         self.widget_left_middle_layout.setSpacing(0)
@@ -559,12 +571,15 @@ class DrawingViewPage(QtGui.QWidget):
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(300)
-        self.widget_left_down.setStyleSheet("background-color:lightgray;")   
+        self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) # this line
         self.widget_left_down_layout.setSpacing(0)
         self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
+        
+
+        
  
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
@@ -582,11 +597,13 @@ class DrawingViewPage(QtGui.QWidget):
         scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         scroll.setWidgetResizable(True)        
         self.widget_right_layout.addWidget(scroll)
-
+        
         splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_middle_down)
         splitter_middle_down.addWidget(self.widget_left_up)
         splitter_middle_down.addWidget(self.widget_left_middle)
+        splitter_middle_down.addWidget(self.widget_left_down)
+        
 
         splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_left)
@@ -597,8 +614,16 @@ class DrawingViewPage(QtGui.QWidget):
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
         splitter_main.addWidget(self.widget_right)
-
-        
+    
+    
+    
+    
+    
+    
+    """def widget_left_down_add_box(self):
+        new_layout = QtGui.QVBoxLayout()
+        label = QtGui.QLabel("Ninja")
+        self.widget_left_down_layout.addWidget(label)"""
     
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
@@ -691,6 +716,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.large_grid_overlay = False
             self.show_drawing()
 
+
             
     def set_group_widget(self):
         """
@@ -717,36 +743,74 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.myQListWidget = QtGui.QListWidget(self)
         self.myQListWidget.setStyleSheet("QListView::item:selected {background : rgb(77, 185, 88);}");
         
+        self.grid_position = [0, 0]
+        
         for i in range(group_count):
-            myQCustomQWidget = GroupBox()
-            self.grid_position = [0, 0]
-            myQCustomQWidget.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[i].number),
+            groupBoxLine = GroupBox()
+            
+            groupBoxLine.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[i].number),
                                        self.grid_position)
-            myQCustomQWidget.set_spot_count(self.drawing_lst[self.current_count].group_lst[i].spots,
+            
+            groupBoxLine.set_spot_count(self.drawing_lst[self.current_count].group_lst[i].spots,
                                             self.grid_position)
-            myQCustomQWidget.set_zurich_type(self.drawing_lst[self.current_count].group_lst[i].zurich,
+            
+            groupBoxLine.set_zurich_type(self.drawing_lst[self.current_count].group_lst[i].zurich,
                                              self.grid_position)
-            myQCustomQWidget.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[i].McIntosh,
+            
+            groupBoxLine.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[i].McIntosh,
                                                 self.drawing_lst[self.current_count].group_lst[i].zurich,
                                                 self.grid_position)
-            myQCustomQWidget.set_latitude(self.drawing_lst[self.current_count].group_lst[i].latitude,
-                                          self.grid_position)
-            myQCustomQWidget.set_longitude(self.drawing_lst[self.current_count].group_lst[i].longitude,
-                                           self.grid_position)
-            myQCustomQWidget.set_surface(self.drawing_lst[self.current_count].group_lst[i].surface,
-                                         self.grid_position)
-            if self.drawing_lst[self.current_count].group_lst[i].zurich.upper()  in ["B","C","D","E","F","G"]:
-                myQCustomQWidget.set_larger_spot(self.drawing_lst[self.current_count].group_lst[i].g_spot,
-                                                 self.grid_position)      
-            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
-            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
-
-            self.myQListWidget.addItem(myQListWidgetItem)
-            self.myQListWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
             
-        
+            
+            
+            myQListWidgetItem = QtGui.QListWidgetItem(self.myQListWidget)
+            myQListWidgetItem.setSizeHint(groupBoxLine.sizeHint())
+            
+            
+            self.myQListWidget.addItem(myQListWidgetItem)
+            self.myQListWidget.setItemWidget(myQListWidgetItem,groupBoxLine)
+            
+      
         self.drawing_page.widget_left_down_layout.addWidget(self.myQListWidget)
-              
+        
+        
+        myQCustomQWidget = GroupBox()
+        myQCustomQWidget.set_empty()
+        myQCustomQWidget.set_welcome()
+
+        self.drawing_page.widget_left_down_layout.addWidget(myQCustomQWidget)
+        
+    
+
+        self.myQListWidget.itemPressed.connect(lambda: self.update_left_down_box(myQCustomQWidget,self.myQListWidget.currentRow()))
+        
+
+    def update_left_down_box(self,myQCustomQWidget,n):
+
+        myQCustomQWidget.set_empty()
+        myQCustomQWidget.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
+                                       self.grid_position)
+        myQCustomQWidget.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
+                                            self.grid_position)
+        myQCustomQWidget.set_zurich_type(self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                             self.grid_position)
+        myQCustomQWidget.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
+                                                self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                                self.grid_position)
+        myQCustomQWidget.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude,
+                                          self.grid_position)
+        myQCustomQWidget.set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude,
+                                           self.grid_position)
+        myQCustomQWidget.set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
+                                         self.grid_position)
+        if self.drawing_lst[self.current_count].group_lst[n].zurich.upper()  in ["B","C","D","E","F","G"]:
+            myQCustomQWidget.set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
+                                                 self.grid_position)
+        
+
+
+
+        
     def add_drawing_information(self):
 
         title_left_up = QtGui.QLabel("Drawing information")
