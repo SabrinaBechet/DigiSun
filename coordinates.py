@@ -10,8 +10,7 @@ class Coordinates():
         pass
         #print('coordinate')
 
-
-class Spherical2(Coordinates):
+class Spherical(Coordinates):
 
     def __init__(self, radius, theta, phi):
       Coordinates.__init__(self)
@@ -27,30 +26,6 @@ class Spherical2(Coordinates):
         
         return x, y, z
         
-
-        
-class Spherical(Coordinates):
-    """
-    Contains the spherical coordinates with the following reference:
-    theta = latitude angle. 0 degree is the equator and 90 degree the pole
-    phi = longitude angle.
-    """
-    
-    def __init__(self, radius, theta, phi):
-      Coordinates.__init__(self)
-      # angle in degree 
-      self.theta = 90 - theta 
-      self.phi = phi
-      self.radius = radius
-
-    def convert_to_cartesian(self):
-        x = self.radius * math.sin(self.theta*3.14/180) * math.cos(self.phi*3.14/180)
-        y = self.radius * math.sin(self.theta*3.14/180) * math.sin(self.phi*3.14/180)
-        z = self.radius * math.cos(self.theta*3.14/180)
-
-        return x, y, z
-        
-
 class Cartesian(Coordinates):
     """
     Contains cartesian coordinates with the following reference:
@@ -163,9 +138,9 @@ def cartesian_from_drawing(x_center, y_center, x_north,
     theta = (angle_L0 * math.pi/180) - HGC_long
     phi = math.pi/2 - HGC_lat
     
-    sun_spherical = Spherical2(1,
-                               theta,
-                               phi)
+    sun_spherical = Spherical(1,
+                              theta,
+                              phi)
     x, y, z = sun_spherical.convert_to_cartesian()
 
     sun_cartesian = Cartesian(x, y, z)

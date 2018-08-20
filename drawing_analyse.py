@@ -235,8 +235,8 @@ class QLabelDrawing(QtGui.QLabel):
  
        self.large_grid_overlay = True
        self.small_grid_overlay = False
-
        self.group_visu = True
+       self.dipole_visu = False
        
     def set_img(self):
 
@@ -281,11 +281,12 @@ class QLabelDrawing(QtGui.QLabel):
                 else:
                     painter.setPen(pen_grid)
 
-                x_lst, z_lst = self.draw_latitude_line(latitude,
-                                                        self.current_drawing.calibrated_radius)
+                x_lst, y_lst = self.draw_line_on_sphere(latitude,
+                                                        self.current_drawing.calibrated_radius,
+                                                        "longitude")
                 for i in range(len(x_lst)):
                     painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst[i],
-                                      self.current_drawing.calibrated_center.y + z_lst[i])
+                                      self.current_drawing.calibrated_center.y + y_lst[i])
 
             for longitude in angle_array:
                 if longitude == 0 :                
@@ -293,43 +294,45 @@ class QLabelDrawing(QtGui.QLabel):
                 else:
                     painter.setPen(pen_grid)
 
-                x_lst, z_lst = self.draw_longitude_line(longitude,
-                                                        self.current_drawing.calibrated_radius)
+                x_lst, y_lst = self.draw_line_on_sphere(longitude,
+                                                        self.current_drawing.calibrated_radius,
+                                                        "latitude")
+                
                 for i in range(len(x_lst)):
                     painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst[i],
-                                      self.current_drawing.calibrated_center.y + z_lst[i])    
-
-        if self.group_visu :
-            # note: a column with the cartesian coord of group should be recorded in the db!
+                                      self.current_drawing.calibrated_center.y + y_lst[i])    
             
+        if self.group_visu :
+            # note: a column with the cartesian coord of group should be recorded in the db!      
             for i in range(self.current_drawing.group_count):
-                
-                (x_upper_left_origin,
-                 y_upper_left_origin,
-                 z_upper_left_origin) = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
-                                                                           self.current_drawing.calibrated_center.y,
-                                                                           self.current_drawing.calibrated_north.x,
-                                                                           self.current_drawing.calibrated_north.y,
-                                                                           self.current_drawing.group_lst[i].longitude,
-                                                                           self.current_drawing.group_lst[i].latitude,
-                                                                           self.current_drawing.angle_P,
-                                                                           self.current_drawing.angle_B,
-                                                                           self.current_drawing.angle_L)
-
                 radius = 25
+                if self.current_drawing.group_lst[i].zurich.upper() in ["C","D","E","F","G"]:
+                    radius = 40 
                 painter.setPen(pen_border)
-                x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
-                y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
-                # NB: starting from the center(!!)
-                # x_lower_left_origin = x_upper_left_origin while
-                # y_lower_left_origin = - y_upper_left_origin 
-                painter.drawEllipse(QtCore.QPointF(x_centered_lower_left_origin,
-                                                   y_centered_lower_left_origin),
-                                    radius,
-                                    radius)
                 
+                x, y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
+                                                              self.current_drawing.group_lst[i].latitude)
+                painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
                 
-                    
+        if self.dipole_visu :
+            # note: a column with the cartesian coord of group should be recorded in the db!      
+            for i in range(self.current_drawing.group_count):
+
+                pen_point = QtGui.QPen(QtCore.Qt.red)
+                pen_point.setWidth(10)
+                pen_line = QtGui.QPen(QtCore.Qt.red)
+                pen_line.setWidth(5)
+               
+                dip1_x, dip1_y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole1_long,
+                                                                        self.current_drawing.group_lst[i].dipole1_lat)
+                dip2_x, dip2_y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole2_long,
+                                                                        self.current_drawing.group_lst[i].dipole2_lat)
+                painter.setPen(pen_point)
+                painter.drawPoints(QtCore.QPointF(dip1_x,dip1_y), QtCore.QPointF(dip2_x,dip2_y) )
+                painter.setPen(pen_line)
+                painter.drawLine(dip1_x, dip1_y, dip2_x, dip2_y)
+
+                
         painter.end()
         self.setPixmap(self.drawing_pixMap.scaled(int(self.width_scale),
                                                   int(self.height_scale),
@@ -341,42 +344,90 @@ class QLabelDrawing(QtGui.QLabel):
         self.show()
 
 
-    def draw_longitude_line(self, longitude, radius):
+    def get_cartesian_coordinate_from_HGC(self, longitude, latitude):
+        """
+        get the cartesian coordinate suitable for Qpainter (origin upper left)
+        from the given heliographic latitude/longitude (for group or dipole).
+        NB: starting from the center(!!)
+        x_lower_left_origin = x_upper_left_origin while
+        y_lower_left_origin = - y_upper_left_origin
+        """
+        (x_upper_left_origin,
+         y_upper_left_origin,
+         z_upper_left_origin) = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
+                                                                   self.current_drawing.calibrated_center.y,
+                                                                   self.current_drawing.calibrated_north.x,
+                                                                   self.current_drawing.calibrated_north.y,
+                                                                   longitude,
+                                                                   latitude,
+                                                                   self.current_drawing.angle_P,
+                                                                   self.current_drawing.angle_B,
+                                                                   self.current_drawing.angle_L)
+
+        x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
+        y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
+
+        return x_centered_lower_left_origin, y_centered_lower_left_origin 
+
+    def get_spherical_coord_latitude(self, longitude, radius):
+        spherical_coord_lst = []
+        for latitude in range(-180,180, 1):    
+            spherical_coord =  coordinates.Spherical(radius,
+                                                      math.pi/2 - latitude * math.pi/180.,
+                                                      longitude * math.pi/180.)
+            spherical_coord_lst.append(spherical_coord)
+        return spherical_coord_lst
+
+    def get_spherical_coord_longitude(self, latitude, radius):
+        spherical_coord_lst = []
+        for longitude in range(-180,180, 1):    
+            spherical_coord =  coordinates.Spherical(radius,
+                                                      math.pi/2 - latitude * math.pi/180.,
+                                                      longitude * math.pi/180.)
+            spherical_coord_lst.append(spherical_coord)
+        return spherical_coord_lst
+    
+    def draw_line_on_sphere(self, angle, radius, line):
         x_arr = np.array([])
         y_arr = np.array([])
-        for latitude in range(-180,180, 1):
+
+        if line=='latitude':
+            spherical_coord_lst = self.get_spherical_coord_latitude(angle, radius)
+        elif line=='longitude':
+            spherical_coord_lst = self.get_spherical_coord_longitude(angle, radius)
             
-            spherical_coord =  coordinates.Spherical(radius, latitude, longitude)
+        for spherical_coord in spherical_coord_lst:
             x, y, z = spherical_coord.convert_to_cartesian()
             cart_coord = coordinates.Cartesian(x, y, z)
-            cart_coord.rotate_around_z(self.current_drawing.angle_L)
-            cart_coord.rotate_around_x(self.current_drawing.angle_P)
-            cart_coord.rotate_around_y(self.current_drawing.angle_B)
+            cart_coord.rotate_around_y(self.current_drawing.angle_L)
+            cart_coord.rotate_around_z(self.current_drawing.angle_P)
+            cart_coord.rotate_around_x(self.current_drawing.angle_B)
             
-            
-            if cart_coord.x>0:
-                x_arr = np.append(x_arr, [cart_coord.y])
-                y_arr = np.append(y_arr, [cart_coord.z])
+            if cart_coord.z>0:
+                x_arr = np.append(x_arr, [cart_coord.x])
+                y_arr = np.append(y_arr, [cart_coord.y])
              
         return x_arr, y_arr 
 
-    def draw_latitude_line(self, latitude, radius):
+    def draw_longitude_line(self, latitude, radius):
         x_arr = np.array([])
         y_arr = np.array([])
         
-        for longitude in range(-180,180, 1):
+        for longitude in range(-180, 180, 1):
             
-            spherical_coord =  coordinates.Spherical(radius, latitude, longitude)
+            spherical_coord =  coordinates.Spherical(radius,
+                                                     math.pi/2 - latitude * math.pi/180.,
+                                                     longitude * math.pi/180.)
             
             x, y, z = spherical_coord.convert_to_cartesian()
             cart_coord = coordinates.Cartesian(x, y, z)
-            cart_coord.rotate_around_z(self.current_drawing.angle_L)
-            cart_coord.rotate_around_x(self.current_drawing.angle_P)
-            cart_coord.rotate_around_y(self.current_drawing.angle_B)
+            cart_coord.rotate_around_y(self.current_drawing.angle_L)
+            cart_coord.rotate_around_z(self.current_drawing.angle_P)
+            cart_coord.rotate_around_x(self.current_drawing.angle_B)
             
-            if cart_coord.x>0:
-                x_arr = np.append(x_arr, [cart_coord.y])
-                y_arr = np.append(y_arr, [cart_coord.z])
+            if cart_coord.z>0:
+                x_arr = np.append(x_arr, [cart_coord.x])
+                y_arr = np.append(y_arr, [cart_coord.y])
             
         return x_arr, y_arr 
 
@@ -603,8 +654,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         large_grid.triggered.connect(self.set_large_grid)
         small_grid.triggered.connect(self.set_small_grid)
+        sunspot_view.triggered.connect(self.set_group_visualisation)
+        dipole_view.triggered.connect(self.set_dipole_visualisation)
 
-            
+    def set_group_visualisation(self):
+        if self.drawing_page.label_right.group_visu==True:
+            self.drawing_page.label_right.group_visu = False
+            self.show_drawing()
+        elif self.drawing_page.label_right.group_visu==False:
+            self.drawing_page.label_right.group_visu = True
+            self.show_drawing()
+
+    def set_dipole_visualisation(self):
+        if self.drawing_page.label_right.dipole_visu==True:
+            self.drawing_page.label_right.dipole_visu = False
+            self.show_drawing()
+        elif self.drawing_page.label_right.dipole_visu==False:
+            self.drawing_page.label_right.dipole_visu = True
+            self.show_drawing()
+        
     def set_large_grid(self):
         if self.drawing_page.label_right.large_grid_overlay==True:
             self.drawing_page.label_right.large_grid_overlay = False
@@ -638,12 +706,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_down_layout.addWidget(title_left_down)
         
         current_datetime = self.drawing_lst[self.current_count].datetime
-        """current_datetime_minus_1sec = self.drawing_lst[self.current_count]\
+        current_datetime_minus_1sec = self.drawing_lst[self.current_count]\
                                           .datetime - timedelta(seconds=1)
         
         current_datetime_plus_1sec = self.drawing_lst[self.current_count]\
                                          .datetime + timedelta(seconds=1)
-        """
+        
         group_count = self.drawing_lst[self.current_count].group_count
                                          
         self.myQListWidget = QtGui.QListWidget(self)
