@@ -300,42 +300,35 @@ class QLabelDrawing(QtGui.QLabel):
                                       self.current_drawing.calibrated_center.y + z_lst[i])    
 
         if self.group_visu :
-            # note: a column with the cartesian coord of group should be kept in the db!
+            # note: a column with the cartesian coord of group should be recorded in the db!
             
             for i in range(self.current_drawing.group_count):
-                """group_pos = coordinates.Spherical(self.current_drawing.calibrated_radius,
-                                                   self.current_drawing.group_lst[i].latitude * 180/math.pi,
-                                                   self.current_drawing.group_lst[i].longitude * 180/math.pi)
-                """
                 
-                x, y, z = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
-                                                             self.current_drawing.calibrated_center.y,
-                                                             self.current_drawing.calibrated_north.x,
-                                                             self.current_drawing.calibrated_north.y,
-                                                             self.current_drawing.group_lst[i].longitude,
-                                                             self.current_drawing.group_lst[i].latitude,
-                                                             self.current_drawing.angle_P,
-                                                             self.current_drawing.angle_B,
-                                                             self.current_drawing.angle_L)
-                """print("check input: ", self.current_drawing.calibrated_center.x)
-                print("check input: ", self.current_drawing.calibrated_center.y)
-                print("check input: ", self.current_drawing.calibrated_north.x)
-                print("check input: ", self.current_drawing.calibrated_north.y)
-                print(self.current_drawing.group_lst[i].longitude, self.current_drawing.group_lst[i].latitude)
-                """
-                
-                print("***group position", self.current_drawing.calibrated_center.x + x,
-                      self.current_drawing.calibrated_center.y - y)
-                
-                radius = 50
+                (x_upper_left_origin,
+                 y_upper_left_origin,
+                 z_upper_left_origin) = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
+                                                                           self.current_drawing.calibrated_center.y,
+                                                                           self.current_drawing.calibrated_north.x,
+                                                                           self.current_drawing.calibrated_north.y,
+                                                                           self.current_drawing.group_lst[i].longitude,
+                                                                           self.current_drawing.group_lst[i].latitude,
+                                                                           self.current_drawing.angle_P,
+                                                                           self.current_drawing.angle_B,
+                                                                           self.current_drawing.angle_L)
+
+                radius = 25
                 painter.setPen(pen_border)
-                
-                painter.drawEllipse(QtCore.QPointF(self.current_drawing.calibrated_center.x + x,
-                                                   self.current_drawing.calibrated_center.y - y),
+                x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
+                y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
+                # NB: starting from the center(!!)
+                # x_lower_left_origin = x_upper_left_origin while
+                # y_lower_left_origin = - y_upper_left_origin 
+                painter.drawEllipse(QtCore.QPointF(x_centered_lower_left_origin,
+                                                   y_centered_lower_left_origin),
                                     radius,
                                     radius)
                 
-            
+                
                     
         painter.end()
         self.setPixmap(self.drawing_pixMap.scaled(int(self.width_scale),
