@@ -307,28 +307,31 @@ class QLabelDrawing(QtGui.QLabel):
                                                    self.current_drawing.group_lst[i].latitude * 180/math.pi,
                                                    self.current_drawing.group_lst[i].longitude * 180/math.pi)
                 """
+                
                 x, y, z = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
                                                              self.current_drawing.calibrated_center.y,
                                                              self.current_drawing.calibrated_north.x,
                                                              self.current_drawing.calibrated_north.y,
                                                              self.current_drawing.group_lst[i].longitude,
                                                              self.current_drawing.group_lst[i].latitude,
-                                                             self.current_drawing.angle_B,
                                                              self.current_drawing.angle_P,
+                                                             self.current_drawing.angle_B,
                                                              self.current_drawing.angle_L)
-                print("check input: ", self.current_drawing.calibrated_center.x)
+                """print("check input: ", self.current_drawing.calibrated_center.x)
                 print("check input: ", self.current_drawing.calibrated_center.y)
                 print("check input: ", self.current_drawing.calibrated_north.x)
                 print("check input: ", self.current_drawing.calibrated_north.y)
                 print(self.current_drawing.group_lst[i].longitude, self.current_drawing.group_lst[i].latitude)
-
+                """
                 
-                print("***group position", x, y, z)
+                print("***group position", self.current_drawing.calibrated_center.x + x,
+                      self.current_drawing.calibrated_center.y - y)
                 
                 radius = 50
                 painter.setPen(pen_border)
+                
                 painter.drawEllipse(QtCore.QPointF(self.current_drawing.calibrated_center.x + x,
-                                                   self.current_drawing.calibrated_center.y + y),
+                                                   self.current_drawing.calibrated_center.y - y),
                                     radius,
                                     radius)
                 
@@ -642,12 +645,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_down_layout.addWidget(title_left_down)
         
         current_datetime = self.drawing_lst[self.current_count].datetime
-        current_datetime_minus_1sec = self.drawing_lst[self.current_count]\
+        """current_datetime_minus_1sec = self.drawing_lst[self.current_count]\
                                           .datetime - timedelta(seconds=1)
         
         current_datetime_plus_1sec = self.drawing_lst[self.current_count]\
                                          .datetime + timedelta(seconds=1)
-
+        """
         group_count = self.drawing_lst[self.current_count].group_count
                                          
         self.myQListWidget = QtGui.QListWidget(self)
