@@ -247,6 +247,8 @@ class QLabelDrawing(QtGui.QLabel):
        self.small_grid_overlay = False
        self.group_visu = True
        self.dipole_visu = False
+
+       self.group_visu_index = -1
        
     def set_img(self):
 
@@ -313,13 +315,21 @@ class QLabelDrawing(QtGui.QLabel):
                                       self.current_drawing.calibrated_center.y + y_lst[i])    
             
         if self.group_visu :
-            # note: a column with the cartesian coord of group should be recorded in the db!      
+            #print(self.group_visu_index)
+            # note: a column with the cartesian coord of group should be recorded in the db!
+            pen_selected = QtGui.QPen(QtCore.Qt.green)
+            pen_selected.setWidth(3)
+            
             for i in range(self.current_drawing.group_count):
                 radius = 25
                 if self.current_drawing.group_lst[i].zurich.upper() in ["C","D","E","F","G"]:
-                    radius = 40 
+                    radius = 40
+                    
                 painter.setPen(pen_border)
                 
+                if self.group_visu_index==i:
+                    painter.setPen(pen_selected)
+                    
                 x, y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
                                                               self.current_drawing.group_lst[i].latitude)
                 painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
@@ -782,9 +792,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     
 
-        self.myQListWidget.itemPressed.connect(lambda: self.update_left_down_box(myQCustomQWidget,self.myQListWidget.currentRow()))
+        self.myQListWidget.itemSelectionChanged.connect(lambda: self.update_left_down_box(myQCustomQWidget,self.myQListWidget.currentRow()))
+        self.myQListWidget.itemSelectionChanged.connect(lambda: self.update_group_visu(self.myQListWidget.currentRow()))
         
 
+    def update_group_visu(self, n):
+        self.drawing_page.label_right.group_visu_index = n
+        self.drawing_page.label_right.set_img()
+        #print("*********", str(self.drawing_lst[self.current_count].group_lst[n].number ))
+        
     def update_left_down_box(self,myQCustomQWidget,n):
 
         myQCustomQWidget.set_empty()
@@ -999,6 +1015,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #print("show drawing", self.current_count)
         self.set_path_to_qlabel()
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
+        self.drawing_page.label_right.group_visu_index = -1
         self.drawing_page.label_right.set_img()
         #self.drawing_page.label_right.show()
         
