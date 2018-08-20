@@ -236,7 +236,7 @@ class QLabelDrawing(QtGui.QLabel):
        self.large_grid_overlay = True
        self.small_grid_overlay = False
 
-       #self.group_visu = True
+       self.group_visu = True
        
     def set_img(self):
 
