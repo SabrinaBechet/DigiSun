@@ -43,7 +43,7 @@ class GroupBox(QtGui.QWidget):
         
         
     def set_arrows_buttons(self):
-		
+
 	button_up = QtGui.QPushButton()
 	arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
 	arrow_up = QtGui.QIcon(arrow_up_pix)
@@ -379,7 +379,6 @@ class QLabelDrawing(QtGui.QLabel):
                 painter.setPen(pen_border)
                 
                 if self.group_visu_index==i:
-                    print("selected", self.group_visu, i)
                     painter.setPen(pen_selected)
                     
                 x, y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
@@ -855,7 +854,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def update_group_visu(self, n):
         self.drawing_page.label_right.group_visu_index = n
-        print("******", self.drawing_page.label_right.group_visu_index)
         self.drawing_page.label_right.set_img()
        
         
@@ -991,7 +989,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
        
     def update_counter(self, value_to_add):
-  
         self.current_count += value_to_add
         
         if self.current_count > 0 and self.current_count < self.len_drawing_lst - 1:
@@ -1017,7 +1014,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Get the list of drawings from bulk analysis page.
         Set the counter to 0.
         """
-        print("set_drawing_lst")
         self.drawing_lst = drawing_lst
         self.len_drawing_lst = len(drawing_lst)
         
@@ -1030,9 +1026,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.but_previous.setDisabled(True)
         self.set_drawing_lineEdit()
 
-        self.set_path_to_qlabel()
-        self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
-        self.set_group_widget()
+        #self.set_path_to_qlabel()
+        #self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
+        #self.set_group_widget()
         #print("counter:", self.current_count)
         
     def set_drawing_lineEdit(self):
@@ -1075,10 +1071,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
     def show_drawing(self):
         
-        print("show drawing", self.current_count)
         self.set_path_to_qlabel()
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
         self.drawing_page.label_right.group_visu_index = -1
+        self.set_group_widget()
         self.drawing_page.label_right.set_img()
         #self.drawing_page.label_right.show()
         
