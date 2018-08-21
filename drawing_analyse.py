@@ -28,6 +28,7 @@ class GroupBox(QtGui.QWidget):
         super(GroupBox, self).__init__()
         layout = QtGui.QVBoxLayout()
         self.grid_layout = QtGui.QGridLayout()
+        self.arrow_layout = QtGui.QGridLayout()
         #self.grid_layout.setSpacing(0)
         #self.grid_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.grid_layout)
@@ -44,34 +45,34 @@ class GroupBox(QtGui.QWidget):
         
     def set_arrows_buttons(self):
 
-	button_up = QtGui.QPushButton()
+	
+	button_up = QtGui.QToolButton()
 	arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
 	arrow_up = QtGui.QIcon(arrow_up_pix)
 	button_up.setIcon(arrow_up);
-        #button_up.setFixedWidth(self.latitude_linedit.width())
 	
-	button_down = QtGui.QPushButton()
-	arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
+	button_down = QtGui.QToolButton()
+	arrow_down_pix = QtGui.QPixmap("icons/arrow_down_32");
 	arrow_down = QtGui.QIcon(arrow_down_pix)
 	button_down.setIcon(arrow_down);
-        #button_down.setFixedWidth(self.latitude_linedit.width())
 	
-	button_left = QtGui.QPushButton()
+	button_left = QtGui.QToolButton()
 	arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
 	arrow_left = QtGui.QIcon(arrow_left_pix)
-	button_left.setIcon(arrow_left);
-        #button_left.setFixedWidth(self.latitude_linedit.width())
+	button_left.setIcon(arrow_left);	
 	
-	button_right = QtGui.QPushButton()
+	button_right = QtGui.QToolButton()
 	arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
 	arrow_right = QtGui.QIcon(arrow_right_pix)
 	button_right.setIcon(arrow_right);
-        #button_right.setFixedWidth(self.latitude_linedit.width())
 	
-	self.grid_layout.addWidget(button_up,1,3)
-	self.grid_layout.addWidget(button_down,3,3)
-	self.grid_layout.addWidget(button_left,2,2)
-	self.grid_layout.addWidget(button_right,2,4)
+	self.arrow_layout.addWidget(button_up,0,2)
+	self.arrow_layout.addWidget(button_down,2,2)
+	self.arrow_layout.addWidget(button_left,1,1)
+	self.arrow_layout.addWidget(button_right,1,3)
+		
+	self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)
+
 	
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
@@ -672,12 +673,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
         splitter_main.addWidget(self.widget_right)
-    
-   
-    """def widget_left_down_add_box(self):
-        new_layout = QtGui.QVBoxLayout()
-        label = QtGui.QLabel("Ninja")
-        self.widget_left_down_layout.addWidget(label)"""
+        
     
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
