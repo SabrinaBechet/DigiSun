@@ -959,6 +959,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.but_previous = QtGui.QPushButton('previous', self)
         self.but_previous.setShortcut(QtGui.QKeySequence("Left"))
+        self.but_previous.setDisabled(True)
         self.but_next = QtGui.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
@@ -1006,7 +1007,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
           
         self.set_drawing_lineEdit()
         self.show_drawing()
-        self.set_group_widget()
         #print("current count:", self.current_count)
        
     def set_drawing_lst(self, drawing_lst):
@@ -1020,7 +1020,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.current_count = 0
         if len(drawing_lst)>1:
             self.but_next.setEnabled(True)
-            self.but_previous.setEnabled(True)
+            #self.but_previous.setEnabled(True)
         else:
             self.but_next.setDisabled(True)
             self.but_previous.setDisabled(True)
