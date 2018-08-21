@@ -10,6 +10,7 @@ import coordinates
 import numpy as np
 import math
 
+
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
 Keep the analyse itself somwhere else!
@@ -35,7 +36,26 @@ class GroupBox(QtGui.QWidget):
                                    grid_position[0],
                                    grid_position[1],)
         grid_position[1]+=1
+        
+        
+    def set_arrows_buttons(self):
+		
+		button_up = QtGui.QPushButton()
+		button_up.setText("NinjaUp")
+		button_down = QtGui.QPushButton()
+		button_down.setText("NinjaDown")
+		button_left = QtGui.QPushButton()
+		button_left.setText("NinjaLeft")
+		button_right = QtGui.QPushButton()
+		button_right.setText("NinjaRight")
+		
 
+		
+		self.grid_layout.addWidget(button_up,3,2)
+		self.grid_layout.addWidget(button_down,3,4)
+		self.grid_layout.addWidget(button_left,2,3)
+		self.grid_layout.addWidget(button_right,4,3)
+						
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
         self.spot_number_linedit.setMaximumWidth(60)
@@ -210,8 +230,8 @@ class GroupBox(QtGui.QWidget):
     
     def set_empty(self):
         #Empty the layout
-        for i in reversed(range(self.grid_layout.count())): 
-            self.grid_layout.itemAt(i).widget().setParent(None)
+        """for i in reversed(range(self.grid_layout.count())):
+            self.grid_layout.itemAt(i).widget().setParent(None)"""
         
         
     def set_welcome(self):
@@ -802,7 +822,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #print("*********", str(self.drawing_lst[self.current_count].group_lst[n].number ))
         
     def update_left_down_box(self,myQCustomQWidget,n):
-
+        self.grid_position = [0, 0]
         myQCustomQWidget.set_empty()
         myQCustomQWidget.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
                                        self.grid_position)
@@ -819,9 +839,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                            self.grid_position)
         myQCustomQWidget.set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
                                          self.grid_position)
+        myQCustomQWidget.set_arrows_buttons()                                 
+                                         
         if self.drawing_lst[self.current_count].group_lst[n].zurich.upper()  in ["B","C","D","E","F","G"]:
             myQCustomQWidget.set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
                                                  self.grid_position)
+                                                 
         
 
 
