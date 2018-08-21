@@ -51,10 +51,10 @@ class GroupBox(QtGui.QWidget):
 		
 
 		
-		self.grid_layout.addWidget(button_up,3,2)
-		self.grid_layout.addWidget(button_down,3,4)
-		self.grid_layout.addWidget(button_left,2,3)
-		self.grid_layout.addWidget(button_right,4,3)
+		self.grid_layout.addWidget(button_up,2,3)
+		self.grid_layout.addWidget(button_down,4,3)
+		self.grid_layout.addWidget(button_left,3,2)
+		self.grid_layout.addWidget(button_right,3,4)
 						
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
