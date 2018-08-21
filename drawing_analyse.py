@@ -41,13 +41,24 @@ class GroupBox(QtGui.QWidget):
     def set_arrows_buttons(self):
 		
 		button_up = QtGui.QPushButton()
-		button_up.setText("NinjaUp")
+		arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
+		arrow_up = QtGui.QIcon(arrow_up_pix)
+		button_up.setIcon(arrow_up);
+		
 		button_down = QtGui.QPushButton()
-		button_down.setText("NinjaDown")
+		arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
+		arrow_down = QtGui.QIcon(arrow_down_pix)
+		button_down.setIcon(arrow_down);
+		
 		button_left = QtGui.QPushButton()
-		button_left.setText("NinjaLeft")
+		arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
+		arrow_left = QtGui.QIcon(arrow_left_pix)
+		button_left.setIcon(arrow_left);
+		
 		button_right = QtGui.QPushButton()
-		button_right.setText("NinjaRight")
+		arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
+		arrow_right = QtGui.QIcon(arrow_right_pix)
+		button_right.setIcon(arrow_right);
 		
 
 		
@@ -230,8 +241,8 @@ class GroupBox(QtGui.QWidget):
     
     def set_empty(self):
         #Empty the layout
-        """for i in reversed(range(self.grid_layout.count())):
-            self.grid_layout.itemAt(i).widget().setParent(None)"""
+        for i in reversed(range(self.grid_layout.count())):
+            self.grid_layout.itemAt(i).widget().setParent(None)
         
         
     def set_welcome(self):
