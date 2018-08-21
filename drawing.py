@@ -1,17 +1,10 @@
 from datetime import date, time, datetime
-import database
-
-class coordinate():
-
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+import database, coordinates
 
 """
 to do:
 - method the print the drawing information in a nice way.
 """
-
 
 class Group():
     """
@@ -116,14 +109,22 @@ class Drawing():
         self.path = 'None'
         self.operator = 'None'
         self.last_update_time = datetime.now()
-
-        
-        self.calibrated_center = coordinate(0,0)
-        self.calibrated_north = coordinate(0,0)
+       
+        self.calibrated_center = coordinates.Cartesian(0,0)
+        self.calibrated_north = coordinates.Cartesian(0,0)
         self.calibrated_radius = 0
 
         self.group_lst = []
 
+    
+    """def is_different(self, drawing_to_compare):
+
+        if (self.datetime == drawing_to_compare.datetime and
+            self.drawing_type == drawing_to_compare.drawing_type and
+            self.quality == drawing_to_compare.quality and
+            self.observer == drawing_to_compare.observer and
+            self.carington
+    """    
     def fill_from_database(self, datetime):
         """
         A drawing can be identified uniquely with its datetime.

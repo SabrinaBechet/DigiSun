@@ -322,8 +322,8 @@ class BulkAnalysePage(BulkViewPage):
         day_min = str(element_selectionne[0:3])
         day_max = str(element_selectionne[5:8])
 
-        print(year_selected + ' ' + month_selected + ' ' + day_min)
-        print(year_selected + ' ' + month_selected + ' ' + day_max)
+        #print(year_selected + ' ' + month_selected + ' ' + day_min)
+        #print(year_selected + ' ' + month_selected + ' ' + day_max)
         
         self.datetime_drawing_min = datetime.strptime(year_selected + ' ' +
                                                       month_selected + ' ' +
@@ -335,7 +335,7 @@ class BulkAnalysePage(BulkViewPage):
                                                       day_max + "23:59",
                                                       '%Y %b %d %H:%M')
         
-        print( self.datetime_drawing_min, self.datetime_drawing_max)
+        #print( self.datetime_drawing_min, self.datetime_drawing_max)
 
     def set_drawing_information(self):
         """
@@ -360,7 +360,7 @@ class BulkAnalysePage(BulkViewPage):
             drawing_tmp = drawing.Drawing()
             drawing_tmp.fill_from_database(date)
             drawing_lst.append(drawing_tmp)
-            print(drawing_tmp.datetime, drawing_tmp.observer)
+            #print(drawing_tmp.datetime, drawing_tmp.observer)
 
         
         return drawing_lst

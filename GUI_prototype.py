@@ -79,13 +79,11 @@ class mainWindow(QtGui.QMainWindow):
 
   
     def daily_switch_to_drawing_analyse(self, lst_drawing):
-        
         lst_drawing = self.daily_scan.set_drawing_information()
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.show_drawing()
 
     def bulk_switch_to_drawing_analyse(self, lst_drawing):
-        
         lst_drawing = self.analyse_page.set_drawing_information()
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.show_drawing()   
