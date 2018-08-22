@@ -10,7 +10,6 @@ import coordinates
 import numpy as np
 import math
 
-
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
 Keep the analyse itself somwhere else!
@@ -307,6 +306,10 @@ class QLabelDrawing(QtGui.QLabel):
 
        self.group_visu_index = -1
        
+       self.x_drawing = 0
+       self.y_drawing = 0
+
+       
     def set_img(self):
         
         img = Image.open(self.file_path)
@@ -538,13 +541,9 @@ class QLabelDrawing(QtGui.QLabel):
         #change of coordinaet system: qlabel -> drawing
         x_drawing = (x_click - self.pixmap_x_min) * self.drawing_width / self.pixmap().width()
         y_drawing = (y_click - self.pixmap_y_min) * self.drawing_height / self.pixmap().height()
-  
-        x_center_drawing = ((self.current_drawing.calibrated_center.x -
-                            self.pixmap_x_min) * self.drawing_width /
-                            self.pixmap().width())
-        y_center_drawing = ((self.current_drawing.calibrated_center.y -
-                            self.pixmap_y_min) * self.drawing_height /
-                            self.pixmap().height())
+
+        self.x_drawing = x_drawing
+        self.y_drawing = y_drawing
         
         print("click coordinate: ", x_click, y_click)
         print("pixmap coord: ", x_pixmap, y_pixmap)
@@ -553,12 +552,6 @@ class QLabelDrawing(QtGui.QLabel):
               self.current_drawing.calibrated_center.x,
               self.current_drawing.calibrated_center.y)
         
-        #print("**radius", self.radius)
-        #print("pixmap coord centered: ", x_pixmap_centered, y_pixmap_centered)
-        #print("x center pixmap", x_center_pixmap)
-        
-        #print("P, B, L", (self.angle_P, self.angle_B, self.angle_L))
-
         center_x_lower_left_origin = self.current_drawing.calibrated_center.x
         center_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_center.y
         north_x_lower_left_origin = self.current_drawing.calibrated_north.y
@@ -574,8 +567,9 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_P,
                                                                     self.current_drawing.angle_B,
                                                                     self.current_drawing.angle_L)
-        #print("longitude: ", longitude)
-        #print("latitude: ", latitude)
+
+    def get_drawing_coordinates(self):
+        return self.x_drawing, self.y_drawing
         
     def get_pixmap_coordinate_range(self):
         """
@@ -771,6 +765,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         vertical_scroll_bar.setValue(height/2.)
         horizontal_scroll_bar.setMaximum(width)
         horizontal_scroll_bar.setValue(width/2.)
+
+        calib_center_x, calib_center_y = self.drawing_page.label_right.get_drawing_coordinates()
+
+        print("calib_center:",  calib_center_x, calib_center_y)
+
         
     def set_group_visualisation(self):
         if self.drawing_page.label_right.group_visu==True:
@@ -1030,7 +1029,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
           
         self.set_drawing_lineEdit()
         self.show_drawing()
-        self.set_group_widget()
+        #self.set_group_widget()
         #print("current count:", self.current_count)
        
     def set_drawing_lst(self, drawing_lst):
@@ -1052,7 +1051,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         #self.set_path_to_qlabel()
         #self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
-        #self.set_group_widget()
+        
         #print("counter:", self.current_count)
         
     def set_drawing_lineEdit(self):
