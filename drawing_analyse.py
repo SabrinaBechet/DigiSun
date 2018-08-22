@@ -764,7 +764,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
         height = self.drawing_page.label_right.drawing_height + vertical_scroll_bar.pageStep()
         width = self.drawing_page.label_right.drawing_width + horizontal_scroll_bar.pageStep()
-        print(width/2., height/2.)
+        print(width, width/2., height, height/2.)
         vertical_scroll_bar.setMaximum(height)
         vertical_scroll_bar.setValue(height/2.)
         horizontal_scroll_bar.setMaximum(width)
