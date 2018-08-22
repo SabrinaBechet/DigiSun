@@ -65,18 +65,17 @@ class GroupBox(QtGui.QWidget):
 	arrow_right = QtGui.QIcon(arrow_right_pix)
 	button_right.setIcon(arrow_right);
         #button_right.setFixedWidth(self.latitude_linedit.width())
-	self.arrow_layout.addWidget(button_up,0,2)
+	"""self.arrow_layout.addWidget(button_up,0,2)
 	self.arrow_layout.addWidget(button_down,2,2)
 	self.arrow_layout.addWidget(button_left,1,1)
 	self.arrow_layout.addWidget(button_right,1,3)
-	self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)
+	self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)"""
 	
-	"""self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)
 	self.grid_layout.addWidget(button_up,1,3)
 	self.grid_layout.addWidget(button_down,3,3)
 	self.grid_layout.addWidget(button_left,2,2)
 	self.grid_layout.addWidget(button_right,2,4)
-	"""
+	
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
         self.spot_number_linedit.setMaximumWidth(60)
@@ -267,7 +266,10 @@ class GroupBox(QtGui.QWidget):
     def set_empty(self):
         #Empty the layout
         for i in reversed(range(self.grid_layout.count())):
-            self.grid_layout.itemAt(i).widget().setParent(None)
+			"""if (self.grid_layout.itemAt(i).widget().isLayout()):
+				pass
+			else:"""
+			self.grid_layout.itemAt(i).widget().setParent(None)
               
     def set_welcome(self):
         label = QtGui.QLabel("Click on a group to see more informations")
