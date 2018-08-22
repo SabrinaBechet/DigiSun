@@ -44,36 +44,39 @@ class GroupBox(QtGui.QWidget):
         
         
     def set_arrows_buttons(self):
-
-	
-	button_up = QtGui.QToolButton()
+        
+	button_up = QtGui.QPushButton()
 	arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
 	arrow_up = QtGui.QIcon(arrow_up_pix)
 	button_up.setIcon(arrow_up);
 	
-	button_down = QtGui.QToolButton()
-	arrow_down_pix = QtGui.QPixmap("icons/arrow_down_32");
+	button_down = QtGui.QPushButton()
+	arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
 	arrow_down = QtGui.QIcon(arrow_down_pix)
 	button_down.setIcon(arrow_down);
 	
-	button_left = QtGui.QToolButton()
+	button_left = QtGui.QPushButton()
 	arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
 	arrow_left = QtGui.QIcon(arrow_left_pix)
-	button_left.setIcon(arrow_left);	
+	button_left.setIcon(arrow_left);
 	
-	button_right = QtGui.QToolButton()
+	button_right = QtGui.QPushButton()
 	arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
 	arrow_right = QtGui.QIcon(arrow_right_pix)
 	button_right.setIcon(arrow_right);
-	
+        #button_right.setFixedWidth(self.latitude_linedit.width())
 	self.arrow_layout.addWidget(button_up,0,2)
 	self.arrow_layout.addWidget(button_down,2,2)
 	self.arrow_layout.addWidget(button_left,1,1)
 	self.arrow_layout.addWidget(button_right,1,3)
-		
 	self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)
-
 	
+	"""self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)
+	self.grid_layout.addWidget(button_up,1,3)
+	self.grid_layout.addWidget(button_down,3,3)
+	self.grid_layout.addWidget(button_left,2,2)
+	self.grid_layout.addWidget(button_right,2,4)
+	"""
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
         self.spot_number_linedit.setMaximumWidth(60)
@@ -411,7 +414,7 @@ class QLabelDrawing(QtGui.QLabel):
                                                   QtCore.Qt.KeepAspectRatio))
         self.drawing_width = img.size[0]
         self.drawing_height = img.size[1]
-        #print("img size: ", img.size)
+        print("img size: ", img.size)
 
         self.show()
 
@@ -649,13 +652,14 @@ class DrawingViewPage(QtGui.QWidget):
         self.label_right = QLabelDrawing()
         self.widget_right.layout().addWidget(self.label_right)
   
-        scroll = QtGui.QScrollArea()
-        scroll.setWidget(self.label_right)
+        self.scroll = QtGui.QScrollArea()
+        self.scroll.setWidget(self.label_right)
         
-        scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        scroll.setWidgetResizable(True)        
-        self.widget_right_layout.addWidget(scroll)
+        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll.setWidgetResizable(True)
+ 
+        self.widget_right_layout.addWidget(self.scroll)
         
         splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_middle_down)
@@ -673,7 +677,12 @@ class DrawingViewPage(QtGui.QWidget):
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
         splitter_main.addWidget(self.widget_right)
-        
+    
+   
+    """def widget_left_down_add_box(self):
+        new_layout = QtGui.QVBoxLayout()
+        label = QtGui.QLabel("Ninja")
+        self.widget_left_down_layout.addWidget(label)"""
     
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
@@ -744,6 +753,23 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         sunspot_view.triggered.connect(self.set_group_visualisation)
         dipole_view.triggered.connect(self.set_dipole_visualisation)
 
+        calibrate_action.triggered.connect(self.calibrate)
+
+    def calibrate(self):
+        self.drawing_page.label_right.group_visu = False
+        self.drawing_page.label_right.large_grid_overlay = False
+
+        self.drawing_page.label_right.zoom_in(5.)
+        vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
+        horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
+        height = self.drawing_page.label_right.drawing_height + vertical_scroll_bar.pageStep()
+        width = self.drawing_page.label_right.drawing_width + horizontal_scroll_bar.pageStep()
+        print(width/2., height/2.)
+        vertical_scroll_bar.setMaximum(height)
+        vertical_scroll_bar.setValue(height/2.)
+        horizontal_scroll_bar.setMaximum(width)
+        horizontal_scroll_bar.setValue(width/2.)
+        
     def set_group_visualisation(self):
         if self.drawing_page.label_right.group_visu==True:
             self.drawing_page.label_right.group_visu = False
@@ -955,7 +981,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.but_previous = QtGui.QPushButton('previous', self)
         self.but_previous.setShortcut(QtGui.QKeySequence("Left"))
-        self.but_previous.setDisabled(True)
         self.but_next = QtGui.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
@@ -1003,6 +1028,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
           
         self.set_drawing_lineEdit()
         self.show_drawing()
+        self.set_group_widget()
         #print("current count:", self.current_count)
        
     def set_drawing_lst(self, drawing_lst):
@@ -1016,7 +1042,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.current_count = 0
         if len(drawing_lst)>1:
             self.but_next.setEnabled(True)
-            #self.but_previous.setEnabled(True)
+            self.but_previous.setEnabled(True)
         else:
             self.but_next.setDisabled(True)
             self.but_previous.setDisabled(True)
