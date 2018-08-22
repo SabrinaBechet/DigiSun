@@ -10,6 +10,7 @@ import coordinates
 import numpy as np
 import math
 
+
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
 Keep the analyse itself somwhere else!
@@ -33,8 +34,10 @@ class GroupBox(QtGui.QWidget):
         self.setLayout(self.grid_layout)
 
     
-    def set_title(self, title, grid_position):
+    def set_title(self, title, grid_position,colorised):
         self.title_label = QtGui.QLabel(title)
+        if colorised:
+            self.title_label.setStyleSheet("background-color: rgb(255, 165, 84)")
         #self.title_label.setMaximumWidth(50)
         self.grid_layout.addWidget(self.title_label,
                                    grid_position[0],
@@ -43,38 +46,37 @@ class GroupBox(QtGui.QWidget):
         
         
     def set_arrows_buttons(self):
+        button_up = QtGui.QPushButton()
+        arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
+        arrow_up = QtGui.QIcon(arrow_up_pix)
+        button_up.setIcon(arrow_up);
         
-	button_up = QtGui.QPushButton()
-	arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
-	arrow_up = QtGui.QIcon(arrow_up_pix)
-	button_up.setIcon(arrow_up);
-	
-	button_down = QtGui.QPushButton()
-	arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
-	arrow_down = QtGui.QIcon(arrow_down_pix)
-	button_down.setIcon(arrow_down);
-	
-	button_left = QtGui.QPushButton()
-	arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
-	arrow_left = QtGui.QIcon(arrow_left_pix)
-	button_left.setIcon(arrow_left);
-	
-	button_right = QtGui.QPushButton()
-	arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
-	arrow_right = QtGui.QIcon(arrow_right_pix)
-	button_right.setIcon(arrow_right);
-        #button_right.setFixedWidth(self.latitude_linedit.width())
-	"""self.arrow_layout.addWidget(button_up,0,2)
-	self.arrow_layout.addWidget(button_down,2,2)
-	self.arrow_layout.addWidget(button_left,1,1)
-	self.arrow_layout.addWidget(button_right,1,3)
-	self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)"""
-	
-	self.grid_layout.addWidget(button_up,1,3)
-	self.grid_layout.addWidget(button_down,3,3)
-	self.grid_layout.addWidget(button_left,2,2)
-	self.grid_layout.addWidget(button_right,2,4)
-	
+        button_down = QtGui.QPushButton()
+        arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
+        arrow_down = QtGui.QIcon(arrow_down_pix)
+        button_down.setIcon(arrow_down);
+        
+        button_left = QtGui.QPushButton()
+        arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
+        arrow_left = QtGui.QIcon(arrow_left_pix)
+        button_left.setIcon(arrow_left);
+        
+        button_right = QtGui.QPushButton()
+        arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
+        arrow_right = QtGui.QIcon(arrow_right_pix)
+        button_right.setIcon(arrow_right);
+            #button_right.setFixedWidth(self.latitude_linedit.width())
+        """self.arrow_layout.addWidget(button_up,0,2)
+        self.arrow_layout.addWidget(button_down,2,2)
+        self.arrow_layout.addWidget(button_left,1,1)
+        self.arrow_layout.addWidget(button_right,1,3)
+        self.grid_layout.addLayout(self.arrow_layout,1,2,3,2)"""
+        
+        self.grid_layout.addWidget(button_up,1,3)
+        self.grid_layout.addWidget(button_down,3,3)
+        self.grid_layout.addWidget(button_left,2,2)
+        self.grid_layout.addWidget(button_right,2,4)
+        
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
         self.spot_number_linedit.setMaximumWidth(60)
@@ -265,10 +267,10 @@ class GroupBox(QtGui.QWidget):
     def set_empty(self):
         #Empty the layout
         for i in reversed(range(self.grid_layout.count())):
-			"""if (self.grid_layout.itemAt(i).widget().isLayout()):
-				pass
-			else:"""
-			self.grid_layout.itemAt(i).widget().setParent(None)
+            """if (self.grid_layout.itemAt(i).widget().isLayout()):
+                pass
+            else:"""
+            self.grid_layout.itemAt(i).widget().setParent(None)
               
     def set_welcome(self):
         label = QtGui.QLabel("Click on a group to see more informations")
@@ -305,10 +307,6 @@ class QLabelDrawing(QtGui.QLabel):
        self.dipole_visu = False
 
        self.group_visu_index = -1
-       
-       self.x_drawing = 0
-       self.y_drawing = 0
-
        
     def set_img(self):
         
@@ -541,9 +539,13 @@ class QLabelDrawing(QtGui.QLabel):
         #change of coordinaet system: qlabel -> drawing
         x_drawing = (x_click - self.pixmap_x_min) * self.drawing_width / self.pixmap().width()
         y_drawing = (y_click - self.pixmap_y_min) * self.drawing_height / self.pixmap().height()
-
-        self.x_drawing = x_drawing
-        self.y_drawing = y_drawing
+  
+        x_center_drawing = ((self.current_drawing.calibrated_center.x -
+                            self.pixmap_x_min) * self.drawing_width /
+                            self.pixmap().width())
+        y_center_drawing = ((self.current_drawing.calibrated_center.y -
+                            self.pixmap_y_min) * self.drawing_height /
+                            self.pixmap().height())
         
         print("click coordinate: ", x_click, y_click)
         print("pixmap coord: ", x_pixmap, y_pixmap)
@@ -552,6 +554,12 @@ class QLabelDrawing(QtGui.QLabel):
               self.current_drawing.calibrated_center.x,
               self.current_drawing.calibrated_center.y)
         
+        #print("**radius", self.radius)
+        #print("pixmap coord centered: ", x_pixmap_centered, y_pixmap_centered)
+        #print("x center pixmap", x_center_pixmap)
+        
+        #print("P, B, L", (self.angle_P, self.angle_B, self.angle_L))
+
         center_x_lower_left_origin = self.current_drawing.calibrated_center.x
         center_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_center.y
         north_x_lower_left_origin = self.current_drawing.calibrated_north.y
@@ -567,9 +575,8 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_P,
                                                                     self.current_drawing.angle_B,
                                                                     self.current_drawing.angle_L)
-
-    def get_drawing_coordinates(self):
-        return self.x_drawing, self.y_drawing
+        #print("longitude: ", longitude)
+        #print("latitude: ", latitude)
         
     def get_pixmap_coordinate_range(self):
         """
@@ -760,16 +767,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
         height = self.drawing_page.label_right.drawing_height + vertical_scroll_bar.pageStep()
         width = self.drawing_page.label_right.drawing_width + horizontal_scroll_bar.pageStep()
-        print(width, width/2., height, height/2.)
+        print(width/2., height/2.)
         vertical_scroll_bar.setMaximum(height)
         vertical_scroll_bar.setValue(height/2.)
         horizontal_scroll_bar.setMaximum(width)
         horizontal_scroll_bar.setValue(width/2.)
-
-        calib_center_x, calib_center_y = self.drawing_page.label_right.get_drawing_coordinates()
-
-        print("calib_center:",  calib_center_x, calib_center_y)
-
         
     def set_group_visualisation(self):
         if self.drawing_page.label_right.group_visu==True:
@@ -836,9 +838,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
        
         for i in range(group_count):
             groupBoxLine = GroupBox()
-           
+            colorised = False
+            if ((self.drawing_lst[self.current_count].group_lst[i].surface == 0) or (self.drawing_lst[self.current_count].group_lst[i].surface == None)):
+                colorised = True
+            if ((self.drawing_lst[self.current_count].group_lst[i].zurich.upper() in ["B","C","D","E","F","G"]) and (self.drawing_lst[self.current_count].group_lst[i].g_spot == 0)):
+                colorised = True
+
             groupBoxLine.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[i].number),
-                                   self.grid_position)
+                                   self.grid_position,colorised)
             
             groupBoxLine.set_spot_count(self.drawing_lst[self.current_count].group_lst[i].spots,
                                         self.grid_position)
@@ -884,7 +891,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.grid_position = [0, 0]
         myQCustomQWidget.set_empty()
         myQCustomQWidget.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
-                                       self.grid_position)
+                                       self.grid_position,0)
         myQCustomQWidget.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
                                             self.grid_position)
         myQCustomQWidget.set_zurich_type(self.drawing_lst[self.current_count].group_lst[n].zurich,
@@ -1051,7 +1058,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         #self.set_path_to_qlabel()
         #self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
-        
+        #self.set_group_widget()
         #print("counter:", self.current_count)
         
     def set_drawing_lineEdit(self):

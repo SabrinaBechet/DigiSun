@@ -145,8 +145,8 @@ class database():
                             'from groups inner join drawings on ' +
                             'groups.DateTime=drawings.DateTime where ' +
                             'drawings.DateTime > %s && drawings.DateTime< %s ' +
-                            '&& groups.Surface<=> %s && drawings.Analyzed=%s;',
-                            (str(value_min), str(value_max), value2, str(1)))
+                            '&& (groups.Surface is NULL or groups.Surface=0) && drawings.Analyzed=%s;',
+                            (str(value_min), str(value_max), str(1)))
         self.db.commit()
         result = self.cursor.fetchall()
         return result[0][0]
