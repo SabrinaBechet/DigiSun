@@ -575,6 +575,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             colorised = False
             if ((self.drawing_lst[self.current_count].group_lst[i].surface == 0) or
                 (self.drawing_lst[self.current_count].group_lst[i].surface == None)):
+
                 colorised = True
             if ((self.drawing_lst[self.current_count].group_lst[i].zurich.upper() in ["B","C","D","E","F","G"]) and
                 (self.drawing_lst[self.current_count].group_lst[i].g_spot == 0)):
@@ -590,8 +591,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                            self.drawing_lst[self.current_count].group_lst[i].zurich,
                                            self.grid_position)
 
+            groupBoxLine.set_delete_group_button(self.grid_position)
+            
+
+
             #print(groupBoxLine.get_zurich().currentIndex())
             groupBoxLine.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.groupBoxLineList[self.listWidget_groupBox.currentRow()].get_zurich().currentIndex()))
+            
             
             self.groupBoxLineList.append(groupBoxLine)
 
@@ -605,10 +611,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #self.listWidget_group_toolbox.set_empty()
         #self.listWidget_group_toolbox.set_welcome()
 
-        # first element of the list widget initially highlighted
+        # first element of the list widget initially highlighted and other disabled
         if self.listWidget_groupBox.count()>0:
             self.listWidget_groupBox.item(0).setSelected(True)
         self.listWidget_groupBox.setFocus()
+        
+        
+        for i in range(1,self.listWidget_groupBox.count()):
+                self.groupBoxLineList[i].get_spots().setEnabled(False)
+                self.groupBoxLineList[i].get_zurich().setEnabled(False)
+                self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
+            
+        
         
         self.listWidget_groupBox\
             .itemSelectionChanged\
@@ -616,6 +630,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox.itemSelectionChanged.connect(lambda: self.disable_other_lines())
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
@@ -623,6 +638,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
         if self.listWidget_groupBox.count()>0:
             self.update_group_toolbox(0)
+        
          
     def update_group_toolbox(self,n):
         self.grid_position = [0, 0]
@@ -655,6 +671,24 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         
         self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.group_toolbox.get_zurich().currentIndex()))
+
+    
+    def disable_other_lines(self):
+        for i in range(self.listWidget_groupBox.count()):
+            if (i != self.listWidget_groupBox.currentRow()):
+                self.groupBoxLineList[i].get_spots().setEnabled(False)
+                self.groupBoxLineList[i].get_zurich().setEnabled(False)
+                self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
+            else:
+                self.groupBoxLineList[i].get_spots().setEnabled(True)
+                self.groupBoxLineList[i].get_zurich().setEnabled(True)
+                self.groupBoxLineList[i].get_McIntosh().setEnabled(True)
+        
+    def update_groupBoxLineList(self,n):
+        pass
+    
+    def modifyDrawing(self,n):
+        pass
         
     def update_other_box(self,zurich):
         self.groupBoxLineList[self.listWidget_groupBox.currentRow()].get_zurich().setCurrentIndex(zurich)
