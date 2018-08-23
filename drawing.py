@@ -235,7 +235,7 @@ class Drawing(object):
 
     @property
     def angle_P(self):
-        print("here we are reading the value of angle P")
+        #print("here we are reading the value of angle P")
         return self._angle_P
 
     @angle_P.setter
@@ -253,7 +253,7 @@ class Drawing(object):
 
     @property
     def angle_L(self):
-        print("here we are reading the value of angle L")
+        #print("here we are reading the value of angle L")
         return self._angle_L
 
     @angle_L.setter
@@ -304,7 +304,7 @@ class Drawing(object):
 
     @property
     def calibrated_center(self):
-        print("here we are reading the value of calibrated center")
+        #print("here we are reading the value of calibrated center")
         return self._calibrated_center
 
     @calibrated_center.setter
