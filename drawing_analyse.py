@@ -10,6 +10,7 @@ import coordinates
 import numpy as np
 import math
 
+
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
 Keep the analyse itself somwhere else!
@@ -616,6 +617,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if self.listWidget_groupBox.count()>0:
             self.listWidget_groupBox.item(0).setSelected(True)
         self.listWidget_groupBox.setFocus()
+
         
         
         self.groupBoxLineList[0].get_spots().setEnabled(False)
