@@ -2,6 +2,8 @@
 # -*-coding:utf-8-*-
 from PyQt4 import QtGui, QtCore
 
+def patter(self):
+	pass
 
 class GroupBox(QtGui.QWidget):
     """
@@ -61,7 +63,9 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.addWidget(button_down,3,3)
         self.grid_layout.addWidget(button_left,2,2)
         self.grid_layout.addWidget(button_right,2,4)
-        
+
+
+    
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
         self.spot_number_linedit.setMaximumWidth(60)
@@ -73,6 +77,10 @@ class GroupBox(QtGui.QWidget):
     def set_zurich_type(self, group_zurich_type, grid_position):
         self.zurich_combo = QtGui.QComboBox(self)
         self.zurich_combo.setStyleSheet("color:black")
+
+
+        self.zurich_combo.wheelEvent = patter
+        
         self.zurich_combo.setMaximumWidth(50)
         self.zurich_combo.addItem("A")
         self.zurich_combo.addItem("B")
@@ -88,11 +96,13 @@ class GroupBox(QtGui.QWidget):
                               grid_position[1])
         grid_position[1]+=1
         index = self.zurich_combo.findText(group_zurich_type)
-        self.zurich_combo.setCurrentIndex(index)       
+        self.zurich_combo.setCurrentIndex(index)
         self.zurich_combo.currentIndexChanged.connect(lambda : self.update_McIntosh_type(self.zurich_combo.currentText()))
 
     def update_McIntosh_type(self,zurich_type):
         self.McIntosh_combo.clear()
+        
+        self.McIntosh_combo.wheelEvent = patter
     
         if zurich_type=='A':
             self.McIntosh_combo.addItem("Axx")
