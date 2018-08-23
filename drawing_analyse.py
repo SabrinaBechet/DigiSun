@@ -596,7 +596,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
             #print(groupBoxLine.get_zurich().currentIndex())
-            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.groupBoxLineList[self.listWidget_groupBox.currentRow()].get_zurich().currentIndex()))
+            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda: self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_McIntosh().currentIndexChanged.connect(lambda: self.modifyDrawingMcIntosh(self.listWidget_groupBox.currentRow(),False))
             
             
             self.groupBoxLineList.append(groupBoxLine)
@@ -617,13 +618,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox.setFocus()
         
         
+        self.groupBoxLineList[0].get_spots().setEnabled(False)
         for i in range(1,self.listWidget_groupBox.count()):
-                self.groupBoxLineList[i].get_spots().setEnabled(False)
-                self.groupBoxLineList[i].get_zurich().setEnabled(False)
-                self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
-            
-        
-        
+            self.groupBoxLineList[i].get_spots().setEnabled(False)
+            self.groupBoxLineList[i].get_zurich().setEnabled(False)
+            self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
+
+
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda:self.update_group_toolbox(self.listWidget_groupBox.currentRow()))
@@ -646,13 +647,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_toolbox.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
                                        self.grid_position,0)
         self.group_toolbox.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
-                                            self.grid_position)       
+                                            self.grid_position)
         self.group_toolbox.set_zurich_type(self.drawing_lst[self.current_count].group_lst[n].zurich,
                                               self.grid_position)
-        self.group_toolbox.get_zurich().setCurrentIndex(self.groupBoxLineList[n].get_zurich().currentIndex())
         self.group_toolbox.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
                                                 self.drawing_lst[self.current_count].group_lst[n].zurich,
                                                 self.grid_position)
+        self.group_toolbox.set_confirm_spots(self.grid_position)
         self.group_toolbox.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude,
                                           self.grid_position)
     
@@ -669,37 +670,48 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             self.group_toolbox.set_larger_spot(-1, self.grid_position)
 
-        
-        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.group_toolbox.get_zurich().currentIndex()))
 
+        self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modifyDrawingOthers(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda : self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox.get_McIntosh().currentIndexChanged.connect(lambda: self.modifyDrawingMcIntosh(self.listWidget_groupBox.currentRow(),True))
+        
     
     def disable_other_lines(self):
         for i in range(self.listWidget_groupBox.count()):
             if (i != self.listWidget_groupBox.currentRow()):
-                self.groupBoxLineList[i].get_spots().setEnabled(False)
                 self.groupBoxLineList[i].get_zurich().setEnabled(False)
                 self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
             else:
-                self.groupBoxLineList[i].get_spots().setEnabled(True)
                 self.groupBoxLineList[i].get_zurich().setEnabled(True)
                 self.groupBoxLineList[i].get_McIntosh().setEnabled(True)
         
-    def update_groupBoxLineList(self,n):
-        pass
+
     
-    def modifyDrawing(self,n):
-        pass
-        
-    def update_other_box(self,zurich):
-        self.groupBoxLineList[self.listWidget_groupBox.currentRow()].get_zurich().setCurrentIndex(zurich)
-        self.group_toolbox.get_zurich().setCurrentIndex(zurich)
-        
-        #self.listWidget_groupBox.currentItem().get_zurich().setCurrentText(1)
-        """left_bottom_box = self.group_toolbox.findChild()
-        index = self.group_toolbox.findText(zurich, QtCore.Qt.MatchFixedString)
-        if index >= 0:
-            listWidget_group_toolbox.setCurrentIndex(index)
-            self.listWidget_groupBox.zurich_type.setCurrentIndex(index)"""
+    def modifyDrawingOthers(self,n,is_toolbox):
+        if is_toolbox:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].spots = self.group_toolbox.get_spots().text()
+        else:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].spots = self.groupBoxLineList[n].get_spots().text()
+        self.groupBoxLineList[n].update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
+        self.group_toolbox.update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
+
+    def modifyDrawingZurich(self,n,is_toolbox):
+        if is_toolbox:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].zurich = str(self.group_toolbox.get_zurich().currentText())
+        else:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].zurich = str(self.groupBoxLineList[n].get_zurich().currentText())
+        self.groupBoxLineList[n].update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
+        self.group_toolbox.update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
+
+    def modifyDrawingMcIntosh(self,n,is_toolbox):
+        if is_toolbox:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].McIntosh = str(self.group_toolbox.get_McIntosh().currentText())
+        else:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].McIntosh = str(self.groupBoxLineList[n].get_McIntosh().currentText())
+        self.groupBoxLineList[n].update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
+        self.group_toolbox.update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
+
+
         
     def update_group_visu(self, n):
         self.drawing_page.label_right.group_visu_index = n
