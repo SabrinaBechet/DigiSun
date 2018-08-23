@@ -4,297 +4,20 @@ import os
 from PyQt4 import QtGui, QtCore
 from PIL import Image
 from PIL.ImageQt import ImageQt
-import database, drawing
+import database, drawing, group_box
 from datetime import date, time, datetime, timedelta
 import coordinates
 import numpy as np
 import math
 
-
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
 Keep the analyse itself somwhere else!
-- GroupBox : represent the box associated to a group
 - QLabelDrawing : represent the drawing
 - DrawingViewPage : the template of the DrawingViewPage
 - DrawingAnalysePage: the page itself with all the widgets
 """
 
-class GroupBox(QtGui.QWidget):
-    """
-    Represent the box associated to a group
-    """
-    def __init__(self):
-        super(GroupBox, self).__init__()
-        layout = QtGui.QVBoxLayout()
-        self.grid_layout = QtGui.QGridLayout()
-        self.arrow_layout = QtGui.QGridLayout()
-        #self.grid_layout.setSpacing(0)
-        #self.grid_layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self.grid_layout)
-
-    def get_zurich(self):
-        return self.grid_layout.itemAtPosition(0,2).widget()
-        
-    def get_McIntosh(self):
-        return self.grid_layout.itemAtPosition(0,3).widget()
-    
-    def set_title(self, title, grid_position,colorised):
-        self.title_label = QtGui.QLabel(title)
-        if colorised:
-            self.title_label.setStyleSheet("background-color: rgb(255, 165, 84)")
-        #self.title_label.setMaximumWidth(50)
-        self.grid_layout.addWidget(self.title_label,
-                                   grid_position[0],
-                                   grid_position[1])
-        grid_position[1]+=1
-        
-        
-    def set_arrows_buttons(self):
-        button_up = QtGui.QPushButton()
-        arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
-        arrow_up = QtGui.QIcon(arrow_up_pix)
-        button_up.setIcon(arrow_up);
-        
-        button_down = QtGui.QPushButton()
-        arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
-        arrow_down = QtGui.QIcon(arrow_down_pix)
-        button_down.setIcon(arrow_down);
-        
-        button_left = QtGui.QPushButton()
-        arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
-        arrow_left = QtGui.QIcon(arrow_left_pix)
-        button_left.setIcon(arrow_left);
-        
-        button_right = QtGui.QPushButton()
-        arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
-        arrow_right = QtGui.QIcon(arrow_right_pix)
-        button_right.setIcon(arrow_right);
-        
-        self.grid_layout.addWidget(button_up,1,3)
-        self.grid_layout.addWidget(button_down,3,3)
-        self.grid_layout.addWidget(button_left,2,2)
-        self.grid_layout.addWidget(button_right,2,4)
-        
-    def set_spot_count(self, spot_count, grid_position):
-        self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)
-        self.spot_number_linedit.setMaximumWidth(60)
-        self.grid_layout.addWidget(self.spot_number_linedit,
-                                   grid_position[0],
-                                   grid_position[1])
-        grid_position[1]+=1
-
-    def set_zurich_type(self, group_zurich_type, grid_position):
-        zurich_type = QtGui.QComboBox(self)
-        zurich_type.setStyleSheet("color:black")
-        zurich_type.setMaximumWidth(50)
-        zurich_type.addItem("A")
-        zurich_type.addItem("B")
-        zurich_type.addItem("C")
-        zurich_type.addItem("D")
-        zurich_type.addItem("E")
-        zurich_type.addItem("F")
-        zurich_type.addItem("G")
-        zurich_type.addItem("H")
-        zurich_type.addItem("J")
-        self.grid_layout.addWidget(zurich_type,
-                              grid_position[0],
-                              grid_position[1])
-        grid_position[1]+=1
-        index = zurich_type.findText(group_zurich_type)
-        zurich_type.setCurrentIndex(index)
-        
-        
-
-        
-        zurich_type.currentIndexChanged.connect(lambda : self.update_McIntosh_type(zurich_type.currentText()))
-
-    def update_McIntosh_type(self,zurich_type):
-        self.McIntosh_type.clear()
-    
-        if zurich_type=='A':
-            self.McIntosh_type.addItem("Axx")
-        elif zurich_type=='B':
-            self.McIntosh_type.addItem("Bxo")
-            self.McIntosh_type.addItem("Bxi")
-            self.McIntosh_type.addItem("Bxc")
-        elif zurich_type=='C':
-            self.McIntosh_type.addItem("Cro")
-            self.McIntosh_type.addItem("Cri")
-            self.McIntosh_type.addItem("Crc")
-            self.McIntosh_type.addItem("Cso")
-            self.McIntosh_type.addItem("Csi")
-            self.McIntosh_type.addItem("Csc")
-            self.McIntosh_type.addItem("Cao")
-            self.McIntosh_type.addItem("Cai")
-            self.McIntosh_type.addItem("Cac")
-            self.McIntosh_type.addItem("Cho")
-            self.McIntosh_type.addItem("Chi")
-            self.McIntosh_type.addItem("Chc")
-            self.McIntosh_type.addItem("Cko")
-            self.McIntosh_type.addItem("Cki")
-            self.McIntosh_type.addItem("Ckc")
-        elif zurich_type=='D':
-            self.McIntosh_type.addItem("Dro")
-            self.McIntosh_type.addItem("Dri")
-            self.McIntosh_type.addItem("Drc")
-            self.McIntosh_type.addItem("Dso")
-            self.McIntosh_type.addItem("Dsi")
-            self.McIntosh_type.addItem("Dsc")
-            self.McIntosh_type.addItem("Dao")
-            self.McIntosh_type.addItem("Dai")
-            self.McIntosh_type.addItem("Dac")
-            self.McIntosh_type.addItem("Dho")
-            self.McIntosh_type.addItem("Dhi")
-            self.McIntosh_type.addItem("Dhc")
-            self.McIntosh_type.addItem("Dko")
-            self.McIntosh_type.addItem("Dki")
-            self.McIntosh_type.addItem("Dkc")
-        elif zurich_type=='E':
-            self.McIntosh_type.addItem("Ero")
-            self.McIntosh_type.addItem("Eri")
-            self.McIntosh_type.addItem("Erc")
-            self.McIntosh_type.addItem("Eso")
-            self.McIntosh_type.addItem("Esi")
-            self.McIntosh_type.addItem("Esc")
-            self.McIntosh_type.addItem("Eao")
-            self.McIntosh_type.addItem("Eai")
-            self.McIntosh_type.addItem("Eac")
-            self.McIntosh_type.addItem("Eho")
-            self.McIntosh_type.addItem("Ehi")
-            self.McIntosh_type.addItem("Ehc")
-            self.McIntosh_type.addItem("Eko")
-            self.McIntosh_type.addItem("Eki")
-            self.McIntosh_type.addItem("Ekc")
-        elif zurich_type=='F':
-            self.McIntosh_type.addItem("Fro")
-            self.McIntosh_type.addItem("Fri")
-            self.McIntosh_type.addItem("Frc")
-            self.McIntosh_type.addItem("Fso")
-            self.McIntosh_type.addItem("Fsi")
-            self.McIntosh_type.addItem("Fsc")
-            self.McIntosh_type.addItem("Fao")
-            self.McIntosh_type.addItem("Fai")
-            self.McIntosh_type.addItem("Fac")
-            self.McIntosh_type.addItem("Fho")
-            self.McIntosh_type.addItem("Fhi")
-            self.McIntosh_type.addItem("Fhc")
-            self.McIntosh_type.addItem("Fko")
-            self.McIntosh_type.addItem("Fki")
-            self.McIntosh_type.addItem("Fkc")
-        elif zurich_type=='G':
-            self.McIntosh_type.addItem("Eso")    
-            self.McIntosh_type.addItem("Eao")    
-            self.McIntosh_type.addItem("Eho")    
-            self.McIntosh_type.addItem("Eko")    
-            self.McIntosh_type.addItem("Fho")    
-            self.McIntosh_type.addItem("Fko")
-        elif zurich_type=='H':
-            self.McIntosh_type.addItem("Hhx")
-            self.McIntosh_type.addItem("Hkx")
-        elif zurich_type=='J':
-            self.McIntosh_type.addItem("Hsx")
-            self.McIntosh_type.addItem("Hax")
-            
-        
-        
-    
-    def set_mcIntosh_type(self, mcIntosh_type, zurich_type, grid_position):
-        self.McIntosh_type = QtGui.QComboBox(self)
-        self.McIntosh_type.setStyleSheet("color: black")
-        self.McIntosh_type.setMaximumWidth(70)
-        
-        self.update_McIntosh_type(zurich_type)
-        
-        self.grid_layout.addWidget(self.McIntosh_type,
-                                   grid_position[0],
-                                   grid_position[1])
-        grid_position[1]+=1 
-        index = self.McIntosh_type.findText(mcIntosh_type)
-        self.McIntosh_type.setCurrentIndex(index)
-        
-    def set_longitude(self, longitude, grid_position):
-        grid_position[0] +=1
-        self.longitude_label = QtGui.QLabel("Longitude")
-        #self.longitude_label.setMaximumWidth(100)
-        self.longitude_linedit = QtGui.QLineEdit(self)
-        self.longitude_linedit.setText('{0:.2f}'.format(longitude))
-        self.longitude_linedit.setMaximumWidth(60)
-        self.grid_layout.addWidget(self.longitude_label, grid_position[0], 0)
-        self.grid_layout.addWidget(self.longitude_linedit, grid_position[0], 1)
-        
-    def set_latitude(self, latitude, grid_position):
-        grid_position[0]+=1
-        
-        self.latitude_label = QtGui.QLabel("Latitude")
-        #self.latitude_label.setMaximumWidth(100)
-        self.latitude_linedit = QtGui.QLineEdit(self)
-        self.latitude_linedit.setText('{0:.2f}'.format(latitude))
-        self.latitude_linedit.setMaximumWidth(60)
-        self.grid_layout.addWidget(self.latitude_label, grid_position[0], 0)
-        self.grid_layout.addWidget(self.latitude_linedit, grid_position[0], 1)
-
-    def set_larger_spot(self, larger_spot, grid_position):
-        grid_position[0]+=1
-        self.larger_spot_label = QtGui.QLabel("Lead/trail")
-        #self.larger_spot_label.setMaximumWidth(100)
-        self.larger_spot_leading = QtGui.QPushButton("L")
-        self.larger_spot_leading.setFixedWidth(self.latitude_linedit.width())
-        self.larger_spot_egal = QtGui.QPushButton("=")
-        self.larger_spot_egal.setFixedWidth(self.latitude_linedit.width())
-        self.larger_spot_trailing = QtGui.QPushButton("T")
-        self.larger_spot_trailing.setFixedWidth(self.latitude_linedit.width())
-        
-        self.grid_layout.addWidget(self.larger_spot_label, grid_position[0], 0)
-        self.grid_layout.addWidget(self.larger_spot_leading, grid_position[0], 1)
-        self.grid_layout.addWidget(self.larger_spot_egal, grid_position[0], 2)
-        self.grid_layout.addWidget(self.larger_spot_trailing, grid_position[0], 3)
-        
-        if larger_spot is None:
-            self.larger_spot_linedit.setStyleSheet("background-color: rgb(255, 165, 84)")
-        elif larger_spot in [1, 4, 7]:
-            self.larger_spot_leading.setStyleSheet("background-color: rgb(77, 185, 88)");
-        elif larger_spot in [2, 5, 8]:
-            self.larger_spot_trailing.setStyleSheet("background-color: rgb(77, 185, 88)");
-        elif larger_spot in [3, 6, 9]:
-            self.larger_spot_egal.setStyleSheet("background-color: rgb(77, 185, 88)");
-        elif larger_spot==0:
-            self.larger_spot_leading.setStyleSheet("background-color: rgb(255, 165, 84)");
-            self.larger_spot_trailing.setStyleSheet("background-color: rgb(255, 165, 84)");
-            self.larger_spot_egal.setStyleSheet("background-color: rgb(255, 165, 84)");
-        elif larger_spot==-1:
-            self.larger_spot_leading.setDisabled(True)
-            self.larger_spot_trailing.setDisabled(True)
-            self.larger_spot_egal.setDisabled(True)
-            
-    def set_surface(self, surface, grid_position):
-        grid_position[0]+=1
-        self.surface_label = QtGui.QLabel("Surface")
-        #self.surface_label.setMaximumWidth(50)
-        self.surface_linedit = QtGui.QLineEdit(self)
-        self.surface_linedit.setMaximumWidth(60)
-        self.grid_layout.addWidget(self.surface_label, grid_position[0], 0)
-        self.grid_layout.addWidget(self.surface_linedit, grid_position[0], 1)
-        
-        if surface is None:
-            surface = 0.
-        self.surface_linedit.setText('{0:.2f}'.format(surface))
-        if surface==0.:
-            self.surface_linedit.setStyleSheet("background-color: rgb(255, 165, 84)")
-    
-    def set_empty(self):
-        #Empty the layout
-        for i in reversed(range(self.grid_layout.count())):
-            """if (self.grid_layout.itemAt(i).widget().isLayout()):
-                pass
-            else:"""
-            self.grid_layout.itemAt(i).widget().setParent(None)
-              
-    def set_welcome(self):
-        label = QtGui.QLabel("Click on a group to see more informations")
-        self.grid_layout.addWidget(label)
-
-            
 class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 
@@ -731,7 +454,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         toolbar = self.addToolBar("view")
         toolbar.setIconSize(QtCore.QSize(30, 30));
-    
+
+        # icons come from here: https://www.flaticon.com
         zoom_in = QtGui.QAction('zoom_in', toolbar)
         zoom_in.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
         zoom_out = QtGui.QAction('zoom_out',  toolbar)
@@ -841,13 +565,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         group_count = self.drawing_lst[self.current_count].group_count
                                          
-        self.myQListWidget = QtGui.QListWidget(self)
-        self.myQListWidget.setStyleSheet("QListView::item:selected {background : rgb(77, 185, 88);}");
+        self.listWidget_groupBox = QtGui.QListWidget(self)
+        self.listWidget_groupBox.setStyleSheet("QListView::item:selected {background : rgb(77, 185, 88);}");
         
         self.groupBoxLineList = []
         for i in range(group_count):
             self.grid_position = [0, 0]
-            groupBoxLine = GroupBox()
+            groupBoxLine = group_box.GroupBox()
             colorised = False
             if ((self.drawing_lst[self.current_count].group_lst[i].surface == 0) or
                 (self.drawing_lst[self.current_count].group_lst[i].surface == None)):
@@ -865,83 +589,87 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[i].McIntosh,
                                            self.drawing_lst[self.current_count].group_lst[i].zurich,
                                            self.grid_position)
+
             #print(groupBoxLine.get_zurich().currentIndex())
-            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.groupBoxLineList[self.myQListWidget.currentRow()].get_zurich().currentIndex()))
+            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.groupBoxLineList[self.listWidget_groupBox.currentRow()].get_zurich().currentIndex()))
+            
             self.groupBoxLineList.append(groupBoxLine)
 
-            item = QtGui.QListWidgetItem(self.myQListWidget)
+            item = QtGui.QListWidgetItem(self.listWidget_groupBox)
             item.setSizeHint(groupBoxLine.sizeHint())
-            self.myQListWidget.setItemWidget(item, groupBoxLine)
+            self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
             
-        self.drawing_page.widget_left_down_layout.addWidget(self.myQListWidget)
+        self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
 
         # not sure it is still needed??
-        #self.myQCustomQWidget.set_empty()
-        #self.myQCustomQWidget.set_welcome()
+        #self.listWidget_group_toolbox.set_empty()
+        #self.listWidget_group_toolbox.set_welcome()
 
         # first element of the list widget initially highlighted
-        if self.myQListWidget.count()>0:
-            self.myQListWidget.item(0).setSelected(True)
-        self.myQListWidget.setFocus()
+        if self.listWidget_groupBox.count()>0:
+            self.listWidget_groupBox.item(0).setSelected(True)
+        self.listWidget_groupBox.setFocus()
         
-        self.myQListWidget.itemSelectionChanged.connect(lambda:self.update_group_toolbox(self.myQListWidget.currentRow()))
-        self.myQListWidget.itemSelectionChanged.connect(lambda: self.update_group_visu(self.myQListWidget.currentRow()))
+        self.listWidget_groupBox\
+            .itemSelectionChanged\
+            .connect(lambda:self.update_group_toolbox(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox\
+            .itemSelectionChanged\
+            .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
-        self.myQCustomQWidget = GroupBox()  
-        self.drawing_page.widget_left_down_layout.addWidget(self.myQCustomQWidget)
-        if self.myQListWidget.count()>0:
+        self.group_toolbox = group_box.GroupBox()  
+        self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
+        if self.listWidget_groupBox.count()>0:
             self.update_group_toolbox(0)
+         
+    def update_group_toolbox(self,n):
+        self.grid_position = [0, 0]
+        self.group_toolbox.set_empty()
+        self.group_toolbox.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
+                                       self.grid_position,0)
+        self.group_toolbox.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
+                                            self.grid_position)       
+        self.group_toolbox.set_zurich_type(self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                              self.grid_position)
+        self.group_toolbox.get_zurich().setCurrentIndex(self.groupBoxLineList[n].get_zurich().currentIndex())
+        self.group_toolbox.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
+                                                self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                                self.grid_position)
+        self.group_toolbox.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude,
+                                          self.grid_position)
+    
+        self.group_toolbox.set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude,
+                                           self.grid_position)
+        
+        self.group_toolbox.set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
+                                         self.grid_position)
+        self.group_toolbox.set_arrows_buttons()
+        
+        if self.drawing_lst[self.current_count].group_lst[n].zurich.upper()  in ["B","C","D","E","F","G"]:
+            self.group_toolbox.set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
+                                                 self.grid_position)
+        else:
+            self.group_toolbox.set_larger_spot(-1, self.grid_position)
+
+        
+        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.group_toolbox.get_zurich().currentIndex()))
+        
+    def update_other_box(self,zurich):
+        self.groupBoxLineList[self.listWidget_groupBox.currentRow()].get_zurich().setCurrentIndex(zurich)
+        self.group_toolbox.get_zurich().setCurrentIndex(zurich)
+        
+        #self.listWidget_groupBox.currentItem().get_zurich().setCurrentText(1)
+        """left_bottom_box = self.group_toolbox.findChild()
+        index = self.group_toolbox.findText(zurich, QtCore.Qt.MatchFixedString)
+        if index >= 0:
+            listWidget_group_toolbox.setCurrentIndex(index)
+            self.listWidget_groupBox.zurich_type.setCurrentIndex(index)"""
         
     def update_group_visu(self, n):
         self.drawing_page.label_right.group_visu_index = n
         self.drawing_page.label_right.set_img()
-       
-        
-    def update_group_toolbox(self,n):
-        self.grid_position = [0, 0]
-        # not sure it is still needed??
-        #self.myQCustomQWidget.set_empty()
-        self.myQCustomQWidget.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
-                                       self.grid_position,0)
-        self.myQCustomQWidget.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
-                                            self.grid_position)       
-        self.myQCustomQWidget.set_zurich_type(self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                              self.grid_position)
-        self.myQCustomQWidget.get_zurich().setCurrentIndex(self.groupBoxLineList[n].get_zurich().currentIndex())
-        self.myQCustomQWidget.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
-                                                self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                                self.grid_position)
-        self.myQCustomQWidget.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude,
-                                          self.grid_position)
-    
-        self.myQCustomQWidget.set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude,
-                                           self.grid_position)
-        
-        self.myQCustomQWidget.set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
-                                         self.grid_position)
-        self.myQCustomQWidget.set_arrows_buttons()
-        
-        if self.drawing_lst[self.current_count].group_lst[n].zurich.upper()  in ["B","C","D","E","F","G"]:
-            self.myQCustomQWidget.set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
-                                                 self.grid_position)
-        else:
-            self.myQCustomQWidget.set_larger_spot(-1, self.grid_position)
-
-        self.myQCustomQWidget.get_zurich().currentIndexChanged.connect(lambda : self.update_other_box(self.myQCustomQWidget.get_zurich().currentIndex()))
-
-        
-    def update_other_box(self,zurich):
-        self.groupBoxLineList[self.myQListWidget.currentRow()].get_zurich().setCurrentIndex(zurich)
-        self.myQCustomQWidget.get_zurich().setCurrentIndex(zurich)
-        
-        #self.myQListWidget.currentItem().get_zurich().setCurrentText(1)
-        """left_bottom_box = self.myQCustomQWidget.findChild()
-        index = self.myQCustomQWidget.findText(zurich, QtCore.Qt.MatchFixedString)
-        if index >= 0:
-            myQCustomQWidget.setCurrentIndex(index)
-            self.myQListWidget.zurich_type.setCurrentIndex(index)"""
         
     def add_drawing_information(self):
 

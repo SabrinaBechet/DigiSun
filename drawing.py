@@ -116,15 +116,7 @@ class Drawing():
 
         self.group_lst = []
 
-    
-    """def is_different(self, drawing_to_compare):
-
-        if (self.datetime == drawing_to_compare.datetime and
-            self.drawing_type == drawing_to_compare.drawing_type and
-            self.quality == drawing_to_compare.quality and
-            self.observer == drawing_to_compare.observer and
-            self.carington
-    """    
+       
     def fill_from_database(self, datetime):
         """
         A drawing can be identified uniquely with its datetime.
