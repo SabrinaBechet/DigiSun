@@ -20,6 +20,7 @@ class GroupBox(QtGui.QWidget):
         self.arrow_layout = QtGui.QGridLayout()
         #self.grid_layout.setSpacing(0)
         #self.grid_layout.setContentsMargins(0, 0, 0, 0)
+        self.setStyleSheet("color: darkblue")
         self.setLayout(self.grid_layout)
 
     def get_confirm_spots(self):
@@ -34,6 +35,9 @@ class GroupBox(QtGui.QWidget):
     def get_McIntosh(self):
         return self.grid_layout.itemAtPosition(0,3).widget()
     
+    def get_arrows(self):
+        return [self.grid_layout.itemAtPosition(1,3).widget(),self.grid_layout.itemAtPosition(3,3).widget(),self.grid_layout.itemAtPosition(2,2).widget(),self.grid_layout.itemAtPosition(2,4).widget()]
+    
     def update_spots(self,spots):
         self.grid_layout.itemAtPosition(0,1).widget().setText(str(spots))
     
@@ -43,6 +47,12 @@ class GroupBox(QtGui.QWidget):
     def update_McIntosh(self,McIntosh):
         self.grid_layout.itemAtPosition(0,3).widget().setCurrentIndex(self.grid_layout.itemAtPosition(0,3).widget().findText(McIntosh))
     
+    def update_latitude(self,latitude):
+        self.grid_layout.itemAtPosition(1,1).widget().setText(str(round(latitude,2)))
+    
+    def update_longitude(self,longitude):
+        self.grid_layout.itemAtPosition(2,1).widget().setText(str(round(longitude,2)))
+        
 
     def set_title(self, title, grid_position,colorised):
         self.title_label = QtGui.QLabel(title)
