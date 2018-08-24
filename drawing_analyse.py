@@ -58,7 +58,7 @@ class DrawingViewPage(QtGui.QWidget):
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(350)
-        self.widget_left_down.setMinimumHeight(620)
+        self.widget_left_down.setMinimumHeight(580)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
@@ -118,7 +118,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
-
+        print("A")
         self.column_maximum_width = 600
         self.add_drawing_information()
         self.add_current_session()
@@ -127,6 +127,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.calibration_done = False
         self.drawing_page.label_right.drawing_clicked.connect(self.calibrate_signal)
         
+
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_toolbar(self):
@@ -340,7 +341,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.set_delete_group_button(self.grid_position)
             
 
-            
+            #groupBoxLine.get_confirm_spots().setShortcut(QtGui.QKeySequence("Ctrl+s"))
 
 
             #print(groupBoxLine.get_zurich().currentIndex())
@@ -417,6 +418,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                  self.grid_position)
         else:
             self.group_toolbox.set_larger_spot(-1, self.grid_position)
+            
+        self.group_toolbox.set_add_surface_button()
         
 
 
@@ -430,6 +433,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         arrows_list[1].clicked.connect(lambda: self.modify_longitude_latitude(False, False))
         arrows_list[2].clicked.connect(lambda: self.modify_longitude_latitude(True, True))
         arrows_list[3].clicked.connect(lambda: self.modify_longitude_latitude(True, False))
+        
+        self.group_toolbox.get_confirm_spots().setShortcut(QtGui.QKeySequence("Enter"))
         
     
     def modify_longitude_latitude(self,longitude,positive):
@@ -464,7 +469,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
     def modifyDrawingSpots(self,n,is_toolbox):
-        print("SpotsSaved")
         if is_toolbox:
             self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].spots = self.group_toolbox.get_spots().text()
         else:
@@ -576,6 +580,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_middle_layout.addWidget(title_left_middle)
         
         self.current_operator = QtGui.QLineEdit(str(self.operator).upper(), self)
+        self.current_operator.setEnabled(False)
+        self.current_operator.setStyleSheet("background-color: white; color: black")
         self.current_operator.setMaximumWidth(self.column_maximum_width)
         
         self.but_previous = QtGui.QPushButton('previous', self)
@@ -583,25 +589,46 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.but_next = QtGui.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
-        self.but_next.clicked.connect(lambda: self.update_counter(1))
+        self.but_next.clicked.connect(lambda: self.update_counter(self.current_count+1))
         self.but_next.clicked.connect(self.show_drawing)
-        self.but_previous.clicked.connect(lambda: self.update_counter(-1))
+        self.but_previous.clicked.connect(lambda: self.update_counter(self.current_count-1))
         self.but_previous.clicked.connect(self.show_drawing)
 
         layout_but = QtGui.QHBoxLayout()
         layout_but.addWidget(self.but_previous)
         layout_but.addWidget(self.but_next)
+        
+        self.goto_drawing_linedit = QtGui.QLineEdit()
+        self.goto_drawing_label1 = QtGui.QLabel()
+        self.goto_drawing_label2 = QtGui.QLabel()
+        self.goto_drawing_button = QtGui.QPushButton()
+
+        self.goto_drawing_label1.setText("Jump to drawing")
+        self.goto_drawing_linedit.setText("1")
+        self.goto_drawing_linedit.setStyleSheet("background-color: white; color: black")
+        self.goto_drawing_label2.setText("out of 0")
+        self.goto_drawing_button.setText("Go!")
+
+        self.goto_drawing_button.clicked.connect(lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
+        self.goto_drawing_button.clicked.connect(self.show_drawing)
+
+        layout_goto = QtGui.QHBoxLayout()
+        layout_goto.addWidget(self.goto_drawing_label1)
+        layout_goto.addWidget(self.goto_drawing_linedit)
+        layout_goto.addWidget(self.goto_drawing_label2)
+        layout_goto.addWidget(self.goto_drawing_button)
 
         self.but_save = QtGui.QPushButton('save', self)
         self.but_save.setMaximumWidth(self.column_maximum_width + 75)
         #self.but_save.clicked.connect(lambda: self.show_drawing())
 
         form_layout2.addRow("Current operator: ", self.current_operator)
-        form_layout2.setLayout(1,
+        form_layout2.setLayout(1,QtGui.QFormLayout.SpanningRole,layout_goto)
+        form_layout2.setLayout(2,
                                QtGui.QFormLayout.SpanningRole,
                                layout_but)
         
-        form_layout2.setWidget(2,
+        form_layout2.setWidget(3,
                                QtGui.QFormLayout.SpanningRole,
                                self.but_save)
 
@@ -609,12 +636,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout2)
 
        
-    def update_counter(self, value_to_add):
-        self.current_count += value_to_add
-        if self.current_count >= self.len_drawing_lst:
-            self.current_count = self.len_drawing_lst-1
-        elif self.current_count < 0:
-            self.current_count = 0
+    def update_counter(self, value):
+        if value >= self.len_drawing_lst:
+            value = self.len_drawing_lst-1
+        elif value < 0:
+            value = 0
+
+        self.current_count = value
+        self.goto_drawing_linedit.setText(str(value+1))
+        
+        print(self.current_count)
         
         if self.current_count > 0 and self.current_count < self.len_drawing_lst - 1:
             self.but_next.setEnabled(True)
@@ -666,6 +697,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         index_drawing_type = self.drawing_type\
                                  .findText(self.drawing_lst[self.current_count].drawing_type)
         self.drawing_type.setCurrentIndex(index_drawing_type)
+        
+        self.goto_drawing_label2.setText("out of "+str(self.len_drawing_lst))
         
      
     def set_path_to_qlabel(self):

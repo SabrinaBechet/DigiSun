@@ -113,6 +113,12 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.addWidget(button_right,2,4)
 
 
+    def set_add_surface_button(self):
+        self.add_surface_button = QtGui.QPushButton()
+        self.add_surface_button.setText("Add")
+        self.grid_layout.addWidget(self.add_surface_button,3,2)
+        
+        #self.add_surface_button.clicked.connect(lambda:)
     
     def set_spot_count(self, spot_count, grid_position):
         
