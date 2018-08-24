@@ -323,6 +323,7 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_L)
         #print("longitude: ", longitude)
         #print("latitude: ", latitude)
+        print("*******emit signal!!")
         self.drawing_clicked.emit()
         
     def get_pixmap_coordinate_range(self):
