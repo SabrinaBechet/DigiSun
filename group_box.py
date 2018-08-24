@@ -113,6 +113,12 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.addWidget(button_right,2,4)
 
 
+    def set_add_surface_button(self):
+        self.add_surface_button = QtGui.QPushButton()
+        self.add_surface_button.setText("Add")
+        self.grid_layout.addWidget(self.add_surface_button,3,2)
+        
+        #self.add_surface_button.clicked.connect(lambda:)
     
     def set_spot_count(self, spot_count, grid_position):
         
@@ -128,8 +134,8 @@ class GroupBox(QtGui.QWidget):
         self.zurich_combo = QtGui.QComboBox(self)
         self.zurich_combo.setStyleSheet("background-color: white; color:black")
 
-
-        self.zurich_combo.wheelEvent = patter
+        # a quoi ca sert?
+        #self.zurich_combo.wheelEvent = patter
         
         self.zurich_combo.setMaximumWidth(50)
         self.zurich_combo.addItem("A")
@@ -151,8 +157,9 @@ class GroupBox(QtGui.QWidget):
 
     def update_McIntosh_type(self,zurich_type):
         self.McIntosh_combo.clear()
-        
-        self.McIntosh_combo.wheelEvent = patter
+
+        # a quoi ça sert?
+        #self.McIntosh_combo.wheelEvent = patter
     
         if zurich_type=='A':
             self.McIntosh_combo.addItem("Axx")

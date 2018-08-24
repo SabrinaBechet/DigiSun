@@ -57,7 +57,7 @@ class DrawingViewPage(QtGui.QWidget):
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(350)
-        self.widget_left_down.setMinimumHeight(620)
+        self.widget_left_down.setMinimumHeight(580)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
@@ -120,7 +120,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
-
+        #print("A")
         self.column_maximum_width = 600
         self.add_drawing_information()
         self.add_current_session()
@@ -131,10 +131,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.center_done = False
         self.north_done = False
         self.approximate_center = [0., 0.]
+
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
         
-
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
         """
@@ -219,22 +219,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.approximate_center = [height/2., width/2.]
         self.set_zoom_center()
         
-
     def set_zoom_center(self):
-        #print("first step calibrate center", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         self.vertical_scroll_bar.setValue(self.approximate_center[0])
         self.horizontal_scroll_bar.setValue(self.approximate_center[1])
-        #self.drawing_page.label_right.drawing_clicked.connect(self.get_click_coordinates)
+    
         
     def set_zoom_north(self):
-        #print("second step calibrate north", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         approximate_north = [0, self.approximate_center[1]]
         self.vertical_scroll_bar.setValue(approximate_north[0])
         self.horizontal_scroll_bar.setValue(approximate_north[1])
 
     def unzoom(self):
-        #print("enter in the dezoom", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
-        #if self.drawing_page.label_right.calibration_mode == True:
         self.drawing_page.label_right.zoom_in(1/5.)
         
     def calibrate_signal(self):
@@ -346,13 +341,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.set_delete_group_button(self.grid_position)
             
 
-            
-
-
+            #groupBoxLine.get_confirm_spots().setShortcut(QtGui.QKeySequence("Ctrl+s"))
             #print(groupBoxLine.get_zurich().currentIndex())
-            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda: self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),False))
-            groupBoxLine.get_McIntosh().currentIndexChanged.connect(lambda: self.modifyDrawingMcIntosh(self.listWidget_groupBox.currentRow(),False))
-            groupBoxLine.get_confirm_spots().clicked.connect(lambda: self.modifyDrawingSpots(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_McIntosh().currentIndexChanged.connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_confirm_spots().clicked.connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),False))
             
             
             self.groupBoxLineList.append(groupBoxLine)
@@ -389,6 +382,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
+        #print("set group_toolbox")
         self.group_toolbox = group_box.GroupBox()
         self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
         if self.listWidget_groupBox.count()>0:
@@ -423,13 +417,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                  self.grid_position)
         else:
             self.group_toolbox.set_larger_spot(-1, self.grid_position)
+            
+        self.group_toolbox.set_add_surface_button()
         
 
 
 
-        self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modifyDrawingSpots(self.listWidget_groupBox.currentRow(),True))
-        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda: self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),True))
-        self.group_toolbox.get_McIntosh().currentIndexChanged.connect(lambda: self.modifyDrawingMcIntosh(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox.get_McIntosh().currentIndexChanged.connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),True))
         
         arrows_list = self.group_toolbox.get_arrows()
         arrows_list[0].clicked.connect(lambda: self.modify_longitude_latitude(False, True))
@@ -437,14 +433,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         arrows_list[2].clicked.connect(lambda: self.modify_longitude_latitude(True, True))
         arrows_list[3].clicked.connect(lambda: self.modify_longitude_latitude(True, False))
         
+        self.group_toolbox.get_confirm_spots().setShortcut(QtGui.QKeySequence("Enter"))
+        
     
-    def modify_longitude_latitude(self,longitude,positive):
+    def modify_longitude_latitude(self, longitude, positive):
         #Longitude is a boolean and is True if we need to modify the longitude (or false if we need to modify the latitude)
         #Positive is a boolean and is True if we need to +1 (or False if we need to -1)
         if positive:
-            toAdd = 0.00174532925
+            toAdd = 0.1 * math.pi/180 
         else:
-            toAdd = -0.00174532925
+            toAdd = - 0.1 * math.pi/180
         
         if longitude:
             self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude += toAdd
@@ -469,33 +467,55 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
 
-    def modifyDrawingSpots(self,n,is_toolbox):
-        print("SpotsSaved")
+    def modify_drawing_spots(self,n, is_toolbox):
+
         if is_toolbox:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].spots = self.group_toolbox.get_spots().text()
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .spots = self.group_toolbox.get_spots().text()
         else:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].spots = self.groupBoxLineList[n].get_spots().text()
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .spots = self.groupBoxLineList[n].get_spots().text()
+            
         self.groupBoxLineList[n].update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
         self.group_toolbox.update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
 
-    def modifyDrawingZurich(self,n,is_toolbox):
+    def modify_drawing_zurich(self, n, is_toolbox):
+
+        old_zurich_type = self.drawing_lst[self.current_count]\
+                              .group_lst[self.listWidget_groupBox.currentRow()]\
+                              .zurich
         if is_toolbox:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].zurich = str(self.group_toolbox.get_zurich().currentText())
+            new_zurich_type = str(self.group_toolbox.get_zurich().currentText())
         else:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].zurich = str(self.groupBoxLineList[n].get_zurich().currentText())
+            new_zurich_type = str(self.groupBoxLineList[n].get_zurich().currentText())
+
+        if new_zurich_type!=old_zurich_type:
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .zurich = new_zurich_type
+            
         self.groupBoxLineList[n].update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
         self.group_toolbox.update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
 
-    def modifyDrawingMcIntosh(self,n,is_toolbox):
+    def modify_drawing_mcIntosh(self, n, is_toolbox):
+        old_mcIntosh_type = self.drawing_lst[self.current_count]\
+                                .group_lst[self.listWidget_groupBox.currentRow()]\
+                                .McIntosh
         if is_toolbox:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].McIntosh = str(self.group_toolbox.get_McIntosh().currentText())
+            new_mcIntosh_type = str(self.group_toolbox.get_McIntosh().currentText())
         else:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].McIntosh = str(self.groupBoxLineList[n].get_McIntosh().currentText())
+            new_mcIntosh_type = str(self.groupBoxLineList[n].get_McIntosh().currentText())
+
+        if new_mcIntosh_type!=old_mcIntosh_type:
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .McIntosh = new_mcIntosh_type
+        
         self.groupBoxLineList[n].update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
         self.group_toolbox.update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
     
-
-
         
     def update_group_visu(self, n):
         self.drawing_page.label_right.group_visu_index = n
@@ -582,6 +602,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_middle_layout.addWidget(title_left_middle)
         
         self.current_operator = QtGui.QLineEdit(str(self.operator).upper(), self)
+        self.current_operator.setEnabled(False)
+        self.current_operator.setStyleSheet("background-color: white; color: black")
         self.current_operator.setMaximumWidth(self.column_maximum_width)
         
         self.but_previous = QtGui.QPushButton('previous', self)
@@ -589,25 +611,49 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.but_next = QtGui.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
-        self.but_next.clicked.connect(lambda: self.update_counter(1))
+        self.but_next.clicked.connect(lambda: self.update_counter(self.current_count+1))
         self.but_next.clicked.connect(self.show_drawing)
-        self.but_previous.clicked.connect(lambda: self.update_counter(-1))
+        self.but_previous.clicked.connect(lambda: self.update_counter(self.current_count-1))
         self.but_previous.clicked.connect(self.show_drawing)
 
         layout_but = QtGui.QHBoxLayout()
         layout_but.addWidget(self.but_previous)
         layout_but.addWidget(self.but_next)
 
+        
+        self.goto_drawing_linedit = QtGui.QLineEdit()
+        self.goto_drawing_label1 = QtGui.QLabel()
+        self.goto_drawing_label2 = QtGui.QLabel()
+        self.goto_drawing_button = QtGui.QPushButton()
+
+        
+        self.goto_drawing_label1.setText("Jump to drawing")
+        self.goto_drawing_linedit.setText("1")
+        self.goto_drawing_linedit.setStyleSheet("background-color: white; color: black")
+        self.goto_drawing_label2.setText("out of 0")
+        self.goto_drawing_button.setText("Go!")
+
+        self.goto_drawing_button.clicked.connect(lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
+        self.goto_drawing_button.clicked.connect(lambda: self.drawing_page.label_right.set_img())
+
+        layout_goto = QtGui.QHBoxLayout()
+        layout_goto.addWidget(self.goto_drawing_label1)
+        layout_goto.addWidget(self.goto_drawing_linedit)
+        layout_goto.addWidget(self.goto_drawing_label2)
+        layout_goto.addWidget(self.goto_drawing_button)
+        
+        
         self.but_save = QtGui.QPushButton('save', self)
         self.but_save.setMaximumWidth(self.column_maximum_width + 75)
         #self.but_save.clicked.connect(lambda: self.show_drawing())
 
         form_layout2.addRow("Current operator: ", self.current_operator)
-        form_layout2.setLayout(1,
+        form_layout2.setLayout(1,QtGui.QFormLayout.SpanningRole,layout_goto)
+        form_layout2.setLayout(2,
                                QtGui.QFormLayout.SpanningRole,
                                layout_but)
         
-        form_layout2.setWidget(2,
+        form_layout2.setWidget(3,
                                QtGui.QFormLayout.SpanningRole,
                                self.but_save)
 
@@ -615,12 +661,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout2)
 
        
-    def update_counter(self, value_to_add):
-        self.current_count += value_to_add
-        if self.current_count >= self.len_drawing_lst:
-            self.current_count = self.len_drawing_lst-1
-        elif self.current_count < 0:
-            self.current_count = 0
+    def update_counter(self, value):
+        if value >= self.len_drawing_lst:
+            value = self.len_drawing_lst-1
+        elif value < 0:
+            value = 0
+
+        self.current_count = value
+        self.goto_drawing_linedit.setText(str(value+1))
+        
+        #print(self.current_count)
         
         if self.current_count > 0 and self.current_count < self.len_drawing_lst - 1:
             self.but_next.setEnabled(True)
@@ -682,6 +732,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                  .findText(self.drawing_lst[self.current_count].drawing_type)
         self.drawing_type.setCurrentIndex(index_drawing_type)
         
+        self.goto_drawing_label2.setText("out of "+str(self.len_drawing_lst))
+        
      
     def set_path_to_qlabel(self):
         
@@ -702,7 +754,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             
     def show_drawing(self):
-        print("show drawing")
+        #print("show drawing")
         self.set_path_to_qlabel()
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
         self.drawing_page.label_right.group_visu_index = 0

@@ -1,12 +1,13 @@
 from datetime import date, time, datetime
 import database, coordinates
+from PyQt4 import QtCore
 
 """
 to do:
 - method the print the drawing information in a nice way.
 """
 
-class Group(object):
+class Group(QtCore.QObject):
     """
     It contains all the information of a group extracted from the drawing.
     The attributes are:
@@ -32,8 +33,12 @@ class Group(object):
     - rawSurface_msd
     - GSpot
     """
+    
+    value_changed = QtCore.pyqtSignal()
+    
     def __init__(self):
-
+        super(Group, self).__init__()
+        
         self._id_ = 0
         self._datetime = datetime(2000,01,01,00,00)
         self._drawing_type = 'None'
@@ -57,6 +62,12 @@ class Group(object):
         self._raw_surface_msd = 0
         self._g_spot = 0
 
+        self.changed = False
+
+
+    def __repr__(self):
+        return "Group {}".format(self._number)
+        
     @property    
     def number(self):
         #print("here we are reading the value of number of a group ")
@@ -65,6 +76,8 @@ class Group(object):
     @number.setter
     def number(self, value):
         print("here we are changing the value of number to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._number = value
 
     @property    
@@ -75,6 +88,8 @@ class Group(object):
     @longitude.setter
     def longitude(self, value):
         print("here we are changing the value of longitude to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._longitude = value
 
     @property    
@@ -85,6 +100,8 @@ class Group(object):
     @latitude.setter
     def latitude(self, value):
         print("here we are changing the value of latitude to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._latitude = value    
         
     @property    
@@ -95,6 +112,8 @@ class Group(object):
     @surface.setter
     def surface(self, value):
         print("here we are changing the value of surface to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._surface = value
 
     @property    
@@ -105,6 +124,8 @@ class Group(object):
     @McIntosh.setter
     def McIntosh(self, value):
         print("here we are changing the value of mcIntosh to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._McIntosh = value    
 
     @property    
@@ -115,6 +136,8 @@ class Group(object):
     @zurich.setter
     def zurich(self, value):
         print("here we are changing the value of zurich to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._zurich = value
 
     @property    
@@ -126,6 +149,8 @@ class Group(object):
     @spots.setter
     def spots(self, value):
         print("here we are changing the value of spots to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._spots = value
 
     @property    
@@ -136,6 +161,8 @@ class Group(object):
     @dipole1_lat.setter
     def dipole1_lat(self, value):
         print("here we are changing the value of dipole1_lat to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._dipole1_lat = value
 
     @property    
@@ -146,6 +173,8 @@ class Group(object):
     @dipole1_long.setter
     def dipole1_long(self, value):
         print("here we are changing the value of dipole1_lat to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._dipole1_long = value
 
     @property    
@@ -156,6 +185,8 @@ class Group(object):
     @dipole2_lat.setter
     def dipole2_lat(self, value):
         print("here we are changing the value of dipole2_lat to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._dipole2_lat = value
 
     @property    
@@ -166,9 +197,10 @@ class Group(object):
     @dipole2_long.setter
     def dipole2_long(self, value):
         print("here we are changing the value of dipole2_lat to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._dipole2_long = value
-        
-    
+           
     @property    
     def g_spot(self):
         #print("here we are reading the value of g_spot of a group ")
@@ -177,6 +209,8 @@ class Group(object):
     @g_spot.setter
     def g_spot(self, value):
         print("here we are changing the value of g_spot to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._g_spot = value         
         
     def fill_from_database(self, datetime, group_number):
@@ -210,19 +244,22 @@ class Group(object):
          self._raw_surface_px,
          self._raw_surface_msd,
          self._g_spot) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
-        
 
-class Drawing(object):
+
+class Drawing(QtCore.QObject):
     """
     It represents all the information extracted from the drawing
     and stored in the database.
     All the attribute are 'private' (in the python way with the underscore
     before the name).
     """
+
+    value_changed = QtCore.pyqtSignal()
+    
     def __init__(self):
 
         #print("initialize a drawing..")
-
+        super(Drawing, self).__init__()
         self._id_drawnig= 0 
         self._datetime = datetime(2000,01,01,00,00)
         self._drawing_type = 'None'
@@ -249,6 +286,20 @@ class Drawing(object):
 
         self._group_lst = []
 
+        self.changed = False
+
+        #for el in self._group_lst:
+        #    el.value_changed.connect(self.get_group_signal)
+        
+    def get_group_signal(self):
+        print("get group signal")
+        self.value_changed.emit()
+        self.changed = True
+
+    def __repr__(self):
+        return 'Drawing :  date({}), group_count({})'.format(
+            self._datetime, self._group_count)
+            
     @property    
     def drawing_type(self):
         #print("here we are reading the value of drawing_type ")
@@ -257,6 +308,8 @@ class Drawing(object):
     @drawing_type.setter
     def drawing_type(self, value):
         print("here we are changing the value of drawing_type to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._drawing_type = value
         
     @property    
@@ -267,6 +320,8 @@ class Drawing(object):
     @quality.setter
     def quality(self, value):
         print("here we are changing the value of quality to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._quality = value
         
     @property    
@@ -274,6 +329,13 @@ class Drawing(object):
         #print("here we are reading the value of observer ")
         return self._observer
 
+    @observer.setter    
+    def observer(self, value):
+        print("here we are changing the value of observer to ", value)
+        self.changed = True
+        self.value_changed.emit()
+        self._observer = value
+    
     @property
     def angle_P(self):
         #print("here we are reading the value of angle P")
@@ -281,6 +343,9 @@ class Drawing(object):
 
     @angle_P.setter
     def angle_P(self, value):
+        print("here we are changing the value of angle_P to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._angle_P = value
 
     @property
@@ -290,6 +355,9 @@ class Drawing(object):
 
     @angle_B.setter
     def angle_B(self, value):
+        print("here we are changing the value of angle_B to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._angle_B = value   
 
     @property
@@ -299,13 +367,12 @@ class Drawing(object):
 
     @angle_L.setter
     def angle_L(self, value):
-        self._angle_L = value   
+        print("here we are changing the value of angle_L to ", value)
+        self.changed = True
+        self.value_changed.emit()
+        self._angle_L = value
+        
     
-    @observer.setter
-    def observer(self, value):
-        #print("here we are changing the value of observer to ", value)
-        self._observer = value
-
     @property    
     def operator(self):
         #print("here we are reading the value of operator")
@@ -314,6 +381,8 @@ class Drawing(object):
     @operator.setter
     def operator(self, value):
         print("here we are changing the value of operator to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._operator = value    
         
     @property    
@@ -322,7 +391,9 @@ class Drawing(object):
     
     @calibrated.setter
     def calibrated(self, value):
-        #print("here we are changing the value of calibrated to ", value)
+        print("here we are changing the value of calibrated to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._calibrated = value
 
     @property    
@@ -332,6 +403,8 @@ class Drawing(object):
     @group_count.setter
     def group_count(self, value):
         print("here we are changing the value of group_count to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._group_count = value
         
     @property
@@ -341,15 +414,21 @@ class Drawing(object):
 
     @group_lst.setter
     def group_lst(self, value):
+        print("here we are changing the value of group_lst to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._group_lst = value
 
     @property
     def calibrated_center(self):
-        #print("here we are reading the value of calibrated center")
+        ##rint("here we are reading the value of calibrated center")
         return self._calibrated_center
 
     @calibrated_center.setter
     def calibrated_center(self, value):
+        print("here we are changing the value of calibrated center to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._calibrated_center = value
 
     @property
@@ -359,6 +438,9 @@ class Drawing(object):
 
     @calibrated_north.setter
     def calibrated_north(self, value):
+        print("here we are changing the value of calibrated north to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._calibrated_north = value    
 
     @property
@@ -368,6 +450,9 @@ class Drawing(object):
 
     @calibrated_radius.setter
     def calibrated_radius(self, value):
+        print("here we are changing the value of calibrated radius to ", value)
+        self.changed = True
+        self.value_changed.emit()
         self._calibrated_radius = value
         
     def fill_from_database(self, datetime):
@@ -413,6 +498,7 @@ class Drawing(object):
         for group_number in range(self._group_count):
             group_tmp = Group()
             group_tmp.fill_from_database(self._datetime, group_number)
+            group_tmp.value_changed.connect(self.get_group_signal)
             self._group_lst.append(group_tmp)
             #print(group_number, self.group_lst[group_number].longitude, self.group_lst[group_number].latitude)
         
