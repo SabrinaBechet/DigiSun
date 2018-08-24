@@ -38,16 +38,20 @@ class QLabelDrawing(QtGui.QLabel):
        #self.setMinimumWidth(300)
        self.width_scale = 1000
        self.height_scale = 1000
- 
+
+       # viewing mode
        self.large_grid_overlay = True
        self.small_grid_overlay = False
        self.group_visu = True
        self.dipole_visu = False
 
+       #action mode
+       self.calibration_mode = False
+       self.add_group_mode = False
+       self.add_dipole_mode = False
+        
        self.group_visu_index = 0
 
-       
-       
     def set_img(self):
         
         img = Image.open(self.file_path)
@@ -323,8 +327,10 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_L)
         #print("longitude: ", longitude)
         #print("latitude: ", latitude)
-        print("*******emit signal!!")
-        self.drawing_clicked.emit()
+        
+        if self.calibration_mode:
+            print("*******emit signal!!")
+            self.drawing_clicked.emit()
         
     def get_pixmap_coordinate_range(self):
         """

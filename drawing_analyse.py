@@ -30,7 +30,6 @@ class DrawingViewPage(QtGui.QWidget):
     There is a splitter that divides the right/left columns.
     """
 
-    
     def __init__(self):
         super(DrawingViewPage, self).__init__()
 
@@ -114,6 +113,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         super(DrawingAnalysePage, self).__init__()
 
         self.drawing_page = DrawingViewPage()
+        self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
+        self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
+        
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
@@ -123,9 +125,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.add_current_session()
         self.drawing_lst = []
         self.set_toolbar()
-        self.calibration_done = False
-        self.drawing_page.label_right.drawing_clicked.connect(self.calibrate_signal)
         
+        self.drawing_page.label_right.drawing_clicked.connect(self.calibrate_signal)
+        self.center_done = False
+        self.north_done = False
+        self.approximate_center = [0., 0.]
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_toolbar(self):
@@ -191,19 +195,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         1. put the drawing on the center and click on the center -> signal
         2. put the drawing on the north and click on the norht -> signal
         """
-        print("start calibration", self.calibration_done)
-        self.calibration_done = False
+        print("start calibration", self.drawing_page.label_right.calibration_mode)
+        self.drawing_page.label_right.calibration_mode = True
         self.center_done = False
         self.north_done = False
-        print("start calibration", self.calibration_done, self.center_done, self.north_done)
+        print("start calibration", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         
         self.drawing_page.label_right.group_visu = False
         self.drawing_page.label_right.large_grid_overlay = False
 
         self.drawing_page.label_right.zoom_in(5.)
         
-        self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
-        self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
+        
         height = self.drawing_page.label_right.drawing_height + self.vertical_scroll_bar.pageStep()
         width = self.drawing_page.label_right.drawing_width + self.horizontal_scroll_bar.pageStep()
         self.vertical_scroll_bar.setMaximum(height)
@@ -215,43 +218,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
 
     def set_zoom_center(self):
-        #print("first step calibrate center", self.calibration_done, self.center_done, self.north_done)
+        #print("first step calibrate center", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         self.vertical_scroll_bar.setValue(self.approximate_center[0])
         self.horizontal_scroll_bar.setValue(self.approximate_center[1])
         #self.drawing_page.label_right.drawing_clicked.connect(self.get_click_coordinates)
         
     def set_zoom_north(self):
-        #print("second step calibrate north", self.calibration_done, self.center_done, self.north_done)
+        #print("second step calibrate north", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         approximate_north = [0, self.approximate_center[1]]
         self.vertical_scroll_bar.setValue(approximate_north[0])
         self.horizontal_scroll_bar.setValue(approximate_north[1])
 
     def unzoom(self):
-        #print("enter in the dezoom", self.calibration_done, self.center_done, self.north_done)
-        if self.calibration_done == False:
-            self.drawing_page.label_right.zoom_in(1/5.)
+        #print("enter in the dezoom", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
+        #if self.drawing_page.label_right.calibration_mode == True:
+        self.drawing_page.label_right.zoom_in(1/5.)
         
     def calibrate_signal(self):
-        print("** calibrate_signal", self.calibration_done, self.center_done, self.north_done)
-        if self.calibration_done == False and self.center_done == True and self.north_done == False:
-            print("false, true, false")
+        print("** calibrate_signal", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
+        if self.drawing_page.label_right.calibration_mode == True and self.center_done == True and self.north_done == False:
+            print("true, true, false")
             self.north_done = True
             self.get_click_coordinates()
             self.unzoom()
             self.drawing_page.label_right.large_grid_overlay = True
             self.drawing_page.label_right.group_visu = True
             self.drawing_page.label_right.set_img()
+            self.drawing_page.label_right.calibration_mode = False
             
-        elif self.calibration_done == False and self.center_done == False and self.north_done == False:
-            print("false, false, false")
+        elif self.drawing_page.label_right.calibration_mode == True and self.center_done == False and self.north_done == False:
+            print("true, false, false")
             self.get_click_coordinates()
             self.center_done = True
             self.set_zoom_north()
         
-        """ elif self.calibration_done == False and self.center_done == True and self.north_done == True:
+        """ elif self.drawing_page.label_right.calibration_mode == False and self.center_done == True and self.north_done == True:
         print("false, true, true")    
         self.unzoom()
-        self.calibration_done = True
+        self.drawing_page.label_right.calibration_mode = True
         return
         """ 
     def get_click_coordinates(self):
