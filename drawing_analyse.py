@@ -37,7 +37,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.setLayout(QtGui.QVBoxLayout())
       
         self.widget_left_up = QtGui.QWidget()
-        self.widget_left_up.setMinimumWidth(350)
+        #self.widget_left_up.setMinimumWidth(350)
         self.widget_left_up.setMaximumHeight(300)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")   
         self.widget_left_up_layout = QtGui.QVBoxLayout()
@@ -48,7 +48,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(350)
-        self.widget_left_middle.setMaximumHeight(200)
+        self.widget_left_middle.setMaximumHeight(320)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
@@ -58,6 +58,7 @@ class DrawingViewPage(QtGui.QWidget):
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(350)
+        self.widget_left_down.setMinimumHeight(620)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
@@ -334,13 +335,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                            self.drawing_lst[self.current_count].group_lst[i].zurich,
                                            self.grid_position)
 
+            groupBoxLine.set_confirm_spots(self.grid_position)
+
             groupBoxLine.set_delete_group_button(self.grid_position)
+            
+
             
 
 
             #print(groupBoxLine.get_zurich().currentIndex())
             groupBoxLine.get_zurich().currentIndexChanged.connect(lambda: self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),False))
             groupBoxLine.get_McIntosh().currentIndexChanged.connect(lambda: self.modifyDrawingMcIntosh(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_confirm_spots().clicked.connect(lambda: self.modifyDrawingSpots(self.listWidget_groupBox.currentRow(),False))
             
             
             self.groupBoxLineList.append(groupBoxLine)
@@ -360,9 +366,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.listWidget_groupBox.item(0).setSelected(True)
         self.listWidget_groupBox.setFocus()
 
-        if len(self.groupBoxLineList)>0:
-            self.groupBoxLineList[0].get_spots().setEnabled(False)
-            
+
         for i in range(1,self.listWidget_groupBox.count()):
             self.groupBoxLineList[i].get_spots().setEnabled(False)
             self.groupBoxLineList[i].get_zurich().setEnabled(False)
@@ -379,7 +383,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
-        self.group_toolbox = group_box.GroupBox()  
+        self.group_toolbox = group_box.GroupBox()
         self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
         if self.listWidget_groupBox.count()>0:
             self.update_group_toolbox(0)
@@ -413,25 +417,54 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                  self.grid_position)
         else:
             self.group_toolbox.set_larger_spot(-1, self.grid_position)
+        
 
 
-        self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modifyDrawingOthers(self.listWidget_groupBox.currentRow(),True))
-        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda : self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),True))
+
+        self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modifyDrawingSpots(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda: self.modifyDrawingZurich(self.listWidget_groupBox.currentRow(),True))
         self.group_toolbox.get_McIntosh().currentIndexChanged.connect(lambda: self.modifyDrawingMcIntosh(self.listWidget_groupBox.currentRow(),True))
         
+        arrows_list = self.group_toolbox.get_arrows()
+        arrows_list[0].clicked.connect(lambda: self.modify_longitude_latitude(False, True))
+        arrows_list[1].clicked.connect(lambda: self.modify_longitude_latitude(False, False))
+        arrows_list[2].clicked.connect(lambda: self.modify_longitude_latitude(True, True))
+        arrows_list[3].clicked.connect(lambda: self.modify_longitude_latitude(True, False))
+        
     
+    def modify_longitude_latitude(self,longitude,positive):
+        #Longitude is a boolean and is True if we need to modify the longitude (or false if we need to modify the latitude)
+        #Positive is a boolean and is True if we need to +1 (or False if we need to -1)
+        if positive:
+            toAdd = 0.00174532925
+        else:
+            toAdd = -0.00174532925
+        
+        if longitude:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude += toAdd
+            self.group_toolbox.update_longitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude)
+        else:
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude += toAdd
+            self.group_toolbox.update_latitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude)
+        
+        self.drawing_page.label_right.set_img()
+
+
     def disable_other_lines(self):
         for i in range(self.listWidget_groupBox.count()):
             if (i != self.listWidget_groupBox.currentRow()):
+                self.groupBoxLineList[i].get_spots().setEnabled(False)
                 self.groupBoxLineList[i].get_zurich().setEnabled(False)
                 self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
             else:
                 self.groupBoxLineList[i].get_zurich().setEnabled(True)
                 self.groupBoxLineList[i].get_McIntosh().setEnabled(True)
-        
+                self.groupBoxLineList[i].get_spots().setEnabled(True)
 
-    
-    def modifyDrawingOthers(self,n,is_toolbox):
+
+
+    def modifyDrawingSpots(self,n,is_toolbox):
+        print("SpotsSaved")
         if is_toolbox:
             self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].spots = self.group_toolbox.get_spots().text()
         else:
@@ -454,6 +487,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].McIntosh = str(self.groupBoxLineList[n].get_McIntosh().currentText())
         self.groupBoxLineList[n].update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
         self.group_toolbox.update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
+    
 
 
         
@@ -473,20 +507,28 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_operator = QtGui.QLineEdit(self)
         self.drawing_operator.setMaximumWidth(self.column_maximum_width)
-        #self.drawing_operator.setDisabled(True)
+        self.drawing_operator.setEnabled(False)
+        self.drawing_operator.setStyleSheet("background-color: white; color:black")
+        
         self.drawing_observer = QtGui.QLineEdit(self)
         self.drawing_observer.setMaximumWidth(self.column_maximum_width)
-        #self.drawing_observer.setDisabled(True)
+        self.drawing_observer.setEnabled(False)
+        self.drawing_observer.setStyleSheet("background-color: white; color:black")
+        
         self.drawing_date = QtGui.QDateEdit()
         self.drawing_date.setMaximumWidth(self.column_maximum_width)
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
-        #self.drawing_date.setDisabled(True)
+        self.drawing_date.setEnabled(False)
+        self.drawing_date.setStyleSheet("background-color: white; color:black")
+        
         self.drawing_time = QtGui.QLineEdit("00:00",self)
         self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
-        #self.drawing_time.setDisabled(True)
+        self.drawing_time.setEnabled(False)
+        self.drawing_time.setStyleSheet("background-color: white; color:black")
+        
         #self.drawing_time.setStyleSheet("background-color: red")
         
         self.drawing_quality = QtGui.QSpinBox(self)
@@ -494,14 +536,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_quality.setMinimum(1)
         self.drawing_quality.setMaximum(5)
         self.drawing_quality.setValue(3)
-        #self.drawing_quality.setDisabled(True)
+        self.drawing_quality.setEnabled(False)
+        self.drawing_quality.setStyleSheet("background-color: white; color:black")
+        
         self.drawing_type = QtGui.QComboBox(self)
         self.drawing_type.setMaximumWidth(self.column_maximum_width)
-        self.drawing_type.setStyleSheet("color:black")
+        self.drawing_type.setEnabled(False)
+        self.drawing_type.setStyleSheet("background-color: white; color:black")
         self.drawing_type.addItem('USET')
         self.drawing_type.addItem('USET77')
         self.drawing_type.addItem('USET41')
-        #self.drawing_type.setDisabled(True)
+        
 
         self.form_layout1.addRow('Operator:', self.drawing_operator)
         self.form_layout1.addRow('Observer:', self.drawing_observer)
@@ -566,6 +611,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
        
     def update_counter(self, value_to_add):
         self.current_count += value_to_add
+        if self.current_count >= self.len_drawing_lst:
+            self.current_count = self.len_drawing_lst-1
+        elif self.current_count < 0:
+            self.current_count = 0
         
         if self.current_count > 0 and self.current_count < self.len_drawing_lst - 1:
             self.but_next.setEnabled(True)
