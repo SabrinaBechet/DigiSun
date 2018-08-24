@@ -154,9 +154,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # mettre une barre pour separer les differents views/actions
 
         calibrate_action = QtGui.QAction('calibrate', toolbar)
+        calibrate_action.setIcon(QtGui.QIcon('icons/target.svg'))
         add_group_action = QtGui.QAction('add group', toolbar)
+        add_group_action.setIcon(QtGui.QIcon('icons/hospital.svg'))
         add_dipole_action = QtGui.QAction('add dipole', toolbar)
+        add_dipole_action.setIcon(QtGui.QIcon('icons/weight.svg'))
         surface_action = QtGui.QAction('surface', toolbar)
+        surface_action.setIcon(QtGui.QIcon('icons/layout.svg'))
         
         toolbar.addAction(zoom_in)
         toolbar.addAction(zoom_out)
@@ -165,7 +169,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addAction(helper_grid)
         toolbar.addAction(sunspot_view)
         toolbar.addAction(dipole_view)
-
+        toolbar.insertSeparator(calibrate_action)
         toolbar.addAction(calibrate_action)
         toolbar.addAction(add_group_action)
         toolbar.addAction(add_dipole_action)
@@ -211,19 +215,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
 
     def set_zoom_center(self):
-        print("first step calibrate center", self.calibration_done, self.center_done, self.north_done)
+        #print("first step calibrate center", self.calibration_done, self.center_done, self.north_done)
         self.vertical_scroll_bar.setValue(self.approximate_center[0])
         self.horizontal_scroll_bar.setValue(self.approximate_center[1])
         #self.drawing_page.label_right.drawing_clicked.connect(self.get_click_coordinates)
         
     def set_zoom_north(self):
-        print("second step calibrate north", self.calibration_done, self.center_done, self.north_done)
+        #print("second step calibrate north", self.calibration_done, self.center_done, self.north_done)
         approximate_north = [0, self.approximate_center[1]]
         self.vertical_scroll_bar.setValue(approximate_north[0])
         self.horizontal_scroll_bar.setValue(approximate_north[1])
 
     def unzoom(self):
-        print("enter in the dezoom", self.calibration_done, self.center_done, self.north_done)
+        #print("enter in the dezoom", self.calibration_done, self.center_done, self.north_done)
         if self.calibration_done == False:
             self.drawing_page.label_right.zoom_in(1/5.)
         
@@ -240,6 +244,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.north_done = True
             self.get_click_coordinates()
             self.unzoom()
+            self.large_grid_overlay = True
+            self.group_visu = True
             return
         """ elif self.calibration_done == False and self.center_done == True and self.north_done == True:
         print("false, true, true")    
