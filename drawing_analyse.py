@@ -233,20 +233,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     def calibrate_signal(self):
         print("** calibrate_signal", self.calibration_done, self.center_done, self.north_done)
-        if self.calibration_done == False and self.center_done == False and self.north_done == False:
-            print("false, false, false")
-            self.get_click_coordinates()
-            self.center_done = True
-            self.set_zoom_north()
-            return
-        elif self.calibration_done == False and self.center_done == True and self.north_done == False:
+        if self.calibration_done == False and self.center_done == True and self.north_done == False:
             print("false, true, false")
             self.north_done = True
             self.get_click_coordinates()
             self.unzoom()
-            self.large_grid_overlay = True
-            self.group_visu = True
-            return
+            self.drawing_page.label_right.large_grid_overlay = True
+            self.drawing_page.label_right.group_visu = True
+            self.drawing_page.label_right.set_img()
+            
+        elif self.calibration_done == False and self.center_done == False and self.north_done == False:
+            print("false, false, false")
+            self.get_click_coordinates()
+            self.center_done = True
+            self.set_zoom_north()
+        
         """ elif self.calibration_done == False and self.center_done == True and self.north_done == True:
         print("false, true, true")    
         self.unzoom()
