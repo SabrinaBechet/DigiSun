@@ -133,6 +133,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.approximate_center = [0., 0.]
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
+        
+
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
         """
@@ -634,13 +636,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                
         self.set_drawing_lineEdit()
        
-       
+
+    def drawing_value_changed(self):
+        print("*********** the value has changed!!")
+        for el in self.drawing_lst:
+            print(el, el.changed)
+
+        
     def set_drawing_lst(self, drawing_lst):
         """
         Get the list of drawings from bulk analysis page.
         Set the counter to 0.
         """
         self.drawing_lst = drawing_lst
+        for el in self.drawing_lst:
+            el.value_changed.connect(self.drawing_value_changed)
+            
         self.len_drawing_lst = len(drawing_lst)
         
         self.current_count = 0
