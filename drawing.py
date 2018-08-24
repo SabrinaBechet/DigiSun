@@ -129,6 +129,47 @@ class Group(object):
         self._spots = value
 
     @property    
+    def dipole1_lat(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole1_lat
+    
+    @dipole1_lat.setter
+    def dipole1_lat(self, value):
+        print("here we are changing the value of dipole1_lat to ", value)
+        self._dipole1_lat = value
+
+    @property    
+    def dipole1_long(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole1_long
+    
+    @dipole1_long.setter
+    def dipole1_long(self, value):
+        print("here we are changing the value of dipole1_lat to ", value)
+        self._dipole1_long = value
+
+    @property    
+    def dipole2_lat(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole2_lat
+    
+    @dipole2_lat.setter
+    def dipole2_lat(self, value):
+        print("here we are changing the value of dipole2_lat to ", value)
+        self._dipole2_lat = value
+
+    @property    
+    def dipole2_long(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole2_long
+    
+    @dipole2_long.setter
+    def dipole2_long(self, value):
+        print("here we are changing the value of dipole2_lat to ", value)
+        self._dipole2_long = value
+        
+    
+    @property    
     def g_spot(self):
         #print("here we are reading the value of g_spot of a group ")
         return self._g_spot
