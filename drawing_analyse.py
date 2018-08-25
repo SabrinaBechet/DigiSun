@@ -5,6 +5,7 @@ from PyQt4 import QtGui, QtCore
 
 import database, drawing, group_box, qlabel_drawing
 from datetime import date, time, datetime, timedelta
+import math
 
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
@@ -264,36 +265,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def set_group_visualisation(self):
         if self.drawing_page.label_right.group_visu==True:
             self.drawing_page.label_right.group_visu = False
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
         elif self.drawing_page.label_right.group_visu==False:
             self.drawing_page.label_right.group_visu = True
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
 
     def set_dipole_visualisation(self):
         if self.drawing_page.label_right.dipole_visu==True:
             self.drawing_page.label_right.dipole_visu = False
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
         elif self.drawing_page.label_right.dipole_visu==False:
             self.drawing_page.label_right.dipole_visu = True
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
         
     def set_large_grid(self):
         if self.drawing_page.label_right.large_grid_overlay==True:
             self.drawing_page.label_right.large_grid_overlay = False
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
         elif self.drawing_page.label_right.large_grid_overlay==False:
             self.drawing_page.label_right.large_grid_overlay = True
             self.drawing_page.label_right.small_grid_overlay = False
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
 
     def set_small_grid(self):
         if self.drawing_page.label_right.small_grid_overlay==True:
             self.drawing_page.label_right.small_grid_overlay = False
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
         elif self.drawing_page.label_right.small_grid_overlay==False:
             self.drawing_page.label_right.small_grid_overlay = True
             self.drawing_page.label_right.large_grid_overlay = False
-            self.show_drawing()
+            #self.set_drawing()
+            self.drawing_page.label_right.set_img()
             
     def set_group_widget(self):
         """
@@ -330,9 +339,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                    self.grid_position,colorised)           
             groupBoxLine.set_spot_count(self.drawing_lst[self.current_count].group_lst[i].spots,
                                         self.grid_position)
-            groupBoxLine.set_zurich_type(self.drawing_lst[self.current_count].group_lst[i].zurich,
+            groupBoxLine.set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[i].zurich,
                                          self.grid_position)
-            groupBoxLine.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[i].McIntosh,
+            groupBoxLine.set_mcIntosh_combo_box(self.drawing_lst[self.current_count].group_lst[i].McIntosh,
                                            self.drawing_lst[self.current_count].group_lst[i].zurich,
                                            self.grid_position)
 
@@ -378,7 +387,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
-        self.listWidget_groupBox.itemSelectionChanged.connect(lambda: self.disable_other_lines())
+        self.listWidget_groupBox.itemSelectionChanged.connect(lambda: self.disable_other_groupBoxLine())
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
@@ -396,9 +405,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                        self.grid_position,0)
         self.group_toolbox.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
                                             self.grid_position)
-        self.group_toolbox.set_zurich_type(self.drawing_lst[self.current_count].group_lst[n].zurich,
+        self.group_toolbox.set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[n].zurich,
                                               self.grid_position)
-        self.group_toolbox.set_mcIntosh_type(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
+        self.group_toolbox.set_mcIntosh_combo_box(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
                                                 self.drawing_lst[self.current_count].group_lst[n].zurich,
                                                 self.grid_position)
         self.group_toolbox.set_confirm_spots(self.grid_position)
@@ -420,41 +429,36 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
         self.group_toolbox.set_add_surface_button()
         
-
-
-
         self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),True))
         self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),True))
         self.group_toolbox.get_McIntosh().currentIndexChanged.connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),True))
-        
-        arrows_list = self.group_toolbox.get_arrows()
-        arrows_list[0].clicked.connect(lambda: self.modify_longitude_latitude(False, True))
-        arrows_list[1].clicked.connect(lambda: self.modify_longitude_latitude(False, False))
-        arrows_list[2].clicked.connect(lambda: self.modify_longitude_latitude(True, True))
-        arrows_list[3].clicked.connect(lambda: self.modify_longitude_latitude(True, False))
+
+        position_step = 0.1 * math.pi/180 
+        up, down, left, right = self.group_toolbox.get_arrows()
+        up.clicked.connect(lambda: self.update_HGC_position('latitude', position_step))
+        down.clicked.connect(lambda: self.update_HGC_position('latitude', -position_step))
+        left.clicked.connect(lambda: self.update_HGC_position('longitude', position_step))
+        right.clicked.connect(lambda: self.update_HGC_position('longitude', -position_step))
         
         self.group_toolbox.get_confirm_spots().setShortcut(QtGui.QKeySequence("Enter"))
-        
-    
-    def modify_longitude_latitude(self, longitude, positive):
-        #Longitude is a boolean and is True if we need to modify the longitude (or false if we need to modify the latitude)
-        #Positive is a boolean and is True if we need to +1 (or False if we need to -1)
-        if positive:
-            toAdd = 0.1 * math.pi/180 
-        else:
-            toAdd = - 0.1 * math.pi/180
-        
-        if longitude:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude += toAdd
+
+    def update_HGC_position(self, coordinate, value):
+        print("update the position")
+
+        if coordinate=='longitude':
+            #current_longitude = self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude += value
             self.group_toolbox.update_longitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude)
-        else:
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude += toAdd
+
+        elif coordinate=='latitude':
+            #current_latitude = self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude
+            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude += value
             self.group_toolbox.update_latitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude)
-        
+
         self.drawing_page.label_right.set_img()
 
-
-    def disable_other_lines(self):
+        
+    def disable_other_groupBoxLine(self):
         for i in range(self.listWidget_groupBox.count()):
             if (i != self.listWidget_groupBox.currentRow()):
                 self.groupBoxLineList[i].get_spots().setEnabled(False)
@@ -464,8 +468,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.groupBoxLineList[i].get_zurich().setEnabled(True)
                 self.groupBoxLineList[i].get_McIntosh().setEnabled(True)
                 self.groupBoxLineList[i].get_spots().setEnabled(True)
-
-
+                
 
     def modify_drawing_spots(self,n, is_toolbox):
 
@@ -612,9 +615,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
         self.but_next.clicked.connect(lambda: self.update_counter(self.current_count+1))
-        self.but_next.clicked.connect(self.show_drawing)
+        self.but_next.clicked.connect(self.set_drawing)
         self.but_previous.clicked.connect(lambda: self.update_counter(self.current_count-1))
-        self.but_previous.clicked.connect(self.show_drawing)
+        self.but_previous.clicked.connect(self.set_drawing)
 
         layout_but = QtGui.QHBoxLayout()
         layout_but.addWidget(self.but_previous)
@@ -645,7 +648,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.but_save = QtGui.QPushButton('save', self)
         self.but_save.setMaximumWidth(self.column_maximum_width + 75)
-        #self.but_save.clicked.connect(lambda: self.show_drawing())
+        #self.but_save.clicked.connect(lambda: self.set_drawing())
 
         form_layout2.addRow("Current operator: ", self.current_operator)
         form_layout2.setLayout(1,QtGui.QFormLayout.SpanningRole,layout_goto)
@@ -753,7 +756,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.file_path = os.path.join(directory, filename)
 
             
-    def show_drawing(self):
+    def set_drawing(self):
+        """
+        - Get the right path of the image
+        - update the current_drawing of the qlabel image
+        - set the group widget
+        - set the group toolbox
+        - set the img
+        Note: this method should be called only when the current drawing change! 
+        otherwhise use self.drawing_page.label_right.set_img() to refresh the img
+        """
         #print("show drawing")
         self.set_path_to_qlabel()
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]

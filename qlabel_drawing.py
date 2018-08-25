@@ -123,9 +123,9 @@ class QLabelDrawing(QtGui.QLabel):
             pen_selected.setWidth(3)
             
             for i in range(self.current_drawing.group_count):
-                radius = 25
-                if self.current_drawing.group_lst[i].zurich.upper() in ["C","D","E","F","G"]:
-                    radius = 40
+                radius = 10
+                #if self.current_drawing.group_lst[i].zurich.upper() in ["C","D","E","F","G"]:
+                #    radius = 40
                     
                 painter.setPen(pen_border)
                 

@@ -36,7 +36,10 @@ class GroupBox(QtGui.QWidget):
         return self.grid_layout.itemAtPosition(0,3).widget()
     
     def get_arrows(self):
-        return [self.grid_layout.itemAtPosition(1,3).widget(),self.grid_layout.itemAtPosition(3,3).widget(),self.grid_layout.itemAtPosition(2,2).widget(),self.grid_layout.itemAtPosition(2,4).widget()]
+        return [self.grid_layout.itemAtPosition(1,3).widget(),
+                self.grid_layout.itemAtPosition(3,3).widget(),
+                self.grid_layout.itemAtPosition(2,2).widget(),
+                self.grid_layout.itemAtPosition(2,4).widget()]
     
     def update_spots(self,spots):
         self.grid_layout.itemAtPosition(0,1).widget().setText(str(spots))
@@ -130,129 +133,63 @@ class GroupBox(QtGui.QWidget):
                                    grid_position[1])
         grid_position[1]+=1
 
-    def set_zurich_type(self, group_zurich_type, grid_position):
+    def set_zurich_combox_box(self, group_zurich_type, grid_position):
+        #print("set zurich combo box")
         self.zurich_combo = QtGui.QComboBox(self)
         self.zurich_combo.setStyleSheet("background-color: white; color:black")
-
+        self.zurich_combo.setMaximumWidth(50)
         # a quoi ca sert?
         #self.zurich_combo.wheelEvent = patter
-        
-        self.zurich_combo.setMaximumWidth(50)
-        self.zurich_combo.addItem("A")
-        self.zurich_combo.addItem("B")
-        self.zurich_combo.addItem("C")
-        self.zurich_combo.addItem("D")
-        self.zurich_combo.addItem("E")
-        self.zurich_combo.addItem("F")
-        self.zurich_combo.addItem("G")
-        self.zurich_combo.addItem("H")
-        self.zurich_combo.addItem("J")
+
+        zurich_type_lst = ['X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J']
+        for el in zurich_type_lst:
+                self.zurich_combo.addItem(el)
+                
         self.grid_layout.addWidget(self.zurich_combo,
                               grid_position[0],
                               grid_position[1])
         grid_position[1]+=1
-        index = self.zurich_combo.findText(group_zurich_type)
-        self.zurich_combo.setCurrentIndex(index)
-        self.zurich_combo.currentIndexChanged.connect(lambda : self.update_McIntosh_type(self.zurich_combo.currentText()))
+        
+        #index = self.zurich_combo.findText(group_zurich_type)
+        self.zurich_combo.setCurrentIndex(self.zurich_combo.findText(group_zurich_type))
+        
+        #zurich_current_text = self.zurich_combo.currentText()
+        self.zurich_combo.currentIndexChanged\
+                         .connect(lambda : self.update_McIntosh_combo_box(self.zurich_combo.currentText()))
 
-    def update_McIntosh_type(self,zurich_type):
-        self.McIntosh_combo.clear()
-
+    def update_McIntosh_combo_box(self, zurich_type):
+        print("update mcIntosh before clear", zurich_type)
+        self.McIntosh_combo.clear() # this is giving the empty line in the drawing object!!! (signal of change)
+        print("update mcIntosh after clear", zurich_type)
+        
         # a quoi ça sert?
         #self.McIntosh_combo.wheelEvent = patter
+
+        zurich_McIntosh = {}
+        zurich_McIntosh['X'] = ['Xxx']
+        zurich_McIntosh['A'] = ['Axx']
+        zurich_McIntosh['B'] = ['Bxo', 'Bxi', 'Bxc']
+        zurich_McIntosh['C'] = ['Cro', 'Cri', 'Cso', 'Csi', 'Cao', 'Cai']
+        zurich_McIntosh['D'] = ['Dro', 'Dri', 'Drc',
+                                'Dso', 'Dsi', 'Dsc', 'Dao', 'Dai', 'Dac',
+                                'Dho', 'Dhi', 'Dhc', 'Dko', 'Dki', 'Dkc']                        
+        zurich_McIntosh['E'] = ['Esi', 'Esc', 'Eai', 'Eac',
+                                'Ehi', 'Ehc', 'Eki', 'Ekc']
+        zurich_McIntosh['F'] = ['Fhi', 'Fhc', 'Fki', 'Fkc']
+        zurich_McIntosh['G'] = ['Eso', 'Eao', 'Eho', 'Eko',
+                                'Fho', 'Fko']     
+        zurich_McIntosh['H'] = ['Hkx', 'Hhx']
+        zurich_McIntosh['J'] = ['Hsx', 'Hax']
+
+        for el in zurich_McIntosh[str(zurich_type)]:
+                #print(type(zurich_type), zurich_type, el)
+                self.McIntosh_combo.addItem(el)
     
-        if zurich_type=='A':
-            self.McIntosh_combo.addItem("Axx")
-        elif zurich_type=='B':
-            self.McIntosh_combo.addItem("Bxo")
-            self.McIntosh_combo.addItem("Bxi")
-            self.McIntosh_combo.addItem("Bxc")
-        elif zurich_type=='C':
-            self.McIntosh_combo.addItem("Cro")
-            self.McIntosh_combo.addItem("Cri")
-            self.McIntosh_combo.addItem("Crc")
-            self.McIntosh_combo.addItem("Cso")
-            self.McIntosh_combo.addItem("Csi")
-            self.McIntosh_combo.addItem("Csc")
-            self.McIntosh_combo.addItem("Cao")
-            self.McIntosh_combo.addItem("Cai")
-            self.McIntosh_combo.addItem("Cac")
-            self.McIntosh_combo.addItem("Cho")
-            self.McIntosh_combo.addItem("Chi")
-            self.McIntosh_combo.addItem("Chc")
-            self.McIntosh_combo.addItem("Cko")
-            self.McIntosh_combo.addItem("Cki")
-            self.McIntosh_combo.addItem("Ckc")
-        elif zurich_type=='D':
-            self.McIntosh_combo.addItem("Dro")
-            self.McIntosh_combo.addItem("Dri")
-            self.McIntosh_combo.addItem("Drc")
-            self.McIntosh_combo.addItem("Dso")
-            self.McIntosh_combo.addItem("Dsi")
-            self.McIntosh_combo.addItem("Dsc")
-            self.McIntosh_combo.addItem("Dao")
-            self.McIntosh_combo.addItem("Dai")
-            self.McIntosh_combo.addItem("Dac")
-            self.McIntosh_combo.addItem("Dho")
-            self.McIntosh_combo.addItem("Dhi")
-            self.McIntosh_combo.addItem("Dhc")
-            self.McIntosh_combo.addItem("Dko")
-            self.McIntosh_combo.addItem("Dki")
-            self.McIntosh_combo.addItem("Dkc")
-        elif zurich_type=='E':
-            self.McIntosh_combo.addItem("Ero")
-            self.McIntosh_combo.addItem("Eri")
-            self.McIntosh_combo.addItem("Erc")
-            self.McIntosh_combo.addItem("Eso")
-            self.McIntosh_combo.addItem("Esi")
-            self.McIntosh_combo.addItem("Esc")
-            self.McIntosh_combo.addItem("Eao")
-            self.McIntosh_combo.addItem("Eai")
-            self.McIntosh_combo.addItem("Eac")
-            self.McIntosh_combo.addItem("Eho")
-            self.McIntosh_combo.addItem("Ehi")
-            self.McIntosh_combo.addItem("Ehc")
-            self.McIntosh_combo.addItem("Eko")
-            self.McIntosh_combo.addItem("Eki")
-            self.McIntosh_combo.addItem("Ekc")
-        elif zurich_type=='F':
-            self.McIntosh_combo.addItem("Fro")
-            self.McIntosh_combo.addItem("Fri")
-            self.McIntosh_combo.addItem("Frc")
-            self.McIntosh_combo.addItem("Fso")
-            self.McIntosh_combo.addItem("Fsi")
-            self.McIntosh_combo.addItem("Fsc")
-            self.McIntosh_combo.addItem("Fao")
-            self.McIntosh_combo.addItem("Fai")
-            self.McIntosh_combo.addItem("Fac")
-            self.McIntosh_combo.addItem("Fho")
-            self.McIntosh_combo.addItem("Fhi")
-            self.McIntosh_combo.addItem("Fhc")
-            self.McIntosh_combo.addItem("Fko")
-            self.McIntosh_combo.addItem("Fki")
-            self.McIntosh_combo.addItem("Fkc")
-        elif zurich_type=='G':
-            self.McIntosh_combo.addItem("Eso")    
-            self.McIntosh_combo.addItem("Eao")    
-            self.McIntosh_combo.addItem("Eho")    
-            self.McIntosh_combo.addItem("Eko")    
-            self.McIntosh_combo.addItem("Fho")    
-            self.McIntosh_combo.addItem("Fko")
-        elif zurich_type=='H':
-            self.McIntosh_combo.addItem("Hhx")
-            self.McIntosh_combo.addItem("Hkx")
-        elif zurich_type=='J':
-            self.McIntosh_combo.addItem("Hsx")
-            self.McIntosh_combo.addItem("Hax")
-            
-        
-        
-    
-    def set_mcIntosh_type(self, mcIntosh_type, zurich_type, grid_position):
+    def set_mcIntosh_combo_box(self, mcIntosh_type, zurich_type, grid_position):
         self.McIntosh_combo = QtGui.QComboBox(self)
         self.McIntosh_combo.setMaximumWidth(70)
         
-        self.update_McIntosh_type(zurich_type)
+        self.update_McIntosh_combo_box(zurich_type)
         self.McIntosh_combo.setStyleSheet("background-color: white; color: black")
         self.grid_layout.addWidget(self.McIntosh_combo,
                                    grid_position[0],
