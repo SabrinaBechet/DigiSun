@@ -7,6 +7,28 @@ import numpy as np
 import math
 import coordinates
 
+class analyseModeBool(QtCore.QObject):
+
+    value_changed = QtCore.pyqtSignal()
+    
+    def __init__(self, input_value='False'):
+        super(analyseModeBool, self).__init__()
+        self._value = input_value
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, input_value):
+        print("**the value of the mode has changed to ", input_value)
+        self._value = input_value
+        self.value_changed.emit()
+        
+
+
+
+        
 class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 
@@ -39,10 +61,13 @@ class QLabelDrawing(QtGui.QLabel):
        self.width_scale = 1000
        self.height_scale = 1000
 
-       # viewing mode
-       self.large_grid_overlay = True
-       self.small_grid_overlay = False
-       self.group_visu = True
+       # overlay mode
+       self.large_grid_overlay = analyseModeBool(True)
+       self.small_grid_overlay = analyseModeBool(False)
+       self.group_visu = analyseModeBool(True)
+       #self.large_grid_overlay.value_changed.connect{}
+       #self.small_grid_overlay = False
+       #self.group_visu = True
        self.dipole_visu = False
 
        #action mode
@@ -74,7 +99,7 @@ class QLabelDrawing(QtGui.QLabel):
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
 
-        if self.large_grid_overlay or self.small_grid_overlay:
+        if self.large_grid_overlay.value or self.small_grid_overlay.value:
                 
             painter.setPen(QtGui.QPen(QtCore.Qt.red))    
             painter.setPen(pen_border)
@@ -83,7 +108,7 @@ class QLabelDrawing(QtGui.QLabel):
                                 self.current_drawing.calibrated_radius,
                                 self.current_drawing.calibrated_radius)
                        
-            if self.large_grid_overlay:
+            if self.large_grid_overlay.value:
                 angle_array = np.arange(-180, 190, 30)
             else :
                 angle_array = np.arange(-180, 190, 10)
@@ -116,7 +141,7 @@ class QLabelDrawing(QtGui.QLabel):
                     painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst[i],
                                       self.current_drawing.calibrated_center.y + y_lst[i])    
             
-        if self.group_visu :
+        if self.group_visu.value :
             #print(self.group_visu_index)
             # note: a column with the cartesian coord of group should be recorded in the db!
             pen_selected = QtGui.QPen(QtCore.Qt.green)

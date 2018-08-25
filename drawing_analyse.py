@@ -135,7 +135,24 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
-        
+    def set_large_grid_but_color(self):
+        if self.drawing_page.label_right.large_grid_overlay.value==True :
+            self.large_grid_but.setStyleSheet("background-color: lightblue")
+        elif self.drawing_page.label_right.large_grid_overlay.value==False:
+            self.large_grid_but.setStyleSheet("background-color: lightgray")
+
+    def set_small_grid_but_color(self):
+        if self.drawing_page.label_right.small_grid_overlay.value==True :
+            self.small_grid_but.setStyleSheet("background-color: lightblue")
+        elif self.drawing_page.label_right.small_grid_overlay.value==False:
+            self.small_grid_but.setStyleSheet("background-color: lightgray")
+            
+    def set_group_visu_but_color(self):
+        if self.drawing_page.label_right.group_visu.value==True :
+            self.group_visu_but.setStyleSheet("background-color: lightblue")
+        elif self.drawing_page.label_right.group_visu.value==False:
+            self.group_visu_but.setStyleSheet("background-color: lightgray")
+            
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
         """
@@ -143,19 +160,43 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar = self.addToolBar("view")
         toolbar.setIconSize(QtCore.QSize(30, 30));
 
+        self.large_grid_but = QtGui.QToolButton(toolbar)
+        self.large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.large_grid_but.setText("large grid")
+        self.large_grid_but.setIcon(QtGui.QIcon('icons/internet.svg'))
+        self.drawing_page.label_right.large_grid_overlay.value_changed.connect(self.set_large_grid_but_color)
+        if self.drawing_page.label_right.large_grid_overlay.value :
+            self.large_grid_but.setStyleSheet("background-color: lightblue")
+            
+        self.small_grid_but = QtGui.QToolButton(toolbar)
+        self.small_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.small_grid_but.setText("small grid")
+        self.small_grid_but.setIcon(QtGui.QIcon('icons/internet.svg'))
+        self.drawing_page.label_right.small_grid_overlay.value_changed.connect(self.set_small_grid_but_color)
+        if self.drawing_page.label_right.small_grid_overlay.value :
+            self.small_grid_but.setStyleSheet("background-color: lightblue")
+
+        self.group_visu_but = QtGui.QToolButton(toolbar)
+        self.group_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.group_visu_but.setText("group view")
+        self.group_visu_but.setIcon(QtGui.QIcon('icons/share_1.svg'))
+        self.drawing_page.label_right.group_visu.value_changed.connect(self.set_group_visu_but_color)
+        if self.drawing_page.label_right.group_visu.value :
+            self.group_visu_but.setStyleSheet("background-color: lightblue")
+        
         # icons come from here: https://www.flaticon.com
         zoom_in = QtGui.QAction('zoom_in', toolbar)
         zoom_in.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
         zoom_out = QtGui.QAction('zoom_out',  toolbar)
         zoom_out.setIcon(QtGui.QIcon('icons/search.svg'))
-        large_grid = QtGui.QAction('large_grid',  toolbar)
-        large_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
-        small_grid = QtGui.QAction('small_grid',  toolbar)
-        small_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
+        #large_grid_action = QtGui.QAction('large_grid',  toolbar)
+        #large_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
+        #small_grid = QtGui.QAction('small_grid',  toolbar)
+        #small_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
         helper_grid = QtGui.QAction('helper_grid',  toolbar)
         helper_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
-        sunspot_view = QtGui.QAction('sunspot_view',  toolbar)
-        sunspot_view.setIcon(QtGui.QIcon('icons/share_1.svg'))
+        #sunspot_view = QtGui.QAction('sunspot_view',  toolbar)
+        #sunspot_view.setIcon(QtGui.QIcon('icons/share_1.svg'))
         dipole_view = QtGui.QAction('dipole_view',  toolbar)
         dipole_view.setIcon(QtGui.QIcon('icons/share.svg'))
 
@@ -172,10 +213,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         toolbar.addAction(zoom_in)
         toolbar.addAction(zoom_out)
-        toolbar.addAction(large_grid)
-        toolbar.addAction(small_grid)
+        #toolbar.addAction(large_grid_action)
+        #toolbar.addAction(small_grid)
+        #toolbar.addAction(sunspot_view)
+        
+        toolbar.addWidget(self.large_grid_but)
+        toolbar.addWidget(self.small_grid_but)
         toolbar.addAction(helper_grid)
-        toolbar.addAction(sunspot_view)
+        toolbar.addWidget(self.group_visu_but)
+               
         toolbar.addAction(dipole_view)
         toolbar.insertSeparator(calibrate_action)
         toolbar.addAction(calibrate_action)
@@ -185,10 +231,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
         zoom_out.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
+
+        self.large_grid_but.clicked.connect(self.set_large_grid)
+        self.small_grid_but.clicked.connect(self.set_small_grid)
+        self.group_visu_but.clicked.connect(self.set_group_visualisation)
         
-        large_grid.triggered.connect(self.set_large_grid)
-        small_grid.triggered.connect(self.set_small_grid)
-        sunspot_view.triggered.connect(self.set_group_visualisation)
+        #large_grid_action.triggered.connect(self.set_large_grid)
+        #small_grid.triggered.connect(self.set_small_grid)
+        #sunspot_view.triggered.connect(self.set_group_visualisation)
         dipole_view.triggered.connect(self.set_dipole_visualisation)
 
         calibrate_action.triggered.connect(self.start_calibration)
@@ -205,8 +255,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.north_done = False
         print("start calibration", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         
-        self.drawing_page.label_right.group_visu = False
-        self.drawing_page.label_right.large_grid_overlay = False
+        self.drawing_page.label_right.group_visu.value = False
+        self.drawing_page.label_right.large_grid_overlay.value = False
 
         self.drawing_page.label_right.zoom_in(5.)
         
@@ -234,20 +284,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.zoom_in(1/5.)
         
     def calibrate_signal(self):
-        print("** calibrate_signal", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
+        #print("** calibrate_signal", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
         if self.drawing_page.label_right.calibration_mode == True and self.center_done == True and self.north_done == False:
-            print("true, true, false")
+            #print("true, true, false")
             self.north_done = True
             self.get_click_coordinates()
+            
+            #self.drawing_lst[self.current_count].calibrated_center.y = self.drawing_page.label_right.y_drawing
             self.unzoom()
-            self.drawing_page.label_right.large_grid_overlay = True
-            self.drawing_page.label_right.group_visu = True
+            self.drawing_page.label_right.large_grid_overlay.value = True
+            self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.set_img()
             self.drawing_page.label_right.calibration_mode = False
             
         elif self.drawing_page.label_right.calibration_mode == True and self.center_done == False and self.north_done == False:
-            print("true, false, false")
+            #print("true, false, false")
             self.get_click_coordinates()
+            print("after the click", self.drawing_page.label_right.x_drawing, self.drawing_page.label_right.y_drawing)
+            self.drawing_lst[self.current_count].calibrated_center_x = self.drawing_page.label_right.x_drawing
+            #self.drawing_lst[self.current_count].calibrated_north.y = self.drawing_page.label_right.y_drawing
             self.center_done = True
             self.set_zoom_north()
         
@@ -263,12 +318,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print(self.drawing_page.label_right.y_drawing)
         
     def set_group_visualisation(self):
-        if self.drawing_page.label_right.group_visu==True:
-            self.drawing_page.label_right.group_visu = False
+        if self.drawing_page.label_right.group_visu.value==True:
+            self.drawing_page.label_right.group_visu.value = False
             #self.set_drawing()
             self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.group_visu==False:
-            self.drawing_page.label_right.group_visu = True
+        elif self.drawing_page.label_right.group_visu.value==False:
+            self.drawing_page.label_right.group_visu.value = True
             #self.set_drawing()
             self.drawing_page.label_right.set_img()
 
@@ -283,24 +338,28 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.set_img()
         
     def set_large_grid(self):
-        if self.drawing_page.label_right.large_grid_overlay==True:
-            self.drawing_page.label_right.large_grid_overlay = False
+        print("set large grid")
+        if self.drawing_page.label_right.large_grid_overlay.value==True:
+            self.drawing_page.label_right.large_grid_overlay.value = False
             #self.set_drawing()
             self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.large_grid_overlay==False:
-            self.drawing_page.label_right.large_grid_overlay = True
-            self.drawing_page.label_right.small_grid_overlay = False
+        elif self.drawing_page.label_right.large_grid_overlay.value==False:
+            self.drawing_page.label_right.large_grid_overlay.value = True
+            self.drawing_page.label_right.small_grid_overlay.value = False
             #self.set_drawing()
             self.drawing_page.label_right.set_img()
+        print("the new value is", self.drawing_page.label_right.large_grid_overlay.value)
+        #self.set_large_grid_color()
+        
 
     def set_small_grid(self):
-        if self.drawing_page.label_right.small_grid_overlay==True:
-            self.drawing_page.label_right.small_grid_overlay = False
+        if self.drawing_page.label_right.small_grid_overlay.value==True:
+            self.drawing_page.label_right.small_grid_overlay.value = False
             #self.set_drawing()
             self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.small_grid_overlay==False:
-            self.drawing_page.label_right.small_grid_overlay = True
-            self.drawing_page.label_right.large_grid_overlay = False
+        elif self.drawing_page.label_right.small_grid_overlay.value==False:
+            self.drawing_page.label_right.small_grid_overlay.value = True
+            self.drawing_page.label_right.large_grid_overlay.value = False
             #self.set_drawing()
             self.drawing_page.label_right.set_img()
             
@@ -471,7 +530,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 
 
     def modify_drawing_spots(self,n, is_toolbox):
-
         if is_toolbox:
             self.drawing_lst[self.current_count]\
                 .group_lst[self.listWidget_groupBox.currentRow()]\
@@ -485,7 +543,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_toolbox.update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
 
     def modify_drawing_zurich(self, n, is_toolbox):
-
         old_zurich_type = self.drawing_lst[self.current_count]\
                               .group_lst[self.listWidget_groupBox.currentRow()]\
                               .zurich
@@ -622,13 +679,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         layout_but = QtGui.QHBoxLayout()
         layout_but.addWidget(self.but_previous)
         layout_but.addWidget(self.but_next)
-
         
         self.goto_drawing_linedit = QtGui.QLineEdit()
         self.goto_drawing_label1 = QtGui.QLabel()
         self.goto_drawing_label2 = QtGui.QLabel()
         self.goto_drawing_button = QtGui.QPushButton()
-
         
         self.goto_drawing_label1.setText("Jump to drawing")
         self.goto_drawing_linedit.setText("1")
@@ -648,6 +703,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.but_save = QtGui.QPushButton('save', self)
         self.but_save.setMaximumWidth(self.column_maximum_width + 75)
+        #self.but_save.setStyleSheet("background-color: ")
         #self.but_save.clicked.connect(lambda: self.set_drawing())
 
         form_layout2.addRow("Current operator: ", self.current_operator)
@@ -694,7 +750,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print("*********** the value has changed!!")
         for el in self.drawing_lst:
             print(el, el.changed)
-
+            if el.changed:
+                self.but_save.setStyleSheet("background-color: rgb(255, 165, 84)")
+          
         
     def set_drawing_lst(self, drawing_lst):
         """
@@ -734,9 +792,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         index_drawing_type = self.drawing_type\
                                  .findText(self.drawing_lst[self.current_count].drawing_type)
         self.drawing_type.setCurrentIndex(index_drawing_type)
-        
+
+        # to put in another function related to the session and not the drawing
         self.goto_drawing_label2.setText("out of "+str(self.len_drawing_lst))
+
+        print(self.drawing_lst[self.current_count].changed)
         
+        if self.drawing_lst[self.current_count].changed:
+            self.but_save.setStyleSheet("background-color: rgb(255, 165, 84)")
+        else:
+            self.but_save.setStyleSheet("background-color: lightgray")
      
     def set_path_to_qlabel(self):
         

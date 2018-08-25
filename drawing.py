@@ -32,6 +32,9 @@ class Group(QtCore.QObject):
     - RawSurface_px
     - rawSurface_msd
     - GSpot
+
+    Note: It is important to change the value before emitting the signal
+    Otherwhise might play with old signal due to signal emitted!!
     """
     
     value_changed = QtCore.pyqtSignal()
@@ -76,10 +79,10 @@ class Group(QtCore.QObject):
     @number.setter
     def number(self, value):
         print("here we are changing the value of number to ", value)
+        self._number = value
         self.changed = True
         self.value_changed.emit()
-        self._number = value
-
+        
     @property    
     def longitude(self):
         #print("here we are reading the value of longitude of a group ")
@@ -88,9 +91,9 @@ class Group(QtCore.QObject):
     @longitude.setter
     def longitude(self, value):
         print("here we are changing the value of longitude to ", value)
+        self._longitude = value
         self.changed = True
         self.value_changed.emit()
-        self._longitude = value
 
     @property    
     def latitude(self):
@@ -100,9 +103,9 @@ class Group(QtCore.QObject):
     @latitude.setter
     def latitude(self, value):
         print("here we are changing the value of latitude to ", value)
+        self._latitude = value
         self.changed = True
         self.value_changed.emit()
-        self._latitude = value    
         
     @property    
     def surface(self):
@@ -112,9 +115,9 @@ class Group(QtCore.QObject):
     @surface.setter
     def surface(self, value):
         print("here we are changing the value of surface to ", value)
+        self._surface = value
         self.changed = True
         self.value_changed.emit()
-        self._surface = value
 
     @property    
     def McIntosh(self):
@@ -124,9 +127,9 @@ class Group(QtCore.QObject):
     @McIntosh.setter
     def McIntosh(self, value):
         print("here we are changing the value of mcIntosh to ", value)
+        self._McIntosh = value
         self.changed = True
         self.value_changed.emit()
-        self._McIntosh = value    
 
     @property    
     def zurich(self):
@@ -136,9 +139,10 @@ class Group(QtCore.QObject):
     @zurich.setter
     def zurich(self, value):
         print("here we are changing the value of zurich to ", value)
+        self._zurich = value
         self.changed = True
         self.value_changed.emit()
-        self._zurich = value
+        
 
     @property    
     def spots(self):
@@ -149,9 +153,9 @@ class Group(QtCore.QObject):
     @spots.setter
     def spots(self, value):
         print("here we are changing the value of spots to ", value)
+        self._spots = value
         self.changed = True
         self.value_changed.emit()
-        self._spots = value
 
     @property    
     def dipole1_lat(self):
@@ -161,9 +165,10 @@ class Group(QtCore.QObject):
     @dipole1_lat.setter
     def dipole1_lat(self, value):
         print("here we are changing the value of dipole1_lat to ", value)
+        self._dipole1_lat = value
         self.changed = True
         self.value_changed.emit()
-        self._dipole1_lat = value
+        
 
     @property    
     def dipole1_long(self):
@@ -173,9 +178,10 @@ class Group(QtCore.QObject):
     @dipole1_long.setter
     def dipole1_long(self, value):
         print("here we are changing the value of dipole1_lat to ", value)
+        self._dipole1_long = value
         self.changed = True
         self.value_changed.emit()
-        self._dipole1_long = value
+        
 
     @property    
     def dipole2_lat(self):
@@ -185,9 +191,10 @@ class Group(QtCore.QObject):
     @dipole2_lat.setter
     def dipole2_lat(self, value):
         print("here we are changing the value of dipole2_lat to ", value)
+        self._dipole2_lat = value
         self.changed = True
         self.value_changed.emit()
-        self._dipole2_lat = value
+        
 
     @property    
     def dipole2_long(self):
@@ -197,9 +204,10 @@ class Group(QtCore.QObject):
     @dipole2_long.setter
     def dipole2_long(self, value):
         print("here we are changing the value of dipole2_lat to ", value)
+        self._dipole2_long = value
         self.changed = True
         self.value_changed.emit()
-        self._dipole2_long = value
+        
            
     @property    
     def g_spot(self):
@@ -209,9 +217,10 @@ class Group(QtCore.QObject):
     @g_spot.setter
     def g_spot(self, value):
         print("here we are changing the value of g_spot to ", value)
+        self._g_spot = value         
         self.changed = True
         self.value_changed.emit()
-        self._g_spot = value         
+        
         
     def fill_from_database(self, datetime, group_number):
         """
@@ -308,9 +317,10 @@ class Drawing(QtCore.QObject):
     @drawing_type.setter
     def drawing_type(self, value):
         print("here we are changing the value of drawing_type to ", value)
+        self._drawing_type = value
         self.changed = True
         self.value_changed.emit()
-        self._drawing_type = value
+        
         
     @property    
     def quality(self):
@@ -320,9 +330,9 @@ class Drawing(QtCore.QObject):
     @quality.setter
     def quality(self, value):
         print("here we are changing the value of quality to ", value)
+        self._quality = value
         self.changed = True
         self.value_changed.emit()
-        self._quality = value
         
     @property    
     def observer(self):
@@ -332,9 +342,10 @@ class Drawing(QtCore.QObject):
     @observer.setter    
     def observer(self, value):
         print("here we are changing the value of observer to ", value)
+        self._observer = value
         self.changed = True
         self.value_changed.emit()
-        self._observer = value
+        
     
     @property
     def angle_P(self):
@@ -344,9 +355,10 @@ class Drawing(QtCore.QObject):
     @angle_P.setter
     def angle_P(self, value):
         print("here we are changing the value of angle_P to ", value)
+        self._angle_P = value
         self.changed = True
         self.value_changed.emit()
-        self._angle_P = value
+        
 
     @property
     def angle_B(self):
@@ -356,9 +368,10 @@ class Drawing(QtCore.QObject):
     @angle_B.setter
     def angle_B(self, value):
         print("here we are changing the value of angle_B to ", value)
+        self._angle_B = value
         self.changed = True
         self.value_changed.emit()
-        self._angle_B = value   
+        
 
     @property
     def angle_L(self):
@@ -368,9 +381,10 @@ class Drawing(QtCore.QObject):
     @angle_L.setter
     def angle_L(self, value):
         print("here we are changing the value of angle_L to ", value)
+        self._angle_L = value
         self.changed = True
         self.value_changed.emit()
-        self._angle_L = value
+        
         
     
     @property    
@@ -381,9 +395,10 @@ class Drawing(QtCore.QObject):
     @operator.setter
     def operator(self, value):
         print("here we are changing the value of operator to ", value)
+        self._operator = value
         self.changed = True
         self.value_changed.emit()
-        self._operator = value    
+        
         
     @property    
     def calibrated(self):
@@ -392,9 +407,10 @@ class Drawing(QtCore.QObject):
     @calibrated.setter
     def calibrated(self, value):
         print("here we are changing the value of calibrated to ", value)
+        self._calibrated = value
         self.changed = True
         self.value_changed.emit()
-        self._calibrated = value
+        
 
     @property    
     def group_count(self):
@@ -403,9 +419,10 @@ class Drawing(QtCore.QObject):
     @group_count.setter
     def group_count(self, value):
         print("here we are changing the value of group_count to ", value)
+        self._group_count = value
         self.changed = True
         self.value_changed.emit()
-        self._group_count = value
+        
         
     @property
     def group_lst(self):
@@ -415,9 +432,10 @@ class Drawing(QtCore.QObject):
     @group_lst.setter
     def group_lst(self, value):
         print("here we are changing the value of group_lst to ", value)
+        self._group_lst = value
         self.changed = True
         self.value_changed.emit()
-        self._group_lst = value
+        
 
     @property
     def calibrated_center(self):
@@ -427,10 +445,25 @@ class Drawing(QtCore.QObject):
     @calibrated_center.setter
     def calibrated_center(self, value):
         print("here we are changing the value of calibrated center to ", value)
+        self._calibrated_center = value
         self.changed = True
         self.value_changed.emit()
-        self._calibrated_center = value
+        
 
+    @property
+    def calibrated_center_x(self):
+        ##rint("here we are reading the value of calibrated center")
+        return self._calibrated_center.x
+
+    @calibrated_center_x.setter
+    def calibrated_center_x(self, value):
+        print("here we are changing the value of calibrated center x to ", value)
+        self._calibrated_center.x = value
+        self.changed = True
+        self.value_changed.emit()
+        
+
+        
     @property
     def calibrated_north(self):
         #print("here we are reading the value of calibrated north")
@@ -439,9 +472,10 @@ class Drawing(QtCore.QObject):
     @calibrated_north.setter
     def calibrated_north(self, value):
         print("here we are changing the value of calibrated north to ", value)
+        self._calibrated_north = value
         self.changed = True
         self.value_changed.emit()
-        self._calibrated_north = value    
+        
 
     @property
     def calibrated_radius(self):
@@ -451,9 +485,10 @@ class Drawing(QtCore.QObject):
     @calibrated_radius.setter
     def calibrated_radius(self, value):
         print("here we are changing the value of calibrated radius to ", value)
+        self._calibrated_radius = value
         self.changed = True
         self.value_changed.emit()
-        self._calibrated_radius = value
+        
         
     def fill_from_database(self, datetime):
         """

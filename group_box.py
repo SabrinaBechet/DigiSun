@@ -158,9 +158,9 @@ class GroupBox(QtGui.QWidget):
                          .connect(lambda : self.update_McIntosh_combo_box(self.zurich_combo.currentText()))
 
     def update_McIntosh_combo_box(self, zurich_type):
-        print("update mcIntosh before clear", zurich_type)
+        #print("update mcIntosh before clear", zurich_type)
         self.McIntosh_combo.clear() # this is giving the empty line in the drawing object!!! (signal of change)
-        print("update mcIntosh after clear", zurich_type)
+        #print("update mcIntosh after clear", zurich_type)
         
         # a quoi ça sert?
         #self.McIntosh_combo.wheelEvent = patter
