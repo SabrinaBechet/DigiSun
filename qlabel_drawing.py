@@ -8,6 +8,24 @@ import math
 import coordinates
 
 class analyseModeBool(QtCore.QObject):
+    """
+    This represents the mode of the analysis.
+    
+    There are 5 viewing modes wich are overlays:
+    - large grid
+    - small grid
+    - helper grid
+    - group visualisation
+    - dipole visualisation
+    
+    There a 4 action modes:
+    - calibrate 
+    - add group
+    - add dipole
+      * input parameter: group number! works only for a given group
+    - calculate the surface
+      * input parameter: group number! works only for a given group
+    """
 
     value_changed = QtCore.pyqtSignal()
     
@@ -25,8 +43,13 @@ class analyseModeBool(QtCore.QObject):
         self._value = input_value
         self.value_changed.emit()
         
-
-
+    def set_opposite_value(self):
+        if self._value==True:
+            self._value=False
+            self.value_changed.emit()
+        else:
+            self._value=True
+            self.value_changed.emit()
 
         
 class QLabelDrawing(QtGui.QLabel):
@@ -65,21 +88,24 @@ class QLabelDrawing(QtGui.QLabel):
        self.large_grid_overlay = analyseModeBool(True)
        self.small_grid_overlay = analyseModeBool(False)
        self.group_visu = analyseModeBool(True)
-       #self.large_grid_overlay.value_changed.connect{}
-       #self.small_grid_overlay = False
-       #self.group_visu = True
-       self.dipole_visu = False
-
+       self.dipole_visu = analyseModeBool(False)
+       
        #action mode
-       self.calibration_mode = False
-       self.add_group_mode = False
-       self.add_dipole_mode = False
-        
+       self.calibration_mode = analyseModeBool(False)
+       self.add_group_mode = analyseModeBool(False)
+       self.add_dipole_mode = analyseModeBool(False)
+       self.surface_mode = analyseModeBool(False)
+
        self.group_visu_index = 0
 
     def set_img(self):
         
         img = Image.open(self.file_path)
+
+        self.drawing_width = img.size[0]
+        self.drawing_height = img.size[1]
+        print("img size: ", img.size)
+        
         qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
         self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
 
@@ -159,9 +185,13 @@ class QLabelDrawing(QtGui.QLabel):
                     
                 x, y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
                                                               self.current_drawing.group_lst[i].latitude)
+
+
+               
+                
                 painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
                 
-        if self.dipole_visu :
+        if self.dipole_visu.value :
             # note: a column with the cartesian coord of group should be recorded in the db!      
             for i in range(self.current_drawing.group_count):
 
@@ -184,13 +214,22 @@ class QLabelDrawing(QtGui.QLabel):
         self.setPixmap(self.drawing_pixMap.scaled(int(self.width_scale),
                                                   int(self.height_scale),
                                                   QtCore.Qt.KeepAspectRatio))
-        self.drawing_width = img.size[0]
-        self.drawing_height = img.size[1]
-        print("img size: ", img.size)
+        
 
         self.show()
 
+    def normalise_radian(self, radian):
 
+        #if radian > 0 and radian < math.pi:
+        norm_radian = radian
+        if radian > math.pi:
+            norm_radian = radian % math.pi
+        elif radian<0:
+            norm_radian = math.pi - math.fabs(norm_radian)
+            
+        
+        return norm_radian
+    
     def get_cartesian_coordinate_from_HGC(self, longitude, latitude):
         """
         get the cartesian coordinate suitable for Qpainter (origin upper left)
@@ -202,9 +241,9 @@ class QLabelDrawing(QtGui.QLabel):
         (x_upper_left_origin,
          y_upper_left_origin,
          z_upper_left_origin) = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
-                                                                   self.current_drawing.calibrated_center.y,
+                                                                   self.drawing_height - self.current_drawing.calibrated_center.y,
                                                                    self.current_drawing.calibrated_north.x,
-                                                                   self.current_drawing.calibrated_north.y,
+                                                                   self.drawing_height - self.current_drawing.calibrated_north.y,
                                                                    longitude,
                                                                    latitude,
                                                                    self.current_drawing.angle_P,
@@ -214,6 +253,23 @@ class QLabelDrawing(QtGui.QLabel):
         x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
         y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
 
+        lon, lat = coordinates.heliographic_from_drawing(self.current_drawing.calibrated_center.x,
+                                                         self.drawing_height - self.current_drawing.calibrated_center.y,
+                                                         self.current_drawing.calibrated_north.x,
+                                                         self.drawing_height - self.current_drawing.calibrated_north.y,
+                                                         x_centered_lower_left_origin,
+                                                         self.drawing_height - y_centered_lower_left_origin,
+                                                         self.current_drawing.angle_P,
+                                                         self.current_drawing.angle_B,
+                                                         self.current_drawing.angle_P)
+
+
+        
+        print("***************")
+        print("long, lat", self.normalise_radian(longitude), latitude)
+        print("x, y", x_centered_lower_left_origin, y_centered_lower_left_origin)
+        print("long, lat", self.normalise_radian(lon), lat)
+        
         return x_centered_lower_left_origin, y_centered_lower_left_origin 
 
     def get_spherical_coord_latitude(self, longitude, radius):
@@ -350,10 +406,12 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_P,
                                                                     self.current_drawing.angle_B,
                                                                     self.current_drawing.angle_L)
-        #print("longitude: ", longitude)
-        #print("latitude: ", latitude)
+        self.HGC_longitude = longitude
+        self.HGC_latitude = latitude
+        print("longitude: ", longitude)
+        print("latitude: ", latitude)
         
-        if self.calibration_mode:
+        if self.calibration_mode.value or self.add_group_mode.value:
             print("*******emit signal!!")
             self.drawing_clicked.emit()
         

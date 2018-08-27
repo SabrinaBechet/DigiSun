@@ -128,43 +128,47 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst = []
         self.set_toolbar()
         
-        self.drawing_page.label_right.drawing_clicked.connect(self.calibrate_signal)
+        self.drawing_page.label_right.drawing_clicked.connect(self.slot_calibrate)
+        self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
         self.center_done = False
         self.north_done = False
         self.approximate_center = [0., 0.]
 
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
-    def set_large_grid_but_color(self):
-        if self.drawing_page.label_right.large_grid_overlay.value==True :
-            self.large_grid_but.setStyleSheet("background-color: lightblue")
-        elif self.drawing_page.label_right.large_grid_overlay.value==False:
-            self.large_grid_but.setStyleSheet("background-color: lightgray")
-
-    def set_small_grid_but_color(self):
-        if self.drawing_page.label_right.small_grid_overlay.value==True :
-            self.small_grid_but.setStyleSheet("background-color: lightblue")
-        elif self.drawing_page.label_right.small_grid_overlay.value==False:
-            self.small_grid_but.setStyleSheet("background-color: lightgray")
-            
-    def set_group_visu_but_color(self):
-        if self.drawing_page.label_right.group_visu.value==True :
-            self.group_visu_but.setStyleSheet("background-color: lightblue")
-        elif self.drawing_page.label_right.group_visu.value==False:
-            self.group_visu_but.setStyleSheet("background-color: lightgray")
-            
+    def set_but_color(self, mode_bool, but):
+        if mode_bool==True:
+            but.setStyleSheet("background-color: lightblue")
+        elif mode_bool==False:
+            but.setStyleSheet("background-color: lightgray")
+   
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
+        Icons come from here: https://www.flaticon.com
         """
 
         toolbar = self.addToolBar("view")
         toolbar.setIconSize(QtCore.QSize(30, 30));
 
+        self.zoom_in_but = QtGui.QToolButton(toolbar)
+        self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.zoom_in_but.setText("zoom in")
+        self.zoom_in_but.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
+
+        self.zoom_out_but = QtGui.QToolButton(toolbar)
+        self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.zoom_out_but.setText("zoom out")
+        self.zoom_out_but.setIcon(QtGui.QIcon('icons/search.svg'))
+   
         self.large_grid_but = QtGui.QToolButton(toolbar)
         self.large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.large_grid_but.setText("large grid")
         self.large_grid_but.setIcon(QtGui.QIcon('icons/internet.svg'))
-        self.drawing_page.label_right.large_grid_overlay.value_changed.connect(self.set_large_grid_but_color)
+        self.drawing_page.label_right\
+                         .large_grid_overlay\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.large_grid_overlay.value,
+                                                             self.large_grid_but ))
         if self.drawing_page.label_right.large_grid_overlay.value :
             self.large_grid_but.setStyleSheet("background-color: lightblue")
             
@@ -172,7 +176,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.small_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.small_grid_but.setText("small grid")
         self.small_grid_but.setIcon(QtGui.QIcon('icons/internet.svg'))
-        self.drawing_page.label_right.small_grid_overlay.value_changed.connect(self.set_small_grid_but_color)
+        self.drawing_page.label_right\
+                         .small_grid_overlay\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.small_grid_overlay.value,
+                                                             self.small_grid_but))
         if self.drawing_page.label_right.small_grid_overlay.value :
             self.small_grid_but.setStyleSheet("background-color: lightblue")
 
@@ -180,15 +188,81 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.group_visu_but.setText("group view")
         self.group_visu_but.setIcon(QtGui.QIcon('icons/share_1.svg'))
-        self.drawing_page.label_right.group_visu.value_changed.connect(self.set_group_visu_but_color)
+        self.drawing_page.label_right\
+                         .group_visu\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.group_visu.value,
+                                                             self.group_visu_but))
         if self.drawing_page.label_right.group_visu.value :
             self.group_visu_but.setStyleSheet("background-color: lightblue")
+
+
+        self.dipole_visu_but = QtGui.QToolButton(toolbar)
+        self.dipole_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.dipole_visu_but.setText("dipole view")
+        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/share_1.svg'))
+        self.drawing_page.label_right\
+                         .dipole_visu\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.dipole_visu.value,
+                                                             self.dipole_visu_but))
+        if self.drawing_page.label_right.dipole_visu.value :
+            self.dipole_visu_but.setStyleSheet("background-color: lightblue")
+
+        self.calibration_but = QtGui.QToolButton(toolbar)
+        self.calibration_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.calibration_but.setText("calibration")
+        self.calibration_but.setIcon(QtGui.QIcon('icons/target.svg'))
+        self.drawing_page.label_right\
+                         .calibration_mode\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.calibration_mode.value,
+                                                             self.calibration_but))
+        if self.drawing_page.label_right.calibration_mode.value :
+            self.calibration_but.setStyleSheet("background-color: lightblue")
+
+        self.add_group_but = QtGui.QToolButton(toolbar)
+        self.add_group_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.add_group_but.setText("add_group")
+        self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
+        self.drawing_page.label_right\
+                         .add_group_mode\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.add_group_mode.value,
+                                                             self.add_group_but))
+        if self.drawing_page.label_right.add_group_mode.value :
+            self.add_group_but.setStyleSheet("background-color: lightblue")
+
+        self.add_dipole_but = QtGui.QToolButton(toolbar)
+        self.add_dipole_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.add_dipole_but.setText("add_dipole")
+        self.add_dipole_but.setIcon(QtGui.QIcon('icons/share.svg'))
+        self.drawing_page.label_right\
+                         .add_dipole_mode\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.add_dipole_mode.value,
+                                                             self.add_dipole_but))
+        if self.drawing_page.label_right.add_dipole_mode.value :
+            self.add_dipole_but.setStyleSheet("background-color: lightblue")
+
+        self.surface_but = QtGui.QToolButton(toolbar)
+        self.surface_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.surface_but.setText("surface")
+        self.surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))
+        self.drawing_page.label_right\
+                         .surface_mode\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.surface_mode.value,
+                                                             self.surface_but))
+        if self.drawing_page.label_right.surface_mode.value :
+            self.surface_but.setStyleSheet("background-color: lightblue")
+            
         
-        # icons come from here: https://www.flaticon.com
-        zoom_in = QtGui.QAction('zoom_in', toolbar)
-        zoom_in.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
-        zoom_out = QtGui.QAction('zoom_out',  toolbar)
-        zoom_out.setIcon(QtGui.QIcon('icons/search.svg'))
+        #zoom_in = QtGui.QAction('zoom_in', toolbar)
+        #zoom_in.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
+        
+        #zoom_out = QtGui.QAction('zoom_out',  toolbar)
+        #zoom_out.setIcon(QtGui.QIcon('icons/search.svg'))
         #large_grid_action = QtGui.QAction('large_grid',  toolbar)
         #large_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
         #small_grid = QtGui.QAction('small_grid',  toolbar)
@@ -197,66 +271,100 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         helper_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
         #sunspot_view = QtGui.QAction('sunspot_view',  toolbar)
         #sunspot_view.setIcon(QtGui.QIcon('icons/share_1.svg'))
-        dipole_view = QtGui.QAction('dipole_view',  toolbar)
-        dipole_view.setIcon(QtGui.QIcon('icons/share.svg'))
+        #dipole_view = QtGui.QAction('dipole_view',  toolbar)
+        #dipole_view.setIcon(QtGui.QIcon('icons/share.svg'))
 
-        # mettre une barre pour separer les differents views/actions
 
-        calibrate_action = QtGui.QAction('calibrate', toolbar)
-        calibrate_action.setIcon(QtGui.QIcon('icons/target.svg'))
-        add_group_action = QtGui.QAction('add group', toolbar)
-        add_group_action.setIcon(QtGui.QIcon('icons/hospital.svg'))
-        add_dipole_action = QtGui.QAction('add dipole', toolbar)
-        add_dipole_action.setIcon(QtGui.QIcon('icons/weight.svg'))
-        surface_action = QtGui.QAction('surface', toolbar)
-        surface_action.setIcon(QtGui.QIcon('icons/layout.svg'))
+        #calibrate_action = QtGui.QAction(self.calibration_but)
+        #calibrate_action.setIcon(QtGui.QIcon('icons/target.svg'))
+        #add_group_action = QtGui.QAction('add group', toolbar)
+        #add_group_action.setIcon(QtGui.QIcon('icons/hospital.svg'))
+        #add_dipole_action = QtGui.QAction('add dipole', toolbar)
+        #add_dipole_action.setIcon(QtGui.QIcon('icons/weight.svg'))
+        #surface_action = QtGui.QAction('surface', toolbar)
+        #surface_action.setIcon(QtGui.QIcon('icons/layout.svg'))
         
-        toolbar.addAction(zoom_in)
-        toolbar.addAction(zoom_out)
+        #toolbar.addAction(zoom_in)
+        #toolbar.addAction(zoom_out)
         #toolbar.addAction(large_grid_action)
         #toolbar.addAction(small_grid)
         #toolbar.addAction(sunspot_view)
-        
+        #toolbar.addAction(dipole_view)
+
+        vertical_line_widget = QtGui.QWidget()
+        vertical_line_widget.setFixedWidth(2)
+        #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
+        vertical_line_widget.setStyleSheet("background-color: black")
+
+        toolbar.addWidget(self.zoom_in_but)
+        toolbar.addWidget(self.zoom_out_but)
         toolbar.addWidget(self.large_grid_but)
         toolbar.addWidget(self.small_grid_but)
-        toolbar.addAction(helper_grid)
         toolbar.addWidget(self.group_visu_but)
-               
-        toolbar.addAction(dipole_view)
-        toolbar.insertSeparator(calibrate_action)
-        toolbar.addAction(calibrate_action)
-        toolbar.addAction(add_group_action)
-        toolbar.addAction(add_dipole_action)
-        toolbar.addAction(surface_action)
+        toolbar.addWidget(self.dipole_visu_but)
+        toolbar.addAction(helper_grid)
+        toolbar.addWidget(vertical_line_widget)
+        toolbar.addWidget(self.calibration_but)
+        toolbar.addWidget(self.add_group_but)
+        toolbar.addWidget(self.add_dipole_but)
+        toolbar.addWidget(self.surface_but)
         
-        zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
-        zoom_out.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
-
+    
+        #zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
+        #zoom_out.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
+        self.zoom_in_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
+        self.zoom_out_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
         self.large_grid_but.clicked.connect(self.set_large_grid)
         self.small_grid_but.clicked.connect(self.set_small_grid)
         self.group_visu_but.clicked.connect(self.set_group_visualisation)
+        self.dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
+        self.calibration_but.clicked.connect(self.start_calibration)
+        self.add_group_but.clicked.connect(self.add_group)
+        self.add_dipole_but.clicked.connect(self.add_dipole)
+        self.surface_but.clicked.connect(self.calculate_surface)
         
-        #large_grid_action.triggered.connect(self.set_large_grid)
-        #small_grid.triggered.connect(self.set_small_grid)
-        #sunspot_view.triggered.connect(self.set_group_visualisation)
-        dipole_view.triggered.connect(self.set_dipole_visualisation)
+    def add_group(self):
+        print("This will add a group!!", self.drawing_page.label_right.add_group_mode.value )
+        self.drawing_page.label_right.add_group_mode.set_opposite_value()
+        print("This will add a group!!", self.drawing_page.label_right.add_group_mode.value )
 
-        calibrate_action.triggered.connect(self.start_calibration)
 
+    def slot_add_group(self):
+        """
+        This is triggered when clicking on the drawing and the add_group_mode is True
+        """
+        print("add group signal", self.drawing_page.label_right.add_group_mode.value)
+        if self.drawing_page.label_right.add_group_mode.value:       
+            self.get_click_coordinates()
+        #self.drawing_lst[self.current_count].calibrated_north_x = self.drawing_page.label_right.x_drawing
+        #self.drawing_lst[self.current_count].calibrated_north_y = self.drawing_page.label_right.y_drawing
+        
+        #self.drawing_lst[self.current_count].add_group()
+        #self.set_group_widget()
+        #self.set_group_toolbox()
+
+    def add_dipole(self):
+        print("This will add a dipole!!")
+
+    def calculate_surface(self):
+        print("TADAM.... this will calculate the surface")
+        
     def start_calibration(self):
         """
         Contains two parts:
         1. put the drawing on the center and click on the center -> signal
         2. put the drawing on the north and click on the norht -> signal
         """
-        print("start calibration", self.drawing_page.label_right.calibration_mode)
-        self.drawing_page.label_right.calibration_mode = True
+        print("start calibration", self.drawing_page.label_right.calibration_mode.value)
+        self.drawing_page.label_right.calibration_mode.value = True
         self.center_done = False
         self.north_done = False
-        print("start calibration", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
+        print("start calibration", self.drawing_page.label_right.calibration_mode.value, self.center_done, self.north_done)
         
         self.drawing_page.label_right.group_visu.value = False
+        self.drawing_page.label_right.dipole_visu.value = False
         self.drawing_page.label_right.large_grid_overlay.value = False
+        self.drawing_page.label_right.small_grid_overlay.value = False
 
         self.drawing_page.label_right.zoom_in(5.)
         
@@ -283,86 +391,67 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def unzoom(self):
         self.drawing_page.label_right.zoom_in(1/5.)
         
-    def calibrate_signal(self):
-        #print("** calibrate_signal", self.drawing_page.label_right.calibration_mode, self.center_done, self.north_done)
-        if self.drawing_page.label_right.calibration_mode == True and self.center_done == True and self.north_done == False:
+    def slot_calibrate(self):
+        """
+        This is triggered when clicking on the drawing and the calibration_mode is True
+        """
+        #print("** slot_calibrate", self.drawing_page.label_right.calibration_mode.value, self.center_done, self.north_done)
+        if self.drawing_page.label_right.calibration_mode.value == True and self.center_done == True and self.north_done == False:
             #print("true, true, false")
             self.north_done = True
             self.get_click_coordinates()
-            
+            self.drawing_lst[self.current_count].calibrated_north_x = self.drawing_page.label_right.x_drawing
+            self.drawing_lst[self.current_count].calibrated_north_y = self.drawing_page.label_right.y_drawing
             #self.drawing_lst[self.current_count].calibrated_center.y = self.drawing_page.label_right.y_drawing
             self.unzoom()
             self.drawing_page.label_right.large_grid_overlay.value = True
             self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.set_img()
-            self.drawing_page.label_right.calibration_mode = False
+            self.drawing_page.label_right.calibration_mode.value = False
             
-        elif self.drawing_page.label_right.calibration_mode == True and self.center_done == False and self.north_done == False:
+        elif self.drawing_page.label_right.calibration_mode.value == True and self.center_done == False and self.north_done == False:
             #print("true, false, false")
             self.get_click_coordinates()
             print("after the click", self.drawing_page.label_right.x_drawing, self.drawing_page.label_right.y_drawing)
             self.drawing_lst[self.current_count].calibrated_center_x = self.drawing_page.label_right.x_drawing
-            #self.drawing_lst[self.current_count].calibrated_north.y = self.drawing_page.label_right.y_drawing
+            self.drawing_lst[self.current_count].calibrated_center_y = self.drawing_page.label_right.y_drawing
             self.center_done = True
             self.set_zoom_north()
         
-        """ elif self.drawing_page.label_right.calibration_mode == False and self.center_done == True and self.north_done == True:
+        """ elif self.drawing_page.label_right.calibration_mode.value == False and self.center_done == True and self.north_done == True:
         print("false, true, true")    
         self.unzoom()
-        self.drawing_page.label_right.calibration_mode = True
+        self.drawing_page.label_right.calibration_mode.value = True
         return
         """ 
     def get_click_coordinates(self):
         print("get click coordinate")
         print(self.drawing_page.label_right.x_drawing)
         print(self.drawing_page.label_right.y_drawing)
+        print(self.drawing_page.label_right.HGC_longitude)
+        print(self.drawing_page.label_right.HGC_latitude)
+        
         
     def set_group_visualisation(self):
-        if self.drawing_page.label_right.group_visu.value==True:
-            self.drawing_page.label_right.group_visu.value = False
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.group_visu.value==False:
-            self.drawing_page.label_right.group_visu.value = True
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-
+        self.drawing_page.label_right.group_visu.set_opposite_value()
+        self.drawing_page.label_right.set_img()
+        
     def set_dipole_visualisation(self):
-        if self.drawing_page.label_right.dipole_visu==True:
-            self.drawing_page.label_right.dipole_visu = False
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.dipole_visu==False:
-            self.drawing_page.label_right.dipole_visu = True
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
+        self.drawing_page.label_right.dipole_visu.set_opposite_value()
+        self.drawing_page.label_right.set_img()
         
     def set_large_grid(self):
-        print("set large grid")
-        if self.drawing_page.label_right.large_grid_overlay.value==True:
-            self.drawing_page.label_right.large_grid_overlay.value = False
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.large_grid_overlay.value==False:
-            self.drawing_page.label_right.large_grid_overlay.value = True
+        self.drawing_page.label_right.large_grid_overlay.set_opposite_value()
+        if self.drawing_page.label_right.large_grid_overlay.value :
             self.drawing_page.label_right.small_grid_overlay.value = False
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-        print("the new value is", self.drawing_page.label_right.large_grid_overlay.value)
-        #self.set_large_grid_color()
-        
-
+        self.drawing_page.label_right.set_img()
+              
     def set_small_grid(self):
-        if self.drawing_page.label_right.small_grid_overlay.value==True:
-            self.drawing_page.label_right.small_grid_overlay.value = False
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-        elif self.drawing_page.label_right.small_grid_overlay.value==False:
-            self.drawing_page.label_right.small_grid_overlay.value = True
+        self.drawing_page.label_right.small_grid_overlay.set_opposite_value()
+        if self.drawing_page.label_right.small_grid_overlay.value:
             self.drawing_page.label_right.large_grid_overlay.value = False
-            #self.set_drawing()
-            self.drawing_page.label_right.set_img()
-            
+        self.drawing_page.label_right.set_img()
+        
     def set_group_widget(self):
         """
         Associate a widget to each group.

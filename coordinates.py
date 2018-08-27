@@ -88,18 +88,18 @@ class Cartesian(Coordinates):
                          (self.y - pointB.y)** 2 +
                          (self.z - pointB.z)** 2)
     
-    def angle_from_x_axis(self, pointB):
-        """
+    """def angle_from_x_axis(self, pointB):
+        
         Return the angle in degree between the x-axis and vector formed with the point B
-        """
+        
         return math.atan((self.y - pointB.y)/float(self.x - pointB.x)) * 180/math.pi
     
     def angle_from_y_axis(self, pointB):
-        """
+        
         Return the angle in degree between the x-axis and vector formed with the point B
-        """
+        
         return math.atan((self.x - pointB.x)/float(self.y - pointB.y)) * 180/math.pi
-
+        """
     def normalize(self, value):
         if value>0:
             #print(self.x, self.y, self.z, value)
@@ -117,7 +117,7 @@ class Cartesian(Coordinates):
         Return the spherical coordinate theta and phi in radian
         """
         radius = 1
-        theta = math.atan(self.x/self.z) 
+        theta = math.atan2(self.x, self.z) 
         phi = math.acos(self.y/radius) 
 
         return theta, phi
@@ -132,25 +132,29 @@ def cartesian_from_drawing(x_center, y_center, x_north,
     """
     center = Cartesian(x_center, y_center)
     north = Cartesian(x_north, y_north)
-    angle_calibration = center.angle_from_y_axis(north)
+    #angle_calibration = center.angle_from_y_axis(north)
     radius = center.distance(north)
 
     theta = (angle_L0 * math.pi/180) - HGC_long
     phi = math.pi/2 - HGC_lat
+
+    print("theta:", theta)
+    print("phi", phi)
     
-    sun_spherical = Spherical(1,
-                              theta,
-                              phi)
+    sun_spherical = Spherical(1, theta, phi)
     x, y, z = sun_spherical.convert_to_cartesian()
 
     sun_cartesian = Cartesian(x, y, z)
     sun_cartesian.rotate_around_x(angle_B0)
     sun_cartesian.rotate_around_z(-angle_P)
 
+    print("x:", x)
+    print("y:", y)
+    print("z:", z)
     drawing = Cartesian(sun_cartesian.x,
                            sun_cartesian.y,
                            sun_cartesian.z)
-    drawing.rotate_around_z(-angle_calibration)
+    #drawing.rotate_around_z(-angle_calibration)
     drawing.normalize(1./radius)
 
     return drawing.x, drawing.y, drawing.z
@@ -165,20 +169,33 @@ def heliographic_from_drawing(x_center, y_center, x_north,
     """
     center = Cartesian(x_center, y_center)
     north = Cartesian(x_north, y_north)
-    angle_calibration = center.angle_from_y_axis(north)
+    #angle_calibration = center.angle_from_y_axis(north)
     radius = center.distance(north)
+    print("radius:", radius)
     drawing = Cartesian(x_drawing, y_drawing)
     
     disk_trigo = Cartesian(drawing.x, drawing.y)
+    print("x:", disk_trigo.x)
+    print("y:", disk_trigo.y)
     disk_trigo.translate(-center.x, -center.y)
+    print("x:", disk_trigo.x)
+    print("y:", disk_trigo.y)
     disk_trigo.normalize(radius)
+    print("x:", disk_trigo.x)
+    print("y:", disk_trigo.y)
+    #print("z:", disk_trigo.z)
     disk_trigo.set_axis_z()
-    disk_trigo.rotate_around_z(angle_calibration)
+    print("z:", disk_trigo.z)
+    disk_trigo.y = - disk_trigo.y
+    #disk_trigo.rotate_around_z(angle_calibration)
         
     sun = Cartesian(disk_trigo.x, disk_trigo.y, disk_trigo.z)
     sun.rotate_around_z(angle_P)
     sun.rotate_around_x(-angle_B0)
     theta, phi = sun.convert_to_spherical()
+
+    print("theta", theta)
+    print("phi", phi)
     
     central_meridian_distance = theta
     HGC_longitude = (angle_L0 * math.pi/180) - central_meridian_distance

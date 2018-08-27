@@ -449,7 +449,6 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
         
-
     @property
     def calibrated_center_x(self):
         ##rint("here we are reading the value of calibrated center")
@@ -462,7 +461,17 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
         
+    @property
+    def calibrated_center_y(self):
+        ##rint("here we are reading the value of calibrated center")
+        return self._calibrated_center.y
 
+    @calibrated_center_y.setter
+    def calibrated_center_y(self, value):
+        print("here we are changing the value of calibrated center y to ", value)
+        self._calibrated_center.y = value
+        self.changed = True
+        self.value_changed.emit()
         
     @property
     def calibrated_north(self):
@@ -476,7 +485,30 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
         
+    @property
+    def calibrated_north_x(self):
+        ##rint("here we are reading the value of calibrated north")
+        return self._calibrated_north.x
 
+    @calibrated_north_x.setter
+    def calibrated_north_x(self, value):
+        print("here we are changing the value of calibrated north x to ", value)
+        self._calibrated_north.x = value
+        self.changed = True
+        self.value_changed.emit()
+        
+    @property
+    def calibrated_north_y(self):
+        ##rint("here we are reading the value of calibrated north")
+        return self._calibrated_north.y
+
+    @calibrated_north_y.setter
+    def calibrated_north_y(self, value):
+        print("here we are changing the value of calibrated north y to ", value)
+        self._calibrated_north.y = value
+        self.changed = True
+        self.value_changed.emit()
+        
     @property
     def calibrated_radius(self):
         #print("here we are reading the value of calibrated radius")
@@ -536,4 +568,10 @@ class Drawing(QtCore.QObject):
             group_tmp.value_changed.connect(self.get_group_signal)
             self._group_lst.append(group_tmp)
             #print(group_number, self.group_lst[group_number].longitude, self.group_lst[group_number].latitude)
-        
+
+    def add_group(self):
+
+        self._group_count +=1
+        group_tmp = Group()
+        group_tmp._number = self._group_count - 1
+        self._group_lst.append(group_tmp)
