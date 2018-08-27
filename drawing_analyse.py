@@ -55,7 +55,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_middle_layout.setSpacing(0)
         self.widget_left_middle_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_left_middle.setLayout(self.widget_left_middle_layout)
-        
+
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(350)
         self.widget_left_down.setMinimumHeight(580)
@@ -541,6 +541,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
         #print("set group_toolbox")
+        widget_separator = QtGui.QWidget()
+        #Couleur #F2F1F0 est la couleur du background lightgray
+        widget_separator.setStyleSheet("background-color: #F2F1F0")
+        widget_separator.setMinimumHeight(10)
+        widget_separator.setMaximumHeight(10)
+        
+        
+        self.drawing_page.widget_left_down_layout.addWidget(widget_separator)
+        
         self.group_toolbox = group_box.GroupBox()
         self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
         if self.listWidget_groupBox.count()>0:
@@ -633,6 +642,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_toolbox.update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
 
     def modify_drawing_zurich(self, n, is_toolbox):
+        
         old_zurich_type = self.drawing_lst[self.current_count]\
                               .group_lst[self.listWidget_groupBox.currentRow()]\
                               .zurich
@@ -648,6 +658,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
         self.groupBoxLineList[n].update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
         self.group_toolbox.update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
+        
+        if new_zurich_type == "X":
+            self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: orange")
+            self.group_toolbox.get_zurich().setStyleSheet("background-color: orange")
 
     def modify_drawing_mcIntosh(self, n, is_toolbox):
         old_mcIntosh_type = self.drawing_lst[self.current_count]\

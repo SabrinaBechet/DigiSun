@@ -2,7 +2,7 @@
 # -*-coding:utf-8-*-
 from PyQt4 import QtGui, QtCore
 
-def patter(self):
+def inputVoid(self):
 	pass
 
 class GroupBox(QtGui.QWidget):
@@ -60,7 +60,7 @@ class GroupBox(QtGui.QWidget):
     def set_title(self, title, grid_position,colorised):
         self.title_label = QtGui.QLabel(title)
         if colorised:
-            self.title_label.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.title_label.setStyleSheet("background-color: orange")
         #self.title_label.setMaximumWidth(50)
         self.grid_layout.addWidget(self.title_label,
                                    grid_position[0],
@@ -73,6 +73,8 @@ class GroupBox(QtGui.QWidget):
         confirm_button_pix = QtGui.QPixmap("icons/confirm_green")
         confirm_button_icon = QtGui.QIcon(confirm_button_pix)
         confirm_button.setIcon(confirm_button_icon)
+        
+        confirm_button.setMaximumSize(24,24)
 
         self.grid_layout.addWidget(confirm_button,grid_position[0],grid_position[1])
         grid_position[1] += 1
@@ -91,21 +93,29 @@ class GroupBox(QtGui.QWidget):
 		
     def set_arrows_buttons(self):
         button_up = QtGui.QPushButton()
+        button_up.setMinimumWidth(60)
+        button_up.setMaximumWidth(60)
         arrow_up_pix = QtGui.QPixmap("icons/arrow_up");
         arrow_up = QtGui.QIcon(arrow_up_pix)
         button_up.setIcon(arrow_up);
         
         button_down = QtGui.QPushButton()
+        button_down.setMinimumWidth(60)
+        button_down.setMaximumWidth(60)
         arrow_down_pix = QtGui.QPixmap("icons/arrow_down");
         arrow_down = QtGui.QIcon(arrow_down_pix)
         button_down.setIcon(arrow_down);
         
         button_left = QtGui.QPushButton()
+        button_left.setMinimumWidth(60)
+        button_left.setMaximumWidth(60)
         arrow_left_pix = QtGui.QPixmap("icons/arrow_left");
         arrow_left = QtGui.QIcon(arrow_left_pix)
         button_left.setIcon(arrow_left);
         
         button_right = QtGui.QPushButton()
+        button_right.setMinimumWidth(60)
+        button_right.setMaximumWidth(60)
         arrow_right_pix = QtGui.QPixmap("icons/arrow_right");
         arrow_right = QtGui.QIcon(arrow_right_pix)
         button_right.setIcon(arrow_right);
@@ -118,7 +128,10 @@ class GroupBox(QtGui.QWidget):
 
     def set_add_surface_button(self):
         self.add_surface_button = QtGui.QPushButton()
-        self.add_surface_button.setText("Add")
+        self.add_surface_button.setMinimumWidth(60)
+        self.add_surface_button.setMaximumWidth(60)
+        self.add_surface_button.setStyleSheet("font-size: 8pt")
+        self.add_surface_button.setText("Modify")
         self.grid_layout.addWidget(self.add_surface_button,3,2)
         
         #self.add_surface_button.clicked.connect(lambda:)
@@ -138,8 +151,9 @@ class GroupBox(QtGui.QWidget):
         self.zurich_combo = QtGui.QComboBox(self)
         self.zurich_combo.setStyleSheet("background-color: white; color:black")
         self.zurich_combo.setMaximumWidth(50)
-        # a quoi ca sert?
-        #self.zurich_combo.wheelEvent = patter
+
+        #Cancel the usual Mouse Wheel Event by giving to it a void function
+        self.zurich_combo.wheelEvent = inputVoid
 
         zurich_type_lst = ['X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J']
         for el in zurich_type_lst:
@@ -153,6 +167,8 @@ class GroupBox(QtGui.QWidget):
         #index = self.zurich_combo.findText(group_zurich_type)
         self.zurich_combo.setCurrentIndex(self.zurich_combo.findText(group_zurich_type))
         
+        self.zurich_combo.setItemData(0,QtCore.Qt.black, QtCore.Qt.BackgroundRole);
+        
         #zurich_current_text = self.zurich_combo.currentText()
         self.zurich_combo.currentIndexChanged\
                          .connect(lambda : self.update_McIntosh_combo_box(self.zurich_combo.currentText()))
@@ -162,8 +178,8 @@ class GroupBox(QtGui.QWidget):
         self.McIntosh_combo.clear() # this is giving the empty line in the drawing object!!! (signal of change)
         #print("update mcIntosh after clear", zurich_type)
         
-        # a quoi ça sert?
-        #self.McIntosh_combo.wheelEvent = patter
+        #Cancel the usual Mouse Wheel Event by giving to it a void function
+        self.McIntosh_combo.wheelEvent = inputVoid
 
         zurich_McIntosh = {}
         zurich_McIntosh['X'] = ['Xxx']
