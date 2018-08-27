@@ -261,7 +261,7 @@ class QLabelDrawing(QtGui.QLabel):
                                                          self.drawing_height - y_centered_lower_left_origin,
                                                          self.current_drawing.angle_P,
                                                          self.current_drawing.angle_B,
-                                                         self.current_drawing.angle_P)
+                                                         self.current_drawing.angle_L)
 
 
         

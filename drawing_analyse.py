@@ -348,6 +348,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def calculate_surface(self):
         print("TADAM.... this will calculate the surface")
+        #self.listWidget_groupBox.currentRow()
         
     def start_calibration(self):
         """
