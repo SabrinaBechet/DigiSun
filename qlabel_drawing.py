@@ -171,7 +171,7 @@ class QLabelDrawing(QtGui.QLabel):
             #print(self.group_visu_index)
             # note: a column with the cartesian coord of group should be recorded in the db!
             pen_selected = QtGui.QPen(QtCore.Qt.green)
-            pen_selected.setWidth(3)
+            pen_selected.setWidth(10)
             
             for i in range(self.current_drawing.group_count):
                 radius = 10
@@ -188,8 +188,8 @@ class QLabelDrawing(QtGui.QLabel):
 
 
                
-                
-                painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
+                print("draw group ", x, y)
+                painter.drawPoint(QtCore.QPointF(x, y))#, radius, radius)
                 
         if self.dipole_visu.value :
             # note: a column with the cartesian coord of group should be recorded in the db!      
@@ -250,6 +250,29 @@ class QLabelDrawing(QtGui.QLabel):
                                                                    self.current_drawing.angle_B,
                                                                    self.current_drawing.angle_L)
 
+
+       
+        
+        (x_upper_left_origin2,
+         y_upper_left_origin2,
+         z_upper_left_origin2) = coordinates.cartesian_from_drawing_method2(self.current_drawing.calibrated_center.x,
+                                                                   self.drawing_height - self.current_drawing.calibrated_center.y,
+                                                                   self.current_drawing.calibrated_north.x,
+                                                                   self.drawing_height - self.current_drawing.calibrated_north.y,
+                                                                   longitude,
+                                                                   latitude,
+                                                                   self.current_drawing.angle_P,
+                                                                   self.current_drawing.angle_B,
+                                                                   self.current_drawing.angle_L)
+        
+        print("THE check")
+        print(self.current_drawing.calibrated_center.x + x_upper_left_origin,
+              self.current_drawing.calibrated_center.y - y_upper_left_origin,
+              z_upper_left_origin)
+        print(self.current_drawing.calibrated_center.x + x_upper_left_origin2,
+              self.current_drawing.calibrated_center.y - y_upper_left_origin2,
+              z_upper_left_origin2) 
+        
         x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
         y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
 
@@ -264,7 +287,16 @@ class QLabelDrawing(QtGui.QLabel):
                                                          self.current_drawing.angle_L)
 
 
-        
+        print("**check")
+        print(self.current_drawing.calibrated_center.x,
+                                                         self.drawing_height - self.current_drawing.calibrated_center.y,
+                                                         self.current_drawing.calibrated_north.x,
+                                                         self.drawing_height - self.current_drawing.calibrated_north.y,
+                                                         x_centered_lower_left_origin,
+                                                         self.drawing_height - y_centered_lower_left_origin,
+                                                         self.current_drawing.angle_P,
+                                                         self.current_drawing.angle_B,
+                                                         self.current_drawing.angle_L)
         print("***************")
         print("long, lat", self.normalise_radian(longitude), latitude)
         print("x, y", x_centered_lower_left_origin, y_centered_lower_left_origin)

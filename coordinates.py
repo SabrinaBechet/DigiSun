@@ -123,9 +123,9 @@ class Cartesian(Coordinates):
         return theta, phi
 
 def cartesian_from_drawing(x_center, y_center, x_north,
-                           y_north, HGC_long, HGC_lat,
-                           angle_P, angle_B0, angle_L0):
-
+                                   y_north, HGC_long, HGC_lat,
+                                   angle_P, angle_B0, angle_L0):
+    
     """
     Given a heliographic longitude and latitude, 
     returns the corresponding x, y, z positions on the drawing.
@@ -138,19 +138,63 @@ def cartesian_from_drawing(x_center, y_center, x_north,
     theta = (angle_L0 * math.pi/180) - HGC_long
     phi = math.pi/2 - HGC_lat
 
-    print("theta:", theta)
+    """print("theta:", theta)
     print("phi", phi)
-    
+    """
     sun_spherical = Spherical(1, theta, phi)
     x, y, z = sun_spherical.convert_to_cartesian()
 
     sun_cartesian = Cartesian(x, y, z)
+    
     sun_cartesian.rotate_around_x(angle_B0)
     sun_cartesian.rotate_around_z(-angle_P)
-    #sun_cartesian.rotate_around_y(angle_L0)
-    print("x:", x)
+    #sun_cartesian.rotate_around_y(-angle_L0)
+    
+    """print("x:", x)
     print("y:", y)
     print("z:", z)
+    """
+    drawing = Cartesian(sun_cartesian.x,
+                        sun_cartesian.y,
+                           sun_cartesian.z)
+    drawing.rotate_around_z(-angle_calibration)
+    drawing.normalize(1./radius)
+
+    return drawing.x, drawing.y, drawing.z
+    
+def cartesian_from_drawing_method2(x_center, y_center, x_north,
+                                   y_north, HGC_long, HGC_lat,
+                                   angle_P, angle_B0, angle_L0):
+    
+    """
+    Given a heliographic longitude and latitude, 
+    returns the corresponding x, y, z positions on the drawing.
+    """
+    center = Cartesian(x_center, y_center)
+    north = Cartesian(x_north, y_north)
+    angle_calibration = center.angle_from_y_axis(north)
+    radius = center.distance(north)
+
+    theta = (angle_L0 * math.pi/180) - HGC_long
+    phi = math.pi/2 - HGC_lat
+
+    """print("theta:", theta)
+    print("phi", phi)"""
+    
+    sun_spherical = Spherical(1, -HGC_long, phi)
+    x, y, z = sun_spherical.convert_to_cartesian()
+
+    sun_cartesian = Cartesian(x, y, z)
+
+    sun_cartesian.rotate_around_y(angle_L0)
+    sun_cartesian.rotate_around_x(angle_B0)
+    sun_cartesian.rotate_around_z(-angle_P)
+    
+    
+    """print("x:", x)
+    print("y:", y)
+    print("z:", z)"""
+    
     drawing = Cartesian(sun_cartesian.x,
                            sun_cartesian.y,
                            sun_cartesian.z)
@@ -158,7 +202,7 @@ def cartesian_from_drawing(x_center, y_center, x_north,
     drawing.normalize(1./radius)
 
     return drawing.x, drawing.y, drawing.z
-    
+
 
 def heliographic_from_drawing(x_center, y_center, x_north,
                               y_north, x_drawing, y_drawing,
@@ -171,35 +215,39 @@ def heliographic_from_drawing(x_center, y_center, x_north,
     north = Cartesian(x_north, y_north)
     angle_calibration = center.angle_from_y_axis(north)
     radius = center.distance(north)
-    print("radius:", radius)
+    #print("radius:", radius)
     drawing = Cartesian(x_drawing, y_drawing)
     
     disk_trigo = Cartesian(drawing.x, drawing.y)
-    print("x:", disk_trigo.x)
-    print("y:", disk_trigo.y)
+    #print("x:", disk_trigo.x)
+    #print("y:", disk_trigo.y)
     disk_trigo.translate(-center.x, -center.y)
-    print("x:", disk_trigo.x)
-    print("y:", disk_trigo.y)
+    #print("x:", disk_trigo.x)
+    #print("y:", disk_trigo.y)
     disk_trigo.normalize(radius)
-    print("x:", disk_trigo.x)
-    print("y:", disk_trigo.y)
+    #print("x:", disk_trigo.x)
+    #print("y:", disk_trigo.y)
     #print("z:", disk_trigo.z)
     disk_trigo.set_axis_z()
-    print("z:", disk_trigo.z)
-    disk_trigo.z = -math.fabs( disk_trigo.z)
+    #print("z:", disk_trigo.z)
+    #disk_trigo.z = -math.fabs( disk_trigo.z)
     disk_trigo.rotate_around_z(angle_calibration)
         
     sun = Cartesian(disk_trigo.x, disk_trigo.y, disk_trigo.z)
     #sun.rotate_around_y(-angle_L0)
+    
     sun.rotate_around_z(angle_P)
     sun.rotate_around_x(-angle_B0)
+    sun.rotate_around_y(-angle_L0)
+    
     theta, phi = sun.convert_to_spherical()
 
-    print("theta", theta)
+    """ print("theta", theta)
     print("phi", phi)
-    
+    """
     #central_meridian_distance = theta
-    HGC_longitude = (angle_L0 * math.pi/180) - theta
+    #HGC_longitude = (angle_L0 * math.pi/180) - theta
+    HGC_longitude = - theta
     HGC_latitude = math.pi/2 - phi
     
     return HGC_longitude, HGC_latitude
