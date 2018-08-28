@@ -200,7 +200,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.dipole_visu_but = QtGui.QToolButton(toolbar)
         self.dipole_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.dipole_visu_but.setText("dipole view")
-        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/share_1.svg'))
+        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/share.svg'))
         self.drawing_page.label_right\
                          .dipole_visu\
                          .value_changed\

@@ -7,6 +7,18 @@ import numpy as np
 import math
 import coordinates
 
+def radian_between_zero_pi(radian):
+
+        #if radian > 0 and radian < math.pi:
+        norm_radian = radian
+        if radian > math.pi:
+            norm_radian = radian % math.pi
+        elif radian<0:
+            norm_radian = math.pi - math.fabs(norm_radian)
+            
+        
+        return norm_radian
+    
 class analyseModeBool(QtCore.QObject):
     """
     This represents the mode of the analysis.
@@ -218,17 +230,7 @@ class QLabelDrawing(QtGui.QLabel):
 
         self.show()
 
-    def normalise_radian(self, radian):
-
-        #if radian > 0 and radian < math.pi:
-        norm_radian = radian
-        if radian > math.pi:
-            norm_radian = radian % math.pi
-        elif radian<0:
-            norm_radian = math.pi - math.fabs(norm_radian)
-            
-        
-        return norm_radian
+    
     
     def get_cartesian_coordinate_from_HGC(self, longitude, latitude):
         """
@@ -289,18 +291,19 @@ class QLabelDrawing(QtGui.QLabel):
 
         print("**check")
         print(self.current_drawing.calibrated_center.x,
-                                                         self.drawing_height - self.current_drawing.calibrated_center.y,
-                                                         self.current_drawing.calibrated_north.x,
-                                                         self.drawing_height - self.current_drawing.calibrated_north.y,
-                                                         x_centered_lower_left_origin,
-                                                         self.drawing_height - y_centered_lower_left_origin,
-                                                         self.current_drawing.angle_P,
-                                                         self.current_drawing.angle_B,
-                                                         self.current_drawing.angle_L)
+              self.drawing_height - self.current_drawing.calibrated_center.y,
+              self.current_drawing.calibrated_north.x,
+              self.drawing_height - self.current_drawing.calibrated_north.y,
+              x_centered_lower_left_origin,
+              self.drawing_height - y_centered_lower_left_origin,
+              self.current_drawing.angle_P,
+              self.current_drawing.angle_B,
+              self.current_drawing.angle_L)
+        
         print("***************")
-        print("long, lat", self.normalise_radian(longitude), latitude)
+        print("long, lat", radian_between_zero_pi(longitude), latitude)
         print("x, y", x_centered_lower_left_origin, y_centered_lower_left_origin)
-        print("long, lat", self.normalise_radian(lon), lat)
+        print("long, lat", radian_between_zero_pi(lon), lat)
         
         return x_centered_lower_left_origin, y_centered_lower_left_origin 
 
@@ -413,6 +416,7 @@ class QLabelDrawing(QtGui.QLabel):
         print("click coordinate: ", x_click, y_click)
         print("pixmap coord: ", x_pixmap, y_pixmap)
         print("drawing coord:", x_drawing, y_drawing)
+        print("drawing coord lower left origin:", x_drawing, self.drawing_height - y_drawing)
         print("drawing coord of the center:",
               self.current_drawing.calibrated_center.x,
               self.current_drawing.calibrated_center.y)
@@ -425,7 +429,7 @@ class QLabelDrawing(QtGui.QLabel):
         
         center_x_lower_left_origin = self.current_drawing.calibrated_center.x
         center_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_center.y
-        north_x_lower_left_origin = self.current_drawing.calibrated_north.y
+        north_x_lower_left_origin = self.current_drawing.calibrated_north.x
         north_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_north.y
         drawing_x_lower_left_origin = x_drawing
         drawing_y_lower_left_origin = self.drawing_height - y_drawing
@@ -438,10 +442,39 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_P,
                                                                     self.current_drawing.angle_B,
                                                                     self.current_drawing.angle_L)
+
+        print("***second check")
+        print(center_x_lower_left_origin,
+              center_y_lower_left_origin,
+              north_x_lower_left_origin,
+              north_y_lower_left_origin,
+              drawing_x_lower_left_origin,
+              drawing_y_lower_left_origin,
+              self.current_drawing.angle_P,
+              self.current_drawing.angle_B,
+              self.current_drawing.angle_L)
+
+        
         self.HGC_longitude = longitude
         self.HGC_latitude = latitude
         print("longitude: ", longitude)
         print("latitude: ", latitude)
+
+        (x_upper_left_origin,
+        y_upper_left_origin,
+        z_upper_left_origin) = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
+                                                                  self.drawing_height - self.current_drawing.calibrated_center.y,
+                                                                  self.current_drawing.calibrated_north.x,
+                                                                  self.drawing_height - self.current_drawing.calibrated_north.y,
+                                                                  longitude,
+                                                                  latitude,
+                                                                  self.current_drawing.angle_P,
+                                                                  self.current_drawing.angle_B,
+                                                                  self.current_drawing.angle_L)
+        
+        print("****************check ",
+              self.current_drawing.calibrated_center.x + x_upper_left_origin,
+              self.current_drawing.calibrated_center.y - y_upper_left_origin)
         
         if self.calibration_mode.value or self.add_group_mode.value:
             print("*******emit signal!!")
