@@ -107,6 +107,7 @@ class mainWindow(QtGui.QMainWindow):
         self.setMenuBar(menuBar)
         
         menu_mode = menuBar.addMenu('Mode')
+        menu_about = menuBar.addMenu('About')
         
         action_goTo_login = QtGui.QAction('login', self)
         action_goTo_scanalyse = QtGui.QAction('daily scan', self)
@@ -126,7 +127,7 @@ class mainWindow(QtGui.QMainWindow):
         menu_mode.addAction(action_goTo_analyse)
         menu_mode.addAction(action_goTo_scan)
         menu_mode.addAction(action_exit)
-        
+
         menuBar.show()
 
     def change_login(self):

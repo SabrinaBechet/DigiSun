@@ -14,7 +14,6 @@ Keep the analyse itself somwhere else!
 - DrawingAnalysePage: the page itself with all the widgets
 """
 
-
 class DrawingViewPage(QtGui.QWidget):
     """
     Contains the template of the DrawingViewPage
@@ -65,7 +64,18 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_down_layout.setSpacing(0)
         self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
-        
+
+        """self.widget_middle_up = QtGui.QWidget()
+        self.widget_middle_up.setMaximumWidth(350)
+        self.widget_middle_up.setMinimumHeight(580)
+        self.widget_middle_up.setStyleSheet("background-color:gray;")
+        self.widget_middle_up_layout = QtGui.QVBoxLayout()
+        self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
+        self.widget_middle_up_layout.setSpacing(0)
+        self.widget_middle_up.setLayout(self.widget_middle_up_layout)
+        self.label_middle_up = qlabel_drawing.QLabelDrawing()
+        self.widget_middle_up.layout().addWidget(self.label_middle_up)
+        """
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
@@ -73,6 +83,10 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_right_layout.setSpacing(0)
         self.widget_right.setLayout(self.widget_right_layout)
         self.label_right = qlabel_drawing.QLabelDrawing()
+
+        self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
+        
+        self.widget_right.layout().addWidget(self.label_middle_up)
         self.widget_right.layout().addWidget(self.label_right)
   
         self.scroll = QtGui.QScrollArea()
@@ -99,6 +113,7 @@ class DrawingViewPage(QtGui.QWidget):
         splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
+        #splitter_main.addWidget(self.widget_middle_up)
         splitter_main.addWidget(self.widget_right)
     
    
@@ -258,41 +273,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.surface_but.setStyleSheet("background-color: lightblue")
             
         
-        self.about_but = QtGui.QPushButton("About")
+        #self.about_but = QtGui.QPushButton("About")
         
-        #zoom_in = QtGui.QAction('zoom_in', toolbar)
-        #zoom_in.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
-        
-        #zoom_out = QtGui.QAction('zoom_out',  toolbar)
-        #zoom_out.setIcon(QtGui.QIcon('icons/search.svg'))
-        #large_grid_action = QtGui.QAction('large_grid',  toolbar)
-        #large_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
-        #small_grid = QtGui.QAction('small_grid',  toolbar)
-        #small_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
         helper_grid = QtGui.QAction('helper_grid',  toolbar)
         helper_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
-        #sunspot_view = QtGui.QAction('sunspot_view',  toolbar)
-        #sunspot_view.setIcon(QtGui.QIcon('icons/share_1.svg'))
-        #dipole_view = QtGui.QAction('dipole_view',  toolbar)
-        #dipole_view.setIcon(QtGui.QIcon('icons/share.svg'))
-
-
-        #calibrate_action = QtGui.QAction(self.calibration_but)
-        #calibrate_action.setIcon(QtGui.QIcon('icons/target.svg'))
-        #add_group_action = QtGui.QAction('add group', toolbar)
-        #add_group_action.setIcon(QtGui.QIcon('icons/hospital.svg'))
-        #add_dipole_action = QtGui.QAction('add dipole', toolbar)
-        #add_dipole_action.setIcon(QtGui.QIcon('icons/weight.svg'))
-        #surface_action = QtGui.QAction('surface', toolbar)
-        #surface_action.setIcon(QtGui.QIcon('icons/layout.svg'))
-        
-        #toolbar.addAction(zoom_in)
-        #toolbar.addAction(zoom_out)
-        #toolbar.addAction(large_grid_action)
-        #toolbar.addAction(small_grid)
-        #toolbar.addAction(sunspot_view)
-        #toolbar.addAction(dipole_view)
-
+    
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
         #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -310,7 +295,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addWidget(self.add_group_but)
         toolbar.addWidget(self.add_dipole_but)
         toolbar.addWidget(self.surface_but)
-        toolbar.addWidget(self.about_but)
+        #toolbar.addWidget(self.about_but)
         
     
         #zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
@@ -326,33 +311,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.add_dipole_but.clicked.connect(self.add_dipole)
         self.surface_but.clicked.connect(self.calculate_surface)
         
-    def add_group(self):
-        print("This will add a group!!", self.drawing_page.label_right.add_group_mode.value )
+    def add_group(self):        
         self.drawing_page.label_right.add_group_mode.set_opposite_value()
-        print("This will add a group!!", self.drawing_page.label_right.add_group_mode.value )
-
 
     def slot_add_group(self):
         """
         This is triggered when clicking on the drawing and the add_group_mode is True
+        It calls the add_group method of the drawing object.
         """
-        print("add group signal", self.drawing_page.label_right.add_group_mode.value)
         if self.drawing_page.label_right.add_group_mode.value:       
             self.get_click_coordinates()
-        #self.drawing_lst[self.current_count].calibrated_north_x = self.drawing_page.label_right.x_drawing
-        #self.drawing_lst[self.current_count].calibrated_north_y = self.drawing_page.label_right.y_drawing
         
-        #self.drawing_lst[self.current_count].add_group()
-        #self.set_group_widget()
-        #self.set_group_toolbox()
+        self.drawing_lst[self.current_count].add_group(self.drawing_page.label_right.HGC_latitude,
+                                                       self.drawing_page.label_right.HGC_longitude)
+        self.set_group_widget()
+        
+        # set the focus to the last element 
+        self.listWidget_groupBox.item(self.drawing_lst[self.current_count].group_count - 1).setSelected(True)
+        self.listWidget_groupBox.setFocus()
+        
+        self.set_group_toolbox()
+        self.update_group_toolbox(self.drawing_lst[self.current_count].group_count - 1)
+        self.drawing_page.label_right.set_img()
 
     def add_dipole(self):
-        print("This will add a dipole!!")
-
-    def calculate_surface(self):
-        print("TADAM.... this will calculate the surface")
-        #self.listWidget_groupBox.currentRow()
         
+        self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
+
+    def slot_surface(self):
+        """
+        triggered when item selection changed and surface mode is true.
+        """
+        if self.drawing_page.label_right.surface_mode.value:
+            self.calculate_surface()
+        
+    def calculate_surface(self):
+        print("TADAM.... this will calculate the surface", self.drawing_page.label_right.surface_mode.value)
+        self.drawing_page.label_right.surface_mode.set_opposite_value()
+        print("TADAM.... this will calculate the surface", self.drawing_page.label_right.surface_mode.value)
         longitude = self.drawing_lst[self.current_count]\
                         .group_lst[self.listWidget_groupBox.currentRow()]\
                         .longitude
@@ -360,26 +356,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                         .group_lst[self.listWidget_groupBox.currentRow()]\
                         .latitude
 
-        print('LONGITUDE!!!', longitude, latitude)
         #coords = (x,y)
         coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
-        x, y, brol1, brol2 = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
         coords = list(coords)
-        print("COORDS:",coords)
-
-        print("------------------------------------CHECK!!!!!!!",
-              self.drawing_page.label_right.pixmap().height(),
-              self.drawing_page.label_right.drawing_pixMap.height())
+        
+        # don't forget to document this:
+        #print("------------------------------------CHECK!!!!!!!",
+        #      self.drawing_page.label_right.pixmap().height(),
+        #      self.drawing_page.label_right.drawing_pixMap.height())
         
         
-        VLayout = QtGui.QVBoxLayout()
-        HLayoutDown = QtGui.QHBoxLayout()
-        
-        dialog = QtGui.QDialog(self)
-        dialog.resize(300,300)
-        ok_button = QtGui.QPushButton("Ok")
-        cancel_button = QtGui.QPushButton("Cancel")
-        picture = QtGui.QLabel()
+        #self.drawing_page.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
         
         #Shift the coordinates to centre the group
         if coords[0] > 150:
@@ -391,25 +378,26 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             coords[1] = coords[1]-150
         else: coords[1] = 0
         
+        pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
+        self.drawing_page.label_middle_up.set_img(pixmap_group_surface)
+        #self.set_dialog_surface(qlabel_group_surface)
         
-        print("NEW COORDS:",coords)
-        
-        picture.setPixmap(self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300))
 
-
-        #picture.setPixmap(self.drawing_page.label_right.pixmap().copy(279,82,300,300))
-        picture.setFrameShape(QtGui.QFrame.Panel)
-        picture.setFrameShadow(QtGui.QFrame.Plain)
-        picture.setLineWidth(3)
+    def set_dialog_surface(self, qlabel_group_surface):
+        VLayout = QtGui.QVBoxLayout()
+        HLayoutDown = QtGui.QHBoxLayout()
         
-        VLayout.addWidget(picture)
+        dialog = QtGui.QDialog(self)
+        dialog.resize(300,300)
+        ok_button = QtGui.QPushButton("Ok")
+        cancel_button = QtGui.QPushButton("Cancel")
+
+        VLayout.addWidget(qlabel_group_surface)
         HLayoutDown.addWidget(ok_button)
         HLayoutDown.addWidget(cancel_button)
         VLayout.addLayout(HLayoutDown)
         
         dialog.setLayout(VLayout)
-        
-        
         centre = QtGui.QDesktopWidget().availableGeometry().center()
         centre.setX(centre.x()-(dialog.width()/2))
         centre.setY(centre.y()-(dialog.width()/2))
@@ -425,11 +413,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         1. put the drawing on the center and click on the center -> signal
         2. put the drawing on the north and click on the norht -> signal
         """
-        print("start calibration", self.drawing_page.label_right.calibration_mode.value)
+        print("start calibration",
+              self.drawing_page.label_right.calibration_mode.value)
         self.drawing_page.label_right.calibration_mode.value = True
         self.center_done = False
         self.north_done = False
-        print("start calibration", self.drawing_page.label_right.calibration_mode.value, self.center_done, self.north_done)
+        print("start calibration",
+              self.drawing_page.label_right.calibration_mode.value,
+              self.center_done, self.north_done)
         
         self.drawing_page.label_right.group_visu.value = False
         self.drawing_page.label_right.dipole_visu.value = False
@@ -465,22 +456,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         This is triggered when clicking on the drawing and the calibration_mode is True
         """
-        #print("** slot_calibrate", self.drawing_page.label_right.calibration_mode.value, self.center_done, self.north_done)
-        if self.drawing_page.label_right.calibration_mode.value == True and self.center_done == True and self.north_done == False:
-            #print("true, true, false")
+        if (self.drawing_page.label_right.calibration_mode.value == True and
+            self.center_done == True and
+            self.north_done == False):
+            
             self.north_done = True
             self.get_click_coordinates()
             self.drawing_lst[self.current_count].calibrated_north_x = self.drawing_page.label_right.x_drawing
             self.drawing_lst[self.current_count].calibrated_north_y = self.drawing_page.label_right.y_drawing
-            #self.drawing_lst[self.current_count].calibrated_center.y = self.drawing_page.label_right.y_drawing
+            
             self.unzoom()
             self.drawing_page.label_right.large_grid_overlay.value = True
             self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.set_img()
             self.drawing_page.label_right.calibration_mode.value = False
             
-        elif self.drawing_page.label_right.calibration_mode.value == True and self.center_done == False and self.north_done == False:
-            #print("true, false, false")
+        elif (self.drawing_page.label_right.calibration_mode.value == True and
+              self.center_done == False and
+              self.north_done == False):
+            
             self.get_click_coordinates()
             print("after the click", self.drawing_page.label_right.x_drawing, self.drawing_page.label_right.y_drawing)
             self.drawing_lst[self.current_count].calibrated_center_x = self.drawing_page.label_right.x_drawing
@@ -568,13 +562,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.set_delete_group_button(self.grid_position)
             
             if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
-                self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: orange")
+                groupBoxLine.get_zurich().setStyleSheet("background-color: orange")
 
             #groupBoxLine.get_confirm_spots().setShortcut(QtGui.QKeySequence("Ctrl+s"))
             #print(groupBoxLine.get_zurich().currentIndex())
-            groupBoxLine.get_zurich().currentIndexChanged.connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),False))
-            groupBoxLine.get_McIntosh().currentIndexChanged.connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),False))
-            groupBoxLine.get_confirm_spots().clicked.connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_zurich().currentIndexChanged.\
+                connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_McIntosh().currentIndexChanged.\
+                connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),False))
+            groupBoxLine.get_confirm_spots().clicked.\
+                connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),False))
             
             
             self.groupBoxLineList.append(groupBoxLine)
@@ -586,7 +583,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
 
         # not sure it is still needed??
-        #self.listWidget_group_toolbox.set_empty()
+        # self.listWidget_group_toolbox.set_empty()
         #self.listWidget_group_toolbox.set_welcome()
 
         # first element of the list widget initially highlighted and other disabled
@@ -600,34 +597,32 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.groupBoxLineList[i].get_zurich().setEnabled(False)
             self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
 
-
+        # Signals related to the change of item in the group box
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda:self.update_group_toolbox(self.listWidget_groupBox.currentRow()))
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
-        self.listWidget_groupBox.itemSelectionChanged.connect(lambda: self.disable_other_groupBoxLine())
+        self.listWidget_groupBox\
+            .itemSelectionChanged.connect(lambda: self.disable_other_groupBoxLine())
+        self.listWidget_groupBox.itemSelectionChanged.connect(lambda: self.slot_surface())
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
-        #print("set group_toolbox")
+        
         widget_separator = QtGui.QWidget()
         #Couleur #F2F1F0 est la couleur du background lightgray
         widget_separator.setStyleSheet("background-color: #F2F1F0")
         widget_separator.setMinimumHeight(10)
         widget_separator.setMaximumHeight(10)
-        
-        
         self.drawing_page.widget_left_down_layout.addWidget(widget_separator)
-        
         self.group_toolbox = group_box.GroupBox()
         self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
         if self.listWidget_groupBox.count()>0:
             self.update_group_toolbox(0)
         
-         
-    def update_group_toolbox(self,n):
+    def update_group_toolbox(self, n):
         self.grid_position = [0, 0]
         self.group_toolbox.set_empty()
         self.group_toolbox.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
@@ -675,12 +670,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print("update the position")
 
         if coordinate=='longitude':
-            #current_longitude = self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude
             self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude += value
             self.group_toolbox.update_longitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude)
 
         elif coordinate=='latitude':
-            #current_latitude = self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude
             self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude += value
             self.group_toolbox.update_latitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude)
 
@@ -858,26 +851,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         layout_but.addWidget(self.but_previous)
         layout_but.addWidget(self.but_next)
         
-        self.goto_drawing_linedit = QtGui.QLineEdit()
-        self.goto_drawing_label1 = QtGui.QLabel()
-        self.goto_drawing_label2 = QtGui.QLabel()
-        self.goto_drawing_button = QtGui.QPushButton()
-        
-        self.goto_drawing_label1.setText("Jump to drawing")
-        self.goto_drawing_linedit.setText("1")
-        self.goto_drawing_linedit.setStyleSheet("background-color: white; color: black")
-        self.goto_drawing_label2.setText("out of 0")
-        self.goto_drawing_button.setText("Go!")
-
-        self.goto_drawing_button.clicked.connect(lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
-        self.goto_drawing_button.clicked.connect(lambda: self.drawing_page.label_right.set_img())
-
-        layout_goto = QtGui.QHBoxLayout()
-        layout_goto.addWidget(self.goto_drawing_label1)
-        layout_goto.addWidget(self.goto_drawing_linedit)
-        layout_goto.addWidget(self.goto_drawing_label2)
-        layout_goto.addWidget(self.goto_drawing_button)
-        
+        layout_goto = self.jump_to_drawing_linedit()
         
         self.but_save = QtGui.QPushButton('save', self)
         self.but_save.setMaximumWidth(self.column_maximum_width + 75)
@@ -897,17 +871,40 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout2)
 
+
+    def jump_to_drawing_linedit(self):
+        """
+        TO DO: It should update the drawing and the group box which is not case now!!!
+        """
+        self.goto_drawing_linedit = QtGui.QLineEdit()
+        self.goto_drawing_label1 = QtGui.QLabel()
+        self.goto_drawing_label2 = QtGui.QLabel()
+        self.goto_drawing_button = QtGui.QPushButton()
+        
+        self.goto_drawing_label1.setText("Jump to drawing")
+        self.goto_drawing_linedit.setText("1")
+        self.goto_drawing_linedit.setStyleSheet("background-color: white; color: black")
+        self.goto_drawing_label2.setText("out of 0")
+        self.goto_drawing_button.setText("Go!")
+
+        self.goto_drawing_button.clicked.connect(lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
+        self.goto_drawing_button.clicked.connect(lambda: self.drawing_page.label_right.set_img())
+
+        layout_goto = QtGui.QHBoxLayout()
+        layout_goto.addWidget(self.goto_drawing_label1)
+        layout_goto.addWidget(self.goto_drawing_linedit)
+        layout_goto.addWidget(self.goto_drawing_label2)
+        layout_goto.addWidget(self.goto_drawing_button)     
+        return layout_goto
        
     def update_counter(self, value):
+        
         if value >= self.len_drawing_lst:
             value = self.len_drawing_lst-1
         elif value < 0:
             value = 0
 
         self.current_count = value
-        self.goto_drawing_linedit.setText(str(value+1))
-        
-        #print(self.current_count)
         
         if self.current_count > 0 and self.current_count < self.len_drawing_lst - 1:
             self.but_next.setEnabled(True)
@@ -922,7 +919,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.but_previous.setDisabled(True)
                
         self.set_drawing_lineEdit()
-       
+        self.update_session_lineEdit()
 
     def drawing_value_changed(self):
         print("*********** the value has changed!!")
@@ -950,7 +947,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             self.but_next.setDisabled(True)
             self.but_previous.setDisabled(True)
+            
         self.set_drawing_lineEdit()
+        self.update_session_lineEdit()
+        
+    def update_session_lineEdit(self):
+
+        self.goto_drawing_linedit.setText(str(self.current_count + 1))
+        self.goto_drawing_label2.setText("out of "+str(self.len_drawing_lst))
   
     def set_drawing_lineEdit(self):
         """
@@ -971,8 +975,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                  .findText(self.drawing_lst[self.current_count].drawing_type)
         self.drawing_type.setCurrentIndex(index_drawing_type)
 
-        # to put in another function related to the session and not the drawing
-        self.goto_drawing_label2.setText("out of "+str(self.len_drawing_lst))
+        
 
         print(self.drawing_lst[self.current_count].changed)
         

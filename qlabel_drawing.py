@@ -16,7 +16,6 @@ def radian_between_zero_pi(radian):
         elif radian<0:
             norm_radian = math.pi - math.fabs(norm_radian)
             
-        
         return norm_radian
     
 class analyseModeBool(QtCore.QObject):
@@ -62,6 +61,21 @@ class analyseModeBool(QtCore.QObject):
         else:
             self._value=True
             self.value_changed.emit()
+
+class QLabelSurfaceThreshold(QtGui.QLabel):
+
+    def __init__(self):
+        super(QLabelSurfaceThreshold, self).__init__()
+        self.setFrameShape(QtGui.QFrame.Panel)
+        self.setFrameShadow(QtGui.QFrame.Plain)
+        self.setLineWidth(3)
+        
+    """def set_pixmap(self):
+        self.setPixmap(pixmap)
+    """
+    def set_img(self, pixmap):
+        self.setPixmap(pixmap)
+        self.show()
 
         
 class QLabelDrawing(QtGui.QLabel):
@@ -111,8 +125,7 @@ class QLabelDrawing(QtGui.QLabel):
        self.group_visu_index = 0
 
     def set_img(self):
-
-        print("SET IMAGE")
+            
         img = Image.open(self.file_path)
 
         self.drawing_width = img.size[0]
@@ -184,7 +197,7 @@ class QLabelDrawing(QtGui.QLabel):
             #print(self.group_visu_index)
             # note: a column with the cartesian coord of group should be recorded in the db!
             pen_selected = QtGui.QPen(QtCore.Qt.green)
-            pen_selected.setWidth(10)
+            pen_selected.setWidth(5)
             
             for i in range(self.current_drawing.group_count):
                 radius = 10
@@ -202,7 +215,7 @@ class QLabelDrawing(QtGui.QLabel):
 
                
                 print("draw group ", x, y)
-                painter.drawPoint(QtCore.QPointF(x, y))#, radius, radius)
+                painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
                 
         if self.dipole_visu.value :
             # note: a column with the cartesian coord of group should be recorded in the db!      
@@ -268,14 +281,14 @@ class QLabelDrawing(QtGui.QLabel):
                                                                    self.current_drawing.angle_B,
                                                                    self.current_drawing.angle_L)
         
-        print("THE check")
+        """print("THE check")
         print(self.current_drawing.calibrated_center.x + x_upper_left_origin,
               self.current_drawing.calibrated_center.y - y_upper_left_origin,
               z_upper_left_origin)
         print(self.current_drawing.calibrated_center.x + x_upper_left_origin2,
               self.current_drawing.calibrated_center.y - y_upper_left_origin2,
               z_upper_left_origin2) 
-        
+        """
         x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
         y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
 
@@ -293,7 +306,7 @@ class QLabelDrawing(QtGui.QLabel):
                                                          self.current_drawing.angle_L)
 
 
-        print("**check")
+        """print("**check")
         print(self.current_drawing.calibrated_center.x,
               self.drawing_height - self.current_drawing.calibrated_center.y,
               self.current_drawing.calibrated_north.x,
@@ -308,7 +321,7 @@ class QLabelDrawing(QtGui.QLabel):
         print("long, lat", radian_between_zero_pi(longitude), latitude)
         print("x, y", x_centered_lower_left_origin, y_centered_lower_left_origin)
         print("long, lat", radian_between_zero_pi(lon), lat)
-        
+        """
         return x_centered_lower_left_origin, y_centered_lower_left_origin,   x_centered_upper_left_origin, y_centered_upper_left_origin
 
     def get_spherical_coord_latitude(self, longitude, radius):
@@ -447,38 +460,11 @@ class QLabelDrawing(QtGui.QLabel):
                                                                     self.current_drawing.angle_B,
                                                                     self.current_drawing.angle_L)
 
-        print("***second check")
-        print(center_x_lower_left_origin,
-              center_y_lower_left_origin,
-              north_x_lower_left_origin,
-              north_y_lower_left_origin,
-              drawing_x_lower_left_origin,
-              drawing_y_lower_left_origin,
-              self.current_drawing.angle_P,
-              self.current_drawing.angle_B,
-              self.current_drawing.angle_L)
-
         
         self.HGC_longitude = longitude
         self.HGC_latitude = latitude
         print("longitude: ", longitude)
         print("latitude: ", latitude)
-
-        (x_upper_left_origin,
-        y_upper_left_origin,
-        z_upper_left_origin) = coordinates.cartesian_from_drawing(self.current_drawing.calibrated_center.x,
-                                                                  self.drawing_height - self.current_drawing.calibrated_center.y,
-                                                                  self.current_drawing.calibrated_north.x,
-                                                                  self.drawing_height - self.current_drawing.calibrated_north.y,
-                                                                  longitude,
-                                                                  latitude,
-                                                                  self.current_drawing.angle_P,
-                                                                  self.current_drawing.angle_B,
-                                                                  self.current_drawing.angle_L)
-        
-        print("****************check ",
-              self.current_drawing.calibrated_center.x + x_upper_left_origin,
-              self.current_drawing.calibrated_center.y - y_upper_left_origin)
         
         if self.calibration_mode.value or self.add_group_mode.value:
             print("*******emit signal!!")

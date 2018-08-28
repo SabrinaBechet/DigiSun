@@ -569,9 +569,13 @@ class Drawing(QtCore.QObject):
             self._group_lst.append(group_tmp)
             #print(group_number, self.group_lst[group_number].longitude, self.group_lst[group_number].latitude)
 
-    def add_group(self):
+    def add_group(self, lat, lon):
 
         self._group_count +=1
         group_tmp = Group()
         group_tmp._number = self._group_count - 1
+        group_tmp._latitude = lat
+        group_tmp._longitude = lon
         self._group_lst.append(group_tmp)
+        self.changed = True
+        self.value_changed.emit()
