@@ -258,6 +258,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.surface_but.setStyleSheet("background-color: lightblue")
             
         
+        self.about_but = QtGui.QPushButton("About")
+        
         #zoom_in = QtGui.QAction('zoom_in', toolbar)
         #zoom_in.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
         
@@ -308,6 +310,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addWidget(self.add_group_but)
         toolbar.addWidget(self.add_dipole_but)
         toolbar.addWidget(self.surface_but)
+        toolbar.addWidget(self.about_but)
         
     
         #zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
@@ -349,6 +352,62 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def calculate_surface(self):
         print("TADAM.... this will calculate the surface")
         #self.listWidget_groupBox.currentRow()
+        
+        longitude = self.drawing_lst[self.current_count]\
+                        .group_lst[self.listWidget_groupBox.currentRow()]\
+                        .longitude
+        latitude = self.drawing_lst[self.current_count]\
+                        .group_lst[self.listWidget_groupBox.currentRow()]\
+                        .latitude
+        #coords = (x,y)
+        coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
+        coords = list(coords)
+        print("COORDS:",coords)
+        
+        VLayout = QtGui.QVBoxLayout()
+        HLayoutDown = QtGui.QHBoxLayout()
+        
+        dialog = QtGui.QDialog(self)
+        dialog.resize(300,300)
+        ok_button = QtGui.QPushButton("Ok")
+        cancel_button = QtGui.QPushButton("Cancel")
+        picture = QtGui.QLabel()
+        
+        #Shift the coordinates to centre the group
+        if coords[0] > 150:
+            coords[0] = coords[0]-150
+        else:
+            coords[0] = 0
+            
+        if coords[1] > 150:
+            coords[1] = coords[1]-150
+        else: coords[1] = 0
+        
+        
+        print("NEW COORDS:",coords)
+        
+        #picture.setPixmap(self.drawing_page.label_right.pixmap().copy(coords[0],coords[1],300,300))
+        picture.setPixmap(self.drawing_page.label_right.pixmap().copy(279,82,300,300))
+        picture.setFrameShape(QtGui.QFrame.Panel)
+        picture.setFrameShadow(QtGui.QFrame.Plain)
+        picture.setLineWidth(3)
+        
+        VLayout.addWidget(picture)
+        HLayoutDown.addWidget(ok_button)
+        HLayoutDown.addWidget(cancel_button)
+        VLayout.addLayout(HLayoutDown)
+        
+        dialog.setLayout(VLayout)
+        
+        
+        centre = QtGui.QDesktopWidget().availableGeometry().center()
+        centre.setX(centre.x()-(dialog.width()/2))
+        centre.setY(centre.y()-(dialog.width()/2))
+        dialog.move(centre)
+        dialog.show()
+        
+        ok_button.clicked.connect(lambda: dialog.accept())
+        cancel_button.clicked.connect(lambda: dialog.reject())
         
     def start_calibration(self):
         """

@@ -130,7 +130,7 @@ class GroupBox(QtGui.QWidget):
         self.add_surface_button = QtGui.QPushButton()
         self.add_surface_button.setMinimumWidth(60)
         self.add_surface_button.setMaximumWidth(60)
-        self.add_surface_button.setStyleSheet("font-size: 8pt")
+        self.add_surface_button.setStyleSheet("font-size: 11pt")
         self.add_surface_button.setText("Modify")
         self.grid_layout.addWidget(self.add_surface_button,3,2)
         
