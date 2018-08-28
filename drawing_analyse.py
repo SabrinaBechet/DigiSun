@@ -366,6 +366,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         x, y, brol1, brol2 = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
         coords = list(coords)
         print("COORDS:",coords)
+
+        print("------------------------------------CHECK!!!!!!!",
+              self.drawing_page.label_right.pixmap().height(),
+              self.drawing_page.label_right.drawing_pixMap.height())
+        
         
         VLayout = QtGui.QVBoxLayout()
         HLayoutDown = QtGui.QHBoxLayout()
