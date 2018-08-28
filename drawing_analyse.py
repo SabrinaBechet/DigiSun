@@ -359,8 +359,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         latitude = self.drawing_lst[self.current_count]\
                         .group_lst[self.listWidget_groupBox.currentRow()]\
                         .latitude
+
+        print('LONGITUDE!!!', longitude, latitude)
         #coords = (x,y)
         coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
+        x, y, brol1, brol2 = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
         coords = list(coords)
         print("COORDS:",coords)
         
@@ -386,8 +389,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         print("NEW COORDS:",coords)
         
-        #picture.setPixmap(self.drawing_page.label_right.pixmap().copy(coords[0],coords[1],300,300))
-        picture.setPixmap(self.drawing_page.label_right.pixmap().copy(279,82,300,300))
+        picture.setPixmap(self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300))
+
+
+        #picture.setPixmap(self.drawing_page.label_right.pixmap().copy(279,82,300,300))
         picture.setFrameShape(QtGui.QFrame.Panel)
         picture.setFrameShadow(QtGui.QFrame.Plain)
         picture.setLineWidth(3)

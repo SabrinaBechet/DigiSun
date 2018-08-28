@@ -11,8 +11,8 @@ def radian_between_zero_pi(radian):
 
         #if radian > 0 and radian < math.pi:
         norm_radian = radian
-        if radian > math.pi:
-            norm_radian = radian % math.pi
+        if radian > 2*math.pi:
+            norm_radian = radian % 2*math.pi
         elif radian<0:
             norm_radian = math.pi - math.fabs(norm_radian)
             
@@ -111,12 +111,13 @@ class QLabelDrawing(QtGui.QLabel):
        self.group_visu_index = 0
 
     def set_img(self):
-        
+
+        print("SET IMAGE")
         img = Image.open(self.file_path)
 
         self.drawing_width = img.size[0]
         self.drawing_height = img.size[1]
-        print("img size: ", img.size)
+        print("!img size: ", img.size)
         
         qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
         self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
@@ -195,7 +196,7 @@ class QLabelDrawing(QtGui.QLabel):
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
                     
-                x, y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
+                x, y, x_up, y_up = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
                                                               self.current_drawing.group_lst[i].latitude)
 
 
@@ -212,9 +213,9 @@ class QLabelDrawing(QtGui.QLabel):
                 pen_line = QtGui.QPen(QtCore.Qt.red)
                 pen_line.setWidth(5)
                
-                dip1_x, dip1_y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole1_long,
+                dip1_x, dip1_y, tst, tst2 = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole1_long,
                                                                         self.current_drawing.group_lst[i].dipole1_lat)
-                dip2_x, dip2_y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole2_long,
+                dip2_x, dip2_y, tst, tst2 = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole2_long,
                                                                         self.current_drawing.group_lst[i].dipole2_lat)
                 painter.setPen(pen_point)
                 painter.drawPoints(QtCore.QPointF(dip1_x,dip1_y), QtCore.QPointF(dip2_x,dip2_y) )
@@ -278,6 +279,9 @@ class QLabelDrawing(QtGui.QLabel):
         x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
         y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
 
+        x_centered_upper_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
+        y_centered_upper_left_origin = self.current_drawing.calibrated_center.y + y_upper_left_origin
+
         lon, lat = coordinates.heliographic_from_drawing(self.current_drawing.calibrated_center.x,
                                                          self.drawing_height - self.current_drawing.calibrated_center.y,
                                                          self.current_drawing.calibrated_north.x,
@@ -305,7 +309,7 @@ class QLabelDrawing(QtGui.QLabel):
         print("x, y", x_centered_lower_left_origin, y_centered_lower_left_origin)
         print("long, lat", radian_between_zero_pi(lon), lat)
         
-        return x_centered_lower_left_origin, y_centered_lower_left_origin 
+        return x_centered_lower_left_origin, y_centered_lower_left_origin,   x_centered_upper_left_origin, y_centered_upper_left_origin
 
     def get_spherical_coord_latitude(self, longitude, radius):
         spherical_coord_lst = []
