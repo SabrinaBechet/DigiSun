@@ -567,6 +567,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             groupBoxLine.set_delete_group_button(self.grid_position)
             
+            if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
+                self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: orange")
 
             #groupBoxLine.get_confirm_spots().setShortcut(QtGui.QKeySequence("Ctrl+s"))
             #print(groupBoxLine.get_zurich().currentIndex())
@@ -731,6 +733,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if new_zurich_type == "X":
             self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: orange")
             self.group_toolbox.get_zurich().setStyleSheet("background-color: orange")
+        else:
+            self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: white")
+            self.group_toolbox.get_zurich().setStyleSheet("background-color: white")
 
     def modify_drawing_mcIntosh(self, n, is_toolbox):
         old_mcIntosh_type = self.drawing_lst[self.current_count]\
