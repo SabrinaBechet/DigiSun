@@ -75,6 +75,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         
         self.is_drawing = False
         
+        self.to_fill = False
+        
 
         
     """def set_pixmap(self):
@@ -129,12 +131,35 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
             print("Clicked")
             self.paint_pixmap()
         else:
-            self.painter.begin(self.pixmap())
-            pen_drawing = QtGui.QPen(QtCore.Qt.red)
-            pen_drawing.setWidth(5)
-            self.painter.setPen(pen_drawing)
-            self.painter.drawPoint(QMouseEvent.pos())
-            self.setPixmap(self.pixmap())
+            if not self.to_fill:
+                self.painter.begin(self.pixmap())
+                pen_drawing = QtGui.QPen(QtCore.Qt.red)
+                pen_drawing.setWidth(5)
+                self.painter.setPen(pen_drawing)
+                self.painter.setBrush(QtCore.Qt.cyan)
+                self.painter.drawPoint(QMouseEvent.pos())
+                self.setPixmap(self.pixmap())
+            elif self.to_fill:
+                #Utiliser les fonctions de Sabrina:
+                #Faise d'abord image = self.pixmap().toImage()
+                #Dans QlabelDrawing, fonctions de transformations de QImage vers numpy
+                #et après on peut faire pareil dans l'autre sens.
+                """image = self.pixmap().toImage()
+                print(image)
+                pic_list = .rgb_view(image)
+                np.set_printoptions(threshold=np.nan)
+                x = QMouseEvent.pos().x()
+                y = QMouseEvent.pos().y()
+                pic_list[x][y][0] = 0
+                pic_list[x][y][1] = 0
+                pic_list[x][y][2] = 0
+                print(pic_list)
+                
+                image = .array2qimage(pic_list)
+                new_pixmap = QtGui.QPixmap()
+                new_pixmap.fromImage(image)
+                self.setPixmap(new_pixmap)"""
+                print("OK")
     
     def mouseMoveEvent(self,QMouseEvent):
         if self.is_drawing:
