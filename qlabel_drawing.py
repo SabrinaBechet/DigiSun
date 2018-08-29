@@ -71,6 +71,9 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.setFrameShape(QtGui.QFrame.Panel)
         self.setFrameShadow(QtGui.QFrame.Plain)
         self.setLineWidth(3)
+        self.original_pixmap = QtGui.QPixmap()
+        
+
         
     """def set_pixmap(self):
         self.setPixmap(pixmap)
@@ -93,19 +96,85 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         return QtGui.QPixmap.fromImage(img)
     
     def set_img(self, pixmap):
-        
 
         qimage = pixmap.toImage()
         pixel_matrix = self.convertQImageToMat(qimage)
         print(type(pixel_matrix), pixel_matrix.size)
         pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
         thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, 225, 256, cv2.THRESH_BINARY_INV)
-
         pixmap_thresh = self.np2qpixmap(pixel_matrix_thresh)
-
         self.setPixmap(pixmap_thresh)
         
+
+        #self.setPixmap(pixmap)
+        self.original_pixmap = pixmap
+        self.painter = QtGui.QPainter()
+        self.painter.begin(self.pixmap())
+        pen_polygon = QtGui.QPen(QtCore.Qt.red)
+        pen_polygon.setWidth(10000)
+        self.painter.setPen(pen_polygon)        
+        #self.painter.drawPoint(10,10)
+        self.painter.end()
+        
+        self.pointsList = []
+
+
         self.show()
+    
+    def mousePressEvent(self,QMouseEvent):
+        self.pointsList.append(QMouseEvent.pos())
+        print("Clicked")
+        self.paint_pixmap()
+
+        
+        
+    def paint_pixmap(self):
+        self.setPixmap(self.original_pixmap)
+        self.painter.begin(self.pixmap())
+        
+        pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
+        pen_polygon.setWidth(3)
+        
+        self.painter.setPen(pen_polygon)
+        
+        if len(self.pointsList) == 1:
+            self.painter.drawPoint(self.pointsList[-1])
+            print("Cas A")
+        else:
+            for i in range(len(self.pointsList)):
+                self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
+                print("Cas B")
+        self.painter.end()
+        self.setPixmap(self.pixmap())
+    
+    def reset_points(self):
+        self.pointsList = []
+        self.paint_pixmap()
+    
+    def confirm_points(self):
+        left = None
+        right = None
+        up = None
+        down = None
+        for i in range(len(self.pointsList)):
+            if left == None or self.pointsList[i].x() < left:
+                left = self.pointsList[i].x()
+            if right == None or self.pointsList[i].x() > right:
+                right = self.pointsList[i].x()
+            if up == None or self.pointsList[i].y() < up:
+                up = self.pointsList[i].y()
+            if down == None or self.pointsList[i].y() > down:
+                down = self.pointsList[i].y()
+        new_pixmap = self.pixmap().copy(left,up,right-left,down-up)
+        self.setPixmap(new_pixmap)
+    """def paintEvent(self,event):
+        self.painter.begin(self.pixmap())
+        self.painter.setPen(QtGui.QPen(QtCore.Qt.red))
+        if len(self.pointsList) == 1:
+            self.painter.drawPoint(self.pointsList[-1])
+        elif len(self.pointsList) > 1:
+            self.painter.drawLine(self.pointsList[-2],self.pointsList[-1])
+        self.painter.end()"""
 
         
 class QLabelDrawing(QtGui.QLabel):
