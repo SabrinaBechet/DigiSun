@@ -67,25 +67,15 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_middle_up = QtGui.QWidget()
         self.widget_middle_up.setMaximumWidth(10)
-        self.widget_middle_up.setMinimumHeight(580)
+        #self.widget_middle_up.setMaximumHeight(200)
         self.widget_middle_up.setStyleSheet("background-color:lightgray;")
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
-        self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_middle_up_layout.setSpacing(0)
-        reset_points_but = QtGui.QPushButton("Reset Points")
-        confirm_points_but = QtGui.QPushButton("Confirm Points")
+        #self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
+        #self.widget_middle_up_layout.setSpacing(0)
+        self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
         self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
-        self.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding))
-        self.widget_middle_up.layout().addWidget(reset_points_but)
-        self.widget_middle_up.layout().addWidget(confirm_points_but)
-        self.widget_middle_up.layout().addWidget(self.label_middle_up)
-        self.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding))
-        
-        reset_points_but.clicked.connect(lambda: self.label_middle_up.reset_points())
-        confirm_points_but.clicked.connect(lambda: self.label_middle_up.confirm_points())
-        confirm_points_but.clicked.connect(lambda: confirm_points_but.setEnabled(False))
-        
+           
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
@@ -150,6 +140,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.column_maximum_width = 600
         self.add_drawing_information()
         self.add_current_session()
+        self.add_surface()
         self.drawing_lst = []
         self.set_toolbar()
         
@@ -362,13 +353,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         if self.drawing_page.label_right.surface_mode.value:
             self.drawing_page.widget_middle_up.setMaximumWidth(350)
-            self.drawing_page.widget_middle_up.setMinimumHeight(580)
+            #self.drawing_page.widget_middle_up.setMinimumHeight(580)
         
             self.update_surface_qlabel(n)
 
         elif self.drawing_page.label_right.surface_mode.value == False:
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
-            self.drawing_page.widget_middle_up.setMinimumHeight(580)
+            #self.drawing_page.widget_middle_up.setMinimumHeight(580)
 
 
     def update_surface_qlabel(self, n):
@@ -847,6 +838,36 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         widget_form.setLayout(self.form_layout1)
         #self.widget_left_up_layout.addWidget(title)
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
+
+    def add_surface(self):
+        qlabel_polygon = QtGui.QLabel("Polygon selection:")
+        reset_points_but = QtGui.QPushButton("Reset")
+        confirm_points_but = QtGui.QPushButton("Save")
+        #qlabel_threshold = QtGui.QLabel("Threshold")
+        #threshold_but = QtGui.QPushButton("Threshold")
+
+        """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
+                                                                              40,
+                                                                              QtGui.QSizePolicy.Minimum,
+                                                                              QtGui.QSizePolicy.Expanding))
+        """
+        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
+        self.drawing_page.widget_middle_up_layout.addWidget(reset_points_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(confirm_points_but)
+        #self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
+        #self.drawing_page.widget_middle_up_layout.addWidget(threshold_but)
+        
+        self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
+        """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
+                                                                              40,
+                                                                              QtGui.QSizePolicy.Minimum,
+                                                                              QtGui.QSizePolicy.Expanding))
+        """
+        reset_points_but.clicked.connect(lambda: self.drawing_page.label_middle_up.reset_points())
+        confirm_points_but.clicked.connect(lambda: self.drawing_page.label_middle_up.confirm_points())
+        #confirm_points_but.clicked.connect(lambda: confirm_points_but.setEnabled(False))
+        #threshold_value = 225
+        #threshold_but.clicked.connect(lambda: self.drawing_page.label_middle_up.set_threshold_img(threshold_value))
         
     def add_current_session(self):
         

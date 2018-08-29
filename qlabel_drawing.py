@@ -98,13 +98,13 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         return QtGui.QPixmap.fromImage(img)
 
 
-    def set_threshold_img(self, pixmap, threshold_value):
+    def set_threshold_img(self, threshold_value):
 
-        qimage = pixmap.toImage()
+        qimage = self.pixmap().toImage()
         pixel_matrix = self.convertQImageToMat(qimage)
         print(type(pixel_matrix), pixel_matrix.size)
         pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
-        thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, 225, 256, cv2.THRESH_BINARY_INV)
+        thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
         pixmap_thresh = self.np2qpixmap(pixel_matrix_thresh)
         self.setPixmap(pixmap_thresh)
         
