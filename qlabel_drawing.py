@@ -94,8 +94,9 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
         img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
         return QtGui.QPixmap.fromImage(img)
-    
-    def set_img(self, pixmap):
+
+
+    def set_threshold_img(self, pixmap, threshold_value):
 
         qimage = pixmap.toImage()
         pixel_matrix = self.convertQImageToMat(qimage)
@@ -106,7 +107,9 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.setPixmap(pixmap_thresh)
         
 
-        #self.setPixmap(pixmap)
+    def set_img(self, pixmap):
+
+        self.setPixmap(pixmap)
         self.original_pixmap = pixmap
         self.painter = QtGui.QPainter()
         self.painter.begin(self.pixmap())
