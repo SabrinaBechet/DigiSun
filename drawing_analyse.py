@@ -72,9 +72,18 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
         self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_middle_up_layout.setSpacing(0)
+        reset_points_but = QtGui.QPushButton("Reset Points")
+        confirm_points_but = QtGui.QPushButton("Confirm Points")
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
         self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
+        self.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding))
+        self.widget_middle_up.layout().addWidget(reset_points_but)
+        self.widget_middle_up.layout().addWidget(confirm_points_but)
         self.widget_middle_up.layout().addWidget(self.label_middle_up)
+        self.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding))
+        
+        reset_points_but.clicked.connect(lambda: self.label_middle_up.reset_points())
+        confirm_points_but.clicked.connect(lambda: self.label_middle_up.confirm_points())
         
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
