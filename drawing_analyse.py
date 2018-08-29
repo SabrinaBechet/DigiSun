@@ -84,6 +84,7 @@ class DrawingViewPage(QtGui.QWidget):
         
         reset_points_but.clicked.connect(lambda: self.label_middle_up.reset_points())
         confirm_points_but.clicked.connect(lambda: self.label_middle_up.confirm_points())
+        confirm_points_but.clicked.connect(lambda: confirm_points_but.setEnabled(False))
         
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
