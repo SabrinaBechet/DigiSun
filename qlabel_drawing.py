@@ -73,6 +73,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.setLineWidth(3)
         self.original_pixmap = QtGui.QPixmap()
         
+        self.is_drawing = False
+        
 
         
     """def set_pixmap(self):
@@ -125,10 +127,26 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.show()
     
     def mousePressEvent(self,QMouseEvent):
-        self.pointsList.append(QMouseEvent.pos())
-        print("Clicked")
-        self.paint_pixmap()
-
+        if not self.is_drawing:
+            self.pointsList.append(QMouseEvent.pos())
+            print("Clicked")
+            self.paint_pixmap()
+        else:
+            self.painter.begin(self.pixmap())
+            pen_drawing = QtGui.QPen(QtCore.Qt.red)
+            pen_drawing.setWidth(5)
+            self.painter.setPen(pen_drawing)
+            self.painter.drawPoint(QMouseEvent.pos())
+            self.setPixmap(self.pixmap())
+    
+    def mouseMoveEvent(self,QMouseEvent):
+        if self.is_drawing:
+            self.painter.drawPoint(QMouseEvent.pos())
+            self.setPixmap(self.pixmap())
+    
+    def mouseReleaseEvent(self,QMouseEvent):
+        if self.is_drawing:
+            self.painter.end()
         
         
     def paint_pixmap(self):
@@ -153,6 +171,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
     def reset_points(self):
         self.pointsList = []
         self.paint_pixmap()
+        self.is_drawing = False
     
     def confirm_points(self):
         left = None
@@ -169,7 +188,10 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
             if down == None or self.pointsList[i].y() > down:
                 down = self.pointsList[i].y()
         new_pixmap = self.pixmap().copy(left,up,right-left,down-up)
+        new_pixmap = new_pixmap.scaled(300, 300, QtCore.Qt.KeepAspectRatio)
         self.setPixmap(new_pixmap)
+        
+        self.is_drawing = True
     """def paintEvent(self,event):
         self.painter.begin(self.pixmap())
         self.painter.setPen(QtGui.QPen(QtCore.Qt.red))
