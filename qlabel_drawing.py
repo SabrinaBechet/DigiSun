@@ -6,6 +6,8 @@ from PIL.ImageQt import ImageQt
 import numpy as np
 import math
 import coordinates
+import cv2
+import numpy as np
 
 def radian_between_zero_pi(radian):
 
@@ -73,8 +75,36 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
     """def set_pixmap(self):
         self.setPixmap(pixmap)
     """
+    def convertQImageToMat(self, incomingImage):
+        '''  Converts a QImage into an opencv MAT format  '''
+
+        incomingImage = incomingImage.convertToFormat(4)
+        width = incomingImage.width()
+        height = incomingImage.height()
+
+        ptr = incomingImage.bits()
+        ptr.setsize(incomingImage.byteCount())
+        arr = np.array(ptr).reshape(height, width, 4)  #  Copies the data
+        return arr
+
+    def np2qpixmap(self, np_img):
+        frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
+        img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
+        return QtGui.QPixmap.fromImage(img)
+    
     def set_img(self, pixmap):
-        self.setPixmap(pixmap)
+        
+
+        qimage = pixmap.toImage()
+        pixel_matrix = self.convertQImageToMat(qimage)
+        print(type(pixel_matrix), pixel_matrix.size)
+        pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
+        thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, 225, 256, cv2.THRESH_BINARY_INV)
+
+        pixmap_thresh = self.np2qpixmap(pixel_matrix_thresh)
+
+        self.setPixmap(pixmap_thresh)
+        
         self.show()
 
         
