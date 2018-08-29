@@ -65,17 +65,17 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
 
-        """self.widget_middle_up = QtGui.QWidget()
-        self.widget_middle_up.setMaximumWidth(350)
+        self.widget_middle_up = QtGui.QWidget()
+        self.widget_middle_up.setMaximumWidth(10)
         self.widget_middle_up.setMinimumHeight(580)
-        self.widget_middle_up.setStyleSheet("background-color:gray;")
+        self.widget_middle_up.setStyleSheet("background-color:lightgray;")
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
         self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_middle_up_layout.setSpacing(0)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
-        self.label_middle_up = qlabel_drawing.QLabelDrawing()
+        self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
         self.widget_middle_up.layout().addWidget(self.label_middle_up)
-        """
+        
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
@@ -84,9 +84,9 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_right.setLayout(self.widget_right_layout)
         self.label_right = qlabel_drawing.QLabelDrawing()
 
-        self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
+        #self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
         
-        self.widget_right.layout().addWidget(self.label_middle_up)
+        #self.widget_right.layout().addWidget(self.label_middle_up)
         self.widget_right.layout().addWidget(self.label_right)
   
         self.scroll = QtGui.QScrollArea()
@@ -113,7 +113,7 @@ class DrawingViewPage(QtGui.QWidget):
         splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
-        #splitter_main.addWidget(self.widget_middle_up)
+        splitter_main.addWidget(self.widget_middle_up)
         splitter_main.addWidget(self.widget_right)
     
    
@@ -343,19 +343,32 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         triggered when item selection changed and surface mode is true.
         """
         if self.drawing_page.label_right.surface_mode.value:
-            self.calculate_surface()
+            self.calculate_surface(self.listWidget_groupBox.currentRow())
         
-    def calculate_surface(self):
+    def calculate_surface(self, n):
         print("TADAM.... this will calculate the surface", self.drawing_page.label_right.surface_mode.value)
         self.drawing_page.label_right.surface_mode.set_opposite_value()
         print("TADAM.... this will calculate the surface", self.drawing_page.label_right.surface_mode.value)
+
+        if self.drawing_page.label_right.surface_mode.value:
+            self.drawing_page.widget_middle_up.setMaximumWidth(350)
+            self.drawing_page.widget_middle_up.setMinimumHeight(580)
+        
+            self.update_surface_qlabel(n)
+
+        elif self.drawing_page.label_right.surface_mode.value == False:
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
+            self.drawing_page.widget_middle_up.setMinimumHeight(580)
+
+
+    def update_surface_qlabel(self, n):
         longitude = self.drawing_lst[self.current_count]\
-                        .group_lst[self.listWidget_groupBox.currentRow()]\
+                        .group_lst[n]\
                         .longitude
         latitude = self.drawing_lst[self.current_count]\
-                        .group_lst[self.listWidget_groupBox.currentRow()]\
-                        .latitude
-
+                       .group_lst[n]\
+                       .latitude
+        
         #coords = (x,y)
         coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
         coords = list(coords)
@@ -365,9 +378,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #      self.drawing_page.label_right.pixmap().height(),
         #      self.drawing_page.label_right.drawing_pixMap.height())
         
-        
         #self.drawing_page.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
-        
         #Shift the coordinates to centre the group
         if coords[0] > 150:
             coords[0] = coords[0]-150
@@ -377,12 +388,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if coords[1] > 150:
             coords[1] = coords[1]-150
         else: coords[1] = 0
-        
+            
         pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
         self.drawing_page.label_middle_up.set_img(pixmap_group_surface)
         #self.set_dialog_surface(qlabel_group_surface)
         
-
     def set_dialog_surface(self, qlabel_group_surface):
         VLayout = QtGui.QVBoxLayout()
         HLayoutDown = QtGui.QHBoxLayout()
@@ -587,10 +597,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #self.listWidget_group_toolbox.set_welcome()
 
         # first element of the list widget initially highlighted and other disabled
+        # first element surface updated
         if self.listWidget_groupBox.count()>0:
             self.listWidget_groupBox.item(0).setSelected(True)
+            
+        self.update_surface_qlabel(0)    
         self.listWidget_groupBox.setFocus()
-
+        
+        
 
         for i in range(1,self.listWidget_groupBox.count()):
             self.groupBoxLineList[i].get_spots().setEnabled(False)
@@ -600,13 +614,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # Signals related to the change of item in the group box
         self.listWidget_groupBox\
             .itemSelectionChanged\
-            .connect(lambda:self.update_group_toolbox(self.listWidget_groupBox.currentRow()))
+            .connect(lambda: self.update_group_toolbox(self.listWidget_groupBox.currentRow()))
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
         self.listWidget_groupBox\
-            .itemSelectionChanged.connect(lambda: self.disable_other_groupBoxLine())
-        self.listWidget_groupBox.itemSelectionChanged.connect(lambda: self.slot_surface())
+            .itemSelectionChanged.connect(self.disable_other_groupBoxLine)
+        self.listWidget_groupBox\
+            .itemSelectionChanged\
+            .connect(lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow()))
         
     def set_group_toolbox(self):
         " Set the group toolbox at the bottom of the left column."
@@ -1016,8 +1032,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_path_to_qlabel()
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
         self.drawing_page.label_right.group_visu_index = 0
+        self.drawing_page.label_right.set_img()
         self.set_group_widget()
         self.set_group_toolbox()
-        self.drawing_page.label_right.set_img()
+        
         #self.drawing_page.label_right.show()
     
