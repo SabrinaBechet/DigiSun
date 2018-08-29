@@ -67,12 +67,12 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_middle_up = QtGui.QWidget()
         self.widget_middle_up.setMaximumWidth(10)
-        #self.widget_middle_up.setMaximumHeight(200)
+        self.widget_middle_up.setMinimumHeight(200)
         self.widget_middle_up.setStyleSheet("background-color:lightgray;")
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
-        #self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
-        #self.widget_middle_up_layout.setSpacing(0)
-        self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
+        self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
+        self.widget_middle_up_layout.setSpacing(0)
+        self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
         self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
            
@@ -104,15 +104,15 @@ class DrawingViewPage(QtGui.QWidget):
         splitter_middle_down.addWidget(self.widget_left_middle)
         splitter_middle_down.addWidget(self.widget_left_down)
         
-
-        splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
+        """splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_left)
-        splitter_left.addWidget(splitter_middle_down)
+        splitter_left.addWidget(splitter_middle_down)       
         splitter_left.addWidget(self.widget_left_down)
+        """
         
         splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
         self.layout().addWidget(splitter_main)
-        splitter_main.addWidget(splitter_left)
+        splitter_main.addWidget(splitter_middle_down)
         splitter_main.addWidget(self.widget_middle_up)
         splitter_main.addWidget(self.widget_right)
     
@@ -146,6 +146,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_calibrate)
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
+        
+        #self.drawing_page.label_middle_up.mouse_pressed.connect(self.drawing_page.label_middle_up.reset)
+        self.drawing_page.label_middle_up.mouse_pressed.connect(self.drawing_page.label_middle_up.drawing_polygon)
+        
         self.center_done = False
         self.north_done = False
         self.approximate_center = [0., 0.]
@@ -153,6 +157,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_but_color(self, mode_bool, but):
+        print("set the button in color")
         if mode_bool==True:
             but.setStyleSheet("background-color: lightblue")
         elif mode_bool==False:
@@ -369,8 +374,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         latitude = self.drawing_lst[self.current_count]\
                        .group_lst[n]\
                        .latitude
-        
-        #coords = (x,y)
         coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
         coords = list(coords)
         
@@ -389,34 +392,27 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if coords[1] > 150:
             coords[1] = coords[1]-150
         else: coords[1] = 0
-            
+
+        large_grid_tmp = self.drawing_page.label_right.large_grid_overlay.value
+        small_grid_tmp = self.drawing_page.label_right.small_grid_overlay.value
+        group_tmp = self.drawing_page.label_right.group_visu.value
+        dipole_tmp = self.drawing_page.label_right.dipole_visu.value
+
+        self.drawing_page.label_right.large_grid_overlay.value = False
+        self.drawing_page.label_right.small_grid_overlay.value = False
+        self.drawing_page.label_right.group_visu.value = False
+        self.drawing_page.label_right.dipole_visu.value = False
+        self.drawing_page.label_right.set_img()
+        
         pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
         self.drawing_page.label_middle_up.set_img(pixmap_group_surface)
-        #self.set_dialog_surface(qlabel_group_surface)
-        
-    def set_dialog_surface(self, qlabel_group_surface):
-        VLayout = QtGui.QVBoxLayout()
-        HLayoutDown = QtGui.QHBoxLayout()
-        
-        dialog = QtGui.QDialog(self)
-        dialog.resize(300,300)
-        ok_button = QtGui.QPushButton("Ok")
-        cancel_button = QtGui.QPushButton("Cancel")
 
-        VLayout.addWidget(qlabel_group_surface)
-        HLayoutDown.addWidget(ok_button)
-        HLayoutDown.addWidget(cancel_button)
-        VLayout.addLayout(HLayoutDown)
-        
-        dialog.setLayout(VLayout)
-        centre = QtGui.QDesktopWidget().availableGeometry().center()
-        centre.setX(centre.x()-(dialog.width()/2))
-        centre.setY(centre.y()-(dialog.width()/2))
-        dialog.move(centre)
-        dialog.show()
-        
-        ok_button.clicked.connect(lambda: dialog.accept())
-        cancel_button.clicked.connect(lambda: dialog.reject())
+        self.drawing_page.label_right.large_grid_overlay.value = large_grid_tmp
+        self.drawing_page.label_right.small_grid_overlay.value = small_grid_tmp
+        self.drawing_page.label_right.group_visu.value = group_tmp
+        self.drawing_page.label_right.dipole_visu.value = dipole_tmp
+
+        self.drawing_page.label_right.set_img()
         
     def start_calibration(self):
         """
@@ -840,22 +836,38 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
     def add_surface(self):
+        qlabel_title = QtGui.QLabel("Surface calculation")
+        qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
+        qlabel_title.setContentsMargins(0, 5, 0, 5)
+        
+        self.drawing_page.widget_middle_up_layout.setSpacing(10)
         qlabel_polygon = QtGui.QLabel("Polygon selection:")
-        reset_points_but = QtGui.QPushButton("Reset")
+        draw_polygon_but = QtGui.QPushButton("Draw polygon")
+        #draw_polygon_but.set_but_color()
         confirm_points_but = QtGui.QPushButton("Save")
-        #qlabel_threshold = QtGui.QLabel("Threshold")
-        #threshold_but = QtGui.QPushButton("Threshold")
+        qlabel_threshold = QtGui.QLabel("Threshold:")
+        threshold_but = QtGui.QPushButton("Threshold")
+        qlabel_paint_tool = QtGui.QLabel("Paint tool:")
+        pencil_but = QtGui.QPushButton("Pencil")
+        flood_fill_but = QtGui.QPushButton("Flood fill")
+        eraser_but = QtGui.QPushButton("Eraser")
 
         """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
                                                                               40,
                                                                               QtGui.QSizePolicy.Minimum,
                                                                               QtGui.QSizePolicy.Expanding))
         """
+        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
+        
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
-        self.drawing_page.widget_middle_up_layout.addWidget(reset_points_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(draw_polygon_but)
         self.drawing_page.widget_middle_up_layout.addWidget(confirm_points_but)
-        #self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
-        #self.drawing_page.widget_middle_up_layout.addWidget(threshold_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
+        self.drawing_page.widget_middle_up_layout.addWidget(threshold_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_paint_tool)
+        self.drawing_page.widget_middle_up_layout.addWidget(pencil_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(flood_fill_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(eraser_but)
         
         self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
         """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
@@ -863,11 +875,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                                               QtGui.QSizePolicy.Minimum,
                                                                               QtGui.QSizePolicy.Expanding))
         """
-        reset_points_but.clicked.connect(lambda: self.drawing_page.label_middle_up.reset_points())
+        draw_polygon_but.clicked.connect(self.draw_polygon)
+        draw_polygon_but.clicked.connect(lambda: self.set_but_color(draw_polygon_but,
+                                                                    self.drawing_page.label_middle_up.mode_draw_polygon.value))
         confirm_points_but.clicked.connect(lambda: self.drawing_page.label_middle_up.confirm_points())
         #confirm_points_but.clicked.connect(lambda: confirm_points_but.setEnabled(False))
-        #threshold_value = 225
-        #threshold_but.clicked.connect(lambda: self.drawing_page.label_middle_up.set_threshold_img(threshold_value))
+        threshold_value = 225
+        threshold_but.clicked.connect(lambda: self.drawing_page.label_middle_up.set_threshold_img(threshold_value))
+
+    def draw_polygon(self):
+        print("draw polygon function")
+        self.drawing_page.label_middle_up.pointsList = []
+        self.drawing_page.label_middle_up.mode_draw_polygon.set_opposite_value()
         
     def add_current_session(self):
         
