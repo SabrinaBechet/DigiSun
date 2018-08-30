@@ -883,7 +883,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         selection_layout.addWidget(self.reset_but)
         
         qlabel_threshold = QtGui.QLabel("Threshold:")
-        threshold_but = QtGui.QPushButton("Threshold")
+        self.threshold_but = QtGui.QToolButton()
+        self.threshold_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.threshold_but.setText("threshold")
+        self.drawing_page\
+            .label_middle_up\
+            .mode_threshold\
+            .value_changed.connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.mode_threshold.value,
+                                                              self.threshold_but))
         
         self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")
         paint_layout = QtGui.QHBoxLayout()
@@ -908,8 +915,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.rubber_but.setText("Erase")
         self.rubber_but.setIcon(QtGui.QIcon('icons/Freepik/erase-text.svg'))
 
-        
+        form_layout = QtGui.QFormLayout()
+        pixel_number_linedit = QtGui.QLineEdit()
+        surface_linedit = QtGui.QLineEdit()
 
+        form_layout.addRow("Pixel Number:", pixel_number_linedit)
+        form_layout.addRow("Surface:", surface_linedit)
+        
         """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
                                                                               40,
                                                                               QtGui.QSizePolicy.Minimum,
@@ -918,22 +930,35 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         paint_layout.addWidget(self.pencil_but)
         paint_layout.addWidget(self.bucket_fill_but)
         paint_layout.addWidget(self.rubber_but)
+
+        save_but = QtGui.QToolButton()
+        save_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        save_but.setText("Save")
         
+        calculate_but = QtGui.QToolButton()
+        calculate_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        calculate_but.setText("Calculate")
+        
+
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
         self.drawing_page.widget_middle_up_layout.addLayout(selection_layout)
-        #self.drawing_page.widget_middle_up_layout.addWidget(confirm_points_but)
+        
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
-        self.drawing_page.widget_middle_up_layout.addWidget(threshold_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.threshold_but)
         # add line with default value (coming from gradient)
         self.drawing_page.widget_middle_up_layout.addWidget(self.qlabel_paint_tool)
         self.drawing_page.widget_middle_up_layout.addLayout(paint_layout)
-        #self.drawing_page.widget_middle_up_layout.addWidget(self.flood_fill_but)
-        #self.drawing_page.widget_middle_up_layout.addWidget(self.eraser_but)
+        
         # surface :  value
         # save
         # next group
         self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
+        self.drawing_page.widget_middle_up_layout.addWidget(calculate_but)
+        self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
+        self.drawing_page.widget_middle_up_layout.addWidget(save_but)
+        
+        
         """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
                                                                               40,
                                                                               QtGui.QSizePolicy.Minimum,
@@ -945,11 +970,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.reset_but.clicked.connect(self.drawing_page.label_middle_up.reset_img)
                                    
         threshold_value = 225 # to be determined by a more clever way or a gradient
-        threshold_but\
-            .clicked.connect(lambda: self.drawing_page.label_middle_up.set_threshold_img(threshold_value))
+        self.threshold_but\
+            .clicked.connect(lambda: self.threshold(threshold_value))
 
         self.pencil_but.clicked.connect(self.draw_pencil)
-            
+
+    def threshold(self, value):
+        self.drawing_page.label_middle_up.mode_threshold.set_opposite_value()
+        self.drawing_page.label_middle_up.set_threshold_img(value)
+        
+        
     def draw_pencil(self):
         self.drawing_page.label_middle_up.mode_pencil.set_opposite_value()
         self.drawing_page.label_middle_up.mode_draw_polygon.value = False
