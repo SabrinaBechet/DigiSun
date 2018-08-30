@@ -8,6 +8,10 @@ import math
 import coordinates
 import cv2
 import numpy as np
+import time
+import sys
+
+sys.setrecursionlimit(100000)
 
 def radian_between_zero_pi(radian):
 
@@ -149,7 +153,9 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
             #self.painter.end()
             #self.update()
-       
+        if self.mode_bucket_fill.value:
+            self.flood_fill()
+            
     def set_img(self, pixmap):
         self.mypixmap = pixmap
         self.setPixmap(pixmap.scaled(int(self.width_scale),
@@ -184,14 +190,47 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
                     
         self.painter.end()
         """
+    
+    def flood_fill(self):
+        x = self.position.x()
+        y = self.position.y()
+        image = self.pixmap().toImage()
+        array_image = self.convertQImageToMat(image)
+        array_image = self.iter_fill(x,y,array_image)
+        newPixmap = self.np2qpixmap(array_image)
+        self.setPixmap(newPixmap)
+
+
+    def iter_fill(self,x_start,y_start,array):
+        stack = [(x_start,y_start)]
+        while stack:
+            x, y, stack = stack[0][0], stack[0][1], stack[1:]
+            if not self.check_color(x,y,array):
+                array[y][x][0] = 0
+                array[y][x][1] = 0
+                array[y][x][2] = 255
+                if x > 0:
+                    stack.append((x - 1, y))
+                if x < (len(array[y])-1):
+                    stack.append((x + 1, y))
+                if y > 0:
+                    stack.append((x, y - 1))
+                if y < (len(array)-1):
+                    stack.append((x, y + 1))
+        return array
+
+    def check_color(self,x,y,array):
+        return(array[y][x][0] == 0 and array[y][x][1] == 0 and array[y][x][2] == 255)
+
+
     def mousePressEvent(self,QMouseEvent):
-        
         self.position = QMouseEvent.pos()
         #print(self.position)
-        if self.mode_draw_polygon.value or self.mode_pencil.value:
+        if self.mode_draw_polygon.value or self.mode_pencil.value or self.mode_bucket_fill.value:
             print("emit a signal!!", self.mode_draw_polygon.value)
-            #self.mouse_pressed.emit()
+            
             self.drawing_on_img()
+            #self.flood_fill()
                 
         
         """if not self.is_drawing:
@@ -233,12 +272,12 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
          """
     def mouseMoveEvent(self,QMouseEvent):
         #if self.is_drawing:
-        if not self.mode_draw_polygon.value:
+        if self.mode_pencil.value:
             self.painter.drawPoint(QMouseEvent.pos())
             self.setPixmap(self.pixmap())
     
     def mouseReleaseEvent(self,QMouseEvent):
-        if not self.mode_draw_polygon.value:
+        if self.mode_pencil.value:
             self.painter.end()
         
         
