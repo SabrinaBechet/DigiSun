@@ -8,6 +8,10 @@ import math
 import coordinates
 import cv2
 import numpy as np
+import time
+import sys
+
+sys.setrecursionlimit(100000)
 
 def radian_between_zero_pi(radian):
 
@@ -121,7 +125,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
             print(type(pixel_matrix), pixel_matrix.size)
             pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
             thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
-            self.threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh)
+            self.threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
             self.setPixmap(self.threshold_pixmap)
             print("exit the threshold function")
         else:
@@ -179,7 +183,10 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
             #self.painter.end()
             #self.update()
-        
+
+        if self.mode_bucket_fill.value:
+            self.bucket_fill()
+            
     def set_img(self, pixmap):
         self.setPixmap(pixmap)
         self.original_pixmap = pixmap.copy()
@@ -193,115 +200,54 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.pointsList = []
         self.show()
 
-        """if self.draw_polygon:
-            pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
-            pen_polygon.setWidth(3)
-            
-            self.painter.setPen(pen_polygon)
-        
-            if len(self.pointsList) == 1:
-                self.painter.drawPoint(self.pointsList[-1])
-                print("Cas A")
-            else:
-                for i in range(len(self.pointsList)):
-                    self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
-                    print("Cas B")
+    def bucket_fill(self):
+        x = self.position.x()
+        y = self.position.y()
+        image = self.pixmap().toImage()
+        array_image = self.convertQImageToMat(image)
+        array_image = self.iter_fill(x,y,array_image)
+        newPixmap = self.np2qpixmap(array_image)
+        self.setPixmap(newPixmap)
 
-                    
-        self.painter.end()
-        """
+
+    def iter_fill(self,x_start,y_start,array):
+        stack = [(x_start,y_start)]
+        while stack:
+            x, y, stack = stack[0][0], stack[0][1], stack[1:]
+            if not self.check_color(x,y,array):
+                array[y][x][0] = 0
+                array[y][x][1] = 0
+                array[y][x][2] = 255
+                if x > 0:
+                    stack.append((x - 1, y))
+                if x < (len(array[y])-1):
+                    stack.append((x + 1, y))
+                if y > 0:
+                    stack.append((x, y - 1))
+                if y < (len(array)-1):
+                    stack.append((x, y + 1))
+        return array
+
+    def check_color(self,x,y,array):
+        return(array[y][x][0] == 0 and array[y][x][1] == 0 and array[y][x][2] == 255)
+
+
     def mousePressEvent(self,QMouseEvent):
-        print("mouse press event")
         self.position = QMouseEvent.pos()
-        #print(self.position)
-        if self.mode_draw_polygon.value or self.mode_pencil.value:
-            #print("emit a signal!!", self.mode_draw_polygon.value)
-            #self.mouse_pressed.emit()
+        if self.mode_draw_polygon.value or self.mode_pencil.value or self.mode_bucket_fill.value:
             self.drawing_on_img()
-                
-        
-        """if not self.is_drawing:
-            #self.pointsList.append(QMouseEvent.pos())
             
-            print("Clicked")
-            self.paint_pixmap()
-        else:
-            if not self.to_fill:
-                self.painter.begin(self.pixmap())
-                pen_drawing = QtGui.QPen(QtCore.Qt.red)
-                pen_drawing.setWidth(5)
-                self.painter.setPen(pen_drawing)
-                self.painter.setBrush(QtCore.Qt.cyan)
-                self.painter.drawPoint(QMouseEvent.pos())
-                #self.update()
-                #self.setPixmap(self.pixmap())
-            elif self.to_fill:
-                #Utiliser les fonctions de Sabrina:
-                #Faise d'abord image = self.pixmap().toImage()
-                #Dans QlabelDrawing, fonctions de transformations de QImage vers numpy
-                #et après on peut faire pareil dans l'autre sens.
-                image = self.pixmap().toImage()
-                print(image)
-                pic_list = .rgb_view(image)
-                np.set_printoptions(threshold=np.nan)
-                x = QMouseEvent.pos().x()
-                y = QMouseEvent.pos().y()
-                pic_list[x][y][0] = 0
-                pic_list[x][y][1] = 0
-                pic_list[x][y][2] = 0
-                print(pic_list)
-                
-                image = .array2qimage(pic_list)
-                new_pixmap = QtGui.QPixmap()
-                new_pixmap.fromImage(image)
-                self.setPixmap(new_pixmap)
-                print("OK")
-         """
     def mouseMoveEvent(self,QMouseEvent):
         print("mouse move event")
         #if self.is_drawing:
-        if not self.mode_draw_polygon.value:
+        if self.mode_pencil.value:
             self.painter.drawPoint(QMouseEvent.pos())
             self.setPixmap(self.pixmap())
     
     def mouseReleaseEvent(self,QMouseEvent):
-        print("mouse release event")
-        if not self.mode_draw_polygon.value:
+        if self.mode_pencil.value:
             self.painter.end()
         
-        
-    """def paint_pixmap(self):
-        self.setPixmap(self.original_pixmap)
-        self.painter.begin(self.pixmap())
-        
-        pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
-        pen_polygon.setWidth(3)
-        
-        self.painter.setPen(pen_polygon)
-        
-        if len(self.pointsList) == 1:
-            self.painter.drawPoint(self.pointsList[-1])
-            #print("Cas A")
-        else:
-            for i in range(len(self.pointsList)):
-                self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
-                #print("Cas B")
-        self.painter.end()
-        #self.setPixmap(self.my_pixmap())
-    """
-    """def reset_points(self):
-        print("reset point")
-        self.pointsList = []
-        print(self.pointsList)
-        self.setPixmap(self.original_pixmap.scaled(int(self.width_scale),
-                                              int(self.height_scale),
-                                              QtCore.Qt.KeepAspectRatio))
-        #self.draw_polygon=True
-        #self.set_img(self.pixmap)
-        #self.paint_pixmap()
-        #self.is_drawing = False
-
-    """    
     def crop(self):
         left = None
         right = None
@@ -322,18 +268,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
     
         self.setPixmap(new_pixmap)
     
-    #self.is_drawing = True
-        
-    """def paintEvent(self,event):
-        self.painter.begin(self.pixmap())
-        self.painter.setPen(QtGui.QPen(QtCore.Qt.red))
-        if len(self.pointsList) == 1:
-            self.painter.drawPoint(self.pointsList[-1])
-        elif len(self.pointsList) > 1:
-            self.painter.drawLine(self.pointsList[-2],self.pointsList[-1])
-        self.painter.end()"""
-
-        
+    
 class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 

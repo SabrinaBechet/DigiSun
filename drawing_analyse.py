@@ -146,8 +146,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_calibrate)
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
         
-        #self.drawing_page.label_middle_up.mouse_pressed.connect(self.drawing_page.label_middle_up.drawing_on_img)
-        
         self.center_done = False
         self.north_done = False
         self.approximate_center = [0., 0.]
@@ -875,7 +873,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.reset_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.reset_but.setText("Reset")
         #self.zoom_out_but.setIcon(QtGui.QIcon('icons/search.svg')) 
-        
+
         selection_layout.addWidget(self.draw_polygon_but)
         selection_layout.addWidget(self.crop_but)
         selection_layout.addWidget(self.zoom_in_but)
@@ -904,11 +902,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .mode_pencil\
             .value_changed.connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.mode_pencil.value,
                                                               self.pencil_but))
-                                   
+        
         self.bucket_fill_but = QtGui.QToolButton()
         self.bucket_fill_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.bucket_fill_but.setText("Fill")
         self.bucket_fill_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/bucket.svg'))
+        self.drawing_page\
+            .label_middle_up\
+            .mode_bucket_fill\
+            .value_changed.connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.mode_bucket_fill.value,
+                                                              self.bucket_fill_but))
+        
         
         self.rubber_but = QtGui.QToolButton()
         self.rubber_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -974,6 +978,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .clicked.connect(lambda: self.threshold(threshold_value))
 
         self.pencil_but.clicked.connect(self.draw_pencil)
+        self.bucket_fill_but.clicked.connect(self.draw_bucket)
+
 
     def threshold(self, value):
         self.drawing_page.label_middle_up.mode_threshold.set_opposite_value()
@@ -984,6 +990,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_middle_up.mode_pencil.set_opposite_value()
         self.drawing_page.label_middle_up.mode_draw_polygon.value = False
         self.drawing_page.label_middle_up.mode_bucket_fill.value = False
+        self.drawing_page.label_middle_up.mode_rubber.value = False
+    
+    def draw_bucket(self):
+        self.drawing_page.label_middle_up.mode_bucket_fill.set_opposite_value()
+        self.drawing_page.label_middle_up.mode_draw_polygon.value = False
+        self.drawing_page.label_middle_up.mode_pencil.value = False
         self.drawing_page.label_middle_up.mode_rubber.value = False
         
     def draw_polygon(self):
@@ -1044,7 +1056,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout2)
 
-
+        
     def jump_to_drawing_linedit(self):
         """
         TO DO: It should update the drawing and the group box which is not case now!!!
