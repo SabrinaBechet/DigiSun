@@ -136,7 +136,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
-        #print("A")
         self.column_maximum_width = 600
         self.add_drawing_information()
         self.add_current_session()
@@ -147,8 +146,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_calibrate)
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
         
-        #self.drawing_page.label_middle_up.mouse_pressed.connect(self.drawing_page.label_middle_up.reset)
-        self.drawing_page.label_middle_up.mouse_pressed.connect(self.drawing_page.label_middle_up.drawing_polygon)
+        #self.drawing_page.label_middle_up.mouse_pressed.connect(self.drawing_page.label_middle_up.drawing_on_img)
         
         self.center_done = False
         self.north_done = False
@@ -157,7 +155,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_but_color(self, mode_bool, but):
-        print("set the button in color")
         if mode_bool==True:
             but.setStyleSheet("background-color: lightblue")
         elif mode_bool==False:
@@ -165,7 +162,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
    
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
-        Icons come from here: https://www.flaticon.com
+        Icons were designed by "Good Ware" from https://www.flaticon.com
         """
 
         toolbar = self.addToolBar("view")
@@ -836,57 +833,137 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
     def add_surface(self):
+        
         qlabel_title = QtGui.QLabel("Surface calculation")
         qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
         qlabel_title.setContentsMargins(0, 5, 0, 5)
         
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
-        qlabel_polygon = QtGui.QLabel("Polygon selection:")
-        draw_polygon_but = QtGui.QPushButton("Draw polygon")
-        #draw_polygon_but.set_but_color()
-        confirm_points_but = QtGui.QPushButton("Save")
+        qlabel_polygon = QtGui.QLabel("Selection tools:")
+        selection_layout = QtGui.QHBoxLayout()
+        
+        self.draw_polygon_but = QtGui.QToolButton()
+        self.draw_polygon_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.draw_polygon_but.setText("Select")
+        self.draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
+        self.set_but_color(self.drawing_page.label_middle_up.mode_draw_polygon.value,
+                           self.draw_polygon_but)
+        self.drawing_page\
+            .label_middle_up\
+            .mode_draw_polygon\
+            .value_changed.connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.mode_draw_polygon.value,
+                                                              self.draw_polygon_but))
+        
+        self.crop_but = QtGui.QToolButton()
+        self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.crop_but.setText("Crop")
+        #self.draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
+        #self.crop_color(self.drawing_page.label_middle_up.mode_draw_polygon.value,
+        #                   self.draw_polygon_but)
+        
+        self.zoom_in_but = QtGui.QToolButton()
+        self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.zoom_in_but.setText("zoom in")
+        self.zoom_in_but.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
+
+        self.zoom_out_but = QtGui.QToolButton()
+        self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.zoom_out_but.setText("zoom out")
+        self.zoom_out_but.setIcon(QtGui.QIcon('icons/search.svg'))
+
+        self.reset_but = QtGui.QToolButton()
+        self.reset_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.reset_but.setText("Reset")
+        #self.zoom_out_but.setIcon(QtGui.QIcon('icons/search.svg')) 
+        
+        selection_layout.addWidget(self.draw_polygon_but)
+        selection_layout.addWidget(self.crop_but)
+        selection_layout.addWidget(self.zoom_in_but)
+        selection_layout.addWidget(self.zoom_out_but)
+        selection_layout.addWidget(self.reset_but)
+        
         qlabel_threshold = QtGui.QLabel("Threshold:")
         threshold_but = QtGui.QPushButton("Threshold")
-        qlabel_paint_tool = QtGui.QLabel("Paint tool:")
-        pencil_but = QtGui.QPushButton("Pencil")
-        flood_fill_but = QtGui.QPushButton("Flood fill")
-        eraser_but = QtGui.QPushButton("Eraser")
+        
+        self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")
+        paint_layout = QtGui.QHBoxLayout()
+
+        self.pencil_but = QtGui.QToolButton()
+        self.pencil_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.pencil_but.setText("Draw")
+        self.pencil_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/pencil.svg'))
+        self.drawing_page\
+            .label_middle_up\
+            .mode_pencil\
+            .value_changed.connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.mode_pencil.value,
+                                                              self.pencil_but))
+                                   
+        self.bucket_fill_but = QtGui.QToolButton()
+        self.bucket_fill_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.bucket_fill_but.setText("Fill")
+        self.bucket_fill_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/bucket.svg'))
+        
+        self.rubber_but = QtGui.QToolButton()
+        self.rubber_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.rubber_but.setText("Erase")
+        self.rubber_but.setIcon(QtGui.QIcon('icons/Freepik/erase-text.svg'))
+
+        
 
         """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
                                                                               40,
                                                                               QtGui.QSizePolicy.Minimum,
                                                                               QtGui.QSizePolicy.Expanding))
         """
-        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
+        paint_layout.addWidget(self.pencil_but)
+        paint_layout.addWidget(self.bucket_fill_but)
+        paint_layout.addWidget(self.rubber_but)
         
+        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
-        self.drawing_page.widget_middle_up_layout.addWidget(draw_polygon_but)
-        self.drawing_page.widget_middle_up_layout.addWidget(confirm_points_but)
+        self.drawing_page.widget_middle_up_layout.addLayout(selection_layout)
+        #self.drawing_page.widget_middle_up_layout.addWidget(confirm_points_but)
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
         self.drawing_page.widget_middle_up_layout.addWidget(threshold_but)
-        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_paint_tool)
-        self.drawing_page.widget_middle_up_layout.addWidget(pencil_but)
-        self.drawing_page.widget_middle_up_layout.addWidget(flood_fill_but)
-        self.drawing_page.widget_middle_up_layout.addWidget(eraser_but)
-        
+        # add line with default value (coming from gradient)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.qlabel_paint_tool)
+        self.drawing_page.widget_middle_up_layout.addLayout(paint_layout)
+        #self.drawing_page.widget_middle_up_layout.addWidget(self.flood_fill_but)
+        #self.drawing_page.widget_middle_up_layout.addWidget(self.eraser_but)
+        # surface :  value
+        # save
+        # next group
         self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
         """self.drawing_page.widget_middle_up.layout().addItem(QtGui.QSpacerItem(20,
                                                                               40,
                                                                               QtGui.QSizePolicy.Minimum,
                                                                               QtGui.QSizePolicy.Expanding))
         """
-        draw_polygon_but.clicked.connect(self.draw_polygon)
-        draw_polygon_but.clicked.connect(lambda: self.set_but_color(draw_polygon_but,
-                                                                    self.drawing_page.label_middle_up.mode_draw_polygon.value))
-        confirm_points_but.clicked.connect(lambda: self.drawing_page.label_middle_up.confirm_points())
-        #confirm_points_but.clicked.connect(lambda: confirm_points_but.setEnabled(False))
-        threshold_value = 225
-        threshold_but.clicked.connect(lambda: self.drawing_page.label_middle_up.set_threshold_img(threshold_value))
+        
+        self.draw_polygon_but.clicked.connect(self.draw_polygon)
+        self.crop_but.clicked.connect(self.drawing_page.label_middle_up.crop)
+        self.reset_but.clicked.connect(self.drawing_page.label_middle_up.reset_img)
+                                   
+        threshold_value = 225 # to be determined by a more clever way or a gradient
+        threshold_but\
+            .clicked.connect(lambda: self.drawing_page.label_middle_up.set_threshold_img(threshold_value))
 
+        self.pencil_but.clicked.connect(self.draw_pencil)
+            
+    def draw_pencil(self):
+        self.drawing_page.label_middle_up.mode_pencil.set_opposite_value()
+        self.drawing_page.label_middle_up.mode_draw_polygon.value = False
+        self.drawing_page.label_middle_up.mode_bucket_fill.value = False
+        self.drawing_page.label_middle_up.mode_rubber.value = False
+        
     def draw_polygon(self):
         print("draw polygon function")
-        self.drawing_page.label_middle_up.pointsList = []
+        if not self.drawing_page.label_middle_up.mode_draw_polygon.value:
+            self.drawing_page.label_middle_up.pointsList = []
         self.drawing_page.label_middle_up.mode_draw_polygon.set_opposite_value()
+        self.drawing_page.label_middle_up.mode_pencil.value = False
+        self.drawing_page.label_middle_up.mode_bucket_fill.value = False
+        self.drawing_page.label_middle_up.mode_rubber.value = False
         
     def add_current_session(self):
         

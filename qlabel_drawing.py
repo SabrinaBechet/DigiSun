@@ -67,6 +67,7 @@ class analyseModeBool(QtCore.QObject):
 class QLabelSurfaceThreshold(QtGui.QLabel):
 
     mouse_pressed = QtCore.pyqtSignal()
+    
     def __init__(self):
         super(QLabelSurfaceThreshold, self).__init__()
         self.setFrameShape(QtGui.QFrame.Panel)
@@ -80,7 +81,11 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.is_drawing = False
         self.to_fill = False
 
-        self.mode_draw_polygon = analyseModeBool(False)
+        self.mode_draw_polygon = analyseModeBool(True)
+        #self.mode_threshold = analyseModeBool(False)
+        self.mode_pencil = analyseModeBool(False)
+        self.mode_bucket_fill = analyseModeBool(False)
+        self.mode_rubber = analyseModeBool(False)
         
         
     def convertQImageToMat(self, incomingImage):
@@ -102,7 +107,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
 
     def set_threshold_img(self, threshold_value):
-            
+
+        #self.mode_threshold.set_opposite_value()
         qimage = self.pixmap().toImage()
         
         pixel_matrix = self.convertQImageToMat(qimage)
@@ -112,26 +118,37 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         pixmap_thresh = self.np2qpixmap(pixel_matrix_thresh)
         self.setPixmap(pixmap_thresh)
         
-
-    def drawing_polygon(self):
-            
-        self.setPixmap(self.original_pixmap)    
-        print("draw the polygon!!")
-        self.pointsList.append(self.position)
+    def reset_img(self):
+        self.pointsList = []
+        self.setPixmap(self.original_pixmap)
         
-        self.painter.begin(self.pixmap())
-        pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
-        pen_polygon.setWidth(3)
-        self.painter.setPen(pen_polygon)
-        if len(self.pointsList) == 1:
-            self.painter.drawPoint(self.pointsList[-1])
-            #print("Cas A")
-        else:
-            for i in range(len(self.pointsList)):
-                self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
-                #print("Cas B")
+    def drawing_on_img(self):
+            
+        if self.mode_draw_polygon.value:
                 
-        self.painter.end()
+            self.setPixmap(self.original_pixmap)
+            self.painter.begin(self.pixmap())
+            self.pointsList.append(self.position)
+            pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
+            pen_polygon.setWidth(3)
+            self.painter.setPen(pen_polygon)
+            if len(self.pointsList) == 1:
+                self.painter.drawPoint(self.pointsList[-1])
+            else:
+                for i in range(len(self.pointsList)):
+                    self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
+            self.painter.end()        
+
+        if self.mode_pencil.value:
+            self.painter.begin(self.pixmap())
+            pen_drawing = QtGui.QPen(QtCore.Qt.red)
+            pen_drawing.setWidth(5)
+            self.painter.setPen(pen_drawing)
+            self.painter.setBrush(QtCore.Qt.cyan)
+            self.painter.drawPoint(self.position)
+
+            #self.painter.end()
+            #self.update()
        
     def set_img(self, pixmap):
         self.mypixmap = pixmap
@@ -168,10 +185,14 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.painter.end()
         """
     def mousePressEvent(self,QMouseEvent):
-        print("emit a signal!!", self.mode_draw_polygon.value)
+        
         self.position = QMouseEvent.pos()
-        if self.mode_draw_polygon.value:
-                self.mouse_pressed.emit()
+        #print(self.position)
+        if self.mode_draw_polygon.value or self.mode_pencil.value:
+            print("emit a signal!!", self.mode_draw_polygon.value)
+            #self.mouse_pressed.emit()
+            self.drawing_on_img()
+                
         
         """if not self.is_drawing:
             #self.pointsList.append(QMouseEvent.pos())
@@ -211,12 +232,13 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
                 print("OK")
          """
     def mouseMoveEvent(self,QMouseEvent):
-        if self.is_drawing:
+        #if self.is_drawing:
+        if not self.mode_draw_polygon.value:
             self.painter.drawPoint(QMouseEvent.pos())
             self.setPixmap(self.pixmap())
     
     def mouseReleaseEvent(self,QMouseEvent):
-        if self.is_drawing:
+        if not self.mode_draw_polygon.value:
             self.painter.end()
         
         
@@ -252,7 +274,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         #self.is_drawing = False
 
     """    
-    def confirm_points(self):
+    def crop(self):
         left = None
         right = None
         up = None
@@ -267,12 +289,12 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
             if down == None or self.pointsList[i].y() > down:
                 down = self.pointsList[i].y()
                 
-        """new_pixmap = self.pixmap().copy(left,up,right-left,down-up)
+        new_pixmap = self.pixmap().copy(left,up,right-left,down-up)
         new_pixmap = new_pixmap.scaled(300, 300, QtCore.Qt.KeepAspectRatio)
-
+    
         self.setPixmap(new_pixmap)
-        """
-        self.is_drawing = True
+    
+    #self.is_drawing = True
         
     """def paintEvent(self,event):
         self.painter.begin(self.pixmap())
