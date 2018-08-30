@@ -347,9 +347,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.calculate_surface(self.listWidget_groupBox.currentRow())
         
     def calculate_surface(self, n):
-        print("TADAM.... this will calculate the surface", self.drawing_page.label_right.surface_mode.value)
         self.drawing_page.label_right.surface_mode.set_opposite_value()
-        print("TADAM.... this will calculate the surface", self.drawing_page.label_right.surface_mode.value)
 
         if self.drawing_page.label_right.surface_mode.value:
             self.drawing_page.widget_middle_up.setMaximumWidth(350)
@@ -363,6 +361,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
     def update_surface_qlabel(self, n):
+        print("update surface qlabel number:", n)
         longitude = self.drawing_lst[self.current_count]\
                         .group_lst[n]\
                         .longitude
@@ -400,6 +399,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.set_img()
         
         pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
+        self.drawing_page.label_middle_up.first_view.value  = True
+        self.drawing_page.label_middle_up.mode_draw_polygon.value  = False
+        self.drawing_page.label_middle_up.mode_pencil.value  = False
+        self.drawing_page.label_middle_up.mode_bucket_fill.value  = False
         self.drawing_page.label_middle_up.set_img(pixmap_group_surface)
 
         self.drawing_page.label_right.large_grid_overlay.value = large_grid_tmp
@@ -983,7 +986,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def threshold(self, value):
         self.drawing_page.label_middle_up.mode_threshold.set_opposite_value()
-        self.drawing_page.label_middle_up.set_threshold_img(value)
+        self.drawing_page.label_middle_up.set_img(self.drawing_page.label_middle_up.pixmap())
         
         
     def draw_pencil(self):

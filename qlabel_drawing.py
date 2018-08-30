@@ -56,7 +56,7 @@ class analyseModeBool(QtCore.QObject):
 
     @value.setter
     def value(self, input_value):
-        print("**the value of the mode has changed to ", input_value)
+        #print("**the value of the mode has changed to ", input_value)
         self._value = input_value
         self.value_changed.emit()
         
@@ -84,8 +84,9 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
         self.width_scale = 300
         self.height_scale = 300
-        self.pointsList  =[]
 
+        self.pointsList  =[]
+        
         self.is_drawing = False
         self.to_fill = False
 
@@ -94,7 +95,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.mode_pencil = analyseModeBool(False)
         self.mode_bucket_fill = analyseModeBool(False)
         self.mode_rubber = analyseModeBool(False)
-
+        self.first_view = analyseModeBool(True)
+        
         self.painter = QtGui.QPainter()
         
     def convertQImageToMat(self, incomingImage):
@@ -144,12 +146,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.mode_threshold.value = False
         self.setPixmap(self.original_pixmap)
         
-    def drawing_on_img(self):
-        """
-        If draw_polygon : select a region around the interesting group (for an ulterior crop)
-        If pencil : begin the painter for the drawing line (and rubber if color is white)
-        - allow to select a region for a later crop
-        """
+    """def drawing_on_img(self):
+       
         if self.mode_draw_polygon.value:
             if not self.mode_threshold.value:
                 self.setPixmap(self.original_pixmap)
@@ -186,20 +184,110 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
         if self.mode_bucket_fill.value:
             self.bucket_fill()
-            
-    def set_img(self, pixmap):
-        self.setPixmap(pixmap)
-        self.original_pixmap = pixmap.copy()
-        
+    """
+    def draw_polygon(self):
         self.painter.begin(self.pixmap())
+            
+        self.pointsList.append(self.position)
+        pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
+        pen_polygon.setWidth(3)
+        self.painter.setPen(pen_polygon)
+        if len(self.pointsList) == 1:
+            self.painter.drawPoint(self.pointsList[-1])
+        else:
+            for i in range(len(self.pointsList)):
+                self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
+        self.painter.end()
+        self.update()
 
+    def draw_pencil(self):
+        self.painter.begin(self.pixmap())
+        pen_drawing = QtGui.QPen(QtCore.Qt.red)
+        pen_drawing.setWidth(5)
+        self.painter.setPen(pen_drawing)
+        self.painter.setBrush(QtCore.Qt.cyan)
+        self.painter.drawPoint(self.position)
+            
+    def set_img(self, pixmap = None):
+        """
+        Set the image in the surface calculation widget.
+        It the input pixamp is None, then use the previous pixmap in memory (self.pixmap())
+
+        If draw_polygon : select a region around the interesting group (for an ulterior crop)
+        If pencil : begin the painter for the drawing line (and rubber if color is white)
+        - allow to select a region for a later crop
+        """
+        print("**** set img",
+              self.mode_draw_polygon.value,
+              self.mode_threshold.value,
+              self.mode_pencil.value,
+              self.mode_bucket_fill.value,
+              self.first_view.value)
+        
+        if pixmap is not None:
+            self.setPixmap(pixmap)
+        # check if pixmap is None and self.pixmap is emppty -> message!!
+
+        #mode de depart quand on lance image pour la premiere fois
+        #if not self.mode_draw_polygon.value and not self.mode_threshold.value:
+        #    self.original_pixmap = pixmap.copy()
+            
+        """self.painter.begin(self.pixmap())
         pen_polygon = QtGui.QPen(QtCore.Qt.red)
         pen_polygon.setWidth(10000)
-        self.painter.setPen(pen_polygon)        
+        self.painter.setPen(pen_polygon)
         self.painter.end()
-        self.pointsList = []
-        self.show()
+        """
+        #if self.first_view:
+            
+                
+        if self.mode_threshold.value:
+            
+            if self.mode_draw_polygon.value:
+                self.setPixmap(self.threshold_pixmap)
+                self.draw_polygon()
 
+            elif self.mode_pencil.value:
+                self.setPixmap(self.threshold_pixmap)
+                self.draw_pencil()
+
+            elif self.mode_bucket_fill.value:
+                self.setPixmap(self.threshold_pixmap)
+                self.bucket_fill()
+
+            elif (not self.mode_draw_polygon.value and
+                  not self.mode_pencil.value and
+                  not self.mode_bucket_fill.value):
+               self.set_threshold_img(225)
+               self.setPixmap(self.threshold_pixmap) 
+
+        elif not self.mode_threshold.value:
+
+            if self.first_view.value:
+                self.original_pixmap = pixmap.copy()     
+                
+            if self.mode_draw_polygon.value :
+                self.setPixmap(self.original_pixmap)
+                self.draw_polygon()
+  
+            elif self.mode_pencil.value:
+                self.setPixmap(self.pixmap())    
+                self.draw_pencil()
+
+            elif self.mode_bucket_fill.value:
+                self.setPixmap(self.pixmap())    
+                self.bucket_fill()
+
+            elif (not self.mode_draw_polygon.value and
+                  not self.mode_pencil.value and
+                  not self.mode_bucket_fill.value):
+               
+               self.set_threshold_img(225)
+               self.setPixmap(self.original_pixmap)
+                
+        self.show()
+        self.first_view.value = False
+        
     def bucket_fill(self):
         x = self.position.x()
         y = self.position.y()
@@ -235,17 +323,18 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
     def mousePressEvent(self,QMouseEvent):
         self.position = QMouseEvent.pos()
         if self.mode_draw_polygon.value or self.mode_pencil.value or self.mode_bucket_fill.value:
-            self.drawing_on_img()
+            self.set_img(self.pixmap())
             
     def mouseMoveEvent(self,QMouseEvent):
-        print("mouse move event")
-        #if self.is_drawing:
+            
         if self.mode_pencil.value:
             self.painter.drawPoint(QMouseEvent.pos())
             self.setPixmap(self.pixmap())
     
     def mouseReleaseEvent(self,QMouseEvent):
+        
         if self.mode_pencil.value:
+            print("enter in the mouse release and painter end")
             self.painter.end()
         
     def crop(self):
