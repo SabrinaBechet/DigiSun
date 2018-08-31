@@ -81,7 +81,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.original_pixmap = QtGui.QPixmap() # used for the reset
         self.threshold_pixmap = QtGui.QPixmap()
         self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
-
+    
+        self.setMaximumWidth(300)
         self.width_scale = 300
         self.height_scale = 300
 
@@ -288,6 +289,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.position = QMouseEvent.pos()
         if self.polygon.value or self.pencil.value or self.bucket.value :
             self.set_img()
+            self.setPixmap(self.pixmap())
             
     def mouseMoveEvent(self,QMouseEvent):
             
