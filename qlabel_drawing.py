@@ -106,6 +106,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         
         
         self.painter = QtGui.QPainter()
+        self.pen = QtGui.QPen(QtCore.Qt.red)
+        self.pen.setWidth(5)
         
     def convertQImageToMat(self, incomingImage):
         '''  Converts a QImage into an opencv MAT format  '''
@@ -131,7 +133,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         qimage = self.pixmap().toImage()
         pixel_matrix = self.convertQImageToMat(qimage)
         print(type(pixel_matrix), pixel_matrix.size)
-        pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
+        pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)
         thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
         self.threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
         self.setPixmap(self.threshold_pixmap)
@@ -177,9 +179,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
     def draw_pencil(self):
         self.painter.begin(self.pixmap())
-        pen_drawing = QtGui.QPen(QtCore.Qt.red)
-        pen_drawing.setWidth(5)
-        self.painter.setPen(pen_drawing)
+        self.painter.setPen(self.pen)
         self.painter.setBrush(QtCore.Qt.cyan)
         self.painter.drawPoint(self.position)
             
@@ -239,12 +239,22 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
     def iter_fill(self,x_start,y_start,array):
         stack = [(x_start,y_start)]
+        #C1, C2 and C3 are the colors in RGB that the pixel need to be in
+        #If the pen is white, then the pixels are turned black (0,0,0), otherwise they are turned red (0,0,255)
+        if self.pen.color() == QtCore.Qt.black:
+            c1 = 0
+            c2 = 0
+            c3 = 0
+        else:
+            c1 = 0
+            c2 = 0
+            c3 = 255
         while stack:
             x, y, stack = stack[0][0], stack[0][1], stack[1:]
-            if not self.check_color(x,y,array):
-                array[y][x][0] = 0
-                array[y][x][1] = 0
-                array[y][x][2] = 255
+            if not self.check_color(x,y,array,c1,c2,c3):
+                array[y][x][0] = c1
+                array[y][x][1] = c2
+                array[y][x][2] = c3
                 if x > 0:
                     stack.append((x - 1, y))
                 if x < (len(array[y])-1):
@@ -255,8 +265,15 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
                     stack.append((x, y + 1))
         return array
 
-    def check_color(self,x,y,array):
-        return(array[y][x][0] == 0 and array[y][x][1] == 0 and array[y][x][2] == 255)
+    def modify_rubber_color(self):
+        if(self.pen.color() == QtCore.Qt.red):
+            self.pen.setColor(QtCore.Qt.black)
+        else:
+            self.pen.setColor(QtCore.Qt.red)
+
+
+    def check_color(self,x,y,array,c1,c2,c3):
+        return(array[y][x][0] == c1 and array[y][x][1] == c2 and array[y][x][2] == c3)
 
 
     def mousePressEvent(self,QMouseEvent):
