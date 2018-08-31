@@ -78,9 +78,9 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.setFrameShadow(QtGui.QFrame.Plain)
         self.setLineWidth(3)
         
-        self.original_pixmap = QtGui.QPixmap()
+        self.original_pixmap = QtGui.QPixmap() # used for the reset
         self.threshold_pixmap = QtGui.QPixmap()
-        self.pixmap_not_thresh = QtGui.QPixmap()
+        self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
 
         self.width_scale = 300
         self.height_scale = 300
@@ -90,12 +90,20 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.is_drawing = False
         self.to_fill = False
 
-        self.mode_draw_polygon = analyseModeBool(False)
+        """self.mode_draw_polygon = analyseModeBool(False)
         self.mode_threshold = analyseModeBool(False)
         self.mode_pencil = analyseModeBool(False)
         self.mode_bucket_fill = analyseModeBool(False)
         self.mode_rubber = analyseModeBool(False)
         self.first_view = analyseModeBool(True)
+        """
+
+        self.threshold = False
+        self.polygon = False
+        self.crop_done = False
+        self.pencil = False
+        self.bucket = False
+        
         
         self.painter = QtGui.QPainter()
         
@@ -119,86 +127,53 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
     def set_threshold_img(self, threshold_value):
 
-        if self.mode_threshold.value:
-            print("enter the threshold function")
-            self.pixmap_not_thresh = self.pixmap().copy()
-            qimage = self.pixmap().toImage()
-            pixel_matrix = self.convertQImageToMat(qimage)
-            print(type(pixel_matrix), pixel_matrix.size)
-            pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
-            thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
-            self.threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
-            self.setPixmap(self.threshold_pixmap)
-            print("exit the threshold function")
-        else:
-            print("unset the threshold...")
-            self.setPixmap(self.pixmap_not_thresh)    
+        print("enter the threshold function")
+        qimage = self.pixmap().toImage()
+        pixel_matrix = self.convertQImageToMat(qimage)
+        print(type(pixel_matrix), pixel_matrix.size)
+        pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)    
+        thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
+        self.threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
+        self.setPixmap(self.threshold_pixmap)
+        print("exit the threshold function")
+        self.threshold = False
         
     def reset_img(self):
         """
         Reset the img to its origin pixmap
         """
         self.pointsList = []
-        self.mode_draw_polygon.value = False
-        self.mode_pencil.value = False
-        self.mode_bucket_fill.value = False
-        self.mode_rubber.value = False
-        self.mode_threshold.value = False
         self.setPixmap(self.original_pixmap)
         
-    """def drawing_on_img(self):
-       
-        if self.mode_draw_polygon.value:
-            if not self.mode_threshold.value:
-                self.setPixmap(self.original_pixmap)
-            
-            if self.mode_threshold.value :
-            #self.set_threshold_img(225)
-                self.setPixmap(self.threshold_pixmap)
-            
-            self.painter.begin(self.pixmap())
-            
-            self.pointsList.append(self.position)
-            pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
-            pen_polygon.setWidth(3)
-            self.painter.setPen(pen_polygon)
-            if len(self.pointsList) == 1:
-                self.painter.drawPoint(self.pointsList[-1])
-            else:
-                for i in range(len(self.pointsList)):
-                    self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
-            self.painter.end()
-            self.update()
-
-        if self.mode_pencil.value:
-            print("enter in the pencil mode")
-            self.painter.begin(self.pixmap())
-            pen_drawing = QtGui.QPen(QtCore.Qt.red)
-            pen_drawing.setWidth(5)
-            self.painter.setPen(pen_drawing)
-            self.painter.setBrush(QtCore.Qt.cyan)
-            self.painter.drawPoint(self.position)
-
-            #self.painter.end()
-            #self.update()
-
-        if self.mode_bucket_fill.value:
-            self.bucket_fill()
-    """
+    
     def draw_polygon(self):
+        self.pointsList.append(self.position)
+        
+        print("enter the draw polygon", len(self.pointsList))
+        
+        
+        if len(self.pointsList) == 1:
+            print("set the pixmap polygon", len(self.pointsList))
+            self.first_pixamp_polygon = self.pixmap().copy()
+
+        self.setPixmap(self.first_pixamp_polygon)    
         self.painter.begin(self.pixmap())
             
-        self.pointsList.append(self.position)
+        
         pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
         pen_polygon.setWidth(3)
         self.painter.setPen(pen_polygon)
         if len(self.pointsList) == 1:
             self.painter.drawPoint(self.pointsList[-1])
+            
         else:
             for i in range(len(self.pointsList)):
                 self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
         self.painter.end()
+
         self.update()
+        
+        #self.setPixmap(self.pixmap())
 
     def draw_pencil(self):
         self.painter.begin(self.pixmap())
@@ -208,7 +183,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.painter.setBrush(QtCore.Qt.cyan)
         self.painter.drawPoint(self.position)
             
-    def set_img(self, pixmap = None):
+    def set_img(self):
         """
         Set the image in the surface calculation widget.
         It the input pixamp is None, then use the previous pixmap in memory (self.pixmap())
@@ -217,15 +192,10 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         If pencil : begin the painter for the drawing line (and rubber if color is white)
         - allow to select a region for a later crop
         """
-        print("**** set img",
-              self.mode_draw_polygon.value,
-              self.mode_threshold.value,
-              self.mode_pencil.value,
-              self.mode_bucket_fill.value,
-              self.first_view.value)
+        print("**** set img", self.threshold, self.polygon, self.pencil, self.bucket)
         
-        if pixmap is not None:
-            self.setPixmap(pixmap)
+        #if pixmap is not None:
+        #    self.setPixmap(pixmap)
         # check if pixmap is None and self.pixmap is emppty -> message!!
 
         #mode de depart quand on lance image pour la premiere fois
@@ -239,54 +209,23 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.painter.end()
         """
         #if self.first_view:
+
+        
+        if self.threshold :
+            self.set_threshold_img(225)
             
-                
-        if self.mode_threshold.value:
-            
-            if self.mode_draw_polygon.value:
-                self.setPixmap(self.threshold_pixmap)
-                self.draw_polygon()
+        if self.polygon :
+            self.draw_polygon()
 
-            elif self.mode_pencil.value:
-                self.setPixmap(self.threshold_pixmap)
-                self.draw_pencil()
+        if self.pencil:
+             self.draw_pencil()
 
-            elif self.mode_bucket_fill.value:
-                self.setPixmap(self.threshold_pixmap)
-                self.bucket_fill()
-
-            elif (not self.mode_draw_polygon.value and
-                  not self.mode_pencil.value and
-                  not self.mode_bucket_fill.value):
-               self.set_threshold_img(225)
-               self.setPixmap(self.threshold_pixmap) 
-
-        elif not self.mode_threshold.value:
-
-            if self.first_view.value:
-                self.original_pixmap = pixmap.copy()     
-                
-            if self.mode_draw_polygon.value :
-                self.setPixmap(self.original_pixmap)
-                self.draw_polygon()
-  
-            elif self.mode_pencil.value:
-                self.setPixmap(self.pixmap())    
-                self.draw_pencil()
-
-            elif self.mode_bucket_fill.value:
-                self.setPixmap(self.pixmap())    
-                self.bucket_fill()
-
-            elif (not self.mode_draw_polygon.value and
-                  not self.mode_pencil.value and
-                  not self.mode_bucket_fill.value):
-               
-               self.set_threshold_img(225)
-               self.setPixmap(self.original_pixmap)
-                
+        if self.bucket:
+             self.bucket_fill()   
+        
+       
         self.show()
-        self.first_view.value = False
+        #self.first_view.value = False
         
     def bucket_fill(self):
         x = self.position.x()
@@ -322,18 +261,18 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
     def mousePressEvent(self,QMouseEvent):
         self.position = QMouseEvent.pos()
-        if self.mode_draw_polygon.value or self.mode_pencil.value or self.mode_bucket_fill.value:
-            self.set_img(self.pixmap())
+        if self.polygon or self.pencil or self.bucket :
+            self.set_img()
             
     def mouseMoveEvent(self,QMouseEvent):
             
-        if self.mode_pencil.value:
+        if self.pencil:
             self.painter.drawPoint(QMouseEvent.pos())
             self.setPixmap(self.pixmap())
     
     def mouseReleaseEvent(self,QMouseEvent):
         
-        if self.mode_pencil.value:
+        if self.pencil:
             print("enter in the mouse release and painter end")
             self.painter.end()
         
@@ -356,7 +295,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         new_pixmap = new_pixmap.scaled(300, 300, QtCore.Qt.KeepAspectRatio)
     
         self.setPixmap(new_pixmap)
-    
+        self.crop_done = True
     
 class QLabelDrawing(QtGui.QLabel):
     """
