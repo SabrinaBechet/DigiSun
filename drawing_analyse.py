@@ -845,7 +845,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.draw_polygon_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.draw_polygon_but.setText("Select")
         self.draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
-        
+        self.drawing_page\
+            .label_middle_up\
+            .polygon\
+            .value_changed\
+            .connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.polygon.value,
+                                                self.draw_polygon_but))
         
         self.crop_but = QtGui.QToolButton()
         self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -957,10 +962,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_middle_up.modify_rubber_color()
         
     def threshold(self, value):
-        self.drawing_page.label_middle_up.threshold = True
-        self.drawing_page.label_middle_up.polygon = False
-        self.drawing_page.label_middle_up.crop_done = False
-        self.drawing_page.label_middle_up.bucket = False
+        self.drawing_page.label_middle_up.threshold.value = True
+        self.drawing_page.label_middle_up.polygon.value = False
+        self.drawing_page.label_middle_up.crop_done.value = False
+        self.drawing_page.label_middle_up.bucket.value = False
 
         self.threshold_but.setDisabled(True)
         #self.drawing_page.label_middle_up.mode_threshold.set_opposite_value()
@@ -976,25 +981,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
     def draw_pencil(self):
         self.drawing_page.label_middle_up.pencil = True
-        self.drawing_page.label_middle_up.threshold = False
-        self.drawing_page.label_middle_up.polygon = False
-        self.drawing_page.label_middle_up.crop_done = False
-        self.drawing_page.label_middle_up.bucket = False
+        self.drawing_page.label_middle_up.threshold.value = False
+        self.drawing_page.label_middle_up.polygon.value = False
+        self.drawing_page.label_middle_up.crop_done.value= False
+        self.drawing_page.label_middle_up.bucket.value = False
     
     def draw_bucket(self):
-        self.drawing_page.label_middle_up.bucket = True
-        self.drawing_page.label_middle_up.threshold = False
-        self.drawing_page.label_middle_up.polygon = False
-        self.drawing_page.label_middle_up.crop_done = False
-        self.drawing_page.label_middle_up.pencil = False
+        self.drawing_page.label_middle_up.bucket.value = True
+        self.drawing_page.label_middle_up.threshold.value = False
+        self.drawing_page.label_middle_up.polygon.value = False
+        self.drawing_page.label_middle_up.crop_done.value = False
+        self.drawing_page.label_middle_up.pencil.value = False
         
     def draw_polygon(self):
         print("draw polygon function")
-        self.drawing_page.label_middle_up.polygon = True
-        self.drawing_page.label_middle_up.threshold = False
-        self.drawing_page.label_middle_up.crop_done = False
-        self.drawing_page.label_middle_up.pencil = False
-        self.drawing_page.label_middle_up.bucket = False
+        self.drawing_page.label_middle_up.polygon.value = True
+        self.drawing_page.label_middle_up.threshold.value = False
+        self.drawing_page.label_middle_up.crop_done.value = False
+        self.drawing_page.label_middle_up.pencil.value = False
+        self.drawing_page.label_middle_up.bucket.value = False
         self.crop_but.setEnabled(True)
         
         # no function here but the click on the image
@@ -1005,11 +1010,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def reset(self):
         
-        self.drawing_page.label_middle_up.threshold = False
-        self.drawing_page.label_middle_up.polygon = False
-        self.drawing_page.label_middle_up.crop_done = False
-        self.drawing_page.label_middle_up.pencil = False
-        self.drawing_page.label_middle_up.bucket = False
+        self.drawing_page.label_middle_up.threshold.value = False
+        self.drawing_page.label_middle_up.polygon.value = False
+        self.drawing_page.label_middle_up.crop_done.value = False
+        self.drawing_page.label_middle_up.pencil.value = False
+        self.drawing_page.label_middle_up.bucket.value = False
         
         self.threshold_but.setEnabled(True)
         self.draw_polygon_but.setEnabled(True)
@@ -1018,7 +1023,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.pencil_but.setDisabled(True)
         self.bucket_fill_but.setDisabled(True)
         self.rubber_but.setDisabled(True)
-        self.drawing_page.label_middle_up.crop_done = False
+        self.drawing_page.label_middle_up.crop_done.value = False
         
     def add_current_session(self):
         
