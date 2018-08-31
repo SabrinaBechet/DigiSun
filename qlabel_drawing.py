@@ -79,9 +79,10 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.setLineWidth(3)
         
         self.original_pixmap = QtGui.QPixmap() # used for the reset
-        self.threshold_pixmap = QtGui.QPixmap()
+        #self.threshold_pixmap = QtGui.QPixmap()
         self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
-    
+        self.pixmap_before_threshold = QtGui.QPixmap()
+        
         self.setMaximumWidth(300)
         self.width_scale = 300
         self.height_scale = 300
@@ -91,7 +92,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.is_drawing = False
         self.to_fill = False
 
-        self.threshold_value = 0
+        self.threshold_value = 225
 
         """self.mode_draw_polygon = analyseModeBool(False)
         self.mode_threshold = analyseModeBool(False)
@@ -102,12 +103,13 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         """
 
         self.threshold = analyseModeBool(False)
+        self.threshold_done = analyseModeBool(False)
+        
         self.polygon = analyseModeBool(False)
         self.crop_done = analyseModeBool(False)
         self.pencil = analyseModeBool(False)
         self.bucket = analyseModeBool(False)
-        
-        
+
         self.painter = QtGui.QPainter()
         self.pen = QtGui.QPen(QtCore.Qt.red)
         self.pen.setWidth(5)
@@ -132,16 +134,20 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
     def set_threshold_img(self, threshold_value):
 
-        print("enter the threshold function")
-        qimage = self.pixmap().toImage()
+        if not self.threshold_done.value:
+            self.pixmap_before_threshold = self.pixmap().copy()
+        
+        qimage = self.pixmap_before_threshold.toImage()
         pixel_matrix = self.convertQImageToMat(qimage)
-        print(type(pixel_matrix), pixel_matrix.size)
+        #print(type(pixel_matrix), pixel_matrix.size)
+
         pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)
         thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
-        self.threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
-        self.setPixmap(self.threshold_pixmap)
-        print("exit the threshold function")
-        self.threshold.value = False
+        threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
+
+        self.setPixmap(threshold_pixmap)
+
+        self.threshold_done.value = True
         
     def reset_img(self):
         """
@@ -200,7 +206,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
               self.polygon.value,
               self.pencil.value,
               self.bucket.value,
-              self.crop_done.value)
+              self.crop_done.value,
+              self.threshold_done.value)
         
         #if pixmap is not None:
         #    self.setPixmap(pixmap)

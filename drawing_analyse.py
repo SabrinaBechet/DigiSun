@@ -350,7 +350,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.surface_mode.set_opposite_value()
 
         if self.drawing_page.label_right.surface_mode.value:
-            self.drawing_page.widget_middle_up.setMaximumWidth(350)
+            self.drawing_page.widget_middle_up.setMaximumWidth(600)
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
         
             self.update_surface_qlabel(n)
@@ -401,8 +401,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
         self.drawing_page.label_middle_up.original_pixmap = pixmap_group_surface.copy()
         self.drawing_page.label_middle_up.setPixmap(pixmap_group_surface)
+        #self.drawing_page.label_middle_up.set_img()
         
-
+        self.drawing_page.label_middle_up.threshold.value = False 
+        self.drawing_page.label_middle_up.threshold_done.value = False
+        self.drawing_page.label_middle_up.polygon.value = False
+        self.drawing_page.label_middle_up.crop_done.value = False
+        self.drawing_page.label_middle_up.pencil.value = False
+        self.drawing_page.label_middle_up.bucket.value = False
+        
         self.drawing_page.label_right.large_grid_overlay.value = large_grid_tmp
         self.drawing_page.label_right.small_grid_overlay.value = small_grid_tmp
         self.drawing_page.label_right.group_visu.value = group_tmp
@@ -485,12 +492,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.center_done = True
             self.set_zoom_north()
         
-        """ elif self.drawing_page.label_right.calibration_mode.value == False and self.center_done == True and self.north_done == True:
-        print("false, true, true")    
-        self.unzoom()
-        self.drawing_page.label_right.calibration_mode.value = True
-        return
-        """ 
+       
     def get_click_coordinates(self):
         print("get click coordinate")
         print(self.drawing_page.label_right.x_drawing)
@@ -843,7 +845,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.draw_polygon_but = QtGui.QToolButton()
         self.draw_polygon_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.draw_polygon_but.setText("Select")
+        self.draw_polygon_but.setText("Select mode")
         self.draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
         self.drawing_page\
             .label_middle_up\
@@ -880,12 +882,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         qlabel_threshold = QtGui.QLabel("Threshold:")
         self.slider_threshold = QtGui.QSlider(QtCore.Qt.Horizontal)
         self.slider_threshold.setRange(0,256)
-        self.slider_threshold.setValue(225)
+        self.slider_threshold.setValue(self.drawing_page.label_middle_up.threshold_value)
+        self.slider_threshold.setDisabled(True)
         
         self.threshold_but = QtGui.QToolButton()
         self.threshold_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.threshold_but.setText("threshold")
-         
+        self.threshold_but.setText("threshold mode")
+        self.drawing_page\
+            .label_middle_up\
+            .threshold\
+            .value_changed\
+            .connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.threshold.value,
+                                                self.threshold_but))
+        
         self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")
         paint_layout = QtGui.QHBoxLayout()
 
@@ -918,32 +927,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         paint_layout.addWidget(self.bucket_fill_but)
         paint_layout.addWidget(self.rubber_but)
 
+        self.convert_but = QtGui.QToolButton()
+        self.convert_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.convert_but.setText("Convert")
+        #self.convert_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/pencil.svg'))
+        self.convert_but.setDisabled(True)
+
+        
         save_but = QtGui.QToolButton()
         save_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        save_but.setText("Save")
+        save_but.setText("Save area")
+
+        next_but = QtGui.QToolButton()
+        next_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        next_but.setText("Next group")
         
         self.calculate_but = QtGui.QToolButton()
         self.calculate_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.calculate_but.setText("Calculate")
         
+        self.drawing_page.widget_middle_up_layout.setMargin(10)
+
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
         self.drawing_page.widget_middle_up_layout.addLayout(selection_layout)
         
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
-        self.drawing_page.widget_middle_up_layout.addWidget(self.slider_threshold)
         self.drawing_page.widget_middle_up_layout.addWidget(self.threshold_but)
-        # add line with default value (coming from gradient)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.slider_threshold)
+        
         self.drawing_page.widget_middle_up_layout.addWidget(self.qlabel_paint_tool)
         self.drawing_page.widget_middle_up_layout.addLayout(paint_layout)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.convert_but)
         
-        # surface :  value
-        # save
-        # next group
         self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
         self.drawing_page.widget_middle_up_layout.addWidget(self.calculate_but)
         self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
         self.drawing_page.widget_middle_up_layout.addWidget(save_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(next_but)
         
         
         self.draw_polygon_but.clicked.connect(self.draw_polygon)
@@ -951,10 +972,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.reset_but.clicked.connect(self.reset)
 
         self.slider_threshold.valueChanged.connect(self.update_threshold_value)
-        #self.slider_threshold.valueChanged.connect(self.threshold)
-        #threshold_value = slider_threshold.value()#   225 # to be determined by a more clever way or a gradient
-        
-        
+       
         self.threshold_but\
             .clicked.connect(self.threshold)
 
@@ -966,7 +984,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def update_threshold_value(self):
         print("check the slider value",self.slider_threshold.value() )
         self.drawing_page.label_middle_up.threshold_value = self.slider_threshold.value()
-
+        if self.drawing_page.label_middle_up.threshold.value:
+            self.drawing_page.label_middle_up.set_img()
+            
     def crop_method(self):
         self.drawing_page.label_middle_up.crop()
         self.draw_polygon_but.setDisabled(True)
@@ -981,15 +1001,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def threshold(self):
         if self.drawing_page.label_middle_up.threshold.value :
             self.drawing_page.label_middle_up.threshold.value = False
+            self.slider_threshold.setDisabled(True)
         else:
             print("set the threshold to true")
             self.drawing_page.label_middle_up.threshold.value = True
-        
+            self.slider_threshold.setEnabled(True)
+            
         self.drawing_page.label_middle_up.polygon.value = False
         self.drawing_page.label_middle_up.bucket.value = False
         self.drawing_page.label_middle_up.pencil.value = False
 
-        self.threshold_but.setDisabled(True)
+        
+        
+        #self.threshold_but.setDisabled(True)
         self.drawing_page.label_middle_up.set_img()
 
         #print(self.drawing_page.label_middle_up.crop_done.value)
@@ -1049,6 +1073,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.bucket_fill_but.setDisabled(True)
         self.rubber_but.setDisabled(True)
         self.drawing_page.label_middle_up.crop_done.value = False
+        self.drawing_page.label_middle_up.threshold_done.value = False
         
     def add_current_session(self):
         
