@@ -905,10 +905,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.rubber_but.setDisabled(True)
 
         form_layout = QtGui.QFormLayout()
-        pixel_number_linedit = QtGui.QLineEdit()
+        self.pixel_number_linedit = QtGui.QLineEdit()
         surface_linedit = QtGui.QLineEdit()
 
-        form_layout.addRow("Pixel Number:", pixel_number_linedit)
+        form_layout.addRow("Pixel Number:", self.pixel_number_linedit)
         form_layout.addRow("Surface:", surface_linedit)
         
         paint_layout.addWidget(self.pencil_but)
@@ -919,9 +919,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         save_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         save_but.setText("Save")
         
-        calculate_but = QtGui.QToolButton()
-        calculate_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        calculate_but.setText("Calculate")
+        self.calculate_but = QtGui.QToolButton()
+        self.calculate_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.calculate_but.setText("Calculate")
         
 
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
@@ -938,7 +938,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # save
         # next group
         self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
-        self.drawing_page.widget_middle_up_layout.addWidget(calculate_but)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.calculate_but)
         self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
         self.drawing_page.widget_middle_up_layout.addWidget(save_but)
         
@@ -946,7 +946,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.draw_polygon_but.clicked.connect(self.draw_polygon)
         self.crop_but.clicked.connect(self.crop_method)
         self.reset_but.clicked.connect(self.reset)
-                                   
+
         threshold_value = 225 # to be determined by a more clever way or a gradient
         self.threshold_but\
             .clicked.connect(lambda: self.threshold(threshold_value))
@@ -954,14 +954,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.pencil_but.clicked.connect(self.draw_pencil)
         self.bucket_fill_but.clicked.connect(self.draw_bucket)
         self.rubber_but.clicked.connect(self.rubber_method)
-       
+        self.calculate_but.clicked.connect(self.calculate_method)
+
+
+
     def crop_method(self):
         self.drawing_page.label_middle_up.crop()
         self.draw_polygon_but.setDisabled(True)
-        
+
     def rubber_method(self):
         self.drawing_page.label_middle_up.modify_rubber_color()
-        
+
+    def calculate_method(self):
+        count = self.drawing_page.label_middle_up.calculate_area()
+        self.pixel_number_linedit.setText(str(count))
+
     def threshold(self, value):
         if self.drawing_page.label_middle_up.threshold.value :
             self.drawing_page.label_middle_up.threshold.value = False
