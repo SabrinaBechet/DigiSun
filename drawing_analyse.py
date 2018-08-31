@@ -856,7 +856,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.crop_but.setText("Crop")
         self.crop_but.setDisabled(True)
-       
         
         self.zoom_in_but = QtGui.QToolButton()
         self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -879,6 +878,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         selection_layout.addWidget(self.reset_but)
         
         qlabel_threshold = QtGui.QLabel("Threshold:")
+        self.slider_threshold = QtGui.QSlider(QtCore.Qt.Horizontal)
+        self.slider_threshold.setRange(0,256)
+        self.slider_threshold.setValue(225)
+        
         self.threshold_but = QtGui.QToolButton()
         self.threshold_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.threshold_but.setText("threshold")
@@ -923,12 +926,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.calculate_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.calculate_but.setText("Calculate")
         
-
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
         self.drawing_page.widget_middle_up_layout.addLayout(selection_layout)
         
         self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.slider_threshold)
         self.drawing_page.widget_middle_up_layout.addWidget(self.threshold_but)
         # add line with default value (coming from gradient)
         self.drawing_page.widget_middle_up_layout.addWidget(self.qlabel_paint_tool)
@@ -947,16 +950,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.crop_but.clicked.connect(self.crop_method)
         self.reset_but.clicked.connect(self.reset)
 
-        threshold_value = 225 # to be determined by a more clever way or a gradient
+        self.slider_threshold.valueChanged.connect(self.update_threshold_value)
+        #self.slider_threshold.valueChanged.connect(self.threshold)
+        #threshold_value = slider_threshold.value()#   225 # to be determined by a more clever way or a gradient
+        
+        
         self.threshold_but\
-            .clicked.connect(lambda: self.threshold(threshold_value))
+            .clicked.connect(self.threshold)
 
         self.pencil_but.clicked.connect(self.draw_pencil)
         self.bucket_fill_but.clicked.connect(self.draw_bucket)
         self.rubber_but.clicked.connect(self.rubber_method)
         self.calculate_but.clicked.connect(self.calculate_method)
 
-
+    def update_threshold_value(self):
+        print("check the slider value",self.slider_threshold.value() )
+        self.drawing_page.label_middle_up.threshold_value = self.slider_threshold.value()
 
     def crop_method(self):
         self.drawing_page.label_middle_up.crop()
@@ -969,7 +978,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         count = self.drawing_page.label_middle_up.calculate_area()
         self.pixel_number_linedit.setText(str(count))
 
-    def threshold(self, value):
+    def threshold(self):
         if self.drawing_page.label_middle_up.threshold.value :
             self.drawing_page.label_middle_up.threshold.value = False
         else:

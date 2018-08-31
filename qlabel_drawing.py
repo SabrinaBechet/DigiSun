@@ -85,10 +85,12 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         self.width_scale = 300
         self.height_scale = 300
 
-        self.pointsList  =[]
+        self.pointsList = []
         
         self.is_drawing = False
         self.to_fill = False
+
+        self.threshold_value = 0
 
         """self.mode_draw_polygon = analyseModeBool(False)
         self.mode_threshold = analyseModeBool(False)
@@ -217,7 +219,8 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
         
         if self.threshold.value :
-            self.set_threshold_img(225)
+            print("threshold!!", self.threshold_value)
+            self.set_threshold_img(self.threshold_value)
             
         if self.polygon.value :
             self.draw_polygon()
