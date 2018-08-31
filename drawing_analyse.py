@@ -987,6 +987,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def reset(self):
         
+        self.drawing_page.label_middle_up.threshold = False
+        self.drawing_page.label_middle_up.polygon = False
+        self.drawing_page.label_middle_up.crop_done = False
+        self.drawing_page.label_middle_up.pencil = False
+        self.drawing_page.label_middle_up.bucket = False
+        
         self.threshold_but.setEnabled(True)
         self.draw_polygon_but.setEnabled(True)
         self.crop_but.setEnabled(True)
