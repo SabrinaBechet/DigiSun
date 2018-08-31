@@ -312,12 +312,27 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
                 up = self.pointsList[i].y()
             if down == None or self.pointsList[i].y() > down:
                 down = self.pointsList[i].y()
-                
+
         new_pixmap = self.pixmap().copy(left,up,right-left,down-up)
         new_pixmap = new_pixmap.scaled(300, 300, QtCore.Qt.KeepAspectRatio)
-    
+
         self.setPixmap(new_pixmap)
         self.crop_done.value = True
+
+    def calculate_area(self):
+        image = self.pixmap().toImage()
+        array_image = self.convertQImageToMat(image)
+        count = self.count_pixel(array_image)
+        return count
+
+    def count_pixel(self,array):
+        count = 0
+        for y in range(len(array)):
+            for x in range(len(array)):
+                if(array[y][x][0] == 0 and array[y][x][1] == 0 and array[y][x][2] == 255):
+                    count += 1
+        return count
+    
     
 class QLabelDrawing(QtGui.QLabel):
     """
