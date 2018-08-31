@@ -856,6 +856,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.crop_but.setText("Crop")
         self.crop_but.setDisabled(True)
+       
         
         self.zoom_in_but = QtGui.QToolButton()
         self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -881,6 +882,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.threshold_but = QtGui.QToolButton()
         self.threshold_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.threshold_but.setText("threshold")
+        self.drawing_page\
+            .label_middle_up\
+            .threshold\
+            .value_changed\
+            .connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.threshold.value,
+                                                self.threshold_but))
         
         self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")
         paint_layout = QtGui.QHBoxLayout()
@@ -957,21 +964,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def crop_method(self):
         self.drawing_page.label_middle_up.crop()
         self.draw_polygon_but.setDisabled(True)
-    
+        
     def rubber_method(self):
         self.drawing_page.label_middle_up.modify_rubber_color()
         
     def threshold(self, value):
-        self.drawing_page.label_middle_up.threshold.value = True
+        if self.drawing_page.label_middle_up.threshold.value :
+            self.drawing_page.label_middle_up.threshold.value = False
+        else:
+            self.drawing_page.label_middle_up.threshold.value = True
+        
         self.drawing_page.label_middle_up.polygon.value = False
-        self.drawing_page.label_middle_up.crop_done.value = False
+        #self.drawing_page.label_middle_up.crop_done.value = False
         self.drawing_page.label_middle_up.bucket.value = False
 
         self.threshold_but.setDisabled(True)
-        #self.drawing_page.label_middle_up.mode_threshold.set_opposite_value()
         self.drawing_page.label_middle_up.set_img()
 
-        if self.drawing_page.label_middle_up.crop_done :
+        #print(self.drawing_page.label_middle_up.crop_done.value)
+        if self.drawing_page.label_middle_up.crop_done.value :
             self.draw_polygon_but.setDisabled(True)
             self.crop_but.setDisabled(True)
             
@@ -980,7 +991,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.rubber_but.setEnabled(True)
             
     def draw_pencil(self):
-        self.drawing_page.label_middle_up.pencil = True
+        self.drawing_page.label_middle_up.pencil.value = True
         self.drawing_page.label_middle_up.threshold.value = False
         self.drawing_page.label_middle_up.polygon.value = False
         self.drawing_page.label_middle_up.crop_done.value= False
@@ -994,8 +1005,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_middle_up.pencil.value = False
         
     def draw_polygon(self):
-        print("draw polygon function")
-        self.drawing_page.label_middle_up.polygon.value = True
+        if self.drawing_page.label_middle_up.polygon.value :
+            self.drawing_page.label_middle_up.polygon.value = False
+        else:
+            self.drawing_page.label_middle_up.polygon.value = True
+            
         self.drawing_page.label_middle_up.threshold.value = False
         self.drawing_page.label_middle_up.crop_done.value = False
         self.drawing_page.label_middle_up.pencil.value = False

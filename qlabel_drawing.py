@@ -100,7 +100,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
 
         self.threshold = analyseModeBool(False)
         self.polygon = analyseModeBool(False)
-        self.crop_done = analyseModeBool( False)
+        self.crop_done = analyseModeBool(False)
         self.pencil = analyseModeBool(False)
         self.bucket = analyseModeBool(False)
         
@@ -192,7 +192,12 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
         If pencil : begin the painter for the drawing line (and rubber if color is white)
         - allow to select a region for a later crop
         """
-        print("**** set img", self.threshold.value, self.polygon.value, self.pencil.value, self.bucket.value)
+        print("**** set img",
+              self.threshold.value,
+              self.polygon.value,
+              self.pencil.value,
+              self.bucket.value,
+              self.crop_done.value)
         
         #if pixmap is not None:
         #    self.setPixmap(pixmap)
@@ -221,7 +226,7 @@ class QLabelSurfaceThreshold(QtGui.QLabel):
              self.draw_pencil()
 
         if self.bucket.value:
-             self.bucket.value_fill()   
+             self.bucket_fill()   
         
        
         self.show()
