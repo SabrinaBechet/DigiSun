@@ -846,6 +846,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.draw_polygon_but.setText("Select")
         self.draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
         
+        
         self.crop_but = QtGui.QToolButton()
         self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.crop_but.setText("Crop")
