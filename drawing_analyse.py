@@ -946,10 +946,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.pencil_but.clicked.connect(self.draw_pencil)
         self.bucket_fill_but.clicked.connect(self.draw_bucket)
+        self.rubber_but.clicked.connect(self.rubber_method)
 
     def crop_method(self):
         self.drawing_page.label_middle_up.crop()
         self.draw_polygon_but.setDisabled(True)
+    
+    def rubber_method(self):
+        self.drawing_page.label_middle_up.modify_rubber_color()
         
     def threshold(self, value):
         self.drawing_page.label_middle_up.threshold = True
