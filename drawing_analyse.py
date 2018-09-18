@@ -6,6 +6,7 @@ from PyQt4 import QtGui, QtCore
 import database, drawing, group_box, qlabel_drawing
 from datetime import date, time, datetime, timedelta
 import math
+import configparser
 
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
@@ -129,6 +130,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def __init__(self, operator=None):
         super(DrawingAnalysePage, self).__init__()
 
+        self.config = configparser.ConfigParser()
+        self.config_file = "digisun.ini"
+        self.set_configuration()
         self.drawing_page = DrawingViewPage()
         self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
         self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
@@ -152,6 +156,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
+    def set_configuration(self):
+        try:
+            with open(self.config_file) as config_file:
+                self.config.read_file(config_file)
+                self.prefix = self.config['archdrawings']['prefix']
+                self.archdrawing_directory = self.config['archdrawings']['path']
+                self.extension = self.config['archdrawings']['extension']
+        except IOError:
+            print('IOError - config file not found !!')
+        
+        
     def set_but_color(self, mode_bool, but):
         if mode_bool==True:
             but.setStyleSheet("background-color: lightblue")
@@ -1238,16 +1253,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.but_save.setStyleSheet("background-color: lightgray")
      
     def set_path_to_qlabel(self):
-        
-        filename = ("usd" +
+        """
+        set the path to the image of the drawing based on the information contained 
+        in the configuration file (digisun.ini).
+        Here is fixed the structure of the filename and 
+        the structure of the directory.
+        """  
+        filename = (self.prefix +
                     str(self.drawing_lst[self.current_count].datetime.year) +
                     str(self.drawing_lst[self.current_count].datetime.strftime('%m')) +
                     str(self.drawing_lst[self.current_count].datetime.strftime('%d')) +
                     str(self.drawing_lst[self.current_count].datetime.strftime('%H')) +
                     str(self.drawing_lst[self.current_count].datetime.strftime('%M')) +
-                    ".jpg")
-        
-        directory = os.path.join("/media/archdrawings/",
+                    "." +
+                    self.extension)
+
+        directory = os.path.join(self.archdrawing_directory,
                                  str(self.drawing_lst[self.current_count].datetime.year),
                                  self.drawing_lst[self.current_count].datetime.strftime('%m'))
         

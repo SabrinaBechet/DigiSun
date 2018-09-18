@@ -9,7 +9,6 @@ from datetime import date, time, datetime
 from PIL import Image
 from PIL.ImageQt import ImageQt
 
-
 ###############################################################
 ###############################################################     
 class BulkScanPage(QtGui.QWidget):
@@ -46,7 +45,7 @@ class mainWindow(QtGui.QMainWindow):
         self.analyse_page = bulk_analyse.BulkAnalysePage()
         self.bulk_scan_page = BulkScanPage(self.operator)
         self.drawing_analyse = drawing_analyse.DrawingAnalysePage(self.operator)
-        
+ 
         self.central_zone = QtGui.QWidget()
         self.central_zone.setLayout(self.stack)
         self.setCentralWidget(self.central_zone)
