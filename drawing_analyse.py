@@ -184,17 +184,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.zoom_in_but = QtGui.QToolButton(toolbar)
         self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_in_but.setText("zoom in")
-        self.zoom_in_but.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
+        self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
 
         self.zoom_out_but = QtGui.QToolButton(toolbar)
         self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_out_but.setText("zoom out")
-        self.zoom_out_but.setIcon(QtGui.QIcon('icons/search.svg'))
+        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
    
         self.large_grid_but = QtGui.QToolButton(toolbar)
         self.large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.large_grid_but.setText("large grid")
-        self.large_grid_but.setIcon(QtGui.QIcon('icons/internet.svg'))
+        self.large_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
         self.drawing_page.label_right\
                          .large_grid_overlay\
                          .value_changed\
@@ -206,7 +206,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.small_grid_but = QtGui.QToolButton(toolbar)
         self.small_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.small_grid_but.setText("small grid")
-        self.small_grid_but.setIcon(QtGui.QIcon('icons/internet.svg'))
+        self.small_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
         self.drawing_page.label_right\
                          .small_grid_overlay\
                          .value_changed\
@@ -218,7 +218,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_visu_but = QtGui.QToolButton(toolbar)
         self.group_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.group_visu_but.setText("group view")
-        self.group_visu_but.setIcon(QtGui.QIcon('icons/share_1.svg'))
+        self.group_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share_1.svg'))
         self.drawing_page.label_right\
                          .group_visu\
                          .value_changed\
@@ -231,7 +231,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.dipole_visu_but = QtGui.QToolButton(toolbar)
         self.dipole_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.dipole_visu_but.setText("dipole view")
-        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/share.svg'))
+        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
         self.drawing_page.label_right\
                          .dipole_visu\
                          .value_changed\
@@ -240,10 +240,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if self.drawing_page.label_right.dipole_visu.value :
             self.dipole_visu_but.setStyleSheet("background-color: lightblue")
 
+        helper_grid = QtGui.QAction('helper grid',  toolbar)
+        helper_grid.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
+
+            
         self.calibration_but = QtGui.QToolButton(toolbar)
         self.calibration_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.calibration_but.setText("calibration")
-        self.calibration_but.setIcon(QtGui.QIcon('icons/target.svg'))
+        self.calibration_but.setIcon(QtGui.QIcon('icons/Smashicons/target.svg'))
         self.drawing_page.label_right\
                          .calibration_mode\
                          .value_changed\
@@ -267,7 +271,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.add_dipole_but = QtGui.QToolButton(toolbar)
         self.add_dipole_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.add_dipole_but.setText("add_dipole")
-        self.add_dipole_but.setIcon(QtGui.QIcon('icons/share.svg'))
+        self.add_dipole_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
         self.drawing_page.label_right\
                          .add_dipole_mode\
                          .value_changed\
@@ -291,8 +295,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         #self.about_but = QtGui.QPushButton("About")
         
-        helper_grid = QtGui.QAction('helper_grid',  toolbar)
-        helper_grid.setIcon(QtGui.QIcon('icons/internet.svg'))
+        
     
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
@@ -829,14 +832,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_type.addItem('USET')
         self.drawing_type.addItem('USET77')
         self.drawing_type.addItem('USET41')
-        
 
+        self.angleP = QtGui.QLabel(self)
+        self.angleB = QtGui.QLabel(self)
+        self.angleL = QtGui.QLabel(self)
+        self.rotation_number = QtGui.QLabel(self)
+        
         self.form_layout1.addRow('Operator:', self.drawing_operator)
         self.form_layout1.addRow('Observer:', self.drawing_observer)
         self.form_layout1.addRow('Date:', self.drawing_date)
         self.form_layout1.addRow('Time:', self.drawing_time)
         self.form_layout1.addRow('Quality:', self.drawing_quality)
         self.form_layout1.addRow('Type:', self.drawing_type)
+        self.form_layout1.addRow('P angle:', self.angleP)
+        self.form_layout1.addRow('B angle:', self.angleB)
+        self.form_layout1.addRow('L angle:', self.angleL)
+        self.form_layout1.addRow('Carington rotation :', self.rotation_number)
         #self.form_layout.addWidget(self.but_scan)
         #self.form_layout.addWidget(self.but_analyse)
         #self.drawing_time.textChanged.connect(self.check_valid_datetime)
@@ -1230,9 +1241,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         self.drawing_operator.setText(self.drawing_lst[self.current_count].operator)
         self.drawing_observer.setText(self.drawing_lst[self.current_count].observer)
-        self.drawing_date.setDate(QtCore.QDate(self.drawing_lst[ self.current_count].datetime.year,
-                                               self.drawing_lst[ self.current_count].datetime.month,
-                                               self.drawing_lst[ self.current_count].datetime.day))
+        self.drawing_date.setDate(QtCore.QDate(self.drawing_lst[self.current_count].datetime.year,
+                                               self.drawing_lst[self.current_count].datetime.month,
+                                               self.drawing_lst[self.current_count].datetime.day))
         self.drawing_time.setText(str(self.drawing_lst[ self.current_count].datetime.strftime('%H')) +
                                   ":" +
                                   str(self.drawing_lst[ self.current_count].datetime.strftime('%M')))
@@ -1251,7 +1262,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.but_save.setStyleSheet("background-color: rgb(255, 165, 84)")
         else:
             self.but_save.setStyleSheet("background-color: lightgray")
-     
+
+        self.angleP.setText(str(self.drawing_lst[self.current_count].angle_P))
+        self.angleB.setText(str(self.drawing_lst[self.current_count].angle_B))
+        self.angleL.setText(str(self.drawing_lst[self.current_count].angle_L))
+        self.rotation_number.setText(str(self.drawing_lst[self.current_count].carington_rotation))
+        
     def set_path_to_qlabel(self):
         """
         set the path to the image of the drawing based on the information contained 

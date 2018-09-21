@@ -346,7 +346,18 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
         
-    
+    @property    
+    def carington_rotation(self):
+        #print("here we are reading the value of observer ")
+        return self._carington_rotation
+
+    @carington_rotation.setter    
+    def carington_rotation(self, value):
+        print("here we are changing the value of carington rotation to ", value)
+        self._carington_rotation = value
+        self.changed = True
+        self.value_changed.emit()
+        
     @property
     def angle_P(self):
         #print("here we are reading the value of angle P")

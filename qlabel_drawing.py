@@ -403,17 +403,21 @@ class QLabelDrawing(QtGui.QLabel):
         qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
         self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
 
-        pen_grid = QtGui.QPen(QtCore.Qt.blue)
-        pen_grid.setWidth(3)
-        pen_grid.setStyle(QtCore.Qt.DotLine)
+        pen_grid = QtGui.QPen()
+        pen_grid.setColor(QtGui.QColor(22, 206, 255))
+        img_mean_resolution = (self.drawing_width + self.drawing_height)/2.
+        pen_width = int(img_mean_resolution/600.)
+        print("check pen width: ", img_mean_resolution, pen_width)
+        pen_grid.setWidth(pen_width)
+        pen_grid.setStyle(QtCore.Qt.SolidLine)
         
         pen_border = QtGui.QPen(QtCore.Qt.blue)
         # the width should depend on the dpi/size of the drawing
-        pen_border.setWidth(3)
+        pen_border.setWidth(pen_width)
         pen_border.setStyle(QtCore.Qt.SolidLine)
         
         pen_special_line =  QtGui.QPen(QtCore.Qt.magenta)
-        pen_special_line.setWidth(5)
+        pen_special_line.setWidth(pen_width)
         pen_special_line.setStyle(QtCore.Qt.SolidLine)
 
         painter = QtGui.QPainter()
@@ -429,37 +433,90 @@ class QLabelDrawing(QtGui.QLabel):
                                 self.current_drawing.calibrated_radius)
                        
             if self.large_grid_overlay.value:
-                angle_array = np.arange(-180, 190, 30)
+                angle_array_latitude_range = np.arange(0, 190, 30)
+                angle_array_longitude_range = np.arange(-180, 190, 30)
             else :
-                angle_array = np.arange(-180, 190, 10)
-                angle_array = np.append(angle_array, [270])
+                angle_array_latitude_range = np.arange(0, 190, 10)
+                angle_array_longitude_range = np.arange(-180, 190, 10)
+                #angle_array_longitude_range = np.append(angle_array_longitude_range, [270])
                            
-            for latitude in angle_array:
-                if latitude == 0 :
-                    painter.setPen(pen_special_line)
+            for latitude in angle_array_latitude_range:
+        
+                if latitude == 90 :
+                    if self.current_drawing.angle_L < 90  or self.current_drawing.angle_L >270: 
+                        pen_special_line.setStyle(QtCore.Qt.SolidLine)    
+                        painter.setPen(pen_special_line)
+                    else:
+                       pen_special_line.setStyle(QtCore.Qt.DotLine)    
+                       painter.setPen(pen_special_line)
+                                           
                 else:
-                    painter.setPen(pen_grid)
-
-                x_lst, y_lst = self.draw_line_on_sphere(latitude,
-                                                        self.current_drawing.calibrated_radius,
-                                                        "longitude")
-                for i in range(len(x_lst)):
-                    painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst[i],
-                                      self.current_drawing.calibrated_center.y + y_lst[i])
-
-            for longitude in angle_array:
-                if longitude == 0 :                
-                    painter.setPen(pen_special_line)
-                else:
-                    painter.setPen(pen_grid)
-
-                x_lst, y_lst = self.draw_line_on_sphere(longitude,
-                                                        self.current_drawing.calibrated_radius,
-                                                        "latitude")
+                    painter.setPen(pen_grid)        
+              
+                (x_lst_0_180,
+                 y_lst_0_180) = self.draw_line_on_sphere(latitude,
+                                                         self.current_drawing.calibrated_radius,
+                                                         "longitude", 0, 180)
                 
-                for i in range(len(x_lst)):
-                    painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst[i],
-                                      self.current_drawing.calibrated_center.y + y_lst[i])    
+                (x_lst_minus180_0,
+                 y_lst_minus180_0) = self.draw_line_on_sphere(latitude,
+                                                              self.current_drawing.calibrated_radius,
+                                                              "longitude", -180, 0)
+                """start_draw_point = time.clock()
+                for i in range(len(x_lst_0_180)):
+                    painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst_0_180[i],
+                                      self.current_drawing.calibrated_center.y + y_lst_0_180[i])
+                for i in range(len(x_lst_minus180_0)):   
+                    painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst_minus180_0[i],
+                                      self.current_drawing.calibrated_center.y + y_lst_minus180_0[i])
+                end_draw_point = time.clock()
+                print("********time for draw point ", end_draw_point - start_draw_point)
+                """
+                
+                start_interpol = time.clock()
+                if len(x_lst_0_180)>0:
+                    path_0_180 = self.set_drawing_path(x_lst_0_180, y_lst_0_180)
+                    painter.drawPath(path_0_180)
+
+                if len(x_lst_minus180_0)>0:
+                    path_minus180_0 = self.set_drawing_path(x_lst_minus180_0, y_lst_minus180_0)
+                    painter.drawPath(path_minus180_0)
+                      
+                end_interpol = time.clock()
+                print("********time for interpolation for longitude", end_interpol - start_interpol)
+                
+                
+            for longitude in angle_array_longitude_range:
+                if longitude == 90 or longitude == -90 :
+                    pen_special_line.setStyle(QtCore.Qt.SolidLine)     
+                    painter.setPen(pen_special_line)
+                else:
+                    painter.setPen(pen_grid)
+
+                (x_lst_0_180,
+                 y_lst_0_180) = self.draw_line_on_sphere(longitude,
+                                                         self.current_drawing.calibrated_radius,
+                                                         "latitude", -90, 90)
+                
+                """(x_lst_minus180_0,
+                 y_lst_minus180_0) = self.draw_line_on_sphere(longitude,
+                                                            self.current_drawing.calibrated_radius,
+                                                            "latitude", -180, 0)
+                """
+                start_interpol = time.clock()
+                if len(x_lst_0_180)>0:
+                    path_0_180 = self.set_drawing_path(x_lst_0_180, y_lst_0_180)
+                    painter.drawPath(path_0_180)
+                
+                if len(x_lst_minus180_0)>0:
+                    path_minus180_0 = self.set_drawing_path(x_lst_minus180_0, y_lst_minus180_0)
+                    painter.drawPath(path_minus180_0)
+                      
+                end_interpol = time.clock()
+                print("********time for interpolation for latitude", end_interpol - start_interpol)
+                #for i in range(len(x_lst_0_180)):
+                #    painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst[i],
+                #                      self.current_drawing.calibrated_center.y + y_lst[i])    
             
         if self.group_visu.value :
             #print(self.group_visu_index)
@@ -512,7 +569,59 @@ class QLabelDrawing(QtGui.QLabel):
 
         #self.show()
 
-    
+    def set_drawing_path(self, x_lst, y_lst):
+        
+        start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[0],
+                                     self.current_drawing.calibrated_center.y + y_lst[0])
+        path = QtGui.QPainterPath(start_point)
+
+        if len(x_lst)<10:
+            print("case for x_lst smaller than 10 element")
+            for i in range(1, len(x_lst)-1, 1):
+                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
+                                             self.current_drawing.calibrated_center.y + y_lst[i-1])
+                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
+                                              self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
+                                           self.current_drawing.calibrated_center.y + y_lst[i+1])
+                path.cubicTo(start_point, middle_point, end_point)
+                
+        if len(x_lst)>10:
+            for i in range(1, 10, 1):
+                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
+                                             self.current_drawing.calibrated_center.y + y_lst[i-1])
+                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
+                                              self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
+                                           self.current_drawing.calibrated_center.y + y_lst[i+1])
+                path.cubicTo(start_point, middle_point, end_point)
+                #print(y_lst_minus180_0[i-1], y_lst_minus180_0[i], y_lst_minus180_0[i+1])
+                
+        if len(x_lst)>20:       
+            for i in range(15, len(x_lst) - 20, 10):
+                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-5],
+                                             self.current_drawing.calibrated_center.y + y_lst[i-5])
+                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
+                                              self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+5],
+                                           self.current_drawing.calibrated_center.y + y_lst[i+5])
+                path.cubicTo(start_point, middle_point, end_point)
+                #print(y_lst_minus180_0[i-5], y_lst_minus180_0[i], y_lst_minus180_0[i+5])
+                    
+                        
+            for i in range(len(x_lst)-19, len(x_lst)-1, 1):
+                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
+                                             self.current_drawing.calibrated_center.y + y_lst[i-1])
+                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
+                                              self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
+                                           self.current_drawing.calibrated_center.y + y_lst[i+1])
+                path.cubicTo(start_point, middle_point, end_point)
+                #print(y_lst_minus180_0[i-1], y_lst_minus180_0[i], y_lst_minus180_0[i+1])
+                        
+                
+        return path
+                         
     
     def get_cartesian_coordinate_from_HGC(self, longitude, latitude):
         """
@@ -592,69 +701,47 @@ class QLabelDrawing(QtGui.QLabel):
         """
         return x_centered_lower_left_origin, y_centered_lower_left_origin,   x_centered_upper_left_origin, y_centered_upper_left_origin
 
-    def get_spherical_coord_latitude(self, longitude, radius):
+    def get_spherical_coord_latitude(self, longitude, radius, range_min, range_max):
         spherical_coord_lst = []
-        for latitude in range(-180,180, 1):    
+        for latitude in range(range_min, range_max, 1):    
             spherical_coord =  coordinates.Spherical(radius,
-                                                      math.pi/2 - latitude * math.pi/180.,
-                                                      longitude * math.pi/180.)
+                                                     math.pi/2 - latitude * math.pi/180.,
+                                                     longitude * math.pi/180.)
             spherical_coord_lst.append(spherical_coord)
         return spherical_coord_lst
 
-    def get_spherical_coord_longitude(self, latitude, radius):
+    def get_spherical_coord_longitude(self, latitude, radius, range_min, range_max):
         spherical_coord_lst = []
-        for longitude in range(-180,180, 1):    
+        for longitude in range(range_min, range_max, 1):    
             spherical_coord =  coordinates.Spherical(radius,
-                                                      math.pi/2 - latitude * math.pi/180.,
-                                                      longitude * math.pi/180.)
+                                                     math.pi/2 - latitude * math.pi/180.,
+                                                     longitude * math.pi/180.)
             spherical_coord_lst.append(spherical_coord)
         return spherical_coord_lst
     
-    def draw_line_on_sphere(self, angle, radius, line):
-        x_arr = np.array([])
-        y_arr = np.array([])
-
+    def draw_line_on_sphere(self, angle, radius, line, range_min, range_max):
+        x_array = np.array([])
+        y_array = np.array([])
         if line=='latitude':
-            spherical_coord_lst = self.get_spherical_coord_latitude(angle, radius)
+            spherical_coord_lst = self.get_spherical_coord_latitude(angle, radius, range_min, range_max)
         elif line=='longitude':
-            spherical_coord_lst = self.get_spherical_coord_longitude(angle, radius)
+            spherical_coord_lst = self.get_spherical_coord_longitude(angle, radius, range_min, range_max)
             
         for spherical_coord in spherical_coord_lst:
             x, y, z = spherical_coord.convert_to_cartesian()
             cart_coord = coordinates.Cartesian(x, y, z)
             cart_coord.rotate_around_y(self.current_drawing.angle_L)
             cart_coord.rotate_around_z(self.current_drawing.angle_P)
-            cart_coord.rotate_around_x(self.current_drawing.angle_B)
-            
-            if cart_coord.z>0:
-                x_arr = np.append(x_arr, [cart_coord.x])
-                y_arr = np.append(y_arr, [cart_coord.y])
-             
-        return x_arr, y_arr 
-
-    def draw_longitude_line(self, latitude, radius):
-        x_arr = np.array([])
-        y_arr = np.array([])
-        
-        for longitude in range(-180, 180, 1):
-            
-            spherical_coord =  coordinates.Spherical(radius,
-                                                     math.pi/2 - latitude * math.pi/180.,
-                                                     longitude * math.pi/180.)
-            
-            x, y, z = spherical_coord.convert_to_cartesian()
-            cart_coord = coordinates.Cartesian(x, y, z)
-            cart_coord.rotate_around_y(self.current_drawing.angle_L)
-            cart_coord.rotate_around_z(self.current_drawing.angle_P)
-            cart_coord.rotate_around_x(self.current_drawing.angle_B)
-            
-            if cart_coord.z>0:
-                x_arr = np.append(x_arr, [cart_coord.x])
-                y_arr = np.append(y_arr, [cart_coord.y])
-            
-        return x_arr, y_arr 
-
+            cart_coord.rotate_around_x(-self.current_drawing.angle_B)
     
+            if cart_coord.z>0 :
+                x_array = np.append(x_array, [cart_coord.x])
+                y_array = np.append(y_array, [cart_coord.y])
+
+                
+        print(len(x_array), len(y_array))
+        return x_array, y_array
+
     def zoom_in(self, scaling_factor):
        
         self.width_scale *=  scaling_factor
