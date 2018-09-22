@@ -147,12 +147,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst = []
         self.set_toolbar()
         
-        self.drawing_page.label_right.drawing_clicked.connect(self.slot_calibrate)
+        self.drawing_page.label_right.center_clicked.connect(self.set_zoom_north)
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
-        
-        self.center_done = False
-        self.north_done = False
-        self.approximate_center = [0., 0.]
 
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
@@ -440,15 +436,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Contains two parts:
         1. put the drawing on the center and click on the center -> signal
         2. put the drawing on the north and click on the norht -> signal
+        here it is what happens when one click on the calibrate button
+        (the rest is described in the mouse event)
         """
         print("start calibration",
               self.drawing_page.label_right.calibration_mode.value)
         self.drawing_page.label_right.calibration_mode.value = True
-        self.center_done = False
-        self.north_done = False
+        self.drawing_page.label_right.center_done = False
+        self.drawing_page.label_right.north_done = False
         print("start calibration",
               self.drawing_page.label_right.calibration_mode.value,
-              self.center_done, self.north_done)
+              self.drawing_page.label_right.center_done, self.drawing_page.label_right.north_done)
         
         self.drawing_page.label_right.group_visu.value = False
         self.drawing_page.label_right.dipole_visu.value = False
@@ -664,10 +662,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                 self.drawing_lst[self.current_count].group_lst[n].zurich,
                                                 self.grid_position)
         self.group_toolbox.set_confirm_spots(self.grid_position)
-        self.group_toolbox.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude,
+        self.group_toolbox.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude * 180/math.pi,
                                           self.grid_position)
     
-        self.group_toolbox.set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude,
+        self.group_toolbox.set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude * 180/math.pi,
                                            self.grid_position)
         
         self.group_toolbox.set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
