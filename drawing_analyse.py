@@ -236,13 +236,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if self.drawing_page.label_right.dipole_visu.value :
             self.dipole_visu_but.setStyleSheet("background-color: lightblue")
 
-        helper_grid = QtGui.QAction('helper grid',  toolbar)
-        helper_grid.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
-
+        self.helper_grid_but = QtGui.QToolButton(toolbar)
+        self.helper_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.helper_grid_but.setText("helper grid")
+        self.helper_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
+        self.drawing_page.label_right\
+                         .helper_grid\
+                         .value_changed\
+                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.helper_grid.value,
+                                                             self.helper_grid_but))
+        if self.drawing_page.label_right.helper_grid.value :
+            self.helper_grid_but.setStyleSheet("background-color: lightblue")
             
         self.calibration_but = QtGui.QToolButton(toolbar)
         self.calibration_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.calibration_but.setText("calibration")
+        self.calibration_but.setText("calibrate")
         self.calibration_but.setIcon(QtGui.QIcon('icons/Smashicons/target.svg'))
         self.drawing_page.label_right\
                          .calibration_mode\
@@ -254,7 +262,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.add_group_but = QtGui.QToolButton(toolbar)
         self.add_group_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.add_group_but.setText("add_group")
+        self.add_group_but.setText("add group")
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
         self.drawing_page.label_right\
                          .add_group_mode\
@@ -266,7 +274,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.add_dipole_but = QtGui.QToolButton(toolbar)
         self.add_dipole_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.add_dipole_but.setText("add_dipole")
+        self.add_dipole_but.setText("add dipole")
         self.add_dipole_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
         self.drawing_page.label_right\
                          .add_dipole_mode\
@@ -298,14 +306,20 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
         vertical_line_widget.setStyleSheet("background-color: black")
 
+        vertical_line_widget2 = QtGui.QWidget()
+        vertical_line_widget2.setFixedWidth(2)
+        #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
+        vertical_line_widget2.setStyleSheet("background-color: black")
+
         toolbar.addWidget(self.zoom_in_but)
         toolbar.addWidget(self.zoom_out_but)
         toolbar.addWidget(self.large_grid_but)
         toolbar.addWidget(self.small_grid_but)
         toolbar.addWidget(self.group_visu_but)
         toolbar.addWidget(self.dipole_visu_but)
-        toolbar.addAction(helper_grid)
         toolbar.addWidget(vertical_line_widget)
+        toolbar.addWidget(self.helper_grid_but)
+        toolbar.addWidget(vertical_line_widget2)
         toolbar.addWidget(self.calibration_but)
         toolbar.addWidget(self.add_group_but)
         toolbar.addWidget(self.add_dipole_but)
@@ -321,6 +335,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.small_grid_but.clicked.connect(self.set_small_grid)
         self.group_visu_but.clicked.connect(self.set_group_visualisation)
         self.dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
+        self.helper_grid_but.clicked.connect(self.set_helper_grid)
         self.calibration_but.clicked.connect(self.start_calibration)
         self.add_group_but.clicked.connect(self.add_group)
         self.add_dipole_but.clicked.connect(self.add_dipole)
@@ -516,6 +531,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print(self.drawing_page.label_right.HGC_longitude)
         print(self.drawing_page.label_right.HGC_latitude)
         
+
+    def set_helper_grid(self):
+        self.drawing_page.label_right.helper_grid.set_opposite_value()
+        self.drawing_page.label_right.set_img()
+        # affiche un message disant qu'il faut cliquer sur le dessing
         
     def set_group_visualisation(self):
         self.drawing_page.label_right.group_visu.set_opposite_value()
@@ -886,12 +906,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.zoom_in_but = QtGui.QToolButton()
         self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_in_but.setText("zoom in")
-        self.zoom_in_but.setIcon(QtGui.QIcon('icons/zoom-in.svg'))
+        self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
 
         self.zoom_out_but = QtGui.QToolButton()
         self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_out_but.setText("zoom out")
-        self.zoom_out_but.setIcon(QtGui.QIcon('icons/search.svg'))
+        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
 
         self.reset_but = QtGui.QToolButton()
         self.reset_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
