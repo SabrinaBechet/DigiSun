@@ -50,9 +50,6 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
-        #print(result)
-        #field_lst = [x[0] for x in result]
-        #print(date_min, date_max, result)
         return result
     
     def get_all_datetime_group_number(self, table_name, date, number):

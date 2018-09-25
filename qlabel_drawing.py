@@ -68,12 +68,12 @@ class analyseModeBool(QtCore.QObject):
             self._value=True
             self.value_changed.emit()
 
-class QLabelSurfaceThreshold(QtGui.QLabel):
+class QLabelGroupSurface(QtGui.QLabel):
 
     mouse_pressed = QtCore.pyqtSignal()
     
     def __init__(self):
-        super(QLabelSurfaceThreshold, self).__init__()
+        super(QLabelGroupSurface, self).__init__()
         self.setFrameShape(QtGui.QFrame.Panel)
         self.setFrameShadow(QtGui.QFrame.Plain)
         self.setLineWidth(3)
@@ -402,25 +402,6 @@ class QLabelDrawing(QtGui.QLabel):
 
        self.group_visu_index = 0
 
-    """def pen_definition(self):
-        #img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
-        #pen_width = int(img_mean_dimension/1000.)
-        
-        pen_grid = QtGui.QPen()
-        pen_grid.setColor(QtGui.QColor(22, 206, 255))
-        pen_grid.setWidth(self.pen_width)
-        pen_grid.setStyle(QtCore.Qt.SolidLine)
-        pen_border = QtGui.QPen(QtCore.Qt.blue)
-        pen_border.setWidth(self.pen_width)
-        pen_border.setStyle(QtCore.Qt.SolidLine)
-        pen_special_line =  QtGui.QPen(QtCore.Qt.magenta)
-        pen_special_line.setWidth(self.pen_width)
-        pen_helper_grid  = QtGui.QPen(QtCore.Qt.gray)
-        pen_helper_grid.setWidth(self.pen_width)
-        pen_helper_grid.setStyle(QtCore.Qt.DotLine)
-        
-        return pen_grid, pen_border, pen_special_line, pen_helper_grid
-    """ 
     def set_img(self):
             
         img = Image.open(self.file_path)
@@ -431,21 +412,15 @@ class QLabelDrawing(QtGui.QLabel):
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
         self.pen_width = int(self.img_mean_dimension/1000.)
-        print("check pen width: ", self.img_mean_dimension, self.pen_width)
+        #print("check pen width: ", self.img_mean_dimension, self.pen_width)
         
         qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
         self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
-        
-        """(pen_grid,
-         pen_border,
-         pen_special_line,
-         pen_helper_grid) = self.pen_definition()
-        """
-        
+         
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
 
-        if self.helper_grid_position_clicked:
+        if self.current_drawing.calibrated and self.helper_grid_position_clicked :
 
             pen_helper_grid  = QtGui.QPen(QtCore.Qt.gray)
             pen_helper_grid.setWidth(self.pen_width)
@@ -499,7 +474,7 @@ class QLabelDrawing(QtGui.QLabel):
                     
             self.helper_grid_position_clicked = False
            
-        if self.large_grid_overlay.value or self.small_grid_overlay.value:
+        if self.current_drawing.calibrated and (self.large_grid_overlay.value or self.small_grid_overlay.value):
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.SolidLine)
@@ -567,7 +542,7 @@ class QLabelDrawing(QtGui.QLabel):
                             painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst_minus180_0[i],
                                               self.current_drawing.calibrated_center.y + y_lst_minus180_0[i])
                     end_draw_point = time.clock()
-                    print("********time for draw point ", end_draw_point - start_draw_point)
+                    #print("********time for draw point ", end_draw_point - start_draw_point)
 
                     
             for latitude in angle_array_latitude_range:
@@ -597,7 +572,7 @@ class QLabelDrawing(QtGui.QLabel):
                         painter.drawPath(path_minus90_0)
                       
                     end_interpol = time.clock()
-                    print("********time for interpolation for latitude", end_interpol - start_interpol)                                            
+                    #print("********time for interpolation for latitude", end_interpol - start_interpol)                                            
                 if self.grid_draw_point:    
                     
                     for i in range(len(x_lst_0_90)):
@@ -614,24 +589,25 @@ class QLabelDrawing(QtGui.QLabel):
             painter.drawPoint(self.current_drawing.calibrated_north.x ,
                               self.current_drawing.calibrated_north.y ) 
             
-        if self.group_visu.value :
+        if self.current_drawing.calibrated and self.group_visu.value :
             # note: a column with the cartesian coord of group should be recorded in the db!
+            pen_border = QtGui.QPen(QtCore.Qt.blue)
+            pen_border.setWidth(self.pen_width)
+            pen_border.setStyle(QtCore.Qt.SolidLine)    
             pen_selected = QtGui.QPen()
             pen_selected.setWidth(self.pen_width * 2)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
             
             for i in range(self.current_drawing.group_count):
                 radius = self.img_mean_dimension/500.
-                painter.setPen(pen_border)
-                
+                painter.setPen(pen_border)               
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
-                    
                 x, y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].longitude,
                                                               self.current_drawing.group_lst[i].latitude)
                 painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
                 
-        if self.dipole_visu.value :
+        if self.current_drawing.calibrated and self.dipole_visu.value :
             # note: a column with the cartesian coord of group should be recorded in the db!
             #painter.setPen(pen_border)
             pen_point = QtGui.QPen(QtCore.Qt.blue)
@@ -852,7 +828,7 @@ class QLabelDrawing(QtGui.QLabel):
     def draw_line_on_sphere(self, angle, radius, line, range_min, range_max, step=1):
         x_array = np.array([])
         y_array = np.array([])
-        print("the step is ", step)
+        #print("the step is ", step)
         if line=='latitude':
             spherical_coord_lst = self.get_spherical_coord_latitude(angle, radius, range_min, range_max, step)
         elif line=='longitude':
@@ -880,7 +856,7 @@ class QLabelDrawing(QtGui.QLabel):
                 y_array = np.append(y_array, [cart_coord.y])
 
                 
-        print(len(x_array), len(y_array))
+        #print(len(x_array), len(y_array))
         return x_array, y_array
 
     def zoom_in(self, scaling_factor):
@@ -964,6 +940,7 @@ class QLabelDrawing(QtGui.QLabel):
             self.north_done = True
             self.current_drawing.calibrated_north_x = self.x_drawing
             self.current_drawing.calibrated_north_y = self.y_drawing
+            # calculate the radius as well!!
             self.zoom_in(1/5.)
             self.large_grid_overlay.value = True
             self.group_visu.value = True

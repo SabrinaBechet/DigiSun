@@ -197,7 +197,7 @@ class dialog_login(QtGui.QDialog):
 
         print("handleLogin...")
         uset_db = database.database()
-        if (uset_db.exist_in_db('observers', 'namecode',self.operator_name.text())):
+        if (uset_db.exist_in_db('observers', 'namecode', self.operator_name.text())):
             self.accept()
         else:
             QtGui.QMessageBox.warning(

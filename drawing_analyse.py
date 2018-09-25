@@ -38,7 +38,7 @@ class DrawingViewPage(QtGui.QWidget):
       
         self.widget_left_up = QtGui.QWidget()
         #self.widget_left_up.setMinimumWidth(350)
-        self.widget_left_up.setMaximumHeight(300)
+        self.widget_left_up.setMaximumHeight(500)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")   
         self.widget_left_up_layout = QtGui.QVBoxLayout()
         self.widget_left_up_layout.setContentsMargins(0, 0, 0, 0) 
@@ -48,7 +48,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(350)
-        self.widget_left_middle.setMaximumHeight(320)
+        self.widget_left_middle.setMaximumHeight(200)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
@@ -75,7 +75,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_middle_up_layout.setSpacing(0)
         self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
-        self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
+        self.label_middle_up = qlabel_drawing.QLabelGroupSurface()
            
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
@@ -85,7 +85,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_right.setLayout(self.widget_right_layout)
         self.label_right = qlabel_drawing.QLabelDrawing()
 
-        #self.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
+        #self.label_middle_up = qlabel_drawing.QLabelGroupSurface()
         
         #self.widget_right.layout().addWidget(self.label_middle_up)
         self.widget_right.layout().addWidget(self.label_right)
@@ -319,14 +319,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addWidget(self.dipole_visu_but)
         toolbar.addWidget(vertical_line_widget)
         toolbar.addWidget(self.helper_grid_but)
-        toolbar.addWidget(vertical_line_widget2)
+        #toolbar.addWidget(vertical_line_widget2)
         toolbar.addWidget(self.calibration_but)
         toolbar.addWidget(self.add_group_but)
         toolbar.addWidget(self.add_dipole_but)
         toolbar.addWidget(self.surface_but)
         #toolbar.addWidget(self.about_but)
         
-    
         #zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
         #zoom_out.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
         self.zoom_in_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
@@ -368,13 +367,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
 
-    def slot_surface(self):
-        """
-        triggered when item selection changed and surface mode is true.
-        """
+    """def slot_surface(self):
         if self.drawing_page.label_right.surface_mode.value:
             self.calculate_surface(self.listWidget_groupBox.currentRow())
-        
+    """
+    
     def calculate_surface(self, n):
         self.drawing_page.label_right.surface_mode.set_opposite_value()
 
@@ -390,61 +387,67 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
     def update_surface_qlabel(self, n):
-        print("update surface qlabel number:", n)
-        longitude = self.drawing_lst[self.current_count]\
-                        .group_lst[n]\
-                        .longitude
-        latitude = self.drawing_lst[self.current_count]\
-                       .group_lst[n]\
-                       .latitude
-        coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
-        coords = list(coords)
-        
-        # don't forget to document this:
-        #print("------------------------------------CHECK!!!!!!!",
-        #      self.drawing_page.label_right.pixmap().height(),
-        #      self.drawing_page.label_right.drawing_pixMap.height())
-        
-        #self.drawing_page.label_middle_up = qlabel_drawing.QLabelSurfaceThreshold()
-        #Shift the coordinates to centre the group
-        if coords[0] > 150:
-            coords[0] = coords[0]-150
-        else:
-            coords[0] = 0
+        """
+        Update the QLabelGroupSurface object which represent an image of the drawing 
+        to calculate the surface.
+        This method uses heliographic coordinates so it needs the calibration to be done!
+        """
+        #print("update surface qlabel number:", n)
+        if self.drawing_lst[self.current_count].calibrated:
+            longitude = self.drawing_lst[self.current_count]\
+                            .group_lst[n]\
+                            .longitude
+            latitude = self.drawing_lst[self.current_count]\
+                           .group_lst[n]\
+                           .latitude
+            coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
+            coords = list(coords)
             
-        if coords[1] > 150:
-            coords[1] = coords[1]-150
-        else: coords[1] = 0
+            # don't forget to document this:
+            #print("------------------------------------CHECK!!!!!!!",
+            #      self.drawing_page.label_right.pixmap().height(),
+            #      self.drawing_page.label_right.drawing_pixMap.height())
+            
+            #self.drawing_page.label_middle_up = qlabel_drawing.QLabelGroupSurface()
+            #Shift the coordinates to centre the group
+            if coords[0] > 150:
+                coords[0] = coords[0]-150
+            else:
+                coords[0] = 0
+            
+            if coords[1] > 150:
+                coords[1] = coords[1]-150
+            else: coords[1] = 0
 
-        large_grid_tmp = self.drawing_page.label_right.large_grid_overlay.value
-        small_grid_tmp = self.drawing_page.label_right.small_grid_overlay.value
-        group_tmp = self.drawing_page.label_right.group_visu.value
-        dipole_tmp = self.drawing_page.label_right.dipole_visu.value
-
-        self.drawing_page.label_right.large_grid_overlay.value = False
-        self.drawing_page.label_right.small_grid_overlay.value = False
-        self.drawing_page.label_right.group_visu.value = False
-        self.drawing_page.label_right.dipole_visu.value = False
-        self.drawing_page.label_right.set_img()
-        
-        pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
-        self.drawing_page.label_middle_up.original_pixmap = pixmap_group_surface.copy()
-        self.drawing_page.label_middle_up.setPixmap(pixmap_group_surface)
-        #self.drawing_page.label_middle_up.set_img()
-        
-        self.drawing_page.label_middle_up.threshold.value = False 
-        self.drawing_page.label_middle_up.threshold_done.value = False
-        self.drawing_page.label_middle_up.polygon.value = False
-        self.drawing_page.label_middle_up.crop_done.value = False
-        self.drawing_page.label_middle_up.pencil.value = False
-        self.drawing_page.label_middle_up.bucket.value = False
-        
-        self.drawing_page.label_right.large_grid_overlay.value = large_grid_tmp
-        self.drawing_page.label_right.small_grid_overlay.value = small_grid_tmp
-        self.drawing_page.label_right.group_visu.value = group_tmp
-        self.drawing_page.label_right.dipole_visu.value = dipole_tmp
-
-        self.drawing_page.label_right.set_img()
+            large_grid_tmp = self.drawing_page.label_right.large_grid_overlay.value
+            small_grid_tmp = self.drawing_page.label_right.small_grid_overlay.value
+            group_tmp = self.drawing_page.label_right.group_visu.value
+            dipole_tmp = self.drawing_page.label_right.dipole_visu.value
+            
+            self.drawing_page.label_right.large_grid_overlay.value = False
+            self.drawing_page.label_right.small_grid_overlay.value = False
+            self.drawing_page.label_right.group_visu.value = False
+            self.drawing_page.label_right.dipole_visu.value = False
+            self.drawing_page.label_right.set_img()
+            
+            pixmap_group_surface = self.drawing_page.label_right.drawing_pixMap.copy(coords[0],coords[1],300,300)
+            self.drawing_page.label_middle_up.original_pixmap = pixmap_group_surface.copy()
+            self.drawing_page.label_middle_up.setPixmap(pixmap_group_surface)
+            #self.drawing_page.label_middle_up.set_img()
+            
+            self.drawing_page.label_middle_up.threshold.value = False 
+            self.drawing_page.label_middle_up.threshold_done.value = False
+            self.drawing_page.label_middle_up.polygon.value = False
+            self.drawing_page.label_middle_up.crop_done.value = False
+            self.drawing_page.label_middle_up.pencil.value = False
+            self.drawing_page.label_middle_up.bucket.value = False
+            
+            self.drawing_page.label_right.large_grid_overlay.value = large_grid_tmp
+            self.drawing_page.label_right.small_grid_overlay.value = small_grid_tmp
+            self.drawing_page.label_right.group_visu.value = group_tmp
+            self.drawing_page.label_right.dipole_visu.value = dipole_tmp
+            
+            self.drawing_page.label_right.set_img()
         
     def start_calibration(self):
         """
@@ -493,37 +496,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def unzoom(self):
         self.drawing_page.label_right.zoom_in(1/5.)
         
-    def slot_calibrate(self):
-        """
-        This is triggered when clicking on the drawing and the calibration_mode is True
-        """
-        if (self.drawing_page.label_right.calibration_mode.value == True and
-            self.center_done == True and
-            self.north_done == False):
-            
-            self.north_done = True
-            self.get_click_coordinates()
-            self.drawing_lst[self.current_count].calibrated_north_x = self.drawing_page.label_right.x_drawing
-            self.drawing_lst[self.current_count].calibrated_north_y = self.drawing_page.label_right.y_drawing
-            
-            self.unzoom()
-            self.drawing_page.label_right.large_grid_overlay.value = True
-            self.drawing_page.label_right.group_visu.value = True
-            self.drawing_page.label_right.set_img()
-            self.drawing_page.label_right.calibration_mode.value = False
-            
-        elif (self.drawing_page.label_right.calibration_mode.value == True and
-              self.center_done == False and
-              self.north_done == False):
-            
-            self.get_click_coordinates()
-            print("after the click", self.drawing_page.label_right.x_drawing, self.drawing_page.label_right.y_drawing)
-            self.drawing_lst[self.current_count].calibrated_center_x = self.drawing_page.label_right.x_drawing
-            self.drawing_lst[self.current_count].calibrated_center_y = self.drawing_page.label_right.y_drawing
-            self.center_done = True
-            self.set_zoom_north()
-        
-       
     def get_click_coordinates(self):
         print("get click coordinate")
         print(self.drawing_page.label_right.x_drawing)
@@ -631,8 +603,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # first element surface updated
         if self.listWidget_groupBox.count()>0:
             self.listWidget_groupBox.item(0).setSelected(True)
+            self.update_surface_qlabel(0)
             
-        self.update_surface_qlabel(0)    
         self.listWidget_groupBox.setFocus()
         
         
@@ -811,12 +783,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_operator = QtGui.QLineEdit(self)
         self.drawing_operator.setMaximumWidth(self.column_maximum_width)
-        self.drawing_operator.setEnabled(False)
-        self.drawing_operator.setStyleSheet("background-color: white; color:black")
+        self.drawing_operator.setEnabled(True)
+        self.drawing_operator.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_observer = QtGui.QLineEdit(self)
         self.drawing_observer.setMaximumWidth(self.column_maximum_width)
-        self.drawing_observer.setEnabled(False)
+        self.drawing_observer.setEnabled(True)
         self.drawing_observer.setStyleSheet("background-color: white; color:black")
         
         self.drawing_date = QtGui.QDateEdit()
@@ -825,58 +797,131 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
         self.drawing_date.setEnabled(False)
-        self.drawing_date.setStyleSheet("background-color: white; color:black")
+        self.drawing_date.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_time = QtGui.QLineEdit("00:00",self)
         self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setEnabled(False)
-        self.drawing_time.setStyleSheet("background-color: white; color:black")
+        self.drawing_time.setStyleSheet("background-color: lightgray; color:black")
         
-        #self.drawing_time.setStyleSheet("background-color: red")
-        
-        self.drawing_quality = QtGui.QSpinBox(self)
+        self.drawing_quality = QtGui.QLineEdit(self)
         self.drawing_quality.setMaximumWidth(self.column_maximum_width)
-        self.drawing_quality.setMinimum(1)
-        self.drawing_quality.setMaximum(5)
-        self.drawing_quality.setValue(3)
-        self.drawing_quality.setEnabled(False)
+        #self.drawing_quality.setMinimum(1)
+        #self.drawing_quality.setMaximum(5)
+        #self.drawing_quality.setValue(3)
+        self.drawing_quality.setEnabled(True)
         self.drawing_quality.setStyleSheet("background-color: white; color:black")
         
         self.drawing_type = QtGui.QComboBox(self)
         self.drawing_type.setMaximumWidth(self.column_maximum_width)
-        self.drawing_type.setEnabled(False)
+        self.drawing_type.setEnabled(True)
         self.drawing_type.setStyleSheet("background-color: white; color:black")
         self.drawing_type.addItem('USET')
         self.drawing_type.addItem('USET77')
         self.drawing_type.addItem('USET41')
 
-        self.angleP = QtGui.QLabel(self)
-        self.angleB = QtGui.QLabel(self)
-        self.angleL = QtGui.QLabel(self)
-        self.rotation_number = QtGui.QLabel(self)
+        self.wolf_number = QtGui.QLineEdit(self)
+        self.wolf_number.setMaximumWidth(self.column_maximum_width)
+        self.wolf_number.setStyleSheet("background-color: white; color:black")
         
-        self.form_layout1.addRow('Operator:', self.drawing_operator)
-        self.form_layout1.addRow('Observer:', self.drawing_observer)
+        self.angleP = QtGui.QLineEdit(self)
+        self.angleP.setMaximumWidth(self.column_maximum_width)
+        self.angleP.setEnabled(False)
+        self.angleP.setStyleSheet("background-color: lightgrey; color:black")
+        
+        self.angleB = QtGui.QLineEdit(self)
+        self.angleB.setMaximumWidth(self.column_maximum_width)
+        self.angleB.setEnabled(False)
+        self.angleB.setStyleSheet("background-color: lightgrey; color:black")
+        
+        self.angleL = QtGui.QLineEdit(self)
+        self.angleL.setMaximumWidth(self.column_maximum_width)
+        self.angleL.setEnabled(False)
+        self.angleL.setStyleSheet("background-color: lightgrey; color:black")
+        
+        self.rotation_number = QtGui.QLineEdit(self)
+        self.rotation_number.setMaximumWidth(self.column_maximum_width)
+        self.rotation_number.setEnabled(False)
+        self.rotation_number.setStyleSheet("background-color: lightgrey; color:black")
+
+        self.calibrated = QtGui.QLineEdit(self)
+        self.calibrated.setMaximumWidth(self.column_maximum_width)
+        self.calibrated.setEnabled(False)
+        self.calibrated.setStyleSheet("background-color: lightgrey; color:black")
+        
+        self.analyzed = QtGui.QLineEdit(self)
+        self.analyzed.setMaximumWidth(self.column_maximum_width)
+        self.analyzed.setEnabled(False)
+        self.analyzed.setStyleSheet("background-color: lightgrey; color:black")
+        
+        self.area_done = QtGui.QLineEdit(self)
+        self.area_done.setMaximumWidth(self.column_maximum_width)
+        self.area_done.setEnabled(False)
+        self.area_done.setStyleSheet("background-color: lightgrey; color:black")
+
         self.form_layout1.addRow('Date:', self.drawing_date)
         self.form_layout1.addRow('Time:', self.drawing_time)
-        self.form_layout1.addRow('Quality:', self.drawing_quality)
-        self.form_layout1.addRow('Type:', self.drawing_type)
         self.form_layout1.addRow('P angle:', self.angleP)
         self.form_layout1.addRow('B angle:', self.angleB)
         self.form_layout1.addRow('L angle:', self.angleL)
         self.form_layout1.addRow('Carington rotation :', self.rotation_number)
-        #self.form_layout.addWidget(self.but_scan)
-        #self.form_layout.addWidget(self.but_analyse)
-        #self.drawing_time.textChanged.connect(self.check_valid_datetime)
-
+        
+        self.form_layout1.addRow('Observer:', self.drawing_observer)
+        self.form_layout1.addRow('Last Operator:', self.drawing_operator)
+        self.form_layout1.addRow('Quality:', self.drawing_quality)
+        self.form_layout1.addRow('Type:', self.drawing_type)
+        
+        self.form_layout1.addRow('Wolf number:', self.wolf_number)
+        
+        self.form_layout1.addRow('Calibrated:', self.calibrated)
+        self.form_layout1.addRow('Analysed:', self.analyzed)
+        self.form_layout1.addRow('Area done:', self.area_done)
+        
+        
+        self.drawing_observer.textEdited.connect(self.update_observer)
+        self.drawing_quality.textEdited.connect(self.update_quality)
+        self.drawing_type.currentIndexChanged.connect(self.update_type)
+        self.wolf_number.textEdited.connect(self.update_wolf_number)
 
         widget_form = QtGui.QWidget()
         widget_form.setMaximumWidth(self.column_maximum_width)
         widget_form.setLayout(self.form_layout1)
-        #self.widget_left_up_layout.addWidget(title)
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
+    def update_wolf_number(self):
+        #check that the value from the linedit is a number between 1 and xxx
+        self.drawing_lst[self.current_count].wolf = self.wolf_number.text()
+
+    def update_observer(self):
+        # check that the value is in the database
+        uset_db = database.database()
+        if uset_db.exist_in_db('observers', 'namecode', self.drawing_observer.text()):
+            self.drawing_lst[self.current_count].observer = self.drawing_observer.text()
+            self.drawing_observer.setStyleSheet("background-color: white")
+        else:
+            self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
+
+    def update_quality(self):
+        # check that the value is in the database
+        # to do: create the table in the database!!
+        uset_db = database.database()
+        
+        self.drawing_lst[self.current_count].quality = self.drawing_quality.text()
+        #    self.drawing_observer.setStyleSheet("background-color: rgb(125, 232, 164)")
+        #else:
+        #    self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
+        
+    def update_type(self):
+        # check that the value is in the database
+        # to do: create the table in the database!!
+        uset_db = database.database()
+        
+        self.drawing_lst[self.current_count].drawing_type = self.drawing_type.currentText()
+        #    self.drawing_observer.setStyleSheet("background-color: rgb(125, 232, 164)")
+        #else:
+        #    self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
+                
     def add_surface(self):
         
         qlabel_title = QtGui.QLabel("Surface calculation")
@@ -1266,12 +1311,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                   ":" +
                                   str(self.drawing_lst[ self.current_count].datetime.strftime('%M')))
         
-        self.drawing_quality.setValue(int(self.drawing_lst[self.current_count].quality))
-
+        self.drawing_quality.setText(str(self.drawing_lst[self.current_count].quality))
+        
+        self.drawing_type.blockSignals(True)
         index_drawing_type = self.drawing_type\
                                  .findText(self.drawing_lst[self.current_count].drawing_type)
         self.drawing_type.setCurrentIndex(index_drawing_type)
-
+        self.drawing_type.blockSignals(False)
         
 
         print(self.drawing_lst[self.current_count].changed)
@@ -1281,10 +1327,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             self.but_save.setStyleSheet("background-color: lightgray")
 
-        self.angleP.setText(str(self.drawing_lst[self.current_count].angle_P))
-        self.angleB.setText(str(self.drawing_lst[self.current_count].angle_B))
-        self.angleL.setText(str(self.drawing_lst[self.current_count].angle_L))
+        self.angleP.setText('{0:.2f}'.format(self.drawing_lst[self.current_count].angle_P))
+        self.angleB.setText('{0:.2f}'.format(self.drawing_lst[self.current_count].angle_B))
+        self.angleL.setText('{0:.2f}'.format(self.drawing_lst[self.current_count].angle_L))
         self.rotation_number.setText(str(self.drawing_lst[self.current_count].carington_rotation))
+
+        self.calibrated.setText(str(self.drawing_lst[self.current_count].calibrated))
+        self.analyzed.setText(str(self.drawing_lst[self.current_count].analyzed))
+
+        self.wolf_number.setText(str(self.drawing_lst[self.current_count].wolf))
         
     def set_path_to_qlabel(self):
         """

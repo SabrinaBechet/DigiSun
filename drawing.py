@@ -297,9 +297,7 @@ class Drawing(QtCore.QObject):
 
         self.changed = False
 
-        #for el in self._group_lst:
-        #    el.value_changed.connect(self.get_group_signal)
-        
+       
     def get_group_signal(self):
         print("get group signal")
         self.value_changed.emit()
@@ -357,7 +355,51 @@ class Drawing(QtCore.QObject):
         self._carington_rotation = value
         self.changed = True
         self.value_changed.emit()
-        
+               
+    @property    
+    def calibrated(self):
+        return self._calibrated
+    
+    @calibrated.setter
+    def calibrated(self, value):
+        print("here we are changing the value of calibrated to ", value)
+        self._calibrated = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def analyzed(self):
+        return self._analyzed
+    
+    @analyzed.setter
+    def analyzed(self, value):
+        print("here we are changing the value of analyzed to ", value)
+        self._analyzed = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def group_count(self):
+        return self._group_count
+    
+    @group_count.setter
+    def group_count(self, value):
+        print("here we are changing the value of group_count to ", value)
+        self._group_count = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def wolf(self):
+        return self._wolf
+    
+    @wolf.setter
+    def wolf(self, value):
+        print("here we are changing the value of wolf to ", value)
+        self._wolf = value
+        self.changed = True
+        self.value_changed.emit()
+            
     @property
     def angle_P(self):
         #print("here we are reading the value of angle P")
@@ -409,30 +451,9 @@ class Drawing(QtCore.QObject):
         self._operator = value
         self.changed = True
         self.value_changed.emit()
-        
-        
-    @property    
-    def calibrated(self):
-        return self._calibrated
-    
-    @calibrated.setter
-    def calibrated(self, value):
-        print("here we are changing the value of calibrated to ", value)
-        self._calibrated = value
-        self.changed = True
-        self.value_changed.emit()
-        
+  
 
-    @property    
-    def group_count(self):
-        return self._group_count
     
-    @group_count.setter
-    def group_count(self, value):
-        print("here we are changing the value of group_count to ", value)
-        self._group_count = value
-        self.changed = True
-        self.value_changed.emit()
         
         
     @property
@@ -539,39 +560,51 @@ class Drawing(QtCore.QObject):
         Then all the attribute of the drawing can be filled from the database
         """
         self.datetime = datetime
+        print("fill from database", datetime)
+
         
         db = database.database()
-        
-        (self._id_drawing,
-         self._datetime,
-         self._drawing_type, 
-         self._quality, 
-         self._observer, 
-         self._carington_rotation,
-         self._julian_date, 
-         self._calibrated, 
-         self._analyzed, 
-         self._group_count, 
-         self._spot_count, 
-         self._wolf, 
-         self._angle_P, 
-         self._angle_B, 
-         self._angle_L, 
-         self._angle_scan, 
-         self._path, 
-         self._operator, 
-         self._last_update_time) = db.get_all_datetime("drawings", datetime)[0]
-        
-        
-        (self._id_calibration,
-         self._datetime_calibration,
-         self._drawing_type_calibration,
-         self._calibrated_north.x,
-         self._calibrated_north.y,
-         self._calibrated_center.x,
-         self._calibrated_center.y,
-         self._calibrated_radius) = db.get_all_datetime("calibrations", datetime)[0]
 
+        try:
+            (self._id_drawing,
+             self._datetime,
+             self._drawing_type, 
+             self._quality, 
+             self._observer, 
+             self._carington_rotation,
+             self._julian_date, 
+             self._calibrated, 
+             self._analyzed, 
+             self._group_count, 
+             self._spot_count, 
+             self._wolf, 
+             self._angle_P, 
+             self._angle_B, 
+             self._angle_L, 
+             self._angle_scan, 
+             self._path, 
+             self._operator, 
+             self._last_update_time) = db.get_all_datetime("drawings", datetime)[0]
+
+            
+        except IndexError:
+            print("empty set for the drawing table..")
+            
+        print(self._datetime, self._calibrated, self._analyzed)
+
+        try:
+            (self._id_calibration,
+             self._datetime_calibration,
+             self._drawing_type_calibration,
+             self._calibrated_north.x,
+             self._calibrated_north.y,
+             self._calibrated_center.x,
+             self._calibrated_center.y,
+             self._calibrated_radius) = db.get_all_datetime("calibrations", datetime)[0]
+
+        except IndexError:
+            print("empty set for the calibration table")
+            self._calibrated = 0
         
         for group_number in range(self._group_count):
             group_tmp = Group()
