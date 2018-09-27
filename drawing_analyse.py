@@ -88,7 +88,7 @@ class DrawingViewPage(QtGui.QWidget):
         #self.label_middle_up = qlabel_drawing.QLabelGroupSurface()
         
         #self.widget_right.layout().addWidget(self.label_middle_up)
-        self.widget_right.layout().addWidget(self.label_right)
+        #self.widget_right.layout().addWidget(self.label_right)
   
         self.scroll = QtGui.QScrollArea()
         self.scroll.setWidget(self.label_right)
@@ -457,41 +457,109 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         here it is what happens when one click on the calibrate button
         (the rest is described in the mouse event)
         """
-        print("start calibration",
+        self.drawing_page.label_right.calibration_mode.set_opposite_value()
+
+        if self.drawing_page.label_right.calibration_mode.value:
+
+            print("start calibration",
               self.drawing_page.label_right.calibration_mode.value)
-        self.drawing_page.label_right.calibration_mode.value = True
-        self.drawing_page.label_right.center_done = False
-        self.drawing_page.label_right.north_done = False
-        print("start calibration",
-              self.drawing_page.label_right.calibration_mode.value,
-              self.drawing_page.label_right.center_done, self.drawing_page.label_right.north_done)
+            self.drawing_page.label_right.calibration_mode.value = True
+            self.drawing_page.label_right.center_done = False
+            self.drawing_page.label_right.north_done = False
+            print("start calibration",
+                  self.drawing_page.label_right.calibration_mode.value,
+                  self.drawing_page.label_right.center_done, self.drawing_page.label_right.north_done)
         
-        self.drawing_page.label_right.group_visu.value = False
-        self.drawing_page.label_right.dipole_visu.value = False
-        self.drawing_page.label_right.large_grid_overlay.value = False
-        self.drawing_page.label_right.small_grid_overlay.value = False
+            self.drawing_page.label_right.group_visu.value = False
+            self.drawing_page.label_right.dipole_visu.value = False
+            self.drawing_page.label_right.large_grid_overlay.value = False
+            self.drawing_page.label_right.small_grid_overlay.value = False
+            
+            
+            height = self.drawing_page.label_right.drawing_height 
+            width = self.drawing_page.label_right.drawing_width
 
-        self.drawing_page.label_right.zoom_in(5.)
-        
-        
-        height = self.drawing_page.label_right.drawing_height + self.vertical_scroll_bar.pageStep()
-        width = self.drawing_page.label_right.drawing_width + self.horizontal_scroll_bar.pageStep()
-        self.vertical_scroll_bar.setMaximum(height)
-        self.horizontal_scroll_bar.setMaximum(width)
+            print("checkkk")
+            print(self.vertical_scroll_bar.minimum(), self.vertical_scroll_bar.maximum())
+            print(self.horizontal_scroll_bar.minimum(), self.horizontal_scroll_bar.maximum())
 
-        #maybe a tuple instead of the list would be a better choice..
-        self.approximate_center = [height/2., width/2.]
-        self.set_zoom_center()
+            factor = 5./self.drawing_page.label_right.scaling_factor
+            
+            self.vertical_scroll_bar.setMinimum(-self.drawing_page.label_right.height() * factor)
+            self.horizontal_scroll_bar.setMinimum(-self.drawing_page.label_right.width() * factor)
+            self.vertical_scroll_bar.setMaximum(self.drawing_page.label_right.height() * factor)
+            self.horizontal_scroll_bar.setMaximum(self.drawing_page.label_right.width() * factor)
+
+            print(self.vertical_scroll_bar.minimum(), self.vertical_scroll_bar.maximum())
+            print(self.horizontal_scroll_bar.minimum(), self.horizontal_scroll_bar.maximum())
+            #self.horizontal_scroll_bar.setPageStep(10)
+            #self.vertical_scroll_bar.setPageStep(10)
+
+            
+            
+            self.drawing_page.label_right.zoom_in(factor)
+
+            print("height:", height)
+            print("width", width)
+            print("qlabel height", self.drawing_page.label_right.height())
+            print("qlabel width", self.drawing_page.label_right.width())
+            print("widget height", self.drawing_page.height() )
+            print("widget width", self.drawing_page.width())
+            print("page step", self.horizontal_scroll_bar.pageStep())
+            print("page step", self.vertical_scroll_bar.pageStep())
+            print(self.horizontal_scroll_bar.width(), self.vertical_scroll_bar.height())
+            
+            conversion_x = self.drawing_page.label_right.width() * 1./width
+            conversion_y =  self.drawing_page.label_right.height()*1./height
+
+            if self.drawing_lst[self.current_count].drawing_type == 'USET':
+                calib_type=="center_north"
+            else:
+                calib_type="south_north"
+            
+            
+            if calib_type=="center_north":
+                #maybe a tuple instead of the list would be a better choice..
+                self.approximate_center = [self.horizontal_scroll_bar.width()/2. , #+ self.horizontal_scroll_bar.pageStep(),
+                                           self.vertical_scroll_bar.height()/2.  + self.vertical_scroll_bar.pageStep()/2.]
+                
+                """ self.approximate_center = [self.drawing_lst[self.current_count].calibrated_center_x * conversion_x ,
+                self.drawing_lst[self.current_count].calibrated_center_y * conversion_y + self.vertical_scroll_bar.pageStep()/2.]
+                """            
+            elif calib_type=="south_north":
+                self.approximate_center = [self.horizontal_scroll_bar.width()/2. , #+ self.horizontal_scroll_bar.pageStep(),
+                                           self.vertical_scroll_bar.maximum() - self.vertical_scroll_bar.pageStep()]
+                
+        
+            
+            print("conversion", conversion_x, conversion_y)
+            """self.approximate_center = [self.drawing_lst[self.current_count].calibrated_center_x * conversion_x ,
+                                       self.drawing_lst[self.current_count].calibrated_center_y * conversion_y ]
+            """
+            self.set_zoom_center()
+            
+            self.drawing_page.label_right.group_visu.value = True
+            self.drawing_page.label_right.dipole_visu.value = False
+            self.drawing_page.label_right.large_grid_overlay.value = True
+            self.drawing_page.label_right.small_grid_overlay.value = False
+        else:
+            self.drawing_page.label_right.zoom_in(1/self.drawing_page.label_right.scaling_factor)
+            print("out of the calibration")
         
     def set_zoom_center(self):
-        self.vertical_scroll_bar.setValue(self.approximate_center[0])
-        self.horizontal_scroll_bar.setValue(self.approximate_center[1])
+        print("set zoom center")
+        print(self.approximate_center[0], self.approximate_center[1], self.drawing_page.label_right.scaling_factor)
+        
+        self.horizontal_scroll_bar.setValue(self.approximate_center[0] )
+        self.vertical_scroll_bar.setValue(self.approximate_center[1] )
+        
+        print(self.horizontal_scroll_bar.value(), self.vertical_scroll_bar.value())
     
         
     def set_zoom_north(self):
         approximate_north = [0, self.approximate_center[1]]
-        self.vertical_scroll_bar.setValue(approximate_north[0])
-        self.horizontal_scroll_bar.setValue(approximate_north[1])
+        self.vertical_scroll_bar.setValue(approximate_north[0] )
+        self.horizontal_scroll_bar.setValue(approximate_north[1] )
 
     def unzoom(self):
         self.drawing_page.label_right.zoom_in(1/5.)

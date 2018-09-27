@@ -11,18 +11,17 @@ import numpy as np
 import time
 import sys
 
-sys.setrecursionlimit(100000)
+sys.setrecursionlimit(100000) # check where it is exactly used...
 
 def radian_between_zero_pi(radian):
-
-        #if radian > 0 and radian < math.pi:
-        norm_radian = radian
-        if radian > 2*math.pi:
-            norm_radian = radian % 2*math.pi
-        elif radian<0:
-            norm_radian = math.pi - math.fabs(norm_radian)
-            
-        return norm_radian
+    #if radian > 0 and radian < math.pi:
+    norm_radian = radian
+    if radian > 2*math.pi:
+        norm_radian = radian % 2*math.pi
+    elif radian<0:
+        norm_radian = math.pi - math.fabs(norm_radian)
+        
+    return norm_radian
     
 class analyseModeBool(QtCore.QObject):
     """
@@ -43,7 +42,7 @@ class analyseModeBool(QtCore.QObject):
     - calculate the surface
       * input parameter: group number! works only for a given group
     """
-
+    
     value_changed = QtCore.pyqtSignal()
     
     def __init__(self, input_value='False'):
@@ -402,12 +401,24 @@ class QLabelDrawing(QtGui.QLabel):
 
        self.group_visu_index = 0
 
+       # to zoom and show a part of the drawing (for the calibration)
+       """scroll = QtGui.QScrollArea()
+       scroll.setWidget(self)
+       scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+       scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+       scroll.setWidgetResizable(True)
+       self.vertical_scroll_bar = scroll.verticalScrollBar()
+       self.horizontal_scroll_bar = scroll.horizontalScrollBar()
+       """
+       self.scaling_factor = 1
+       
     def set_img(self):
             
         img = Image.open(self.file_path)
 
         self.drawing_width = img.size[0]
         self.drawing_height = img.size[1]
+        print('img info', img.info)
         print("!img size: ", img.size)
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
@@ -642,10 +653,12 @@ class QLabelDrawing(QtGui.QLabel):
 
                 
         painter.end()
-        self.setPixmap(self.drawing_pixMap.scaled(int(self.width_scale),
+        pixmap = self.drawing_pixMap.scaled(int(self.width_scale),
                                                   int(self.height_scale),
-                                                  QtCore.Qt.KeepAspectRatio))
+                                                  QtCore.Qt.KeepAspectRatio)
         
+        self.setPixmap(pixmap)
+          
     def set_drawing_path_small_step(self, x_lst, y_lst):
         """ Join a list of points by step of 1.
         Input : the list of poits
@@ -859,11 +872,14 @@ class QLabelDrawing(QtGui.QLabel):
         #print(len(x_array), len(y_array))
         return x_array, y_array
 
+  
     def zoom_in(self, scaling_factor):
-       
+            
         self.width_scale *=  scaling_factor
         self.height_scale *=  scaling_factor
         #print("zoom in", self.width_scale, self.height_scale)
+        self.scaling_factor *=scaling_factor
+        print("the scaling factor is", self.scaling_factor)
         self.set_img()   
 
     def mousePressEvent(self, QMouseEvent):
