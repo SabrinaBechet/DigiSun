@@ -26,6 +26,20 @@ class database():
         #print(date_min, date_max, result)
         return field_lst
 
+
+    def get_drawing_information(self, table_name, drawing_type):
+
+        print("fill the drawing type information...")
+
+        self.cursor.execute('SELECT * FROM ' + table_name +
+                            ' WHERE name <=> %s ;',
+                            (str(drawing_type)))
+
+        self.db.commit()
+        result = self.cursor.fetchall()
+        print(result)
+        return result
+    
     def get_field_datetime(self, table_name, field, date):
         """
         it returns a list

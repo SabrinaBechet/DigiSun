@@ -391,10 +391,11 @@ class QLabelDrawing(QtGui.QLabel):
        self.helper_grid_position_clicked = False
        
        #action mode
+       #only one action mode at the time!
        self.calibration_mode = analyseModeBool(False)
        self.center_done = False
        self.north_done = False
-       self.approximate_center = [0., 0.]
+       #self.approximate_center = [0., 0.]
        self.add_group_mode = analyseModeBool(False)
        self.add_dipole_mode = analyseModeBool(False)
        self.surface_mode = analyseModeBool(False)
@@ -495,6 +496,9 @@ class QLabelDrawing(QtGui.QLabel):
             pen_grid.setColor(QtGui.QColor(22, 206, 255))
             pen_grid.setWidth(self.pen_width)
             pen_grid.setStyle(QtCore.Qt.SolidLine)
+            large_pen = QtGui.QPen(QtCore.Qt.red)
+            large_pen.setWidth(5)
+            large_pen.setStyle(QtCore.Qt.SolidLine)
             
             painter.setPen(pen_border)
             painter.drawEllipse(QtCore.QPointF(self.current_drawing.calibrated_center.x,
@@ -594,7 +598,7 @@ class QLabelDrawing(QtGui.QLabel):
                         painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst_minus90_0[i],
                                           self.current_drawing.calibrated_center.y + y_lst_minus90_0[i])
 
-            painter.setPen(pen_special_line)
+            painter.setPen(large_pen)
             painter.drawPoint(self.current_drawing.calibrated_center.x ,
                               self.current_drawing.calibrated_center.y )
             painter.drawPoint(self.current_drawing.calibrated_north.x ,
@@ -654,9 +658,11 @@ class QLabelDrawing(QtGui.QLabel):
                 
         painter.end()
         pixmap = self.drawing_pixMap.scaled(int(self.width_scale),
-                                                  int(self.height_scale),
-                                                  QtCore.Qt.KeepAspectRatio)
-        
+                                            int(self.height_scale),
+                                            QtCore.Qt.KeepAspectRatio)
+
+        print(pixmap.height(), pixmap.width())
+    
         self.setPixmap(pixmap)
           
     def set_drawing_path_small_step(self, x_lst, y_lst):
@@ -896,22 +902,22 @@ class QLabelDrawing(QtGui.QLabel):
         init_height = 1000 # without any zoom
         pixmap_width = init_width / self.width_scale # is 1 without any zoom
         pixmap_height = init_height / self.height_scale # is 1 without any zoom
-
+        
         # change of coordinate system: qlabel -> pixmap
         x_pixmap = (x_click - self.pixmap_x_min) * pixmap_width 
         y_pixmap = (y_click - self.pixmap_y_min) * pixmap_height
- 
+        
         #change of coordinaet system: qlabel -> drawing
         x_drawing = (x_click - self.pixmap_x_min) * self.drawing_width / self.pixmap().width()
         y_drawing = (y_click - self.pixmap_y_min) * self.drawing_height / self.pixmap().height()
-  
+        
         x_center_drawing = ((self.current_drawing.calibrated_center.x -
-                            self.pixmap_x_min) * self.drawing_width /
+                             self.pixmap_x_min) * self.drawing_width /
                             self.pixmap().width())
         y_center_drawing = ((self.current_drawing.calibrated_center.y -
-                            self.pixmap_y_min) * self.drawing_height /
+                             self.pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
-
+        
         self.x_drawing = x_drawing
         self.y_drawing = y_drawing
         
@@ -923,50 +929,64 @@ class QLabelDrawing(QtGui.QLabel):
               self.current_drawing.calibrated_center.x,
               self.current_drawing.calibrated_center.y)
         
-        #print("**radius", self.radius)
-        #print("pixmap coord centered: ", x_pixmap_centered, y_pixmap_centered)
-        #print("x center pixmap", x_center_pixmap)
-        
-        #print("P, B, L", (self.angle_P, self.angle_B, self.angle_L))
-        
-        center_x_lower_left_origin = self.current_drawing.calibrated_center.x
-        center_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_center.y
-        north_x_lower_left_origin = self.current_drawing.calibrated_north.x
-        north_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_north.y
-        drawing_x_lower_left_origin = x_drawing
-        drawing_y_lower_left_origin = self.drawing_height - y_drawing
-        longitude, latitude = coordinates.heliographic_from_drawing(center_x_lower_left_origin,
-                                                                    center_y_lower_left_origin,
-                                                                    north_x_lower_left_origin,
-                                                                    north_y_lower_left_origin,
-                                                                    drawing_x_lower_left_origin,
-                                                                    drawing_y_lower_left_origin,
-                                                                    self.current_drawing.angle_P,
-                                                                    self.current_drawing.angle_B,
-                                                                    self.current_drawing.angle_L)
-
-        
-        self.HGC_longitude = longitude
-        self.HGC_latitude = latitude
-        print("longitude: ", longitude)
-        print("latitude: ", latitude)
-
+        if self.add_group_mode.value or self.helper_grid.value:
+            
+            #print("**radius", self.radius)
+            #print("pixmap coord centered: ", x_pixmap_centered, y_pixmap_centered)
+            #print("x center pixmap", x_center_pixmap)
+            
+            #print("P, B, L", (self.angle_P, self.angle_B, self.angle_L))
+            
+            center_x_lower_left_origin = self.current_drawing.calibrated_center.x
+            center_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_center.y
+            north_x_lower_left_origin = self.current_drawing.calibrated_north.x
+            north_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_north.y
+            drawing_x_lower_left_origin = x_drawing
+            drawing_y_lower_left_origin = self.drawing_height - y_drawing
+            longitude, latitude = coordinates.heliographic_from_drawing(center_x_lower_left_origin,
+                                                                        center_y_lower_left_origin,
+                                                                        north_x_lower_left_origin,
+                                                                        north_y_lower_left_origin,
+                                                                        drawing_x_lower_left_origin,
+                                                                        drawing_y_lower_left_origin,
+                                                                        self.current_drawing.angle_P,
+                                                                        self.current_drawing.angle_B,
+                                                                        self.current_drawing.angle_L)
+            
+            
+            self.HGC_longitude = longitude
+            self.HGC_latitude = latitude
+            print("longitude: ", longitude)
+            print("latitude: ", latitude)
+            
         if self.calibration_mode.value and self.center_done and not self.north_done:
             print("Enter in the calibration of the north..", self.calibration_mode.value, self.center_done, self.north_done)
             self.north_done = True
+                
+            calib_pt2_x = self.x_drawing
+            calib_pt2_y = self.y_drawing
+            """
             self.current_drawing.calibrated_north_x = self.x_drawing
             self.current_drawing.calibrated_north_y = self.y_drawing
-            # calculate the radius as well!!
+            """
+            self.current_drawing.calibrate(self.calib_pt1_x, self.calib_pt1_y, calib_pt2_x, calib_pt2_y)
+            
             self.zoom_in(1/5.)
             self.large_grid_overlay.value = True
             self.group_visu.value = True
             self.set_img()
             self.calibration_mode.value = False
-
+            QtGui.QApplication.restoreOverrideCursor()
+            
         elif self.calibration_mode.value and not self.center_done and not self.north_done:
-            print("Enter in the calibraiton of the center..", self.calibration_mode.value, self.center_done, self.north_done)
-            self.current_drawing.calibrated_center_x = self.x_drawing
-            self.current_drawing.calibrated_center_y = self.y_drawing
+            print("Enter in the calibration of the center/south..",
+                  self.calibration_mode.value,
+                  self.center_done, self.north_done)
+
+            self.calib_pt1_x = self.x_drawing
+            self.calib_pt1_y = self.y_drawing
+            
+              
             self.center_done = True
             self.center_clicked.emit()
 

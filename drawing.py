@@ -2,6 +2,8 @@ from datetime import date, time, datetime
 import database, coordinates
 from PyQt4 import QtCore
 
+import math
+
 """
 to do:
 - method the print the drawing information in a nice way.
@@ -255,11 +257,48 @@ class Group(QtCore.QObject):
          self._g_spot) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
 
 
+"""class DrawingType(QtCore.QObject):
+
+    def __init__(self):
+        super(DrawingType, self).__init__()
+        self._id = 0
+        self.name = 'None'
+        self.prefix = 'None'
+        self.p_oriented = False
+        self.height = 0
+        self.width = 0
+        self.name_point1 = 'None'
+        self.name_point2 = 'None'
+        self.calib_point1_X = 0
+        self.calib_point1_Y = 0
+        self.calib_point2_X = 0
+        self.calib_point2_Y = 0
+
+    def fill_from_database(self, datetime, group_number):
+       
+        self._datetime = datetime
+        
+        db = database.database()
+
+        (self._id_,
+         self.name,
+         self.prefix,
+         self.p_oriented,
+         self.height,
+         self.width,
+         self.name_point1,
+         self.name_point2,
+         self.calib_point1_X,
+         self.calib_point1_Y,
+         self.calib_point2_X,
+         self.calib_point2_Y) = db.get_all_values("drawing_type")[0]
+    
+"""        
 class Drawing(QtCore.QObject):
     """
     It represents all the information extracted from the drawing
     and stored in the database.
-    All the attribute are 'private' (in the python way with the underscore
+    All the attribute are 'private' (in the python convention with the underscore
     before the name).
     """
 
@@ -292,12 +331,51 @@ class Drawing(QtCore.QObject):
         self._calibrated_center = coordinates.Cartesian(0,0)
         self._calibrated_north = coordinates.Cartesian(0,0)
         self._calibrated_radius = 0
+        self._calibrated_angle_scan = 0
 
+        self._prefix = 'None'
+        self._p_oriented = 0
+        self._height = 0
+        self._widht = 0
+        self._pt1_name = 'None'
+        self._pt1_fraction_width = 0
+        self._pt1_fraction_height = 0
+        self._pt2_name = 'None'
+        self._pt2_fraction_width = 0
+        self._pt2_fraction_height = 0
+        
         self._group_lst = []
 
         self.changed = False
 
-       
+
+    def radius(self, pt1, pt2):
+
+        return math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
+        
+    def calibrate(self, point1_x, point1_y, point2_x, point2_y):
+        if self.pt1_name == 'Center'  and self.pt2_name == 'North':
+            self.calibrated_center = coordinates.Cartesian(point1_x, point1_y)
+            self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
+            self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)
+
+            radius_tst = self.radius(self.calibrated_center, self.calibrated_north)
+            print("radius 1: ", self.calibrated_radius)
+            print("radius 2: ", radius_tst)
+
+        elif self.pt1_name == 'South'  and self.pt2_name == 'North':
+            self.calibrated_center = coordinates.Cartesian((point1_x + point2_x)/2, (point1_y + point2_y)/2)
+            self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
+            self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)   
+
+            radius_tst = self.radius(self.calibrated_center, self.calibrated_north)
+            print("radius 1: ", self.calibrated_radius)
+            print("radius 2: ", radius_tst)
+            
+        self.calibrated_angle_scan = self.calibrated_center.angle_from_y_axis(self.calibrated_north)
+
+            
+        
     def get_group_signal(self):
         print("get group signal")
         self.value_changed.emit()
@@ -439,7 +517,6 @@ class Drawing(QtCore.QObject):
         self.value_changed.emit()
         
         
-    
     @property    
     def operator(self):
         #print("here we are reading the value of operator")
@@ -452,10 +529,6 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
   
-
-    
-        
-        
     @property
     def group_lst(self):
         #print("here we are reading the value of group_lst")
@@ -476,8 +549,8 @@ class Drawing(QtCore.QObject):
 
     @calibrated_center.setter
     def calibrated_center(self, value):
-        print("here we are changing the value of calibrated center to ", value)
-        self._calibrated_center = value
+        print("here we are changing the value of calibrated center to ", value.x, value.y)
+        self._calibrated_center = coordinates.Cartesian(value.x, value.y)
         self.changed = True
         self.value_changed.emit()
         
@@ -512,8 +585,8 @@ class Drawing(QtCore.QObject):
 
     @calibrated_north.setter
     def calibrated_north(self, value):
-        print("here we are changing the value of calibrated north to ", value)
-        self._calibrated_north = value
+        print("here we are changing the value of calibrated north to ", value.x, value.y)
+        self._calibrated_north = coordinates.Cartesian(value.x, value.y)
         self.changed = True
         self.value_changed.emit()
         
@@ -552,8 +625,99 @@ class Drawing(QtCore.QObject):
         self._calibrated_radius = value
         self.changed = True
         self.value_changed.emit()
-        
-        
+
+    @property
+    def calibrated_angle_scan(self):
+        #print("here we are reading the value of calibrated radius")
+        return self._calibrated_angle_scan
+
+    @calibrated_angle_scan.setter
+    def calibrated_angle_scan(self, value):
+        print("here we are changing the value of calibrated angle scan to ", value)
+        self._calibrated_angle_scan = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def pt1_fraction_width(self):
+        #print("here we are reading the value of drawing_type ")
+        return self._pt1_fraction_width
+    
+    @pt1_fraction_width.setter
+    def pt1_fraction_width(self, value):
+        print("here we are changing the value of fraction width to ", value)
+        print("this is not authorized!!")
+        #self._pt1_fraction_width = value
+        #self.changed = True
+        #self.value_changed.emit()
+
+    @property    
+    def pt1_fraction_height(self):
+        #print("here we are reading the value of drawing_type ")
+        return self._pt1_fraction_height
+    
+    @pt1_fraction_height.setter
+    def pt1_fraction_height(self, value):
+        print("here we are changing the value of fraction height to ", value)
+        print("this is not authorized!!")
+        #self._pt1_fraction_height = value
+        #self.changed = True
+        #self.value_changed.emit()
+
+    @property    
+    def pt2_fraction_width(self):
+        #print("here we are reading the value of drawing_type ")
+        return self._pt2_fraction_width
+    
+    @pt2_fraction_width.setter
+    def pt2_fraction_width(self, value):
+        print("here we are changing the value of fraction width to ", value)
+        print("this is not authorized!!")
+        #self._pt2_fraction_width = value
+        #self.changed = True
+        #self.value_changed.emit()
+
+    @property    
+    def pt2_fraction_height(self):
+        #print("here we are reading the value of drawing_type ")
+        return self._pt2_fraction_height
+    
+    @pt2_fraction_height.setter
+    def pt2_fraction_height(self, value):
+        print("here we are changing the value of fraction height to ", value)
+        print("this is not authorized!!")
+        #self._pt2_fraction_height = value
+        #self.changed = True
+        #self.value_changed.emit()  
+
+    @property    
+    def pt1_name(self):
+        #print("here we are reading the value of drawing_type ")
+        return self._pt1_name
+
+    @pt1_name.setter
+    def pt1_name(self, value):
+        print("here we are changing the value of point1 name to ", value)
+        print("this is not authorized!!")
+        #self._pt2_fraction_height = value
+        #self.changed = True
+        #self.value_changed.emit()
+
+    @property    
+    def pt2_name(self):
+        #print("here we are reading the value of drawing_type ")
+        return self._pt2_name
+
+    @pt2_name.setter
+    def pt2_name(self, value):
+        print("here we are changing the value of point2 name to ", value)
+        print("this is not authorized!!")
+        #self._pt2_fraction_height = value
+        #self.changed = True
+        #self.value_changed.emit() 
+
+    
+             
     def fill_from_database(self, datetime):
         """
         A drawing can be identified uniquely with its datetime.
@@ -600,12 +764,32 @@ class Drawing(QtCore.QObject):
              self._calibrated_north.y,
              self._calibrated_center.x,
              self._calibrated_center.y,
-             self._calibrated_radius) = db.get_all_datetime("calibrations", datetime)[0]
+             self._calibrated_radius,
+             self._calibrated_angle_scan) = db.get_all_datetime("calibrations", datetime)[0]
 
         except IndexError:
             print("empty set for the calibration table")
             self._calibrated = 0
-        
+
+            
+        try:
+            (self._id_type_of_drawing,
+             self._name,
+             self._prefix,
+             self._p_oriented,
+             self._width,
+             self._height,
+             self._pt1_name,
+             self._pt2_name,
+             self._pt1_fraction_width,
+             self._pt1_fraction_height,
+             self._pt2_fraction_width,
+             self._pt2_fraction_height) = db.get_drawing_information("drawing_type", self.drawing_type)[0]
+            
+        except IndexError:
+            print("empty set for the drawing_type table..")
+
+            
         for group_number in range(self._group_count):
             group_tmp = Group()
             group_tmp.fill_from_database(self._datetime, group_number)

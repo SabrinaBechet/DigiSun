@@ -99,6 +99,7 @@ class DrawingViewPage(QtGui.QWidget):
  
         self.widget_right_layout.addWidget(self.scroll)
         
+        
         splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_middle_down)
         splitter_middle_down.addWidget(self.widget_left_up)
@@ -136,7 +137,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page = DrawingViewPage()
         self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
         self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
-        
+
+        """print("scroll bar properties:")
+        print("width: ",  self.vertical_scroll_bar.width())
+        print("height: ",  self.vertical_scroll_bar.height())
+        """
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
@@ -147,12 +152,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst = []
         self.set_toolbar()
         
-        self.drawing_page.label_right.center_clicked.connect(self.set_zoom_north)
+        self.drawing_page.label_right.center_clicked.connect(self.scroll_position)
         self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
-
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_configuration(self):
+        """
+        TO DO:
+        the prefix should be read from the database (prefix from the drawing_type table)
+        and from the initialization file
+        """
         try:
             with open(self.config_file) as config_file:
                 self.config.read_file(config_file)
@@ -163,7 +172,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print('IOError - config file not found !!')
         
         
-    def set_but_color(self, mode_bool, but):
+    def set_button_color(self, mode_bool, but):
         if mode_bool==True:
             but.setStyleSheet("background-color: lightblue")
         elif mode_bool==False:
@@ -194,7 +203,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .large_grid_overlay\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.large_grid_overlay.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.large_grid_overlay.value,
                                                              self.large_grid_but ))
         if self.drawing_page.label_right.large_grid_overlay.value :
             self.large_grid_but.setStyleSheet("background-color: lightblue")
@@ -206,7 +215,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .small_grid_overlay\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.small_grid_overlay.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.small_grid_overlay.value,
                                                              self.small_grid_but))
         if self.drawing_page.label_right.small_grid_overlay.value :
             self.small_grid_but.setStyleSheet("background-color: lightblue")
@@ -218,7 +227,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .group_visu\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.group_visu.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.group_visu.value,
                                                              self.group_visu_but))
         if self.drawing_page.label_right.group_visu.value :
             self.group_visu_but.setStyleSheet("background-color: lightblue")
@@ -231,7 +240,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .dipole_visu\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.dipole_visu.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.dipole_visu.value,
                                                              self.dipole_visu_but))
         if self.drawing_page.label_right.dipole_visu.value :
             self.dipole_visu_but.setStyleSheet("background-color: lightblue")
@@ -243,7 +252,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .helper_grid\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.helper_grid.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.helper_grid.value,
                                                              self.helper_grid_but))
         if self.drawing_page.label_right.helper_grid.value :
             self.helper_grid_but.setStyleSheet("background-color: lightblue")
@@ -255,7 +264,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .calibration_mode\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.calibration_mode.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.calibration_mode.value,
                                                              self.calibration_but))
         if self.drawing_page.label_right.calibration_mode.value :
             self.calibration_but.setStyleSheet("background-color: lightblue")
@@ -267,7 +276,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .add_group_mode\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.add_group_mode.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.add_group_mode.value,
                                                              self.add_group_but))
         if self.drawing_page.label_right.add_group_mode.value :
             self.add_group_but.setStyleSheet("background-color: lightblue")
@@ -279,7 +288,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .add_dipole_mode\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.add_dipole_mode.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.add_dipole_mode.value,
                                                              self.add_dipole_but))
         if self.drawing_page.label_right.add_dipole_mode.value :
             self.add_dipole_but.setStyleSheet("background-color: lightblue")
@@ -291,7 +300,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .surface_mode\
                          .value_changed\
-                         .connect(lambda: self.set_but_color(self.drawing_page.label_right.surface_mode.value,
+                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.surface_mode.value,
                                                              self.surface_but))
         if self.drawing_page.label_right.surface_mode.value :
             self.surface_but.setStyleSheet("background-color: lightblue")
@@ -335,6 +344,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_visu_but.clicked.connect(self.set_group_visualisation)
         self.dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
         self.helper_grid_but.clicked.connect(self.set_helper_grid)
+    
         self.calibration_but.clicked.connect(self.start_calibration)
         self.add_group_but.clicked.connect(self.add_group)
         self.add_dipole_but.clicked.connect(self.add_dipole)
@@ -448,6 +458,28 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.dipole_visu.value = dipole_tmp
             
             self.drawing_page.label_right.set_img()
+
+
+    def scroll_position(self):
+        """
+        Automatically scroll to the position given 
+        by the self.fraction_width and self.fraction_height.
+        """
+        print("************scroll function")
+        print("image width:", self.drawing_page.label_right.pixmap().width())
+        print("image height: ", self.drawing_page.label_right.pixmap().height())
+        print("fraction width: ", self.fraction_width)
+        print("fraction height: ", self.fraction_height)
+        
+        self.vertical_scroll_bar.setMinimum(0)
+        self.horizontal_scroll_bar.setMinimum(0)
+        self.vertical_scroll_bar.setMaximum(self.drawing_page.label_right.pixmap().height() -
+                                            self.vertical_scroll_bar.pageStep())
+        self.horizontal_scroll_bar.setMaximum(self.drawing_page.label_right.pixmap().width() -
+                                              self.horizontal_scroll_bar.pageStep() )
+  
+        self.horizontal_scroll_bar.setValue(self.horizontal_scroll_bar.maximum() * self.fraction_width)
+        self.vertical_scroll_bar.setValue(self.vertical_scroll_bar.maximum() * self.fraction_height)
         
     def start_calibration(self):
         """
@@ -461,8 +493,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         if self.drawing_page.label_right.calibration_mode.value:
 
+            QtGui.QApplication.setOverrideCursor(QtCore.Qt.CrossCursor)
+            
             print("start calibration",
-              self.drawing_page.label_right.calibration_mode.value)
+                  self.drawing_page.label_right.calibration_mode.value)
             self.drawing_page.label_right.calibration_mode.value = True
             self.drawing_page.label_right.center_done = False
             self.drawing_page.label_right.north_done = False
@@ -474,96 +508,49 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.dipole_visu.value = False
             self.drawing_page.label_right.large_grid_overlay.value = False
             self.drawing_page.label_right.small_grid_overlay.value = False
-            
-            
-            height = self.drawing_page.label_right.drawing_height 
-            width = self.drawing_page.label_right.drawing_width
 
-            print("checkkk")
-            print(self.vertical_scroll_bar.minimum(), self.vertical_scroll_bar.maximum())
-            print(self.horizontal_scroll_bar.minimum(), self.horizontal_scroll_bar.maximum())
+            self.drawing_page.label_right.helper_grid.value = False
+            self.drawing_page.label_right.add_group_mode.value = False
+            self.drawing_page.label_right.add_dipole_mode.value = False
+            self.drawing_page.label_right.surface_mode.value = False
+            
+            self.drawing_page.label_right.zoom_in(5./self.drawing_page.label_right.scaling_factor)
+            
+            self.fraction_width = self.drawing_lst[self.current_count].pt1_fraction_width
+            self.fraction_height = self.drawing_lst[self.current_count].pt1_fraction_height
+            
+            self.scroll_position()
+            
+            self.fraction_width = self.drawing_lst[self.current_count].pt2_fraction_width
+            self.fraction_height = self.drawing_lst[self.current_count].pt2_fraction_height
 
-            factor = 5./self.drawing_page.label_right.scaling_factor
-            
-            self.vertical_scroll_bar.setMinimum(-self.drawing_page.label_right.height() * factor)
-            self.horizontal_scroll_bar.setMinimum(-self.drawing_page.label_right.width() * factor)
-            self.vertical_scroll_bar.setMaximum(self.drawing_page.label_right.height() * factor)
-            self.horizontal_scroll_bar.setMaximum(self.drawing_page.label_right.width() * factor)
-
-            print(self.vertical_scroll_bar.minimum(), self.vertical_scroll_bar.maximum())
-            print(self.horizontal_scroll_bar.minimum(), self.horizontal_scroll_bar.maximum())
-            #self.horizontal_scroll_bar.setPageStep(10)
-            #self.vertical_scroll_bar.setPageStep(10)
-
-            
-            
-            self.drawing_page.label_right.zoom_in(factor)
-
-            print("height:", height)
-            print("width", width)
-            print("qlabel height", self.drawing_page.label_right.height())
-            print("qlabel width", self.drawing_page.label_right.width())
-            print("widget height", self.drawing_page.height() )
-            print("widget width", self.drawing_page.width())
-            print("page step", self.horizontal_scroll_bar.pageStep())
-            print("page step", self.vertical_scroll_bar.pageStep())
-            print(self.horizontal_scroll_bar.width(), self.vertical_scroll_bar.height())
-            
-            conversion_x = self.drawing_page.label_right.width() * 1./width
-            conversion_y =  self.drawing_page.label_right.height()*1./height
-
-            if self.drawing_lst[self.current_count].drawing_type == 'USET':
-                calib_type=="center_north"
-            else:
-                calib_type="south_north"
-            
-            
-            if calib_type=="center_north":
-                #maybe a tuple instead of the list would be a better choice..
-                self.approximate_center = [self.horizontal_scroll_bar.width()/2. , #+ self.horizontal_scroll_bar.pageStep(),
-                                           self.vertical_scroll_bar.height()/2.  + self.vertical_scroll_bar.pageStep()/2.]
-                
-                """ self.approximate_center = [self.drawing_lst[self.current_count].calibrated_center_x * conversion_x ,
-                self.drawing_lst[self.current_count].calibrated_center_y * conversion_y + self.vertical_scroll_bar.pageStep()/2.]
-                """            
-            elif calib_type=="south_north":
-                self.approximate_center = [self.horizontal_scroll_bar.width()/2. , #+ self.horizontal_scroll_bar.pageStep(),
-                                           self.vertical_scroll_bar.maximum() - self.vertical_scroll_bar.pageStep()]
-                
-        
-            
-            print("conversion", conversion_x, conversion_y)
-            """self.approximate_center = [self.drawing_lst[self.current_count].calibrated_center_x * conversion_x ,
-                                       self.drawing_lst[self.current_count].calibrated_center_y * conversion_y ]
-            """
-            self.set_zoom_center()
-            
             self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.dipole_visu.value = False
             self.drawing_page.label_right.large_grid_overlay.value = True
             self.drawing_page.label_right.small_grid_overlay.value = False
         else:
+            QtGui.QApplication.restoreOverrideCursor()
             self.drawing_page.label_right.zoom_in(1/self.drawing_page.label_right.scaling_factor)
             print("out of the calibration")
         
-    def set_zoom_center(self):
+    """def set_zoom_center(self):
         print("set zoom center")
         print(self.approximate_center[0], self.approximate_center[1], self.drawing_page.label_right.scaling_factor)
         
-        self.horizontal_scroll_bar.setValue(self.approximate_center[0] )
-        self.vertical_scroll_bar.setValue(self.approximate_center[1] )
+        self.horizontal_scroll_bar.setValue(self.approximate_center[0])
+        self.vertical_scroll_bar.setValue(self.approximate_center[1])
+     
         
-        print(self.horizontal_scroll_bar.value(), self.vertical_scroll_bar.value())
-    
         
     def set_zoom_north(self):
         approximate_north = [0, self.approximate_center[1]]
         self.vertical_scroll_bar.setValue(approximate_north[0] )
         self.horizontal_scroll_bar.setValue(approximate_north[1] )
-
+    
     def unzoom(self):
         self.drawing_page.label_right.zoom_in(1/5.)
-        
+    """
+    
     def get_click_coordinates(self):
         print("get click coordinate")
         print(self.drawing_page.label_right.x_drawing)
@@ -1008,7 +995,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .label_middle_up\
             .polygon\
             .value_changed\
-            .connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.polygon.value,
+            .connect(lambda: self.set_button_color(self.drawing_page.label_middle_up.polygon.value,
                                                 self.draw_polygon_but))
         
         self.crop_but = QtGui.QToolButton()
@@ -1049,7 +1036,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .label_middle_up\
             .threshold\
             .value_changed\
-            .connect(lambda: self.set_but_color(self.drawing_page.label_middle_up.threshold.value,
+            .connect(lambda: self.set_button_color(self.drawing_page.label_middle_up.threshold.value,
                                                 self.threshold_but))
         
         self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")

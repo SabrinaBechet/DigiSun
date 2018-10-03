@@ -214,7 +214,7 @@ def heliographic_from_drawing(x_center, y_center, x_north,
     center = Cartesian(x_center, y_center)
     north = Cartesian(x_north, y_north)
     angle_calibration = center.angle_from_y_axis(north)
-    radius = center.distance(north)
+    radius = center.distance(north) 
     #print("radius:", radius)
     drawing = Cartesian(x_drawing, y_drawing)
     
