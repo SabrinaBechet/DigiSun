@@ -151,6 +151,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.add_surface()
         self.drawing_lst = []
         self.set_toolbar()
+        self.set_status_bar()
         
         self.drawing_page.label_right.center_clicked.connect(self.scroll_position)
         self.drawing_page.label_right.group_added.connect(self.add_group_box)
@@ -177,7 +178,26 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             but.setStyleSheet("background-color: lightblue")
         elif mode_bool==False:
             but.setStyleSheet("background-color: lightgray")
-   
+
+
+    def set_status_bar(self):
+        self.statusBar = QtGui.QStatusBar()
+        locationLabel = QtGui.QLabel(" Calibration mode ")
+        locationLabel.setStyleSheet("QLabel { background-color : red; color : blue; }");
+        locationLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        locationLabel.setMinimumSize(locationLabel.sizeHint())
+        formulaLabel = QtGui.QLabel("click on the center")
+        formulaLabel.setIndent(3)
+              
+        #locationLabel = QtGui.QLabel(" this is a test of the status bar... ")
+        self.setStatusBar(self.statusBar)
+
+        self.statusBar.addWidget(locationLabel)
+        self.statusBar.addWidget(formulaLabel)
+        
+        
+        #self.statusBar().showMessage("this is a test")
+            
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
         Icons were designed by "Good Ware" from https://www.flaticon.com
