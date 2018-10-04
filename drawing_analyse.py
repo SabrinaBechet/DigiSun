@@ -153,7 +153,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_toolbar()
         
         self.drawing_page.label_right.center_clicked.connect(self.scroll_position)
-        self.drawing_page.label_right.drawing_clicked.connect(self.slot_add_group)
+        self.drawing_page.label_right.group_added.connect(self.add_group_box)
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_configuration(self):
@@ -308,8 +308,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         #self.about_but = QtGui.QPushButton("About")
         
-        
-    
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
         #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -335,8 +333,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addWidget(self.surface_but)
         #toolbar.addWidget(self.about_but)
         
-        #zoom_in.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
-        #zoom_out.triggered.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
         self.zoom_in_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
         self.zoom_out_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
         self.large_grid_but.clicked.connect(self.set_large_grid)
@@ -346,45 +342,93 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.helper_grid_but.clicked.connect(self.set_helper_grid)
     
         self.calibration_but.clicked.connect(self.start_calibration)
-        self.add_group_but.clicked.connect(self.add_group)
-        self.add_dipole_but.clicked.connect(self.add_dipole)
+        self.add_group_but.clicked.connect(self.set_group_mode)
+        self.add_dipole_but.clicked.connect(self.set_dipole_mode)
         self.surface_but.clicked.connect(self.calculate_surface)
-        
-    def add_group(self):        
-        self.drawing_page.label_right.add_group_mode.set_opposite_value()
 
-    def slot_add_group(self):
+
+    def set_helper_grid(self):
         """
-        This is triggered when clicking on the drawing and the add_group_mode is True
-        It calls the add_group method of the drawing object.
+        This set the helper grid. It does :
+        - set all the action mode to false
+        The rest is done in the mouseEvent of the qlabel object.
         """
-        if self.drawing_page.label_right.add_group_mode.value:       
-            self.get_click_coordinates()
+        QtGui.QApplication.restoreOverrideCursor()
+        self.drawing_page.label_right.helper_grid.set_opposite_value()
+        if self.drawing_page.label_right.helper_grid.value:
+            self.drawing_page.label_right.calibration_mode.value = False
+            self.drawing_page.label_right.add_group_mode.value = False
+            self.drawing_page.label_right.add_dipole_mode.value = False
+            self.drawing_page.label_right.surface_mode.value = False
+ 
+        #self.drawing_page.label_right.set_img()
+        # affiche un message disant qu'il faut cliquer sur le dessin
+        # si calibration pas faite, affiche un message distant qu'il faut d'abord faire la calibraiton
+        # avant de voir le helper grid
+             
+    def set_group_mode(self):
+        """
+        This set the adding group mode. It does:
+        - reset the cursor to its original shape
+        - set all the other action mode to false
+        - set the cursor to one showing that we are in the add group mode
+        """
+        QtGui.QApplication.restoreOverrideCursor()
+        self.drawing_page.label_right.add_group_mode.set_opposite_value()
+        if self.drawing_page.label_right.add_group_mode.value:
+            self.drawing_page.label_right.helper_grid.value = False
+            self.drawing_page.label_right.calibration_mode.value = False
+            self.drawing_page.label_right.add_dipole_mode.value = False
+            self.drawing_page.label_right.surface_mode.value = False
         
-        self.drawing_lst[self.current_count].add_group(self.drawing_page.label_right.HGC_latitude,
-                                                       self.drawing_page.label_right.HGC_longitude)
+        if self.drawing_page.label_right.add_group_mode.value:
+            cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/click_24.png"
+            cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
+            QtGui.QApplication.setOverrideCursor(cursor_add_group)
+        else:
+            print("restore the old cursor")
+            QtGui.QApplication.restoreOverrideCursor()
+            
+
+    def add_group_box(self):
+        """
+        Fonction associated to the add_group mode, where it add the box associated to each group.
+        """
         self.set_group_widget()
-        
         # set the focus to the last element 
         self.listWidget_groupBox.item(self.drawing_lst[self.current_count].group_count - 1).setSelected(True)
         self.listWidget_groupBox.setFocus()
-        
         self.set_group_toolbox()
         self.update_group_toolbox(self.drawing_lst[self.current_count].group_count - 1)
         self.drawing_page.label_right.set_img()
 
-    def add_dipole(self):
-        
+    def set_dipole_mode(self):
+        """
+        It does:
+        - reset the cursor to its original shape
+        - set all the other action mode to false
+        """
+        QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
+        if self.drawing_page.label_right.add_dipole_mode.value:
+            self.drawing_page.label_right.helper_grid.value = False
+            self.drawing_page.label_right.calibration_mode.value = False
+            self.drawing_page.label_right.add_group_mode.value = False
+            self.drawing_page.label_right.surface_mode.value = False
+        
 
-    """def slot_surface(self):
-        if self.drawing_page.label_right.surface_mode.value:
-            self.calculate_surface(self.listWidget_groupBox.currentRow())
-    """
     
     def calculate_surface(self, n):
+        QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.surface_mode.set_opposite_value()
 
+        if self.drawing_page.label_right.surface_mode.value:
+            self.drawing_page.label_right.helper_grid.value = False
+            self.drawing_page.label_right.calibration_mode.value = False
+            self.drawing_page.label_right.add_group_mode.value = False
+            self.drawing_page.label_right.add_dipole_mode.value = False
+
+        
         if self.drawing_page.label_right.surface_mode.value:
             self.drawing_page.widget_middle_up.setMaximumWidth(600)
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
@@ -490,9 +534,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         (the rest is described in the mouse event)
         """
         self.drawing_page.label_right.calibration_mode.set_opposite_value()
+        QtGui.QApplication.restoreOverrideCursor()
 
-        if self.drawing_page.label_right.calibration_mode.value:
-
+        if self.drawing_page.label_right.calibration_mode.value:    
             QtGui.QApplication.setOverrideCursor(QtCore.Qt.CrossCursor)
             
             print("start calibration",
@@ -524,33 +568,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.fraction_width = self.drawing_lst[self.current_count].pt2_fraction_width
             self.fraction_height = self.drawing_lst[self.current_count].pt2_fraction_height
 
-            self.drawing_page.label_right.group_visu.value = True
+            """self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.dipole_visu.value = False
             self.drawing_page.label_right.large_grid_overlay.value = True
             self.drawing_page.label_right.small_grid_overlay.value = False
+            """
+            
         else:
             QtGui.QApplication.restoreOverrideCursor()
             self.drawing_page.label_right.zoom_in(1/self.drawing_page.label_right.scaling_factor)
             print("out of the calibration")
-        
-    """def set_zoom_center(self):
-        print("set zoom center")
-        print(self.approximate_center[0], self.approximate_center[1], self.drawing_page.label_right.scaling_factor)
-        
-        self.horizontal_scroll_bar.setValue(self.approximate_center[0])
-        self.vertical_scroll_bar.setValue(self.approximate_center[1])
-     
-        
-        
-    def set_zoom_north(self):
-        approximate_north = [0, self.approximate_center[1]]
-        self.vertical_scroll_bar.setValue(approximate_north[0] )
-        self.horizontal_scroll_bar.setValue(approximate_north[1] )
-    
-    def unzoom(self):
-        self.drawing_page.label_right.zoom_in(1/5.)
-    """
-    
+
+            
     def get_click_coordinates(self):
         print("get click coordinate")
         print(self.drawing_page.label_right.x_drawing)
@@ -559,11 +588,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print(self.drawing_page.label_right.HGC_latitude)
         
 
-    def set_helper_grid(self):
-        self.drawing_page.label_right.helper_grid.set_opposite_value()
-        self.drawing_page.label_right.set_img()
-        # affiche un message disant qu'il faut cliquer sur le dessing
-        
     def set_group_visualisation(self):
         self.drawing_page.label_right.group_visu.set_opposite_value()
         self.drawing_page.label_right.set_img()

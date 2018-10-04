@@ -359,21 +359,14 @@ class Drawing(QtCore.QObject):
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
             self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)
 
-            radius_tst = self.radius(self.calibrated_center, self.calibrated_north)
-            print("radius 1: ", self.calibrated_radius)
-            print("radius 2: ", radius_tst)
-
         elif self.pt1_name == 'South'  and self.pt2_name == 'North':
             self.calibrated_center = coordinates.Cartesian((point1_x + point2_x)/2, (point1_y + point2_y)/2)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
             self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)   
-
-            radius_tst = self.radius(self.calibrated_center, self.calibrated_north)
-            print("radius 1: ", self.calibrated_radius)
-            print("radius 2: ", radius_tst)
             
         self.calibrated_angle_scan = self.calibrated_center.angle_from_y_axis(self.calibrated_north)
-
+        self.calibrated = 1
+       
             
         
     def get_group_signal(self):

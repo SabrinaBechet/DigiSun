@@ -364,8 +364,9 @@ class QLabelDrawing(QtGui.QLabel):
     When a signal is referenced as an attribute of an instance of the class then PyQt5 automatically 
     binds the instance to the signal in order to create a bound signal.
     """
-    drawing_clicked = QtCore.pyqtSignal()
+    #drawing_clicked = QtCore.pyqtSignal()
     center_clicked = QtCore.pyqtSignal()
+    group_added = QtCore.pyqtSignal()
     
     def __init__(self):
        super(QLabelDrawing, self).__init__()
@@ -402,28 +403,21 @@ class QLabelDrawing(QtGui.QLabel):
 
        self.group_visu_index = 0
 
-       # to zoom and show a part of the drawing (for the calibration)
-       """scroll = QtGui.QScrollArea()
-       scroll.setWidget(self)
-       scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-       scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-       scroll.setWidgetResizable(True)
-       self.vertical_scroll_bar = scroll.verticalScrollBar()
-       self.horizontal_scroll_bar = scroll.horizontalScrollBar()
-       """
        self.scaling_factor = 1
        
     def set_img(self):
-            
+
+        print("***set the img **")
+        print("current drawing calibrated", self.current_drawing.calibrated)
         img = Image.open(self.file_path)
 
         self.drawing_width = img.size[0]
         self.drawing_height = img.size[1]
-        print('img info', img.info)
-        print("!img size: ", img.size)
+        #print('img info', img.info)
+        #print("!img size: ", img.size)
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
-        self.pen_width = int(self.img_mean_dimension/1000.)
+        self.pen_width = int(self.drawing_height/700.)
         #print("check pen width: ", self.img_mean_dimension, self.pen_width)
         
         qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
@@ -433,7 +427,7 @@ class QLabelDrawing(QtGui.QLabel):
         painter.begin(self.drawing_pixMap)
 
         if self.current_drawing.calibrated and self.helper_grid_position_clicked :
-
+            
             pen_helper_grid  = QtGui.QPen(QtCore.Qt.gray)
             pen_helper_grid.setWidth(self.pen_width)
             pen_helper_grid.setStyle(QtCore.Qt.DotLine)
@@ -487,6 +481,8 @@ class QLabelDrawing(QtGui.QLabel):
             self.helper_grid_position_clicked = False
            
         if self.current_drawing.calibrated and (self.large_grid_overlay.value or self.small_grid_overlay.value):
+            print("print of the overlay")
+            
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.SolidLine)
@@ -604,7 +600,7 @@ class QLabelDrawing(QtGui.QLabel):
             painter.drawPoint(self.current_drawing.calibrated_north.x ,
                               self.current_drawing.calibrated_north.y ) 
             
-        if self.current_drawing.calibrated and self.group_visu.value :
+        if self.current_drawing.calibrated and (self.group_visu.value or self.add_group_mode.value) :
             # note: a column with the cartesian coord of group should be recorded in the db!
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
@@ -976,6 +972,7 @@ class QLabelDrawing(QtGui.QLabel):
             self.group_visu.value = True
             self.set_img()
             self.calibration_mode.value = False
+            
             QtGui.QApplication.restoreOverrideCursor()
             
         elif self.calibration_mode.value and not self.center_done and not self.north_done:
@@ -983,22 +980,28 @@ class QLabelDrawing(QtGui.QLabel):
                   self.calibration_mode.value,
                   self.center_done, self.north_done)
 
+            self.current_drawing.calibrated = 0
+            
             self.calib_pt1_x = self.x_drawing
             self.calib_pt1_y = self.y_drawing
-            
-              
+                         
             self.center_done = True
             self.center_clicked.emit()
 
-        if self.helper_grid.value:
+        if self.current_drawing.calibrated and self.helper_grid.value:
            print("Enter in the helper grid mode")
            self.helper_grid_center_x = self.x_drawing
            self.helper_grid_center_y = self.y_drawing
            self.helper_grid_position_clicked = True
            self.set_img()
 
-           
-           
+        if self.current_drawing.calibrated and self.add_group_mode.value:
+            self.current_drawing.add_group(self.HGC_latitude,
+                                           self.HGC_longitude)
+            
+            self.group_added.emit()
+
+            
     def get_pixmap_coordinate_range(self):
         """
         get the pixmap minimum and maximum coordinate values
