@@ -58,13 +58,23 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(350)
-        self.widget_left_down.setMinimumHeight(580)
+        self.widget_left_down.setMinimumHeight(200)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_left_down_layout.setSpacing(0)
         self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
+
+        self.widget_left_down_bis = QtGui.QWidget()
+        self.widget_left_down_bis.setMaximumWidth(350)
+        self.widget_left_down_bis.setMaximumHeight(200)
+        self.widget_left_down_bis.setStyleSheet("background-color:lightblue;")   
+        self.widget_left_down_bis_layout = QtGui.QVBoxLayout()
+        self.widget_left_down_bis_layout.setContentsMargins(0, 0, 0, 0) 
+        self.widget_left_down_bis_layout.setSpacing(0)
+        self.widget_left_down_bis_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
+        self.widget_left_down_bis.setLayout(self.widget_left_down_bis_layout)
 
         self.widget_middle_up = QtGui.QWidget()
         self.widget_middle_up.setMaximumWidth(10)
@@ -99,18 +109,18 @@ class DrawingViewPage(QtGui.QWidget):
  
         self.widget_right_layout.addWidget(self.scroll)
         
+
+        splitter_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
+        self.layout().addWidget(splitter_down)
+        splitter_down.addWidget(self.widget_left_down)
+        splitter_down.addWidget(self.widget_left_down_bis)
         
         splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_middle_down)
         splitter_middle_down.addWidget(self.widget_left_up)
         splitter_middle_down.addWidget(self.widget_left_middle)
-        splitter_middle_down.addWidget(self.widget_left_down)
+        splitter_middle_down.addWidget(splitter_down)
         
-        """splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
-        self.layout().addWidget(splitter_left)
-        splitter_left.addWidget(splitter_middle_down)       
-        splitter_left.addWidget(self.widget_left_down)
-        """
         
         splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
         self.layout().addWidget(splitter_main)
@@ -154,6 +164,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_status_bar()
         
         self.drawing_page.label_right.center_clicked.connect(self.scroll_position)
+        self.drawing_page.label_right.north_clicked.connect(self.clean_status_bar)
         self.drawing_page.label_right.group_added.connect(self.add_group_box)
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
@@ -181,23 +192,28 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
     def set_status_bar(self):
-        self.statusBar = QtGui.QStatusBar()
-        locationLabel = QtGui.QLabel(" Calibration mode ")
-        locationLabel.setStyleSheet("QLabel { background-color : red; color : blue; }");
-        locationLabel.setAlignment(QtCore.Qt.AlignHCenter)
-        locationLabel.setMinimumSize(locationLabel.sizeHint())
-        formulaLabel = QtGui.QLabel("click on the center")
-        formulaLabel.setIndent(3)
+        """
+        This is maybe heavy, a more elegant and lighter solution?
+        """
+        #self.statusBar = QtGui.QStatusBar()
+        self.status_bar_mode_name = QtGui.QLabel()
+        self.status_bar_mode_name.setStyleSheet("QLabel { background-color : red; color : blue; }");
+        self.status_bar_mode_name.setAlignment(QtCore.Qt.AlignHCenter)
+        self.status_bar_mode_name.setMinimumSize(self.status_bar_mode_name.sizeHint())
+        self.status_bar_mode_comment = QtGui.QLabel()
+        self.status_bar_mode_comment.setIndent(3)
               
         #locationLabel = QtGui.QLabel(" this is a test of the status bar... ")
-        self.setStatusBar(self.statusBar)
-
-        self.statusBar.addWidget(locationLabel)
-        self.statusBar.addWidget(formulaLabel)
+        #self.setStatusBar(self.statusBar)
         
+        self.statusBar().addWidget(self.status_bar_mode_name)
+        self.statusBar().addWidget(self.status_bar_mode_comment)
         
-        #self.statusBar().showMessage("this is a test")
-            
+        """
+        self.statusBar().setStyleSheet("background-color : red; color : blue; ");
+        self.statusBar().showMessage("this is a test")
+        self.statusBar().setMinimumSize(locationLabel.sizeHint())
+        """ 
     def set_toolbar(self):
         """Note : The QToolBar class inherit from QWidget.
         Icons were designed by "Good Ware" from https://www.flaticon.com
@@ -325,17 +341,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if self.drawing_page.label_right.surface_mode.value :
             self.surface_but.setStyleSheet("background-color: lightblue")
             
-        
-        #self.about_but = QtGui.QPushButton("About")
-        
+         
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
-        #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
         vertical_line_widget.setStyleSheet("background-color: black")
 
         vertical_line_widget2 = QtGui.QWidget()
         vertical_line_widget2.setFixedWidth(2)
-        #horizontalLineWidget.setSizePolicy(QtCore.QSizePolicy::Expanding, QSizePolicy::Fixed);
         vertical_line_widget2.setStyleSheet("background-color: black")
 
         toolbar.addWidget(self.zoom_in_but)
@@ -351,7 +363,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addWidget(self.add_group_but)
         toolbar.addWidget(self.add_dipole_but)
         toolbar.addWidget(self.surface_but)
-        #toolbar.addWidget(self.about_but)
         
         self.zoom_in_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
         self.zoom_out_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
@@ -359,8 +370,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.small_grid_but.clicked.connect(self.set_small_grid)
         self.group_visu_but.clicked.connect(self.set_group_visualisation)
         self.dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
+
         self.helper_grid_but.clicked.connect(self.set_helper_grid)
-    
         self.calibration_but.clicked.connect(self.start_calibration)
         self.add_group_but.clicked.connect(self.set_group_mode)
         self.add_dipole_but.clicked.connect(self.set_dipole_mode)
@@ -370,22 +381,36 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def set_helper_grid(self):
         """
         This set the helper grid. It does :
-        - set all the action mode to false
+        - reset the cursor shape to the original one
+        - inverse the boolean value of the helper_grid mode
+        - show a message in the status bar
+        - if helper_grid is active, desactive all the other action modes
         The rest is done in the mouseEvent of the qlabel object.
         """
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.helper_grid.set_opposite_value()
+        
         if self.drawing_page.label_right.helper_grid.value:
-            self.drawing_page.label_right.calibration_mode.value = False
+            self.status_bar_mode_name.setText("Helper grid mode")
+            if self.drawing_lst[self.current_count].calibrated==0:
+                self.status_bar_mode_comment.setText(" Warning :" +
+                                                     " The calibration must" +
+                                                     " be  done before using" +
+                                                     " the helper grid!")
+            else:
+                self.status_bar_mode_comment.setText("Click on a point" +
+                                                     " on the solar disk" +
+                                                     " to see the helper" +
+                                                     " grid ")
+            if self.drawing_page.label_right.calibration_mode.value:
+                self.start_calibration()   
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
- 
-        #self.drawing_page.label_right.set_img()
-        # affiche un message disant qu'il faut cliquer sur le dessin
-        # si calibration pas faite, affiche un message distant qu'il faut d'abord faire la calibraiton
-        # avant de voir le helper grid
-             
+            
+        else:
+            self.clean_status_bar()
+       
     def set_group_mode(self):
         """
         This set the adding group mode. It does:
@@ -396,32 +421,48 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_group_mode.set_opposite_value()
         if self.drawing_page.label_right.add_group_mode.value:
+            self.status_bar_mode_name.setText("Add group mode")
+            if self.drawing_lst[self.current_count].calibrated==0:
+                self.status_bar_mode_comment.setText(" Warning :" +
+                                                     " The calibration must" +
+                                                     " be  done before adding" +
+                                                     " groups!")
+            else:
+                self.status_bar_mode_comment.setText("Click on a the group" +
+                                                     " position to add it")
+            if self.drawing_page.label_right.calibration_mode.value:
+                self.start_calibration() 
             self.drawing_page.label_right.helper_grid.value = False
-            self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
-        
-        if self.drawing_page.label_right.add_group_mode.value:
-            cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/click_24.png"
+
+            """cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/click_24.png"
             cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
             QtGui.QApplication.setOverrideCursor(cursor_add_group)
+            """
         else:
             print("restore the old cursor")
             QtGui.QApplication.restoreOverrideCursor()
-            
+            self.clean_status_bar()
 
     def add_group_box(self):
         """
         Fonction associated to the add_group mode, where it add the box associated to each group.
         """
-        self.set_group_widget()
-        # set the focus to the last element 
-        self.listWidget_groupBox.item(self.drawing_lst[self.current_count].group_count - 1).setSelected(True)
-        self.listWidget_groupBox.setFocus()
-        self.set_group_toolbox()
-        self.update_group_toolbox(self.drawing_lst[self.current_count].group_count - 1)
-        self.drawing_page.label_right.set_img()
+        print("Enter in the add group function..")
+        print("group count", self.drawing_lst[self.current_count].group_count)
 
+        self.set_group_widget()
+        self.set_focus_group_box(self.drawing_lst[self.current_count].group_count - 1)
+        
+            
+        #self.set_group_toolbox()
+        self.set_group_toolbox(self.drawing_lst[self.current_count].group_count - 1)
+
+        self.update_group_visu(self.drawing_lst[self.current_count].group_count - 1)
+
+        #self.drawing_page.label_right.set_img()
+        
     def set_dipole_mode(self):
         """
         It does:
@@ -431,13 +472,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
         if self.drawing_page.label_right.add_dipole_mode.value:
+            self.status_bar_mode_name.setText("Add dipole mode")
+            if self.drawing_lst[self.current_count].calibrated==0:
+                self.status_bar_mode_comment.setText(" Warning :" +
+                                                     " The calibration must" +
+                                                     " be  done before adding" +
+                                                     " dipole!")
+            else:
+                self.status_bar_mode_comment.setText("Click on a the dipole" +
+                                                     " positions to add it")
+                
             self.drawing_page.label_right.helper_grid.value = False
             self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
-        
 
-    
+            
     def calculate_surface(self, n):
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.surface_mode.set_opposite_value()
@@ -535,6 +585,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print("fraction width: ", self.fraction_width)
         print("fraction height: ", self.fraction_height)
         
+        self.status_bar_mode_comment.setText("Click on the " + self.point_name + " position")
+        
         self.vertical_scroll_bar.setMinimum(0)
         self.horizontal_scroll_bar.setMinimum(0)
         self.vertical_scroll_bar.setMaximum(self.drawing_page.label_right.pixmap().height() -
@@ -544,6 +596,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
   
         self.horizontal_scroll_bar.setValue(self.horizontal_scroll_bar.maximum() * self.fraction_width)
         self.vertical_scroll_bar.setValue(self.vertical_scroll_bar.maximum() * self.fraction_height)
+
+    def clean_status_bar(self):
+        self.status_bar_mode_name.setText("")
+        self.status_bar_mode_comment.setText("")
         
     def start_calibration(self):
         """
@@ -558,6 +614,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         if self.drawing_page.label_right.calibration_mode.value:    
             QtGui.QApplication.setOverrideCursor(QtCore.Qt.CrossCursor)
+            self.status_bar_mode_name.setText("Calibration mode")
+            
             
             print("start calibration",
                   self.drawing_page.label_right.calibration_mode.value)
@@ -582,12 +640,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
             self.fraction_width = self.drawing_lst[self.current_count].pt1_fraction_width
             self.fraction_height = self.drawing_lst[self.current_count].pt1_fraction_height
-            
+            self.point_name = self.drawing_lst[self.current_count].pt1_name
             self.scroll_position()
             
             self.fraction_width = self.drawing_lst[self.current_count].pt2_fraction_width
             self.fraction_height = self.drawing_lst[self.current_count].pt2_fraction_height
-
+            self.point_name = self.drawing_lst[self.current_count].pt2_name
+            
             """self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.dipole_visu.value = False
             self.drawing_page.label_right.large_grid_overlay.value = True
@@ -598,6 +657,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             QtGui.QApplication.restoreOverrideCursor()
             self.drawing_page.label_right.zoom_in(1/self.drawing_page.label_right.scaling_factor)
             print("out of the calibration")
+            self.clean_status_bar()
 
             
     def get_click_coordinates(self):
@@ -653,14 +713,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             colorised = False
             if ((self.drawing_lst[self.current_count].group_lst[i].surface == 0) or
                 (self.drawing_lst[self.current_count].group_lst[i].surface == None)):
-
                 colorised = True
             if ((self.drawing_lst[self.current_count].group_lst[i].zurich.upper() in ["B","C","D","E","F","G"]) and
                 (self.drawing_lst[self.current_count].group_lst[i].g_spot == 0)):
                 colorised = True
 
             groupBoxLine.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[i].number),
-                                   self.grid_position,colorised)           
+                                   self.grid_position, colorised)           
             groupBoxLine.set_spot_count(self.drawing_lst[self.current_count].group_lst[i].spots,
                                         self.grid_position)
             groupBoxLine.set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[i].zurich,
@@ -669,111 +728,147 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                            self.drawing_lst[self.current_count].group_lst[i].zurich,
                                            self.grid_position)
 
-            groupBoxLine.set_confirm_spots(self.grid_position)
-
             groupBoxLine.set_delete_group_button(self.grid_position)
+            
+            delete_button = groupBoxLine.get_del_button()
+            delete_button.clicked.connect(self.delete_group)
             
             if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
                 groupBoxLine.get_zurich().setStyleSheet("background-color: orange")
-
-            #groupBoxLine.get_confirm_spots().setShortcut(QtGui.QKeySequence("Ctrl+s"))
-            #print(groupBoxLine.get_zurich().currentIndex())
+      
+            groupBoxLine.get_spots().textEdited.\
+                connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),False))
             groupBoxLine.get_zurich().currentIndexChanged.\
                 connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),False))
             groupBoxLine.get_McIntosh().currentIndexChanged.\
                 connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),False))
-            groupBoxLine.get_confirm_spots().clicked.\
-                connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),False))
             
             
             self.groupBoxLineList.append(groupBoxLine)
-
+            
             item = QtGui.QListWidgetItem(self.listWidget_groupBox)
             item.setSizeHint(groupBoxLine.sizeHint())
             self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
-            
+           
         self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
-
+        
+       
         # not sure it is still needed??
         # self.listWidget_group_toolbox.set_empty()
         #self.listWidget_group_toolbox.set_welcome()
 
-        # first element of the list widget initially highlighted and other disabled
-        # first element surface updated
-        if self.listWidget_groupBox.count()>0:
-            self.listWidget_groupBox.item(0).setSelected(True)
-            self.update_surface_qlabel(0)
-            
-        self.listWidget_groupBox.setFocus()
-        
-        
-
-        for i in range(1,self.listWidget_groupBox.count()):
-            self.groupBoxLineList[i].get_spots().setEnabled(False)
-            self.groupBoxLineList[i].get_zurich().setEnabled(False)
-            self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
-
         # Signals related to the change of item in the group box
         self.listWidget_groupBox\
             .itemSelectionChanged\
-            .connect(lambda: self.update_group_toolbox(self.listWidget_groupBox.currentRow()))
+            .connect(lambda: self.set_focus_group_box(self.listWidget_groupBox.currentRow()))
+        
+        self.listWidget_groupBox\
+            .itemSelectionChanged\
+            .connect(lambda: self.set_group_toolbox(self.listWidget_groupBox.currentRow()))
+        
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
-        self.listWidget_groupBox\
-            .itemSelectionChanged.connect(self.disable_other_groupBoxLine)
+        #self.listWidget_groupBox\
+        #    .itemSelectionChanged.connect(self.disable_other_groupBoxLine)
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow()))
+
+        print("out of set group_widget")
         
-    def set_group_toolbox(self):
-        " Set the group toolbox at the bottom of the left column."
+
+    def set_focus_group_box(self, element_number):
+
+        print("enter in the focus group box for the element: ", element_number)
         
-        widget_separator = QtGui.QWidget()
-        #Couleur #F2F1F0 est la couleur du background lightgray
-        widget_separator.setStyleSheet("background-color: #F2F1F0")
-        widget_separator.setMinimumHeight(10)
-        widget_separator.setMaximumHeight(10)
-        self.drawing_page.widget_left_down_layout.addWidget(widget_separator)
-        self.group_toolbox = group_box.GroupBox()
-        self.drawing_page.widget_left_down_layout.addWidget(self.group_toolbox)
-        if self.listWidget_groupBox.count()>0:
-            self.update_group_toolbox(0)
-        
-    def update_group_toolbox(self, n):
-        self.grid_position = [0, 0]
-        self.group_toolbox.set_empty()
-        self.group_toolbox.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[n].number),
-                                       self.grid_position,0)
-        self.group_toolbox.set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
-                                            self.grid_position)
-        self.group_toolbox.set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                              self.grid_position)
-        self.group_toolbox.set_mcIntosh_combo_box(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
-                                                self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                                self.grid_position)
-        self.group_toolbox.set_confirm_spots(self.grid_position)
-        self.group_toolbox.set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude * 180/math.pi,
-                                          self.grid_position)
-    
-        self.group_toolbox.set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude * 180/math.pi,
-                                           self.grid_position)
-        
-        self.group_toolbox.set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
-                                         self.grid_position)
-        self.group_toolbox.set_arrows_buttons()
-        
-        if self.drawing_lst[self.current_count].group_lst[n].zurich.upper()  in ["B","C","D","E","F","G"]:
-            self.group_toolbox.set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
-                                                 self.grid_position)
-        else:
-            self.group_toolbox.set_larger_spot(-1, self.grid_position)
+        # first element of the list widget initially highlighted and other disabled
+        # first element surface updated
+       
+        if self.listWidget_groupBox.count()>0 and element_number>=0:
+            self.listWidget_groupBox.blockSignals(True)
+            self.listWidget_groupBox.item(element_number).setSelected(True) # itemchanged -> update group tool box
+            self.listWidget_groupBox.blockSignals(False)
+            self.update_surface_qlabel(element_number)
             
-        self.group_toolbox.set_add_surface_button()
+        #self.listWidget_groupBox.setFocus()
+        self.listWidget_groupBox.setCurrentRow(element_number)
+        # to change only the line on which the focus is
+        for i in range(0, self.listWidget_groupBox.count()):
+            if i==element_number:
+                self.groupBoxLineList[i].get_spots().setEnabled(True)
+                self.groupBoxLineList[i].get_zurich().setEnabled(True)
+                self.groupBoxLineList[i].get_McIntosh().setEnabled(True) 
+            else:
+                self.groupBoxLineList[i].get_spots().setEnabled(False)
+                self.groupBoxLineList[i].get_zurich().setEnabled(False)
+                self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
+
+    def set_group_toolbox(self, n=0):
+        print("update the group toolbox for the element", n)
+        # A widget is deleted when its parents is deleted.
+        for i in reversed(range(self.drawing_page.widget_left_down_bis_layout.count())):
+            self.drawing_page.widget_left_down_bis_layout.itemAt(i).widget().setParent(None)
+                
+        self.group_toolbox = group_box.GroupBox()
+        self.drawing_page.widget_left_down_bis_layout\
+                         .addWidget(self.group_toolbox)
+       
+        self.grid_position = [0, 0]
+        #self.group_toolbox.set_empty()
+        self.group_toolbox\
+            .set_title("Group " +
+                       str(self.drawing_lst[self.current_count].group_lst[n].number),
+                       self.grid_position,
+                       0)
+        self.group_toolbox\
+            .set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
+                            self.grid_position)
+        self.group_toolbox\
+            .set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                   self.grid_position)
+        self.group_toolbox\
+            .set_mcIntosh_combo_box(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
+                                    self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                    self.grid_position)
+        self.group_toolbox\
+            .set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude * 180/math.pi,
+                          self.grid_position)
+        self.group_toolbox\
+            .set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude * 180/math.pi,
+                           self.grid_position)
         
-        self.group_toolbox.get_confirm_spots().clicked.connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),True))
-        self.group_toolbox.get_zurich().currentIndexChanged.connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),True))
-        self.group_toolbox.get_McIntosh().currentIndexChanged.connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),True))
+        self.group_toolbox\
+            .set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
+                         self.grid_position)
+        self.group_toolbox\
+            .set_arrows_buttons()
+        
+        if self.drawing_lst[self.current_count].group_lst[n].zurich.upper() in ["B","C","D","E","F","G"]:
+            self.group_toolbox\
+                .set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
+                                 self.grid_position)
+        else:
+            self.group_toolbox\
+                .set_larger_spot(-1, self.grid_position)
+            
+        #self.group_toolbox.set_add_surface_button()
+        
+       
+        self.group_toolbox\
+            .get_spots().textEdited\
+            .connect( lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),
+                                                       True))
+        self.group_toolbox\
+            .get_zurich()\
+            .currentIndexChanged\
+            .connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),
+                                                        True))
+        self.group_toolbox\
+            .get_McIntosh()\
+            .currentIndexChanged\
+            .connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),
+                                                          True))
 
         position_step = 0.1 * math.pi/180 
         up, down, left, right = self.group_toolbox.get_arrows()
@@ -781,36 +876,50 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         down.clicked.connect(lambda: self.update_HGC_position('latitude', -position_step))
         left.clicked.connect(lambda: self.update_HGC_position('longitude', position_step))
         right.clicked.connect(lambda: self.update_HGC_position('longitude', -position_step))
-        
-        self.group_toolbox.get_confirm_spots().setShortcut(QtGui.QKeySequence("Enter"))
 
+      
+    def delete_group(self):
+        """
+        Delete a group by clicking on the red cross in the group_toolbox.
+        """
+        index = self.current_count
+        group_index = self.listWidget_groupBox.currentRow()
+        
+        
+        print("this should delete the group n ", group_index)
+        
+        self.drawing_lst[index].delete_group(group_index)
+        self.set_group_widget()
+        self.set_focus_group_box(0)
+        self.set_group_toolbox()
+        
     def update_HGC_position(self, coordinate, value):
-        print("update the position")
-
-        if coordinate=='longitude':
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude += value
-            self.group_toolbox.update_longitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].longitude)
-
-        elif coordinate=='latitude':
-            self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude += value
-            self.group_toolbox.update_latitude(self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].latitude)
-
-        self.drawing_page.label_right.set_img()
-
+        """
+        Update the position of the group via the arrows in the group_toolbox
+        The longitude and latitude are displayed in degrees.
+        The drawing is updated to show the new position of the group.
+        """
+        index = self.current_count
+        group_index = self.listWidget_groupBox.currentRow()
         
-    def disable_other_groupBoxLine(self):
-        for i in range(self.listWidget_groupBox.count()):
-            if (i != self.listWidget_groupBox.currentRow()):
-                self.groupBoxLineList[i].get_spots().setEnabled(False)
-                self.groupBoxLineList[i].get_zurich().setEnabled(False)
-                self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
-            else:
-                self.groupBoxLineList[i].get_zurich().setEnabled(True)
-                self.groupBoxLineList[i].get_McIntosh().setEnabled(True)
-                self.groupBoxLineList[i].get_spots().setEnabled(True)
-                
-
-    def modify_drawing_spots(self,n, is_toolbox):
+        if coordinate=='longitude':
+            self.drawing_lst[index].group_lst[group_index].longitude += value
+            if self.drawing_lst[index].group_lst[group_index].longitude > 2 * math.pi :
+                self.drawing_lst[index].group_lst[group_index].longitude -= 2 * math.pi
+                 
+            self.group_toolbox.update_longitude(self.drawing_lst[index]\
+                                                .group_lst[group_index]\
+                                                .longitude * 180/math.pi)
+            
+        elif coordinate=='latitude':
+            self.drawing_lst[index].group_lst[group_index].latitude += value 
+            self.group_toolbox.update_latitude(self.drawing_lst[index]\
+                                               .group_lst[group_index]\
+                                               .latitude * 180/math.pi)
+            
+        self.drawing_page.label_right.set_img()
+      
+    def modify_drawing_spots(self, n, is_toolbox):
         if is_toolbox:
             self.drawing_lst[self.current_count]\
                 .group_lst[self.listWidget_groupBox.currentRow()]\
@@ -819,7 +928,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[self.current_count]\
                 .group_lst[self.listWidget_groupBox.currentRow()]\
                 .spots = self.groupBoxLineList[n].get_spots().text()
-            
+     
         self.groupBoxLineList[n].update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
         self.group_toolbox.update_spots(self.drawing_lst[self.current_count].group_lst[n].spots)
 
@@ -1475,8 +1584,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
         self.drawing_page.label_right.group_visu_index = 0
         self.drawing_page.label_right.set_img()
+
         self.set_group_widget()
+
+        self.set_focus_group_box(0)
+        
         self.set_group_toolbox()
+        self.status_bar_mode_name.setText("")
+        self.status_bar_mode_comment.setText("")
         
         #self.drawing_page.label_right.show()
     

@@ -50,8 +50,10 @@ class Group(QtCore.QObject):
         self._number = 0
         self._longitude = 0
         self._latitude = 0
+        self._pos_X = 0
+        self._pos_Y = 0 
         self._Lcm = 0
-        self._alpha_angle = 0
+        self._CenterToLimb_angle = 0
         self._L0 = 0
         self._quadrant = 0
         self._McIntosh = 'Xxx'
@@ -80,7 +82,7 @@ class Group(QtCore.QObject):
     
     @number.setter
     def number(self, value):
-        print("here we are changing the value of number to ", value)
+        print("here we are changing the value of group number to ", value)
         self._number = value
         self.changed = True
         self.value_changed.emit()
@@ -92,7 +94,8 @@ class Group(QtCore.QObject):
     
     @longitude.setter
     def longitude(self, value):
-        print("here we are changing the value of longitude to ", value)
+        print("here we are changing the value of longitude to ", value,
+              " or ", value*180/math.pi , " degree ")
         self._longitude = value
         self.changed = True
         self.value_changed.emit()
@@ -104,8 +107,69 @@ class Group(QtCore.QObject):
     
     @latitude.setter
     def latitude(self, value):
-        print("here we are changing the value of latitude to ", value)
+        print("here we are changing the value of latitude to ", value,
+              " or ", value*180/math.pi , " degree ")
         self._latitude = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def pos_X(self):
+        #print("here we are reading the value of longitude of a group ")
+        return self._pos_X
+    
+    @pos_X.setter
+    def pos_X(self, value):
+        print("here we are changing the value of pos X to ", value)
+        self._pos_X = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def pos_Y(self):
+        #print("here we are reading the value of longitude of a group ")
+        return self._pos_Y
+    
+    @pos_Y.setter
+    def pos_Y(self, value):
+        print("here we are changing the value of pos Y to ", value)
+        self._pos_Y = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def Lcm(self):
+        #print("here we are reading the value of longitude of a group ")
+        return self._Lcm
+    
+    @Lcm.setter
+    def Lcm(self, value):
+        print("here we are changing the value of Lcm to ", value)
+        self._Lcm = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def CenterToLimb_angle(self):
+        #print("here we are reading the value of longitude of a group ")
+        return self._CenterToLimb_angle
+    
+    @Lcm.setter
+    def CenterToLimb_angle(self, value):
+        print("here we are changing the value of CenterToLimb angle to ", value)
+        self._CenterToLimb_angle = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def quadrant(self):
+        #print("here we are reading the value of longitude of a group ")
+        return self._quadrant
+    
+    @quadrant.setter
+    def quadrant(self, value):
+        print("here we are changing the value of quadrant to ", value)
+        self._quadrant = value
         self.changed = True
         self.value_changed.emit()
         
@@ -240,7 +304,7 @@ class Group(QtCore.QObject):
          self._latitude,
          self._longitude,
          self._Lcm,
-         self._alpha_angle,
+         self._CenterToLimb_angle,
          self._L0,
          self._quadrant,
          self._McIntosh,
@@ -254,46 +318,11 @@ class Group(QtCore.QObject):
          self._surface,
          self._raw_surface_px,
          self._raw_surface_msd,
-         self._g_spot) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
+         self._g_spot,
+         self._pos_X,
+         self._pos_Y) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
 
-
-"""class DrawingType(QtCore.QObject):
-
-    def __init__(self):
-        super(DrawingType, self).__init__()
-        self._id = 0
-        self.name = 'None'
-        self.prefix = 'None'
-        self.p_oriented = False
-        self.height = 0
-        self.width = 0
-        self.name_point1 = 'None'
-        self.name_point2 = 'None'
-        self.calib_point1_X = 0
-        self.calib_point1_Y = 0
-        self.calib_point2_X = 0
-        self.calib_point2_Y = 0
-
-    def fill_from_database(self, datetime, group_number):
-       
-        self._datetime = datetime
-        
-        db = database.database()
-
-        (self._id_,
-         self.name,
-         self.prefix,
-         self.p_oriented,
-         self.height,
-         self.width,
-         self.name_point1,
-         self.name_point2,
-         self.calib_point1_X,
-         self.calib_point1_Y,
-         self.calib_point2_X,
-         self.calib_point2_Y) = db.get_all_values("drawing_type")[0]
     
-"""        
 class Drawing(QtCore.QObject):
     """
     It represents all the information extracted from the drawing
@@ -790,13 +819,50 @@ class Drawing(QtCore.QObject):
             self._group_lst.append(group_tmp)
             #print(group_number, self.group_lst[group_number].longitude, self.group_lst[group_number].latitude)
 
-    def add_group(self, lat, lon):
+    def add_group(self, latitude, longitude, posX, posY):
 
-        self._group_count +=1
+        self.group_count +=1
         group_tmp = Group()
-        group_tmp._number = self._group_count - 1
-        group_tmp._latitude = lat
-        group_tmp._longitude = lon
+        group_tmp.number = self.group_count - 1
+        group_tmp.latitude = latitude
+        group_tmp.longitude = longitude
+        group_tmp.pos_X = posX
+        group_tmp.pos_Y = posY
+        
+        group_tmp.Lcm = self._angle_L - longitude * 180/math.pi
+        
+        radius_from_center = math.sqrt((posX - self.calibrated_center.x )**2 +
+                                       (posY - self.calibrated_center.y )**2)
+        
+        group_tmp.CenterToLimb_angle = (math.asin(radius_from_center *
+                                                  1./self.calibrated_radius) *
+                                        180. /math.pi)
+
+        print("calibrated value: ", self.calibrated_center.x, self.calibrated_center.y)
+        print("pos :", posX, posY)
+        
+        if posX > self.calibrated_center.x and posY > self.calibrated_center.y:
+            group_tmp.quadrant = "NE"
+        elif posX > self.calibrated_center.x and posY < self.calibrated_center.y:
+            group_tmp.quadrant = "SE"
+        elif posX < self.calibrated_center.x and posY > self.calibrated_center.y:
+            group_tmp.quadrant = "NW"
+        elif posX < self.calibrated_center.x and posY < self.calibrated_center.y:
+            group_tmp.quadrant = "SW"   
+        
+        #cmd = self._angle_L - longitude * 180/math.pi
+        #print("central meridian distance: ", cmd)
         self._group_lst.append(group_tmp)
         self.changed = True
         self.value_changed.emit()
+
+
+    def delete_group(self, group_index):
+        """
+        Delete a group among the list of groups
+        """
+        self.group_count -= 1
+        self._group_lst.pop(group_index)
+        for i in range(0, len(self._group_lst)):
+            self._group_lst[i].number = i
+            

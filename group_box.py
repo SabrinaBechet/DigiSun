@@ -3,11 +3,12 @@
 from PyQt4 import QtGui, QtCore
 
 def inputVoid(self):
-	pass
+    pass
 
 class GroupBox(QtGui.QWidget):
     """
     Represent the box associated to a group.
+    It is used in the group_widget and in the group_toolbox.
     It consist of
     - combo box for zurich type
     - combo box for mcIntosh type
@@ -22,6 +23,7 @@ class GroupBox(QtGui.QWidget):
         #self.grid_layout.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("color: darkblue")
         self.setLayout(self.grid_layout)
+        #self.setMinimumHeight(200)
 
     def get_confirm_spots(self):
         return self.grid_layout.itemAtPosition(0,4).widget()
@@ -34,6 +36,9 @@ class GroupBox(QtGui.QWidget):
         
     def get_McIntosh(self):
         return self.grid_layout.itemAtPosition(0,3).widget()
+
+    def get_del_button(self):
+        return self.grid_layout.itemAtPosition(0,4).widget()
     
     def get_arrows(self):
         return [self.grid_layout.itemAtPosition(1,3).widget(),
@@ -45,16 +50,26 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.itemAtPosition(0,1).widget().setText(str(spots))
     
     def update_zurich(self,zurich):
-        self.grid_layout.itemAtPosition(0,2).widget().setCurrentIndex(self.grid_layout.itemAtPosition(0,2).widget().findText(zurich))
+        self.grid_layout.itemAtPosition(0,2)\
+                        .widget()\
+                        .setCurrentIndex(self.grid_layout\
+                                         .itemAtPosition(0,2)\
+                                         .widget().findText(zurich))
     
     def update_McIntosh(self,McIntosh):
-        self.grid_layout.itemAtPosition(0,3).widget().setCurrentIndex(self.grid_layout.itemAtPosition(0,3).widget().findText(McIntosh))
-    
-    def update_latitude(self,latitude):
-        self.grid_layout.itemAtPosition(1,1).widget().setText(str(round(latitude,2)))
-    
-    def update_longitude(self,longitude):
-        self.grid_layout.itemAtPosition(2,1).widget().setText(str(round(longitude,2)))
+        self.grid_layout.itemAtPosition(0,3)\
+                        .widget()\
+                        .setCurrentIndex(self.grid_layout\
+                                         .itemAtPosition(0,3)\
+                                         .widget().findText(McIntosh))
+        
+    def update_latitude(self, latitude):
+        self.grid_layout.itemAtPosition(1,1).widget()\
+                                            .setText(str(round(latitude,2)))
+        
+    def update_longitude(self, longitude):
+        self.grid_layout.itemAtPosition(2,1).widget()\
+                                            .setText(str(round(longitude,2)))
         
 
     def set_title(self, title, grid_position,colorised):
@@ -68,8 +83,8 @@ class GroupBox(QtGui.QWidget):
         grid_position[1] += 1
 
 
-    def set_confirm_spots(self,grid_position):
-        confirm_button =QtGui.QPushButton()
+    """def set_confirm_spots(self,grid_position):
+        confirm_button = QtGui.QPushButton()
         confirm_button_pix = QtGui.QPixmap("icons/confirm_green")
         confirm_button_icon = QtGui.QIcon(confirm_button_pix)
         confirm_button.setIcon(confirm_button_icon)
@@ -78,18 +93,19 @@ class GroupBox(QtGui.QWidget):
 
         self.grid_layout.addWidget(confirm_button,grid_position[0],grid_position[1])
         grid_position[1] += 1
-
+    """
+    
     def set_delete_group_button(self,grid_position):
-		delete_button = QtGui.QPushButton()
-		delete_button_pix = QtGui.QPixmap("icons/delete_cross")
-		delete_button_icon = QtGui.QIcon(delete_button_pix)
-		delete_button.setIcon(delete_button_icon)
-		
-		delete_button.setMaximumSize(24,24)
-		
-		self.grid_layout.addWidget(delete_button,grid_position[0],grid_position[1])
-		grid_position[1]+=1
-		#delete_button.clicked.connect(lambda: function())
+	delete_button = QtGui.QPushButton()
+	delete_button_pix = QtGui.QPixmap("icons/delete_cross")
+	delete_button_icon = QtGui.QIcon(delete_button_pix)
+	delete_button.setIcon(delete_button_icon)
+	
+	delete_button.setMaximumSize(24,24)
+	
+	self.grid_layout.addWidget(delete_button,grid_position[0],grid_position[1])
+	grid_position[1]+=1
+	
 		
     def set_arrows_buttons(self):
         button_up = QtGui.QPushButton()
@@ -164,14 +180,13 @@ class GroupBox(QtGui.QWidget):
                               grid_position[1])
         grid_position[1]+=1
         
-        #index = self.zurich_combo.findText(group_zurich_type)
-        self.zurich_combo.setCurrentIndex(self.zurich_combo.findText(group_zurich_type))
-        
-        self.zurich_combo.setItemData(0,QtCore.Qt.black, QtCore.Qt.BackgroundRole);
-        
-        #zurich_current_text = self.zurich_combo.currentText()
-        self.zurich_combo.currentIndexChanged\
-                         .connect(lambda : self.update_McIntosh_combo_box(self.zurich_combo.currentText()))
+        self.zurich_combo\
+            .setCurrentIndex(self.zurich_combo.findText(group_zurich_type))
+        self.zurich_combo\
+            .setItemData(0, QtCore.Qt.black, QtCore.Qt.BackgroundRole)
+        self.zurich_combo\
+            .currentIndexChanged\
+            .connect(lambda : self.update_McIntosh_combo_box(self.zurich_combo.currentText()))
 
     def update_McIntosh_combo_box(self, zurich_type):
         #print("update mcIntosh before clear", zurich_type)
@@ -198,7 +213,6 @@ class GroupBox(QtGui.QWidget):
         zurich_McIntosh['J'] = ['Hsx', 'Hax']
 
         for el in zurich_McIntosh[str(zurich_type)]:
-                #print(type(zurich_type), zurich_type, el)
                 self.McIntosh_combo.addItem(el)
     
     def set_mcIntosh_combo_box(self, mcIntosh_type, zurich_type, grid_position):
