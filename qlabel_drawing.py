@@ -10,10 +10,9 @@ import cv2
 import numpy as np
 import time
 import sys
+import analyse_mode_bool
 
-sys.setrecursionlimit(100000) # check where it is exactly used...
-
-def radian_between_zero_pi(radian):
+"""def radian_between_zero_pi(radian):
     #if radian > 0 and radian < math.pi:
     norm_radian = radian
     if radian > 2*math.pi:
@@ -22,328 +21,7 @@ def radian_between_zero_pi(radian):
         norm_radian = math.pi - math.fabs(norm_radian)
         
     return norm_radian
-    
-class analyseModeBool(QtCore.QObject):
-    """
-    This represents the mode of the analysis.
-    
-    There are 5 viewing modes wich are overlays:
-    - large grid
-    - small grid
-    - helper grid
-    - group visualisation
-    - dipole visualisation
-    
-    There a 4 action modes:
-    - calibrate 
-    - add group
-    - add dipole
-      * input parameter: group number! works only for a given group
-    - calculate the surface
-      * input parameter: group number! works only for a given group
-    """
-    
-    value_changed = QtCore.pyqtSignal()
-    
-    def __init__(self, input_value='False'):
-        super(analyseModeBool, self).__init__()
-        self._value = input_value
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, input_value):
-        #print("**the value of the mode has changed to ", input_value)
-        self._value = input_value
-        self.value_changed.emit()
-        
-    def set_opposite_value(self):
-        if self._value==True:
-            self._value=False
-            self.value_changed.emit()
-        else:
-            self._value=True
-            self.value_changed.emit()
-
-class QLabelGroupSurface(QtGui.QLabel):
-
-    mouse_pressed = QtCore.pyqtSignal()
-    
-    def __init__(self):
-        super(QLabelGroupSurface, self).__init__()
-        self.setFrameShape(QtGui.QFrame.Panel)
-        self.setFrameShadow(QtGui.QFrame.Plain)
-        self.setLineWidth(3)
-        
-        self.original_pixmap = QtGui.QPixmap() # used for the reset
-        #self.threshold_pixmap = QtGui.QPixmap()
-        self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
-        self.pixmap_before_threshold = QtGui.QPixmap()
-        
-        self.setMaximumWidth(300)
-        self.width_scale = 300
-        self.height_scale = 300
-
-        self.pointsList = []
-        
-        self.is_drawing = False
-        self.to_fill = False
-
-        self.threshold_value = 225
-
-        """self.mode_draw_polygon = analyseModeBool(False)
-        self.mode_threshold = analyseModeBool(False)
-        self.mode_pencil = analyseModeBool(False)
-        self.mode_bucket_fill = analyseModeBool(False)
-        self.mode_rubber = analyseModeBool(False)
-        self.first_view = analyseModeBool(True)
-        """
-
-        self.threshold = analyseModeBool(False)
-        self.threshold_done = analyseModeBool(False)
-        
-        self.polygon = analyseModeBool(False)
-        self.crop_done = analyseModeBool(False)
-        self.pencil = analyseModeBool(False)
-        self.bucket = analyseModeBool(False)
-
-        self.painter = QtGui.QPainter()
-        self.pen = QtGui.QPen(QtCore.Qt.red)
-        self.pen.setWidth(5)
-        
-    def convertQImageToMat(self, incomingImage):
-        '''  Converts a QImage into an opencv MAT format  '''
-
-        incomingImage = incomingImage.convertToFormat(4)
-        width = incomingImage.width()
-        height = incomingImage.height()
-
-        ptr = incomingImage.bits()
-        ptr.setsize(incomingImage.byteCount())
-        arr = np.array(ptr).reshape(height, width, 4)  #  Copies the data
-        return arr
-
-    def np2qpixmap(self, np_img):
-        frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
-        img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
-        return QtGui.QPixmap.fromImage(img)
-
-
-    def set_threshold_img(self, threshold_value):
-
-        if not self.threshold_done.value:
-            self.pixmap_before_threshold = self.pixmap().copy()
-        
-        qimage = self.pixmap_before_threshold.toImage()
-        pixel_matrix = self.convertQImageToMat(qimage)
-        #print(type(pixel_matrix), pixel_matrix.size)
-
-        pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)
-        thresh_value , pixel_matrix_thresh = cv2.threshold(pixMat_int8, threshold_value, 256, cv2.THRESH_BINARY_INV)
-        threshold_pixmap = self.np2qpixmap(pixel_matrix_thresh).copy()
-
-        self.setPixmap(threshold_pixmap)
-
-        self.threshold_done.value = True
-        
-    def reset_img(self):
-        """
-        Reset the img to its origin pixmap
-        """
-        self.pointsList = []
-        self.setPixmap(self.original_pixmap)
-        
-    
-    def draw_polygon(self):
-        self.pointsList.append(self.position)
-        
-        print("enter the draw polygon", len(self.pointsList))
-        
-        if len(self.pointsList) == 1:
-            print("set the pixmap polygon", len(self.pointsList))
-            self.first_pixamp_polygon = self.pixmap().copy()
-
-        self.setPixmap(self.first_pixamp_polygon)    
-        self.painter.begin(self.pixmap())
-            
-        
-        pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
-        pen_polygon.setWidth(3)
-        self.painter.setPen(pen_polygon)
-        if len(self.pointsList) == 1:
-            self.painter.drawPoint(self.pointsList[-1])
-            
-        else:
-            for i in range(len(self.pointsList)):
-                self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
-        self.painter.end()
-
-        self.update()
-        
-        #self.setPixmap(self.pixmap())
-
-    def draw_pencil(self):
-        self.painter.begin(self.pixmap())
-        self.painter.setPen(self.pen)
-        self.painter.setBrush(QtCore.Qt.cyan)
-        self.painter.drawPoint(self.position)
-            
-    def set_img(self):
-        """
-        Set the image in the surface calculation widget.
-        It the input pixamp is None, then use the previous pixmap in memory (self.pixmap())
-
-        If draw_polygon : select a region around the interesting group (for an ulterior crop)
-        If pencil : begin the painter for the drawing line (and rubber if color is white)
-        - allow to select a region for a later crop
-        """
-        print("**** set img",
-              self.threshold.value,
-              self.polygon.value,
-              self.pencil.value,
-              self.bucket.value,
-              self.crop_done.value,
-              self.threshold_done.value)
-        
-        #if pixmap is not None:
-        #    self.setPixmap(pixmap)
-        # check if pixmap is None and self.pixmap is emppty -> message!!
-
-        #mode de depart quand on lance image pour la premiere fois
-        #if not self.mode_draw_polygon.value and not self.mode_threshold.value:
-        #    self.original_pixmap = pixmap.copy()
-            
-        """self.painter.begin(self.pixmap())
-        pen_polygon = QtGui.QPen(QtCore.Qt.red)
-        pen_polygon.setWidth(10000)
-        self.painter.setPen(pen_polygon)
-        self.painter.end()
-        """
-        #if self.first_view:
-
-        
-        if self.threshold.value :
-            print("threshold!!", self.threshold_value)
-            self.set_threshold_img(self.threshold_value)
-            
-        if self.polygon.value :
-            self.draw_polygon()
-
-        if self.pencil.value:
-             self.draw_pencil()
-
-        if self.bucket.value:
-             self.bucket_fill()   
-        
-       
-        self.show()
-        #self.first_view.value = False
-        
-    def bucket_fill(self):
-        x = self.position.x()
-        y = self.position.y()
-        image = self.pixmap().toImage()
-        array_image = self.convertQImageToMat(image)
-        array_image = self.iter_fill(x,y,array_image)
-        newPixmap = self.np2qpixmap(array_image)
-        self.setPixmap(newPixmap)
-
-
-    def iter_fill(self,x_start,y_start,array):
-        stack = [(x_start,y_start)]
-        #C1, C2 and C3 are the colors in RGB that the pixel need to be in
-        #If the pen is white, then the pixels are turned black (0,0,0), otherwise they are turned red (0,0,255)
-        if self.pen.color() == QtCore.Qt.black:
-            c1 = 0
-            c2 = 0
-            c3 = 0
-        else:
-            c1 = 0
-            c2 = 0
-            c3 = 255
-        while stack:
-            x, y, stack = stack[0][0], stack[0][1], stack[1:]
-            if not self.check_color(x,y,array,c1,c2,c3):
-                array[y][x][0] = c1
-                array[y][x][1] = c2
-                array[y][x][2] = c3
-                if x > 0:
-                    stack.append((x - 1, y))
-                if x < (len(array[y])-1):
-                    stack.append((x + 1, y))
-                if y > 0:
-                    stack.append((x, y - 1))
-                if y < (len(array)-1):
-                    stack.append((x, y + 1))
-        return array
-
-    def modify_rubber_color(self):
-        if(self.pen.color() == QtCore.Qt.red):
-            self.pen.setColor(QtCore.Qt.black)
-        else:
-            self.pen.setColor(QtCore.Qt.red)
-
-
-    def check_color(self,x,y,array,c1,c2,c3):
-        return(array[y][x][0] == c1 and array[y][x][1] == c2 and array[y][x][2] == c3)
-
-
-    def mousePressEvent(self,QMouseEvent):
-        self.position = QMouseEvent.pos()
-        if self.polygon.value or self.pencil.value or self.bucket.value :
-            self.set_img()
-            self.setPixmap(self.pixmap())
-            
-    def mouseMoveEvent(self,QMouseEvent):
-            
-        if self.pencil.value:
-            self.painter.drawPoint(QMouseEvent.pos())
-            self.setPixmap(self.pixmap())
-    
-    def mouseReleaseEvent(self,QMouseEvent):
-        
-        if self.pencil.value:
-            print("enter in the mouse release and painter end")
-            self.painter.end()
-        
-    def crop(self):
-        left = None
-        right = None
-        up = None
-        down = None
-        for i in range(len(self.pointsList)):
-            if left == None or self.pointsList[i].x() < left:
-                left = self.pointsList[i].x()
-            if right == None or self.pointsList[i].x() > right:
-                right = self.pointsList[i].x()
-            if up == None or self.pointsList[i].y() < up:
-                up = self.pointsList[i].y()
-            if down == None or self.pointsList[i].y() > down:
-                down = self.pointsList[i].y()
-
-        new_pixmap = self.pixmap().copy(left,up,right-left,down-up)
-        new_pixmap = new_pixmap.scaled(300, 300, QtCore.Qt.KeepAspectRatio)
-
-        self.setPixmap(new_pixmap)
-        self.crop_done.value = True
-
-    def calculate_area(self):
-        image = self.pixmap().toImage()
-        array_image = self.convertQImageToMat(image)
-        count = self.count_pixel(array_image)
-        return count
-
-    def count_pixel(self,array):
-        count = 0
-        for y in range(len(array)):
-            for x in range(len(array)):
-                if(array[y][x][0] == 0 and array[y][x][1] == 0 and array[y][x][2] == 255):
-                    count += 1
-        return count
-    
-    
+"""
 class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 
@@ -380,31 +58,32 @@ class QLabelDrawing(QtGui.QLabel):
        self.height_scale = 1000
 
        # overlay mode
-       self.large_grid_overlay = analyseModeBool(True)
-       self.small_grid_overlay = analyseModeBool(False)
+       self.large_grid_overlay = analyse_mode_bool.analyseModeBool(True)
+       self.small_grid_overlay = analyse_mode_bool.analyseModeBool(False)
        self.grid_draw_point = False
        self.grid_interpolate_point = True
-       self.group_visu = analyseModeBool(True)
-       self.dipole_visu = analyseModeBool(False)
+       self.group_visu = analyse_mode_bool.analyseModeBool(True)
+       self.dipole_visu = analyse_mode_bool.analyseModeBool(False)
 
        #helper mode
-       self.helper_grid = analyseModeBool(False)
+       self.helper_grid = analyse_mode_bool.analyseModeBool(False)
        self.helper_grid_position_clicked = False
        
        #action mode
        #only one action mode at the time!
-       self.calibration_mode = analyseModeBool(False)
+       self.calibration_mode = analyse_mode_bool.analyseModeBool(False)
        self.center_done = False
        self.north_done = False
        #self.approximate_center = [0., 0.]
-       self.add_group_mode = analyseModeBool(False)
-       self.add_dipole_mode = analyseModeBool(False)
-       self.surface_mode = analyseModeBool(False)
+       self.add_group_mode = analyse_mode_bool.analyseModeBool(False)
+       self.add_dipole_mode = analyse_mode_bool.analyseModeBool(False)
+       self.surface_mode = analyse_mode_bool.analyseModeBool(False)
 
        self.group_visu_index = 0
 
        self.scaling_factor = 1
        self.dipole_points = []
+       self.dipole_angles = []
 
        
     def set_img(self):
@@ -601,7 +280,7 @@ class QLabelDrawing(QtGui.QLabel):
             painter.drawPoint(self.current_drawing.calibrated_north.x ,
                               self.current_drawing.calibrated_north.y ) 
             
-        if self.current_drawing.calibrated and self.group_visu.value  :
+        if self.group_visu.value and self.current_drawing.calibrated :
             # note: a column with the cartesian coord of group should be recorded in the db!
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
@@ -619,9 +298,9 @@ class QLabelDrawing(QtGui.QLabel):
                                                               self.current_drawing.group_lst[i].latitude)
                 painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
                 
-        if self.current_drawing.calibrated and self.dipole_visu.value :
+        if self.dipole_visu.value and self.current_drawing.calibrated :
             # note: a column with the cartesian coord of group should be recorded in the db!
-            #painter.setPen(pen_border)
+            print("draw the existing dipole..")
             pen_point = QtGui.QPen(QtCore.Qt.blue)
             pen_point.setWidth(self.pen_width * 2 )
             pen_line = QtGui.QPen(QtCore.Qt.blue)
@@ -633,27 +312,31 @@ class QLabelDrawing(QtGui.QLabel):
             pen_line_selected = QtGui.QPen()
             pen_line_selected.setWidth(self.pen_width /2. )
             pen_line_selected.setColor(QtGui.QColor(77, 185, 88))
-            
+    
             for i in range(self.current_drawing.group_count):
 
-                if self.group_visu_index==i:
-                    painter.setPen(pen_selected)
-                dip1_x, dip1_y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole1_long,
-                                                                        self.current_drawing.group_lst[i].dipole1_lat)
-                dip2_x, dip2_y = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole2_long,
-                                                                        self.current_drawing.group_lst[i].dipole2_lat)
-                painter.setPen(pen_point)
-                if self.group_visu_index==i:
-                    painter.setPen(pen_point_selected)
-                painter.drawPoints(QtCore.QPointF(dip1_x,dip1_y), QtCore.QPointF(dip2_x,dip2_y) )
+                zurich_type = self.current_drawing.group_lst[i].zurich.upper()
+                if zurich_type in ["B","C","D","E","F","G"]:
+                    (dip1_x,
+                     dip1_y) = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole1_long,
+                                                                  self.current_drawing.group_lst[i].dipole1_lat)
+                    (dip2_x,
+                     dip2_y) = self.get_cartesian_coordinate_from_HGC(self.current_drawing.group_lst[i].dipole2_long,
+                                                                      self.current_drawing.group_lst[i].dipole2_lat)
+                    
+                    painter.setPen(pen_point)
+                    if self.group_visu_index==i:
+                        painter.setPen(pen_point_selected)
+                    painter.drawPoints(QtCore.QPointF(dip1_x,dip1_y), QtCore.QPointF(dip2_x,dip2_y))
 
-                painter.setPen(pen_line)
-                if self.group_visu_index==i:
-                    painter.setPen(pen_line_selected)
-                painter.drawLine(dip1_x, dip1_y, dip2_x, dip2_y)
+                    painter.setPen(pen_line)
+                    if self.group_visu_index==i:
+                        painter.setPen(pen_line_selected)
+                    painter.drawLine(dip1_x, dip1_y, dip2_x, dip2_y)
 
-        if self.current_drawing.calibrated and self.add_dipole_mode.value :
-           
+        if self.add_dipole_mode.value and self.current_drawing.calibrated :
+            print("draw the added dipole..")
+            
             pen_point = QtGui.QPen(QtCore.Qt.blue)
             pen_point.setWidth(self.pen_width * 2 )
             pen_line = QtGui.QPen(QtCore.Qt.blue)
@@ -666,8 +349,6 @@ class QLabelDrawing(QtGui.QLabel):
             pen_line_selected.setWidth(self.pen_width /2. )
             pen_line_selected.setColor(QtGui.QColor(77, 185, 88))
 
-            #self.dipole_points.append(self.position)
-            
             if len(self.dipole_points)==2:
                 painter.drawPoint(QtCore.QPointF(self.dipole_points[0], self.dipole_points[1]))
             elif len(self.dipole_points)==4:
@@ -676,11 +357,13 @@ class QLabelDrawing(QtGui.QLabel):
                 painter.drawLine(self.dipole_points[0], self.dipole_points[1],
                                  self.dipole_points[2], self.dipole_points[3])
                 self.dipole_points = []
+                self.dipole_angles = []
             else:
                 print("problem with the number of points")
                 print(len(self.dipole_points))
                 self.dipole_points = []
-            
+                self.dipole_angles = []
+                
         painter.end()
         pixmap = self.drawing_pixMap.scaled(int(self.width_scale),
                                             int(self.height_scale),
@@ -1036,10 +719,21 @@ class QLabelDrawing(QtGui.QLabel):
             self.group_added.emit()
 
         if self.current_drawing.calibrated and self.add_dipole_mode.value:
+
+            print("****** group visu index: ", self.group_visu_index)
+
+            if self.current_drawing.group_lst[self.group_visu_index].zurich.upper() in ["B","C","D","E","F","G"]:
+                self.dipole_points.append(self.x_drawing)
+                self.dipole_points.append(self.y_drawing)
+                self.dipole_angles.append(self.HGC_latitude)
+                self.dipole_angles.append(self.HGC_longitude)
+
+                self.current_drawing.add_dipole(self.group_visu_index,
+                                                self.dipole_points,
+                                                self.dipole_angles)
+                self.set_img()
+                
             
-            self.dipole_points.append(self.x_drawing)
-            self.dipole_points.append(self.y_drawing)
-            self.set_img()
         
             
     def get_pixmap_coordinate_range(self):

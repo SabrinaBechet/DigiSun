@@ -3,7 +3,7 @@
 import os
 from PyQt4 import QtGui, QtCore
 
-import database, drawing, group_box, qlabel_drawing
+import database, drawing, group_box, qlabel_drawing, qlabel_group_surface
 from datetime import date, time, datetime, timedelta
 import math
 import configparser
@@ -65,7 +65,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_down_layout.setSpacing(0)
         self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
-
+        
         self.widget_left_down_bis = QtGui.QWidget()
         self.widget_left_down_bis.setMaximumWidth(350)
         self.widget_left_down_bis.setMaximumHeight(200)
@@ -75,7 +75,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_down_bis_layout.setSpacing(0)
         self.widget_left_down_bis_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
         self.widget_left_down_bis.setLayout(self.widget_left_down_bis_layout)
-
+        
         self.widget_middle_up = QtGui.QWidget()
         self.widget_middle_up.setMaximumWidth(10)
         self.widget_middle_up.setMinimumHeight(200)
@@ -85,8 +85,8 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_middle_up_layout.setSpacing(0)
         self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
-        self.label_middle_up = qlabel_drawing.QLabelGroupSurface()
-           
+        self.label_middle_up = qlabel_group_surface.QLabelGroupSurface()
+        
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
@@ -166,6 +166,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.center_clicked.connect(self.scroll_position)
         self.drawing_page.label_right.north_clicked.connect(self.clean_status_bar)
         self.drawing_page.label_right.group_added.connect(self.add_group_box)
+        
+        
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
     def set_configuration(self):
@@ -416,12 +418,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         This set the adding group mode. It does:
         - reset the cursor to its original shape
         - set all the other action mode to false
+        - if group visu mode not activated -> activate it 
         - set the cursor to one showing that we are in the add group mode
         """
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_group_mode.set_opposite_value()
+        
         if self.drawing_page.label_right.add_group_mode.value:
             self.status_bar_mode_name.setText("Add group mode")
+            
+            if not self.drawing_page.label_right.group_visu.value:
+                self.drawing_page.label_right.group_visu.value = True
+                self.drawing_page.label_right.set_img()
+
             if self.drawing_lst[self.current_count].calibrated==0:
                 self.status_bar_mode_comment.setText(" Warning :" +
                                                      " The calibration must" +
@@ -430,16 +439,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             else:
                 self.status_bar_mode_comment.setText("Click on a the group" +
                                                      " position to add it")
+                cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/target_24.png"
+                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
+                #QtGui.QApplication.setOverrideCursor(cursor_add_group)
+                self.drawing_page.label_right.setCursor(cursor_add_group)
+                
+
             if self.drawing_page.label_right.calibration_mode.value:
                 self.start_calibration() 
             self.drawing_page.label_right.helper_grid.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
 
-            cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/target_32.png"
-            cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
-            QtGui.QApplication.setOverrideCursor(cursor_add_group)
-            
         else:
             print("restore the old cursor")
             QtGui.QApplication.restoreOverrideCursor()
@@ -447,7 +458,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def add_group_box(self):
         """
-        Fonction associated to the add_group mode, where it add the box associated to each group.
+        Fonction associated to the add_group mode, 
+        it adds the box associated to each group.
         """
         print("Enter in the add group function..")
         print("group count", self.drawing_lst[self.current_count].group_count)
@@ -465,22 +477,41 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
+        
         if self.drawing_page.label_right.add_dipole_mode.value:
             self.status_bar_mode_name.setText("Add dipole mode")
+
+            if not self.drawing_page.label_right.dipole_visu.value:
+                self.drawing_page.label_right.dipole_visu.value = True
+                self.drawing_page.label_right.set_img()
+
             if self.drawing_lst[self.current_count].calibrated==0:
                 self.status_bar_mode_comment.setText(" Warning :" +
                                                      " The calibration must" +
                                                      " be  done before adding" +
                                                      " dipole!")
-            else:
-                self.status_bar_mode_comment.setText("Click on a the dipole" +
-                                                     " positions to add it")
                 
+            elif (self.drawing_lst[self.current_count].calibrated==1 and
+                  self.drawing_lst[self.current_count].group_count==0):
+                self.status_bar_mode_comment.setText(" Warning :" +
+                                                     " Dipolar groups must" +
+                                                     " be  added before adding" +
+                                                     " dipole!")
+                
+            elif (self.drawing_lst[self.current_count].calibrated==1 and
+                  self.drawing_lst[self.current_count].group_count > 0):
+                self.check_dipole(self.listWidget_groupBox.currentRow())
+                #QtGui.QApplication.setOverrideCursor(QtCore.Qt.SizeFDiagCursor)
+                #self.drawing_page.label_right.setCursor(QtCore.Qt.SizeFDiagCursor)
+            
             self.drawing_page.label_right.helper_grid.value = False
             self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
-
+        else:
+            print("restore the old cursor")
+            QtGui.QApplication.restoreOverrideCursor()
+            self.clean_status_bar()
             
     def calculate_surface(self, n):
         QtGui.QApplication.restoreOverrideCursor()
@@ -594,7 +625,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def clean_status_bar(self):
         self.status_bar_mode_name.setText("")
         self.status_bar_mode_comment.setText("")
-        
+
+    """def status_not_dipolar(self):
+        self.status_bar_mode_name.setText("Add dipole mode")
+        self.status_bar_mode_comment.setStyleSheet("QLabel { color : red; }");
+        self.status_bar_mode_comment.setText("Warning this is not a dipolar group!!")
+       # self.status_bar_mode_comment.setStyleSheet("QLabel { color : black; }");
+    """    
     def start_calibration(self):
         """
         Contains two parts:
@@ -607,7 +644,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         QtGui.QApplication.restoreOverrideCursor()
 
         if self.drawing_page.label_right.calibration_mode.value:    
-            QtGui.QApplication.setOverrideCursor(QtCore.Qt.CrossCursor)
+            #QtGui.QApplication.setOverrideCursor(QtCore.Qt.CrossCursor)
+            elf.drawing_page.label_right.setCursor(QtCore.Qt.CrossCursor)
             self.status_bar_mode_name.setText("Calibration mode")
             
             
@@ -726,11 +764,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.set_delete_group_button(self.grid_position)
             
             delete_button = groupBoxLine.get_del_button()
-            """groupBoxLine\
-                .get_del_button()\
-                .clicked\
-                .connect(lambda: groupBoxLine.setFocus())
-            """
             delete_button.clicked.connect(self.delete_group)
             
             if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
@@ -768,15 +801,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
-        #self.listWidget_groupBox\
-        #    .itemSelectionChanged.connect(self.disable_other_groupBoxLine)
+
         self.listWidget_groupBox\
             .itemSelectionChanged\
             .connect(lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow()))
 
+        self.listWidget_groupBox\
+            .itemSelectionChanged\
+            .connect(lambda: self.check_dipole(self.listWidget_groupBox.currentRow()))
+
         print("out of set group_widget")
         
-        
+    def check_dipole(self, element_number):
+
+        if (self.drawing_page.label_right.add_dipole_mode.value and 
+            self.drawing_lst[self.current_count]\
+            .group_lst[element_number]\
+            .zurich.upper() not in ["B","C","D","E","F","G"]):
+            
+            self.status_bar_mode_name.setText("Add dipole mode")
+            self.status_bar_mode_comment.setStyleSheet("QLabel { color : red; }");
+            self.status_bar_mode_comment.setText("Warning this is not a dipolar group!!")
+            self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
+
+        elif (self.drawing_page.label_right.add_dipole_mode.value and 
+              self.drawing_lst[self.current_count].group_lst[element_number].zurich.upper()  in ["B","C","D","E","F","G"]):
+
+            
+            self.status_bar_mode_name.setText("Add dipole mode")
+            self.status_bar_mode_comment.setStyleSheet("QLabel { color : black; }");
+            self.status_bar_mode_comment.setText("Click on a dipole" +
+                                                     " positions to add it")
+            self.drawing_page.label_right.setCursor(QtCore.Qt.SizeFDiagCursor)
+
+        else:
+            print("condition 3")
+            self.status_bar_mode_name.setText("") 
+            self.status_bar_mode_comment.setText("")
+            
     def set_focus_group_box(self, element_number):
 
         print("enter in the focus group box for the element: ", element_number)
@@ -985,7 +1047,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         title_left_up.setAlignment(QtCore.Qt.AlignCenter)
         title_left_up.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_up_layout.addWidget(title_left_up)
-        
+        title_left_up.setCursor(QtCore.Qt.WaitCursor)
         self.form_layout1 = QtGui.QFormLayout()
         self.form_layout1.setSpacing(10)
         
@@ -1583,15 +1645,23 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_path_to_qlabel()
         self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
         self.drawing_page.label_right.group_visu_index = 0
+
+        self.drawing_page.label_right.calibration_mode.value = False
+        self.drawing_page.label_right.helper_grid.value = False
+        self.drawing_page.label_right.add_group_mode.value = False
+        self.drawing_page.label_right.add_dipole_mode.value = False
+        self.drawing_page.label_right.surface_mode.value = False
+
+        
         self.drawing_page.label_right.set_img()
 
         self.set_group_widget()
 
         self.set_focus_group_box(0)
         
+        
         self.set_group_toolbox()
         self.status_bar_mode_name.setText("")
         self.status_bar_mode_comment.setText("")
-        
         #self.drawing_page.label_right.show()
     

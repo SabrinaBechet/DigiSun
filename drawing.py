@@ -50,8 +50,8 @@ class Group(QtCore.QObject):
         self._number = 0
         self._longitude = 0
         self._latitude = 0
-        self._pos_X = 0
-        self._pos_Y = 0 
+        self._posX= 0
+        self._posY = 0 
         self._Lcm = 0
         self._CenterToLimb_angle = 0
         self._L0 = 0
@@ -63,6 +63,10 @@ class Group(QtCore.QObject):
         self._dipole1_long = 0
         self._dipole2_lat = 0
         self._dipole2_long = 0
+        self._dipole1_posX = 0
+        self._dipole1_posY = 0
+        self._dipole2_posX = 0
+        self._dipole2_posY = 0
         self._dipole_defined = 0
         self._surface = 0
         self._raw_surface_px = 0
@@ -121,19 +125,19 @@ class Group(QtCore.QObject):
     @pos_X.setter
     def pos_X(self, value):
         print("here we are changing the value of pos X to ", value)
-        self._pos_X = value
+        self._posX= value
         self.changed = True
         self.value_changed.emit()
 
     @property    
-    def pos_Y(self):
+    def posY(self):
         #print("here we are reading the value of longitude of a group ")
-        return self._pos_Y
+        return self._posY
     
-    @pos_Y.setter
-    def pos_Y(self, value):
+    @posY.setter
+    def posY(self, value):
         print("here we are changing the value of pos Y to ", value)
-        self._pos_Y = value
+        self._posY = value
         self.changed = True
         self.value_changed.emit()
 
@@ -274,7 +278,54 @@ class Group(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
         
-           
+    @property    
+    def dipole1_posX(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole1_posX
+    
+    @dipole1_posX.setter
+    def dipole1_posX(self, value):
+        print("here we are changing the value of dipole1_posX to ", value)
+        self._dipole1_posX = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def dipole1_posY(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole1_posY
+    
+    @dipole1_posY.setter
+    def dipole1_posY(self, value):
+        print("here we are changing the value of dipole1_posY to ", value)
+        self._dipole1_posY = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def dipole2_posX(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole2_posX
+    
+    @dipole2_posX.setter
+    def dipole2_posX(self, value):
+        print("here we are changing the value of dipole2_posX to ", value)
+        self._dipole2_posX = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property    
+    def dipole2_posY(self):
+        #print("here we are reading the value of spots of a group ")
+        return self._dipole2_posY
+    
+    @dipole2_posY.setter
+    def dipole2_posY(self, value):
+        print("here we are changing the value of dipole2_posY to ", value)
+        self._dipole2_posY = value
+        self.changed = True
+        self.value_changed.emit()
+        
     @property    
     def g_spot(self):
         #print("here we are reading the value of g_spot of a group ")
@@ -320,7 +371,11 @@ class Group(QtCore.QObject):
          self._raw_surface_msd,
          self._g_spot,
          self._pos_X,
-         self._pos_Y) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
+         self._posY,
+         self._dipole1_posX,
+         self.dipoel1_posY,
+         self.dipole2_posX,
+         self.dipole2_posY) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
 
     
 class Drawing(QtCore.QObject):
@@ -820,14 +875,17 @@ class Drawing(QtCore.QObject):
             #print(group_number, self.group_lst[group_number].longitude, self.group_lst[group_number].latitude)
 
     def add_group(self, latitude, longitude, posX, posY):
+        """
+        Add a group to the database by clicking on the drawing.
+        """
 
         self.group_count +=1
         group_tmp = Group()
         group_tmp.number = self.group_count - 1
         group_tmp.latitude = latitude
         group_tmp.longitude = longitude
-        group_tmp.pos_X = posX
-        group_tmp.pos_Y = posY
+        group_tmp.posX= posX
+        group_tmp.posY = posY
         
         group_tmp.Lcm = self._angle_L - longitude * 180/math.pi
         
@@ -866,3 +924,17 @@ class Drawing(QtCore.QObject):
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
             
+    def add_dipole(self, group_index, dipole_points, dipole_angles):
+        """
+        Add the dipole to the database by clicking on the drawing
+        """
+
+        if len(dipole_points)==4:
+            self._group_lst[group_index].dipole1_posX = dipole_points[0]
+            self._group_lst[group_index].dipole1_posY = dipole_points[1]
+            self._group_lst[group_index].dipole2_posX = dipole_points[2]
+            self._group_lst[group_index].dipole2_posY = dipole_points[3]
+            self._group_lst[group_index].dipole1_lat = dipole_angles[0]
+            self._group_lst[group_index].dipole1_long = dipole_angles[1]
+            self._group_lst[group_index].dipole2_lat = dipole_angles[2]
+            self._group_lst[group_index].dipole2_long = dipole_angles[3]
