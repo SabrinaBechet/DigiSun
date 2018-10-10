@@ -1,9 +1,25 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
+
 from PyQt4 import QtGui, QtCore
 
 def inputVoid(self):
     pass
+
+      
+class QLabelClickable(QtGui.QLabel):
+    """
+    Label on which one can click (used to delete group)
+    """    
+    clicked = QtCore.pyqtSignal()
+        
+    def __init__(self):
+        super(QtGui.QLabel, self).__init__()
+        
+    def mouseReleaseEvent(self, QMouseEvent):
+        print("one click on the label!!")
+        self.clicked.emit()
+        
 
 class GroupBox(QtGui.QWidget):
     """
@@ -95,15 +111,17 @@ class GroupBox(QtGui.QWidget):
         grid_position[1] += 1
     """
     
-    def set_delete_group_button(self,grid_position):
-	delete_button = QtGui.QPushButton()
-	delete_button_pix = QtGui.QPixmap("icons/delete_cross")
-	delete_button_icon = QtGui.QIcon(delete_button_pix)
-	delete_button.setIcon(delete_button_icon)
-	
-	delete_button.setMaximumSize(24,24)
-	
-	self.grid_layout.addWidget(delete_button,grid_position[0],grid_position[1])
+    def set_delete_group_button(self, grid_position):
+        
+        delete_button = QLabelClickable()
+        delete_button_pix = QtGui.QPixmap("icons/delete_cross_16.png")
+        delete_button.setPixmap(delete_button_pix)
+	delete_button.setMaximumSize(16,16)
+        
+	self.grid_layout.addWidget(delete_button,
+                                   grid_position[0],
+                                   grid_position[1])
+        
 	grid_position[1]+=1
 	
 		
@@ -141,17 +159,6 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.addWidget(button_left,2,2)
         self.grid_layout.addWidget(button_right,2,4)
 
-
-    def set_add_surface_button(self):
-        self.add_surface_button = QtGui.QPushButton()
-        self.add_surface_button.setMinimumWidth(60)
-        self.add_surface_button.setMaximumWidth(60)
-        self.add_surface_button.setStyleSheet("font-size: 11pt")
-        self.add_surface_button.setText("Modify")
-        self.grid_layout.addWidget(self.add_surface_button,3,2)
-        
-        #self.add_surface_button.clicked.connect(lambda:)
-    
     def set_spot_count(self, spot_count, grid_position):
         
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count),self)

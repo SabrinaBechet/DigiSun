@@ -436,10 +436,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
 
-            """cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/click_24.png"
+            cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/target_32.png"
             cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
             QtGui.QApplication.setOverrideCursor(cursor_add_group)
-            """
+            
         else:
             print("restore the old cursor")
             QtGui.QApplication.restoreOverrideCursor()
@@ -454,14 +454,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.set_group_widget()
         self.set_focus_group_box(self.drawing_lst[self.current_count].group_count - 1)
-        
-            
-        #self.set_group_toolbox()
         self.set_group_toolbox(self.drawing_lst[self.current_count].group_count - 1)
-
         self.update_group_visu(self.drawing_lst[self.current_count].group_count - 1)
-
-        #self.drawing_page.label_right.set_img()
         
     def set_dipole_mode(self):
         """
@@ -707,6 +701,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox.setStyleSheet("QListView::item:selected {background : rgb(77, 185, 88);}");
         
         self.groupBoxLineList = []
+        
         for i in range(group_count):
             self.grid_position = [0, 0]
             groupBoxLine = group_box.GroupBox()
@@ -731,17 +726,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.set_delete_group_button(self.grid_position)
             
             delete_button = groupBoxLine.get_del_button()
+            """groupBoxLine\
+                .get_del_button()\
+                .clicked\
+                .connect(lambda: groupBoxLine.setFocus())
+            """
             delete_button.clicked.connect(self.delete_group)
             
             if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
                 groupBoxLine.get_zurich().setStyleSheet("background-color: orange")
       
             groupBoxLine.get_spots().textEdited.\
-                connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),False))
+                connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(), False))
             groupBoxLine.get_zurich().currentIndexChanged.\
-                connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(),False))
+                connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(), False))
             groupBoxLine.get_McIntosh().currentIndexChanged.\
-                connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(),False))
+                connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(), False))
             
             
             self.groupBoxLineList.append(groupBoxLine)
@@ -752,7 +752,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
            
         self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
         
-       
         # not sure it is still needed??
         # self.listWidget_group_toolbox.set_empty()
         #self.listWidget_group_toolbox.set_welcome()
@@ -777,7 +776,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         print("out of set group_widget")
         
-
+        
     def set_focus_group_box(self, element_number):
 
         print("enter in the focus group box for the element: ", element_number)
@@ -892,6 +891,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_group_widget()
         self.set_focus_group_box(0)
         self.set_group_toolbox()
+        self.drawing_page.label_right.set_img()
         
     def update_HGC_position(self, coordinate, value):
         """

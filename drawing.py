@@ -863,6 +863,6 @@ class Drawing(QtCore.QObject):
         """
         self.group_count -= 1
         self._group_lst.pop(group_index)
-        for i in range(0, len(self._group_lst)):
+        for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
             
