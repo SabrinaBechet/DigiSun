@@ -72,6 +72,7 @@ class Group(QtCore.QObject):
         self._raw_surface_px = 0
         self._raw_surface_msd = 0
         self._g_spot = 0
+        self._largest_spot = 'None'
 
         self.changed = False
 
@@ -337,6 +338,21 @@ class Group(QtCore.QObject):
         self._g_spot = value         
         self.changed = True
         self.value_changed.emit()
+
+    @property    
+    def largest_spot(self):
+        #print("here we are reading the value of g_spot of a group ")
+        return self._largest_spot
+    
+    @largest_spot.setter
+    def largest_spot(self, value):
+        """
+        TO DO: here check that is the value is either L, T or E
+        """
+        print("here we are changing the value of the largest spot to ", value)
+        self._largest_spot = value         
+        self.changed = True
+        self.value_changed.emit()
         
         
     def fill_from_database(self, datetime, group_number):
@@ -375,7 +391,10 @@ class Group(QtCore.QObject):
          self._dipole1_posX,
          self.dipoel1_posY,
          self.dipole2_posX,
-         self.dipole2_posY) = db.get_all_datetime_group_number("groups", datetime, group_number)[0]
+         self.dipole2_posY,
+         self.largest_spot) = db.get_all_datetime_group_number("groups",
+                                                               datetime,
+                                                               group_number)[0]
 
     
 class Drawing(QtCore.QObject):
@@ -444,7 +463,8 @@ class Drawing(QtCore.QObject):
             self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)
 
         elif self.pt1_name == 'South'  and self.pt2_name == 'North':
-            self.calibrated_center = coordinates.Cartesian((point1_x + point2_x)/2, (point1_y + point2_y)/2)
+            self.calibrated_center = coordinates.Cartesian((point1_x + point2_x)/2,
+                                                           (point1_y + point2_y)/2)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
             self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)   
             

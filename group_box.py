@@ -53,26 +53,37 @@ class GroupBox(QtGui.QWidget):
     def get_McIntosh(self):
         return self.grid_layout.itemAtPosition(0,3).widget()
 
-    def get_del_button(self):
+    def get_dipole_button(self):
         return self.grid_layout.itemAtPosition(0,4).widget()
+
+    def get_area_button(self):
+        return self.grid_layout.itemAtPosition(0,5).widget()
+
+    def get_del_button(self):
+        return self.grid_layout.itemAtPosition(0,5).widget()
     
     def get_arrows(self):
-        return [self.grid_layout.itemAtPosition(1,3).widget(),
+        return (self.grid_layout.itemAtPosition(1,3).widget(),
                 self.grid_layout.itemAtPosition(3,3).widget(),
                 self.grid_layout.itemAtPosition(2,2).widget(),
-                self.grid_layout.itemAtPosition(2,4).widget()]
+                self.grid_layout.itemAtPosition(2,4).widget())
+
+    def get_largest_spot_buttons(self):
+        return (self.grid_layout.itemAtPosition(4,1).widget(),
+                self.grid_layout.itemAtPosition(4,2).widget(),
+                self.grid_layout.itemAtPosition(4,3).widget())
     
-    def update_spots(self,spots):
+    def update_spots(self, spots):
         self.grid_layout.itemAtPosition(0,1).widget().setText(str(spots))
     
-    def update_zurich(self,zurich):
+    def update_zurich(self, zurich):
         self.grid_layout.itemAtPosition(0,2)\
                         .widget()\
                         .setCurrentIndex(self.grid_layout\
                                          .itemAtPosition(0,2)\
                                          .widget().findText(zurich))
     
-    def update_McIntosh(self,McIntosh):
+    def update_McIntosh(self, McIntosh):
         self.grid_layout.itemAtPosition(0,3)\
                         .widget()\
                         .setCurrentIndex(self.grid_layout\
@@ -88,39 +99,56 @@ class GroupBox(QtGui.QWidget):
                                             .setText(str(round(longitude,2)))
         
 
-    def set_title(self, title, grid_position,colorised):
+    def set_title(self, title, grid_position, colorised):
         self.title_label = QtGui.QLabel(title)
-        if colorised:
+        """if colorised:
             self.title_label.setStyleSheet("background-color: orange")
-        #self.title_label.setMaximumWidth(50)
+        """
+        self.title_label.sizeHint()
         self.grid_layout.addWidget(self.title_label,
                                    grid_position[0],
                                    grid_position[1])
         grid_position[1] += 1
 
-
-    """def set_confirm_spots(self,grid_position):
-        confirm_button = QtGui.QPushButton()
-        confirm_button_pix = QtGui.QPixmap("icons/confirm_green")
-        confirm_button_icon = QtGui.QIcon(confirm_button_pix)
-        confirm_button.setIcon(confirm_button_icon)
+    def set_area_button(self, grid_position):
+        delete_button = QLabelClickable()
+        delete_button_pix = QtGui.QPixmap("icons/Iconnice/pie_chart_24.png")
+        delete_button.setPixmap(delete_button_pix)
+	delete_button.setMaximumSize(24,24)
+        delete_button.setStyleSheet(
+                    "background-color: transparent") 
+	self.grid_layout.addWidget(delete_button,
+                                   grid_position[0],
+                                   grid_position[1])
         
-        confirm_button.setMaximumSize(24,24)
+	grid_position[1]+=1
 
-        self.grid_layout.addWidget(confirm_button,grid_position[0],grid_position[1])
-        grid_position[1] += 1
-    """
-    
+        
+    def set_dipole_button(self, grid_position):
+        delete_button = QLabelClickable()
+        delete_button_pix = QtGui.QPixmap("icons/dipole_24.png")
+        delete_button.setPixmap(delete_button_pix)
+	delete_button.setMaximumSize(24,24)
+        delete_button.setStyleSheet(
+                    "background-color: transparent") 
+	self.grid_layout.addWidget(delete_button,
+                                   grid_position[0],
+                                   grid_position[1])
+        
+	grid_position[1]+=1
+        
+ 
     def set_delete_group_button(self, grid_position):
         
         delete_button = QLabelClickable()
         delete_button_pix = QtGui.QPixmap("icons/delete_cross_16.png")
         delete_button.setPixmap(delete_button_pix)
 	delete_button.setMaximumSize(16,16)
-        
+        delete_button.setStyleSheet(
+                    "background-color: transparent") 
 	self.grid_layout.addWidget(delete_button,
                                    grid_position[0],
-                                   grid_position[1])
+                                   grid_position[1]+1)
         
 	grid_position[1]+=1
 	
@@ -189,12 +217,14 @@ class GroupBox(QtGui.QWidget):
         
         self.zurich_combo\
             .setCurrentIndex(self.zurich_combo.findText(group_zurich_type))
+        
         self.zurich_combo\
             .setItemData(0, QtCore.Qt.black, QtCore.Qt.BackgroundRole)
-        self.zurich_combo\
+        
+        """self.zurich_combo\
             .currentIndexChanged\
             .connect(lambda : self.update_McIntosh_combo_box(self.zurich_combo.currentText()))
-
+        """
     def update_McIntosh_combo_box(self, zurich_type):
         #print("update mcIntosh before clear", zurich_type)
         self.McIntosh_combo.clear() # this is giving the empty line in the drawing object!!! (signal of change)
@@ -238,6 +268,7 @@ class GroupBox(QtGui.QWidget):
     def set_longitude(self, longitude, grid_position):
         grid_position[0] +=1
         self.longitude_label = QtGui.QLabel("Longitude")
+        
         #self.longitude_label.setMaximumWidth(100)
         self.longitude_linedit = QtGui.QLineEdit(self)
         self.longitude_linedit.setText('{0:.2f}'.format(longitude))
@@ -258,38 +289,76 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.addWidget(self.latitude_label, grid_position[0], 0)
         self.grid_layout.addWidget(self.latitude_linedit, grid_position[0], 1)
 
-    def set_larger_spot(self, larger_spot, grid_position):
+        
+    def update_largest_spot(self, g_spot, zurich_type):
+        """
+        Need some adaptation when colum with largest_spot added in the database!
+        then replace g_spot directly by largest_spot!
+        value of g_spot:
+        0 for unipolar group -> button should be dissabled
+        1->9 for dipolar group -> green to indicate the type of the largest spot
+        NULL if not filled -> button should be in orange
+
+        """
+
+        if g_spot in [1, 4, 7]:
+            largest_spot = 'L'
+        elif g_spot in [2, 5, 8]:
+            largest_spot = 'T'
+        elif g_spot in [3, 6, 9]:
+            largest_spot = 'E'
+        elif g_spot==0:
+            largest_spot = None
+        
+        if (largest_spot is None and
+            zurich_type.upper() not in ["B","C","D","E","F","G"]):
+            self.largest_spot_leading.setDisabled(True)
+            self.largest_spot_trailing.setDisabled(True)
+            self.largest_spot_egal.setDisabled(True)
+        elif largest_spot is None and zurich_type.upper() in ["B","C","D","E","F","G"]:
+            self.largest_spot_leading.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.largest_spot_trailing.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.largest_spot_egal.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.largest_spot_leading.setDisabled(False)
+            self.largest_spot_trailing.setDisabled(False)
+            self.largest_spot_egal.setDisabled(False)
+        elif largest_spot is 'L':
+            self.largest_spot_leading.setStyleSheet("background-color: rgb(77, 185, 88)")
+            self.largest_spot_leading.setDisabled(False)
+            self.largest_spot_trailing.setDisabled(False)
+            self.largest_spot_egal.setDisabled(False)
+        elif largest_spot is 'T':
+            self.largest_spot_trailing.setStyleSheet("background-color: rgb(77, 185, 88)")
+            self.largest_spot_leading.setDisabled(False)
+            self.largest_spot_trailing.setDisabled(False)
+            self.largest_spot_egal.setDisabled(False)
+        elif largest_spot is 'E':
+            self.largest_spot_egal.setStyleSheet("background-color: rgb(77, 185, 88)")
+            self.largest_spot_leading.setDisabled(False)
+            self.largest_spot_trailing.setDisabled(False)
+            self.largest_spot_egal.setDisabled(False)
+      
+    def set_largest_spot(self, g_spot, zurich_type, grid_position):
+        """
+        Create the widget and update the value of it.
+        """
+        print("Enter in the larger spot function in group box", g_spot)
         grid_position[0]+=1
-        self.larger_spot_label = QtGui.QLabel("Lead/trail")
-        #self.larger_spot_label.setMaximumWidth(100)
-        self.larger_spot_leading = QtGui.QPushButton("L")
-        self.larger_spot_leading.setFixedWidth(self.latitude_linedit.width())
-        self.larger_spot_egal = QtGui.QPushButton("=")
-        self.larger_spot_egal.setFixedWidth(self.latitude_linedit.width())
-        self.larger_spot_trailing = QtGui.QPushButton("T")
-        self.larger_spot_trailing.setFixedWidth(self.latitude_linedit.width())
+        self.largest_spot_label = QtGui.QLabel("Lead/trail")
+        #self.largest_spot_label.setMaximumWidth(100)
+        self.largest_spot_leading = QtGui.QPushButton("L")
+        self.largest_spot_leading.setFixedWidth(self.latitude_linedit.width())
+        self.largest_spot_egal = QtGui.QPushButton("=")
+        self.largest_spot_egal.setFixedWidth(self.latitude_linedit.width())
+        self.largest_spot_trailing = QtGui.QPushButton("T")
+        self.largest_spot_trailing.setFixedWidth(self.latitude_linedit.width())
         
-        self.grid_layout.addWidget(self.larger_spot_label, grid_position[0], 0)
-        self.grid_layout.addWidget(self.larger_spot_leading, grid_position[0], 1)
-        self.grid_layout.addWidget(self.larger_spot_egal, grid_position[0], 2)
-        self.grid_layout.addWidget(self.larger_spot_trailing, grid_position[0], 3)
+        self.grid_layout.addWidget(self.largest_spot_label, grid_position[0], 0)
+        self.grid_layout.addWidget(self.largest_spot_leading, grid_position[0], 1)
+        self.grid_layout.addWidget(self.largest_spot_egal, grid_position[0], 2)
+        self.grid_layout.addWidget(self.largest_spot_trailing, grid_position[0], 3)
         
-        if larger_spot is None:
-            self.larger_spot_linedit.setStyleSheet("background-color: rgb(255, 165, 84)")
-        elif larger_spot in [1, 4, 7]:
-            self.larger_spot_leading.setStyleSheet("background-color: rgb(77, 185, 88)");
-        elif larger_spot in [2, 5, 8]:
-            self.larger_spot_trailing.setStyleSheet("background-color: rgb(77, 185, 88)");
-        elif larger_spot in [3, 6, 9]:
-            self.larger_spot_egal.setStyleSheet("background-color: rgb(77, 185, 88)");
-        elif larger_spot==0:
-            self.larger_spot_leading.setStyleSheet("background-color: rgb(255, 165, 84)");
-            self.larger_spot_trailing.setStyleSheet("background-color: rgb(255, 165, 84)");
-            self.larger_spot_egal.setStyleSheet("background-color: rgb(255, 165, 84)");
-        elif larger_spot==-1:
-            self.larger_spot_leading.setDisabled(True)
-            self.larger_spot_trailing.setDisabled(True)
-            self.larger_spot_egal.setDisabled(True)
+        self.update_largest_spot(g_spot, zurich_type)
             
     def set_surface(self, surface, grid_position):
         grid_position[0]+=1

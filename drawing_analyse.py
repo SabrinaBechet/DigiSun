@@ -7,6 +7,7 @@ import database, drawing, group_box, qlabel_drawing, qlabel_group_surface
 from datetime import date, time, datetime, timedelta
 import math
 import configparser
+import time
 
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
@@ -241,8 +242,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .large_grid_overlay\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.large_grid_overlay.value,
-                                                             self.large_grid_but ))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.large_grid_overlay.value,
+                             self.large_grid_but ))
         if self.drawing_page.label_right.large_grid_overlay.value :
             self.large_grid_but.setStyleSheet("background-color: lightblue")
             
@@ -253,8 +255,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .small_grid_overlay\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.small_grid_overlay.value,
-                                                             self.small_grid_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.small_grid_overlay.value,
+                             self.small_grid_but))
         if self.drawing_page.label_right.small_grid_overlay.value :
             self.small_grid_but.setStyleSheet("background-color: lightblue")
 
@@ -265,8 +268,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .group_visu\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.group_visu.value,
-                                                             self.group_visu_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.group_visu.value,
+                             self.group_visu_but))
         if self.drawing_page.label_right.group_visu.value :
             self.group_visu_but.setStyleSheet("background-color: lightblue")
 
@@ -278,8 +282,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .dipole_visu\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.dipole_visu.value,
-                                                             self.dipole_visu_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.dipole_visu.value,
+                             self.dipole_visu_but))
         if self.drawing_page.label_right.dipole_visu.value :
             self.dipole_visu_but.setStyleSheet("background-color: lightblue")
 
@@ -290,8 +295,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .helper_grid\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.helper_grid.value,
-                                                             self.helper_grid_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.helper_grid.value,
+                             self.helper_grid_but))
         if self.drawing_page.label_right.helper_grid.value :
             self.helper_grid_but.setStyleSheet("background-color: lightblue")
             
@@ -302,8 +308,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .calibration_mode\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.calibration_mode.value,
-                                                             self.calibration_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.calibration_mode.value,
+                             self.calibration_but))
         if self.drawing_page.label_right.calibration_mode.value :
             self.calibration_but.setStyleSheet("background-color: lightblue")
 
@@ -314,8 +321,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .add_group_mode\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.add_group_mode.value,
-                                                             self.add_group_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.add_group_mode.value,
+                             self.add_group_but))
         if self.drawing_page.label_right.add_group_mode.value :
             self.add_group_but.setStyleSheet("background-color: lightblue")
 
@@ -326,8 +334,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .add_dipole_mode\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.add_dipole_mode.value,
-                                                             self.add_dipole_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.add_dipole_mode.value,
+                             self.add_dipole_but))
         if self.drawing_page.label_right.add_dipole_mode.value :
             self.add_dipole_but.setStyleSheet("background-color: lightblue")
 
@@ -338,8 +347,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right\
                          .surface_mode\
                          .value_changed\
-                         .connect(lambda: self.set_button_color(self.drawing_page.label_right.surface_mode.value,
-                                                             self.surface_but))
+                         .connect(lambda: self.set_button_color(
+                             self.drawing_page.label_right.surface_mode.value,
+                             self.surface_but))
         if self.drawing_page.label_right.surface_mode.value :
             self.surface_but.setStyleSheet("background-color: lightblue")
             
@@ -366,8 +376,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         toolbar.addWidget(self.add_dipole_but)
         toolbar.addWidget(self.surface_but)
         
-        self.zoom_in_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
-        self.zoom_out_but.clicked.connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
+        self.zoom_in_but\
+            .clicked\
+            .connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
+        self.zoom_out_but\
+            .clicked\
+            .connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
         self.large_grid_but.clicked.connect(self.set_large_grid)
         self.small_grid_but.clicked.connect(self.set_small_grid)
         self.group_visu_but.clicked.connect(self.set_group_visualisation)
@@ -389,7 +403,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         - if helper_grid is active, desactive all the other action modes
         The rest is done in the mouseEvent of the qlabel object.
         """
-        QtGui.QApplication.restoreOverrideCursor()
+        #QtGui.QApplication.restoreOverrideCursor()
+        self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
         self.drawing_page.label_right.helper_grid.set_opposite_value()
         
         if self.drawing_page.label_right.helper_grid.value:
@@ -453,7 +468,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         else:
             print("restore the old cursor")
-            QtGui.QApplication.restoreOverrideCursor()
+            #QtGui.QApplication.restoreOverrideCursor()
+            self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
             self.clean_status_bar()
 
     def add_group_box(self):
@@ -645,7 +661,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         if self.drawing_page.label_right.calibration_mode.value:    
             #QtGui.QApplication.setOverrideCursor(QtCore.Qt.CrossCursor)
-            elf.drawing_page.label_right.setCursor(QtCore.Qt.CrossCursor)
+            self.drawing_page.label_right.setCursor(QtCore.Qt.CrossCursor)
             self.status_bar_mode_name.setText("Calibration mode")
             
             
@@ -728,6 +744,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         for i in reversed(range(self.drawing_page.widget_left_down_layout.count())):
                 self.drawing_page.widget_left_down_layout.itemAt(i).widget().setParent(None)
 
+        print("a")
         title_left_down = QtGui.QLabel("Group information")
         title_left_down.setAlignment(QtCore.Qt.AlignCenter)
         title_left_down.setContentsMargins(0, 5, 0, 5)
@@ -736,46 +753,77 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         group_count = self.drawing_lst[self.current_count].group_count
                                          
         self.listWidget_groupBox = QtGui.QListWidget(self)
-        self.listWidget_groupBox.setStyleSheet("QListView::item:selected {background : rgb(77, 185, 88);}");
+        self.listWidget_groupBox.setStyleSheet(
+            "QListView::item:selected {background : rgb(77, 185, 88);}")
         
         self.groupBoxLineList = []
-        
+        print("b")
         for i in range(group_count):
             self.grid_position = [0, 0]
             groupBoxLine = group_box.GroupBox()
-            colorised = False
+            """colorised = False
             if ((self.drawing_lst[self.current_count].group_lst[i].surface == 0) or
                 (self.drawing_lst[self.current_count].group_lst[i].surface == None)):
                 colorised = True
-            if ((self.drawing_lst[self.current_count].group_lst[i].zurich.upper() in ["B","C","D","E","F","G"]) and
+            if ((self.drawing_lst[self.current_count].group_lst[i].zurich.upper() in
+                 ["B","C","D","E","F","G"]) and
                 (self.drawing_lst[self.current_count].group_lst[i].g_spot == 0)):
                 colorised = True
+            """
+            groupBoxLine.set_title(
+                "Group " +
+                str(self.drawing_lst[self.current_count].group_lst[i].number),
+                self.grid_position, 0)           
+            groupBoxLine.set_spot_count(
+                self.drawing_lst[self.current_count].group_lst[i].spots,
+                self.grid_position)
+            groupBoxLine.set_zurich_combox_box(
+                self.drawing_lst[self.current_count].group_lst[i].zurich,
+                self.grid_position)
+            groupBoxLine.set_mcIntosh_combo_box(
+                self.drawing_lst[self.current_count].group_lst[i].McIntosh,
+                self.drawing_lst[self.current_count].group_lst[i].zurich,
+                self.grid_position)
 
-            groupBoxLine.set_title("Group " + str(self.drawing_lst[self.current_count].group_lst[i].number),
-                                   self.grid_position, colorised)           
-            groupBoxLine.set_spot_count(self.drawing_lst[self.current_count].group_lst[i].spots,
-                                        self.grid_position)
-            groupBoxLine.set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[i].zurich,
-                                         self.grid_position)
-            groupBoxLine.set_mcIntosh_combo_box(self.drawing_lst[self.current_count].group_lst[i].McIntosh,
-                                           self.drawing_lst[self.current_count].group_lst[i].zurich,
-                                           self.grid_position)
-
-            groupBoxLine.set_delete_group_button(self.grid_position)
             
-            delete_button = groupBoxLine.get_del_button()
-            delete_button.clicked.connect(self.delete_group)
+            groupBoxLine.set_dipole_button(self.grid_position)
+            groupBoxLine.set_area_button(self.grid_position)
+
+            
             
             if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
-                groupBoxLine.get_zurich().setStyleSheet("background-color: orange")
+                groupBoxLine.get_zurich().setStyleSheet(
+                    "background-color: orange")
+
+
+            print("*********",
+                  self.drawing_lst[self.current_count].group_lst[i].zurich,
+                  self.drawing_lst[self.current_count].group_lst[i].g_spot)
+                
+            if (self.drawing_lst[self.current_count].group_lst[i].zurich.upper()
+                in ["B","C","D","E","F","G"] and
+                self.drawing_lst[self.current_count].group_lst[i].g_spot==0):
+                print("the button should be orange")
+                groupBoxLine.get_dipole_button().setStyleSheet(
+                    "background-color: orange")
+
+            if self.drawing_lst[self.current_count].group_lst[i].surface is None:
+                groupBoxLine.get_area_button().setStyleSheet(
+                    "background-color: orange")
+                
       
-            groupBoxLine.get_spots().textEdited.\
-                connect(lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(), False))
-            groupBoxLine.get_zurich().currentIndexChanged.\
-                connect(lambda: self.modify_drawing_zurich(self.listWidget_groupBox.currentRow(), False))
-            groupBoxLine.get_McIntosh().currentIndexChanged.\
-                connect(lambda: self.modify_drawing_mcIntosh(self.listWidget_groupBox.currentRow(), False))
-            
+            groupBoxLine.get_spots().textEdited.connect(
+                lambda: self.modify_drawing_spots(
+                    self.listWidget_groupBox.currentRow(),
+                    False))
+            groupBoxLine.get_zurich().currentIndexChanged.connect(
+                lambda: self.modify_drawing_zurich(
+                    self.listWidget_groupBox.currentRow(),
+                    False))
+            groupBoxLine.get_McIntosh().currentIndexChanged.connect(
+                lambda: self.modify_drawing_mcIntosh(
+                    self.listWidget_groupBox.currentRow(),
+                    False))
             
             self.groupBoxLineList.append(groupBoxLine)
             
@@ -784,33 +832,33 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
            
         self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
-        
+        print("c")
         # not sure it is still needed??
         # self.listWidget_group_toolbox.set_empty()
         #self.listWidget_group_toolbox.set_welcome()
 
         # Signals related to the change of item in the group box
-        self.listWidget_groupBox\
-            .itemSelectionChanged\
-            .connect(lambda: self.set_focus_group_box(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.set_focus_group_box(
+                self.listWidget_groupBox.currentRow()))
         
-        self.listWidget_groupBox\
-            .itemSelectionChanged\
-            .connect(lambda: self.set_group_toolbox(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.set_group_toolbox(
+                self.listWidget_groupBox.currentRow()))
         
-        self.listWidget_groupBox\
-            .itemSelectionChanged\
-            .connect(lambda: self.update_group_visu(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.update_group_visu(
+                self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox\
-            .itemSelectionChanged\
-            .connect(lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.update_surface_qlabel(
+                self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox\
-            .itemSelectionChanged\
-            .connect(lambda: self.check_dipole(self.listWidget_groupBox.currentRow()))
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.check_dipole(
+                self.listWidget_groupBox.currentRow()))
 
-        print("out of set group_widget")
+        
         
     def check_dipole(self, element_number):
 
@@ -825,8 +873,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
 
         elif (self.drawing_page.label_right.add_dipole_mode.value and 
-              self.drawing_lst[self.current_count].group_lst[element_number].zurich.upper()  in ["B","C","D","E","F","G"]):
-
+              self.drawing_lst[self.current_count].group_lst[element_number].zurich.upper()
+              in ["B","C","D","E","F","G"]):
             
             self.status_bar_mode_name.setText("Add dipole mode")
             self.status_bar_mode_comment.setStyleSheet("QLabel { color : black; }");
@@ -866,7 +914,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.groupBoxLineList[i].get_McIntosh().setEnabled(False)
 
     def set_group_toolbox(self, n=0):
-        print("update the group toolbox for the element", n)
+        #print("update the group toolbox for the element", n)
         # A widget is deleted when its parents is deleted.
         for i in reversed(range(self.drawing_page.widget_left_down_bis_layout.count())):
             self.drawing_page.widget_left_down_bis_layout.itemAt(i).widget().setParent(None)
@@ -876,50 +924,56 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                          .addWidget(self.group_toolbox)
        
         self.grid_position = [0, 0]
-        #self.group_toolbox.set_empty()
-        self.group_toolbox\
-            .set_title("Group " +
-                       str(self.drawing_lst[self.current_count].group_lst[n].number),
-                       self.grid_position,
-                       0)
-        self.group_toolbox\
-            .set_spot_count(self.drawing_lst[self.current_count].group_lst[n].spots,
-                            self.grid_position)
-        self.group_toolbox\
-            .set_zurich_combox_box(self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                   self.grid_position)
-        self.group_toolbox\
-            .set_mcIntosh_combo_box(self.drawing_lst[self.current_count].group_lst[n].McIntosh,
-                                    self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                    self.grid_position)
-        self.group_toolbox\
-            .set_latitude(self.drawing_lst[self.current_count].group_lst[n].latitude * 180/math.pi,
-                          self.grid_position)
-        self.group_toolbox\
-            .set_longitude(self.drawing_lst[self.current_count].group_lst[n].longitude * 180/math.pi,
-                           self.grid_position)
         
-        self.group_toolbox\
-            .set_surface(self.drawing_lst[self.current_count].group_lst[n].surface,
-                         self.grid_position)
-        self.group_toolbox\
-            .set_arrows_buttons()
+        #self.self.group_toolbox.set_empty()
+        self.group_toolbox.set_title(
+            "Group " +
+            str(self.drawing_lst[self.current_count].group_lst[n].number),
+            self.grid_position,
+            0)
+        self.group_toolbox.set_spot_count(
+            self.drawing_lst[self.current_count].group_lst[n].spots,
+            self.grid_position)
+
+        self.group_toolbox.set_zurich_combox_box(
+            self.drawing_lst[self.current_count].group_lst[n].zurich,
+            self.grid_position)
         
-        if self.drawing_lst[self.current_count].group_lst[n].zurich.upper() in ["B","C","D","E","F","G"]:
-            self.group_toolbox\
-                .set_larger_spot(self.drawing_lst[self.current_count].group_lst[n].g_spot,
-                                 self.grid_position)
-        else:
-            self.group_toolbox\
-                .set_larger_spot(-1, self.grid_position)
+        self.group_toolbox.set_mcIntosh_combo_box(
+            self.drawing_lst[self.current_count].group_lst[n].McIntosh,
+            self.drawing_lst[self.current_count].group_lst[n].zurich,
+            self.grid_position)
+
+        self.group_toolbox.set_delete_group_button(self.grid_position)
             
-        #self.group_toolbox.set_add_surface_button()
+        delete_button = self.group_toolbox.get_del_button()
+        delete_button.clicked.connect(self.delete_group)
         
-       
+        self.group_toolbox.set_latitude(
+            self.drawing_lst[self.current_count].group_lst[n].latitude * 180/math.pi,
+            self.grid_position)
+        
+        self.group_toolbox.set_longitude(
+            self.drawing_lst[self.current_count].group_lst[n].longitude * 180/math.pi,
+            self.grid_position)
+        
+        self.group_toolbox.set_surface(
+            self.drawing_lst[self.current_count].group_lst[n].surface,
+            self.grid_position)
+        
+        self.group_toolbox.set_arrows_buttons()
+        
+      
+        self.group_toolbox.set_largest_spot(
+            0,
+            self.drawing_lst[self.current_count].group_lst[n].zurich,
+            self.grid_position)
+        
         self.group_toolbox\
-            .get_spots().textEdited\
+            .get_spots()\
+            .textEdited\
             .connect( lambda: self.modify_drawing_spots(self.listWidget_groupBox.currentRow(),
-                                                       True))
+                                                        True))
         self.group_toolbox\
             .get_zurich()\
             .currentIndexChanged\
@@ -933,11 +987,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         position_step = 0.1 * math.pi/180 
         up, down, left, right = self.group_toolbox.get_arrows()
-        up.clicked.connect(lambda: self.update_HGC_position('latitude', position_step))
-        down.clicked.connect(lambda: self.update_HGC_position('latitude', -position_step))
-        left.clicked.connect(lambda: self.update_HGC_position('longitude', position_step))
-        right.clicked.connect(lambda: self.update_HGC_position('longitude', -position_step))
+        up.clicked.connect(
+            lambda: self.update_HGC_position('latitude', position_step))
+        down.clicked.connect(
+            lambda: self.update_HGC_position('latitude', -position_step))
+        left.clicked.connect(
+            lambda: self.update_HGC_position('longitude', position_step))
+        right.clicked.connect(
+            lambda: self.update_HGC_position('longitude', -position_step))
 
+        (largest_spot_leading,
+         largest_spot_egal,
+         largest_spot_trailing) = self.group_toolbox.get_largest_spot_buttons()
+
+        largest_spot_leading.clicked.connect(
+            lambda: self.update_g_spot('leading'))
+        largest_spot_egal.clicked.connect(
+            lambda: self.update_g_spot('egal'))
+        largest_spot_trailing.clicked.connect(
+            lambda: self.update_g_spot('trailing'))
       
     def delete_group(self):
         """
@@ -946,14 +1014,68 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         index = self.current_count
         group_index = self.listWidget_groupBox.currentRow()
         
-        
-        print("this should delete the group n ", group_index)
-        
         self.drawing_lst[index].delete_group(group_index)
         self.set_group_widget()
         self.set_focus_group_box(0)
         self.set_group_toolbox()
         self.drawing_page.label_right.set_img()
+        
+    def update_g_spot(self, largest_spot):
+        """ according to the USSPS defintion 
+        g = relative importance of the leading spot and 
+        density of the sunspot population
+        """
+        
+        sunspot_population_density = self.drawing_lst[self.current_count]\
+                                         .group_lst[self.listWidget_groupBox.currentRow()]\
+                                         .McIntosh[2]
+        print("enter in update g spot", largest_spot, sunspot_population_density)
+        
+        if largest_spot=='leading' and sunspot_population_density=='o':
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 1
+            
+        elif largest_spot=='trailing' and sunspot_population_density=='o':
+             self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 2
+        elif largest_spot=='egal' and sunspot_population_density=='o':
+             self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 3
+        elif largest_spot=='leading' and sunspot_population_density=='i':
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 4
+        elif largest_spot=='trailing' and sunspot_population_density=='i':
+             self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 5
+        elif largest_spot=='egal' and sunspot_population_density=='i':
+             self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 6
+        elif largest_spot=='leading' and sunspot_population_density=='c':
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 7
+        elif largest_spot=='trailing' and sunspot_population_density=='c':
+             self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 8
+        elif largest_spot=='egal' and sunspot_population_density=='c':
+             self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox.currentRow()]\
+                .g_spot = 9
+             
+        self.set_group_toolbox.update_largest_spot(
+            self.drawing_lst[self.current_count]\
+            .group_lst[self.listWidget_groupBox.currentRow()]\
+            .g_spot,
+            self.drawing_lst[self.current_count]\
+            .group_lst[self.listWidget_groupBox.currentRow()]\
+            .zurich)
         
     def update_HGC_position(self, coordinate, value):
         """
@@ -1009,8 +1131,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 .group_lst[self.listWidget_groupBox.currentRow()]\
                 .zurich = new_zurich_type
             
-        self.groupBoxLineList[n].update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
-        self.group_toolbox.update_zurich(self.drawing_lst[self.current_count].group_lst[n].zurich)
+        self.groupBoxLineList[n].update_zurich(
+            self.drawing_lst[self.current_count].group_lst[n].zurich)
+        self.group_toolbox.update_zurich(
+            self.drawing_lst[self.current_count].group_lst[n].zurich)
+        self.groupBoxLineList[n].update_McIntosh_combo_box(
+            self.drawing_lst[self.current_count].group_lst[n].zurich)
+        self.group_toolbox.update_McIntosh_combo_box(
+            self.drawing_lst[self.current_count].group_lst[n].zurich)
         
         if new_zurich_type == "X":
             self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: orange")
@@ -1019,23 +1147,40 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.groupBoxLineList[n].get_zurich().setStyleSheet("background-color: white")
             self.group_toolbox.get_zurich().setStyleSheet("background-color: white")
 
+
+        self.group_toolbox.update_largest_spot(
+            new_zurich_type,
+            self.drawing_lst[self.current_count].group_lst[n].g_spot)
+        
+        if (new_zurich_type.upper() in ["B","C","D","E","F","G"] and
+            self.drawing_lst[self.current_count].group_lst[n].g_spot==0):
+                self.groupBoxLineList[n].get_dipole_button().setStyleSheet(
+                    "background-color: orange")        
+        else:
+           self.groupBoxLineList[n].get_dipole_button().setStyleSheet(
+                    "background-color: transparent")
+
     def modify_drawing_mcIntosh(self, n, is_toolbox):
+        print("modif value of mc intosh", n, is_toolbox)
         old_mcIntosh_type = self.drawing_lst[self.current_count]\
                                 .group_lst[self.listWidget_groupBox.currentRow()]\
                                 .McIntosh
+        print("modif value of mc intosh a")
         if is_toolbox:
             new_mcIntosh_type = str(self.group_toolbox.get_McIntosh().currentText())
         else:
             new_mcIntosh_type = str(self.groupBoxLineList[n].get_McIntosh().currentText())
 
+        print("modif value of mc intosh b", new_mcIntosh_type)
         if new_mcIntosh_type!=old_mcIntosh_type:
             self.drawing_lst[self.current_count]\
                 .group_lst[self.listWidget_groupBox.currentRow()]\
                 .McIntosh = new_mcIntosh_type
-        
+
+        print("modif value of mc intosh c")
         self.groupBoxLineList[n].update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
         self.group_toolbox.update_McIntosh(self.drawing_lst[self.current_count].group_lst[n].McIntosh)
-    
+        print("modif value of mc intosh d")
         
     def update_group_visu(self, n):
         self.drawing_page.label_right.group_visu_index = n
@@ -1047,7 +1192,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         title_left_up.setAlignment(QtCore.Qt.AlignCenter)
         title_left_up.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_up_layout.addWidget(title_left_up)
-        title_left_up.setCursor(QtCore.Qt.WaitCursor)
         self.form_layout1 = QtGui.QFormLayout()
         self.form_layout1.setSpacing(10)
         
@@ -1482,7 +1626,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout2)
-
         
     def jump_to_drawing_linedit(self):
         """
@@ -1499,8 +1642,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.goto_drawing_label2.setText("out of 0")
         self.goto_drawing_button.setText("Go!")
 
-        self.goto_drawing_button.clicked.connect(lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
-        self.goto_drawing_button.clicked.connect(lambda: self.drawing_page.label_right.set_img())
+        self.goto_drawing_button.clicked.connect(
+            lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
+        self.goto_drawing_button.clicked.connect(
+            lambda: self.drawing_page.label_right.set_img())
 
         layout_goto = QtGui.QHBoxLayout()
         layout_goto.addWidget(self.goto_drawing_label1)
@@ -1652,7 +1797,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.add_dipole_mode.value = False
         self.drawing_page.label_right.surface_mode.value = False
 
-        
+        self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
         self.drawing_page.label_right.set_img()
 
         self.set_group_widget()
