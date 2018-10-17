@@ -122,13 +122,44 @@ class Cartesian(Coordinates):
 
         return theta, phi
 
-def cartesian_from_drawing(x_center, y_center, x_north,
-                                   y_north, HGC_long, HGC_lat,
-                                   angle_P, angle_B0, angle_L0):
+def cartesian_from_HGC_upper_left_origin(x_center, y_center, x_north,
+                                         y_north, HGC_long, HGC_lat,
+                                         angle_P, angle_B0, angle_L0, height):
+
+    """
+    get the cartesian coordinate suitable for Qpainter (origin upper left)
+    from the given heliographic latitude/longitude (for group or dipole).
+    NB: starting from the center(!!)
+    x_lower_left_origin = x_upper_left_origin while
+    y_lower_left_origin = - y_upper_left_origin
+    """
+
+    (x_lower_left_origin,
+     y_lower_left_origin,
+     z_lower_left_origin) = cartesian_from_HGC_lower_left_origin(x_center,
+                                                                 height - y_center,
+                                                                 x_north,
+                                                                 height - y_north,
+                                                                 HGC_long,
+                                                                 HGC_lat,
+                                                                 angle_P,
+                                                                 angle_B0,
+                                                                 angle_L0)
+
+    x_centered_upper_left_origin = x_center + x_lower_left_origin
+    y_centered_upper_left_origin = y_center - y_lower_left_origin 
+    
+
+    return x_centered_upper_left_origin, y_centered_upper_left_origin, 0
+    
+def cartesian_from_HGC_lower_left_origin(x_center, y_center, x_north,
+                                         y_north, HGC_long, HGC_lat,
+                                         angle_P, angle_B0, angle_L0):
     
     """
-    Given a heliographic longitude and latitude, 
-    returns the corresponding x, y, z positions on the drawing.
+    Given a heliographic longitude and latitude in radian, 
+    returns the corresponding x, y, z positions on the drawing with
+    center in lower left corner
     """
     center = Cartesian(x_center, y_center)
     north = Cartesian(x_north, y_north)
@@ -138,9 +169,6 @@ def cartesian_from_drawing(x_center, y_center, x_north,
     theta = (angle_L0 * math.pi/180) - HGC_long
     phi = math.pi/2 - HGC_lat
 
-    """print("theta:", theta)
-    print("phi", phi)
-    """
     sun_spherical = Spherical(1, theta, phi)
     x, y, z = sun_spherical.convert_to_cartesian()
 
@@ -148,15 +176,10 @@ def cartesian_from_drawing(x_center, y_center, x_north,
     
     sun_cartesian.rotate_around_x(angle_B0)
     sun_cartesian.rotate_around_z(-angle_P)
-    #sun_cartesian.rotate_around_y(-angle_L0)
     
-    """print("x:", x)
-    print("y:", y)
-    print("z:", z)
-    """
     drawing = Cartesian(sun_cartesian.x,
                         sun_cartesian.y,
-                           sun_cartesian.z)
+                        sun_cartesian.z)
     drawing.rotate_around_z(-angle_calibration)
     drawing.normalize(1./radius)
 
@@ -167,8 +190,9 @@ def cartesian_from_drawing_method2(x_center, y_center, x_north,
                                    angle_P, angle_B0, angle_L0):
     
     """
-    Given a heliographic longitude and latitude, 
-    returns the corresponding x, y, z positions on the drawing.
+    Given a heliographic longitude and latitude in radian, 
+    returns the corresponding x, y, z positions on the drawing with
+    center in the lower left corner
     """
     center = Cartesian(x_center, y_center)
     north = Cartesian(x_north, y_north)
@@ -177,10 +201,7 @@ def cartesian_from_drawing_method2(x_center, y_center, x_north,
 
     theta = (angle_L0 * math.pi/180) - HGC_long
     phi = math.pi/2 - HGC_lat
-
-    """print("theta:", theta)
-    print("phi", phi)"""
-    
+ 
     sun_spherical = Spherical(1, -HGC_long, phi)
     x, y, z = sun_spherical.convert_to_cartesian()
 
@@ -189,11 +210,6 @@ def cartesian_from_drawing_method2(x_center, y_center, x_north,
     sun_cartesian.rotate_around_y(angle_L0)
     sun_cartesian.rotate_around_x(angle_B0)
     sun_cartesian.rotate_around_z(-angle_P)
-    
-    
-    """print("x:", x)
-    print("y:", y)
-    print("z:", z)"""
     
     drawing = Cartesian(sun_cartesian.x,
                            sun_cartesian.y,

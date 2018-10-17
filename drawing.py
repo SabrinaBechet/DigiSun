@@ -396,6 +396,10 @@ class Group(QtCore.QObject):
                                                                datetime,
                                                                group_number)[0]
 
+        # to be changed if the database change..
+        #self._latitude = self._latitude * 180/math.pi
+        #self._longitude = self._longitude * 180/math.pi
+
     
 class Drawing(QtCore.QObject):
     """
@@ -881,7 +885,9 @@ class Drawing(QtCore.QObject):
              self._pt1_fraction_width,
              self._pt1_fraction_height,
              self._pt2_fraction_width,
-             self._pt2_fraction_height) = db.get_drawing_information("drawing_type", self.drawing_type)[0]
+             self._pt2_fraction_height) = db.get_drawing_information(
+                 "drawing_type",
+                 self.drawing_type)[0]
             
         except IndexError:
             print("empty set for the drawing_type table..")
@@ -892,19 +898,30 @@ class Drawing(QtCore.QObject):
             group_tmp.fill_from_database(self._datetime, group_number)
             group_tmp.value_changed.connect(self.get_group_signal)
             self._group_lst.append(group_tmp)
-            #print(group_number, self.group_lst[group_number].longitude, self.group_lst[group_number].latitude)
+            #print(group_number,
+            #self.group_lst[group_number].longitude,
+            #self.group_lst[group_number].latitude)
 
     def add_group(self, latitude, longitude, posX, posY):
         """
-        Add a group to the database by clicking on the drawing.
+        By clicking on the drawing, one add to the database:
+        - group_count + 1
+        - update the wolf number
+        - the HGC latitude of the group
+        - the HGC longitude of the group
+        - the raw position of the group on the drawing
+        - the the central merdian distance (LCM)
+        - the center to limb angle
+        - the quadrant
         """
 
         self.group_count +=1
+        self.wolf += 10
         group_tmp = Group()
         group_tmp.number = self.group_count - 1
         group_tmp.latitude = latitude
         group_tmp.longitude = longitude
-        group_tmp.posX= posX
+        group_tmp.posX = posX
         group_tmp.posY = posY
         
         group_tmp.Lcm = self._angle_L - longitude * 180/math.pi
@@ -928,8 +945,6 @@ class Drawing(QtCore.QObject):
         elif posX < self.calibrated_center.x and posY < self.calibrated_center.y:
             group_tmp.quadrant = "SW"   
         
-        #cmd = self._angle_L - longitude * 180/math.pi
-        #print("central meridian distance: ", cmd)
         self._group_lst.append(group_tmp)
         self.changed = True
         self.value_changed.emit()
