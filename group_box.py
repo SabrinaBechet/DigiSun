@@ -71,8 +71,8 @@ class GroupBox(QtGui.QWidget):
         """ 
         button orange if dipole not complete, transparent otherwhise.
         A dipole is not complete when:
-        - position not filled
-        - LTS not filled
+        - if dipolar and position not filled
+        - if dipolar and LTS not filled
         """
         self.dipole_button = QLabelClickable()
         dipole_pix = QtGui.QPixmap("icons/dipole_24.png")
@@ -235,7 +235,7 @@ class GroupBox(QtGui.QWidget):
                                     grid_position[1] + 1)
 
         
-    def update_largest_spot(self, g_spot, zurich_type):
+    def update_largest_spot(self, largest_spot, zurich_type):
         """
         Need some adaptation when colum with largest_spot added in the database!
         then replace g_spot directly by largest_spot!
@@ -243,21 +243,19 @@ class GroupBox(QtGui.QWidget):
         0 for unipolar group -> button should be dissabled
         1->9 for dipolar group -> green to indicate the type of the largest spot
         NULL if not filled -> button should be in orange
-
         """
-        largest_spot = None
-        if g_spot in [1, 4, 7]:
-            largest_spot = 'L'
-        elif g_spot in [2, 5, 8]:
-            largest_spot = 'T'
-        elif g_spot in [3, 6, 9]:
-            largest_spot = 'E'
-       
+
+        print("update largest spot", largest_spot, zurich_type)
+        
         if (largest_spot is None and
             zurich_type.upper() not in self.zurich_dipolar):
+            self.largest_spot_leading.setStyleSheet("background-color: lightblue")
+            self.largest_spot_trailing.setStyleSheet("background-color: lightblue")
+            self.largest_spot_egal.setStyleSheet("background-color: lightblue")
             self.largest_spot_leading.setDisabled(True)
             self.largest_spot_trailing.setDisabled(True)
             self.largest_spot_egal.setDisabled(True)
+            
         elif largest_spot is None and zurich_type.upper() in self.zurich_dipolar:
             self.largest_spot_leading.setStyleSheet("background-color: rgb(255, 165, 84)")
             self.largest_spot_trailing.setStyleSheet("background-color: rgb(255, 165, 84)")
@@ -287,17 +285,14 @@ class GroupBox(QtGui.QWidget):
             self.largest_spot_trailing.setDisabled(False)
             self.largest_spot_egal.setDisabled(False)
       
-    def set_largest_spot(self, g_spot, zurich_type, grid_position):
+    def set_largest_spot(self, largest_spot, zurich_type, grid_position):
         """
         Create the widget and update the value of it.
         """
-        self.largest_spot_label = QtGui.QLabel("Lead/trail")
+        self.largest_spot_label = QtGui.QLabel("Lead/Trail")
         self.largest_spot_leading = QtGui.QPushButton("L")
-        #self.largest_spot_leading.setMaximumWidth(self.widget_maximum_width)
         self.largest_spot_egal = QtGui.QPushButton("=")
-        #self.largest_spot_egal.setMaximumWidth(self.widget_maximum_width)
         self.largest_spot_trailing = QtGui.QPushButton("T")
-        #self.largest_spot_trailing.setMaximumWidth(self.widget_maximum_width)
         
         self.grid_layout.addWidget(self.largest_spot_label,
                                    grid_position[0],
@@ -312,7 +307,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position[0],
                                    grid_position[1] + 3)
         
-        self.update_largest_spot(g_spot, zurich_type)
+        self.update_largest_spot(largest_spot, zurich_type)
             
     def set_surface(self, surface, grid_position):
         self.surface_label = QtGui.QLabel("Surface")

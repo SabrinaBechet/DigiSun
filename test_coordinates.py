@@ -3,7 +3,7 @@
 
 import os
 import math
-import coordinates
+import coordinates_old
 import unittest
 
 
@@ -27,7 +27,7 @@ class test_heliographic_coordinates(unittest.TestCase):
         longitude_drawing = 1.908
         latitude_drawing = 0.229
         
-        lon, lat = coordinates.heliographic_from_drawing(x_center,
+        lon, lat = coordinates_old.heliographic_from_drawing(x_center,
                                                          y_center,
                                                          x_north,
                                                          y_north,
@@ -52,7 +52,7 @@ class test_heliographic_coordinates(unittest.TestCase):
         longitude_drawing = 1.884
         latitude_drawing = 0.228
         
-        lon, lat = coordinates.heliographic_from_drawing(x_center,
+        lon, lat = coordinates_old.heliographic_from_drawing(x_center,
                                                          y_center,
                                                          x_north,
                                                          y_north,
@@ -77,7 +77,7 @@ class test_heliographic_coordinates(unittest.TestCase):
         longitude_drawing = 3.05
         latitude_drawing = -0.144
         
-        lon, lat = coordinates.heliographic_from_drawing(x_center,
+        lon, lat = coordinates_old.heliographic_from_drawing(x_center,
                                                          y_center,
                                                          x_north,
                                                          y_north,
@@ -102,7 +102,7 @@ class test_heliographic_coordinates(unittest.TestCase):
         longitude_drawing = 2.881
         latitude_drawing = -0.136
         
-        lon, lat = coordinates.heliographic_from_drawing(x_center,
+        lon, lat = coordinates_old.heliographic_from_drawing(x_center,
                                                          y_center,
                                                          x_north,
                                                          y_north,
@@ -132,7 +132,7 @@ class test_cartesian_coordinates(unittest.TestCase):
         longitude_drawing = 1.908
         latitude_drawing = 0.229
         
-        lon, lat = coordinates.heliographic_from_drawing(x_center,
+        lon, lat = coordinates_old.heliographic_from_drawing(x_center,
                                                          y_center,
                                                          x_north,
                                                          y_north,
@@ -141,7 +141,7 @@ class test_cartesian_coordinates(unittest.TestCase):
                                                          angle_P,
                                                          angle_B,
                                                          angle_L)
-        x, y, z = coordinates.cartesian_from_drawing(x_center,
+        x, y, z = coordinates_old.cartesian_from_drawing(x_center,
                                                      y_center,
                                                      x_north,
                                                      y_north,

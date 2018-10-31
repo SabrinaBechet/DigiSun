@@ -46,33 +46,33 @@ class Group(QtCore.QObject):
         
         self._id_ = 0
         self._datetime = datetime(2000,01,01,00,00)
-        self._drawing_type = 'None'
+        self._drawing_type = None
         self._number = 0
-        self._longitude = 0
-        self._latitude = 0
-        self._posX= 0
-        self._posY = 0 
-        self._Lcm = 0
-        self._CenterToLimb_angle = 0
-        self._L0 = 0
-        self._quadrant = 0
+        self._longitude = None
+        self._latitude = None
+        self._posX= None
+        self._posY = None
+        self._Lcm = None
+        self._CenterToLimb_angle = None
+        self._L0 = None
+        self._quadrant = None
         self._McIntosh = 'Xxx'
         self._zurich = 'X'
         self._spots = 0
-        self._dipole1_lat = 0
-        self._dipole1_long = 0
-        self._dipole2_lat = 0
-        self._dipole2_long = 0
-        self._dipole1_posX = 0
-        self._dipole1_posY = 0
-        self._dipole2_posX = 0
-        self._dipole2_posY = 0
+        self._dipole1_lat = None
+        self._dipole1_long = None
+        self._dipole2_lat = None
+        self._dipole2_long = None
+        self._dipole1_posX = None
+        self._dipole1_posY = None
+        self._dipole2_posX = None
+        self._dipole2_posY = None
         self._dipole_defined = 0
         self._surface = 0
         self._raw_surface_px = 0
         self._raw_surface_msd = 0
         self._g_spot = 0
-        self._largest_spot = 'None'
+        self._largest_spot = None
 
         self.changed = False
 
@@ -82,7 +82,6 @@ class Group(QtCore.QObject):
         
     @property    
     def number(self):
-        #print("here we are reading the value of number of a group ")
         return self._number
     
     @number.setter
@@ -94,90 +93,114 @@ class Group(QtCore.QObject):
         
     @property    
     def longitude(self):
-        #print("here we are reading the value of longitude of a group ")
         return self._longitude
     
     @longitude.setter
     def longitude(self, value):
-        print("here we are changing the value of longitude to ", value,
+        """
+        the longitude of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we  CAN NOT change the value of longitude to ", value,
               " or ", value*180/math.pi , " degree ")
-        self._longitude = value
-        self.changed = True
-        self.value_changed.emit()
 
+        #self.change_group_position(self._latitude, self._longitude)
+        
+        #self._longitude = value
+        #self.changed = True
+        #self.value_changed.emit()
+    
     @property    
     def latitude(self):
-        #print("here we are reading the value of latitude of a group ")
         return self._latitude
     
     @latitude.setter
     def latitude(self, value):
-        print("here we are changing the value of latitude to ", value,
+        """
+        the latitude of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we CAN NOT change the value of latitude to ", value,
               " or ", value*180/math.pi , " degree ")
-        self._latitude = value
-        self.changed = True
-        self.value_changed.emit()
-
+        #self._latitude = value
+        #self.changed = True
+        #self.value_changed.emit()
+        
     @property    
-    def pos_X(self):
-        #print("here we are reading the value of longitude of a group ")
-        return self._pos_X
+    def posX(self):
+        return self._posX
     
-    @pos_X.setter
-    def pos_X(self, value):
-        print("here we are changing the value of pos X to ", value)
-        self._posX= value
-        self.changed = True
-        self.value_changed.emit()
+    @posX.setter
+    def posX(self, value):
+        """
+        the posX of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we CAN NOT change the value of pos X to ", value)
+        #self._posX= value
+        #self.changed = True
+        #self.value_changed.emit()
 
     @property    
     def posY(self):
-        #print("here we are reading the value of longitude of a group ")
         return self._posY
     
     @posY.setter
     def posY(self, value):
-        print("here we are changing the value of pos Y to ", value)
-        self._posY = value
-        self.changed = True
+        """
+        the posX of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we CAN NOT change the value of pos Y to ", value)
+        #self._posY = value
+        ##self.changed = True
         self.value_changed.emit()
 
     @property    
     def Lcm(self):
-        #print("here we are reading the value of longitude of a group ")
         return self._Lcm
     
     @Lcm.setter
     def Lcm(self, value):
-        print("here we are changing the value of Lcm to ", value)
-        self._Lcm = value
-        self.changed = True
-        self.value_changed.emit()
+        """
+        the Lcm of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we CAN NOT change the value of Lcm to ", value)
+        #self._Lcm = value
+        #self.changed = True
+        #self.value_changed.emit()
 
     @property    
     def CenterToLimb_angle(self):
-        #print("here we are reading the value of longitude of a group ")
         return self._CenterToLimb_angle
     
     @Lcm.setter
     def CenterToLimb_angle(self, value):
-        print("here we are changing the value of CenterToLimb angle to ", value)
-        self._CenterToLimb_angle = value
-        self.changed = True
-        self.value_changed.emit()
+        """
+        the Center to limb angle of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we CAN NOT change the value of CenterToLimb angle to ", value)
+        #self._CenterToLimb_angle = value
+        #self.changed = True
+        #self.value_changed.emit()
 
     @property    
     def quadrant(self):
-        #print("here we are reading the value of longitude of a group ")
         return self._quadrant
     
     @quadrant.setter
     def quadrant(self, value):
-        print("here we are changing the value of quadrant to ", value)
-        self._quadrant = value
-        self.changed = True
-        self.value_changed.emit()
-        
+        """
+        the quadrant of the group can only be changed via 
+        the "change_group_position" function
+        """
+        print("here we CAN NOT change the value of quadrant to ", value)
+        #self._quadrant = value
+        #self.changed = True
+        #self.value_changed.emit()
+       
     @property    
     def surface(self):
         #print("here we are reading the value of surface of a group ")
@@ -279,7 +302,7 @@ class Group(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
         
-    @property    
+    """@property    
     def dipole1_posX(self):
         #print("here we are reading the value of spots of a group ")
         return self._dipole1_posX
@@ -290,7 +313,7 @@ class Group(QtCore.QObject):
         self._dipole1_posX = value
         self.changed = True
         self.value_changed.emit()
-
+   
     @property    
     def dipole1_posY(self):
         #print("here we are reading the value of spots of a group ")
@@ -326,22 +349,20 @@ class Group(QtCore.QObject):
         self._dipole2_posY = value
         self.changed = True
         self.value_changed.emit()
-        
+    """    
     @property    
     def g_spot(self):
-        #print("here we are reading the value of g_spot of a group ")
         return self._g_spot
     
     @g_spot.setter
     def g_spot(self, value):
-        print("here we are changing the value of g_spot to ", value)
-        self._g_spot = value         
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of g_spot to ", value)
+        #self._g_spot = value         
+        #self.changed = True
+        #self.value_changed.emit()
 
     @property    
     def largest_spot(self):
-        #print("here we are reading the value of g_spot of a group ")
         return self._largest_spot
     
     @largest_spot.setter
@@ -386,13 +407,13 @@ class Group(QtCore.QObject):
          self._raw_surface_px,
          self._raw_surface_msd,
          self._g_spot,
-         self._pos_X,
+         self._posX,
          self._posY,
          self._dipole1_posX,
          self.dipoel1_posY,
          self.dipole2_posX,
          self.dipole2_posY,
-         self.largest_spot) = db.get_all_datetime_group_number("groups",
+         self._largest_spot) = db.get_all_datetime_group_number("groups",
                                                                datetime,
                                                                group_number)[0]
 
@@ -417,9 +438,9 @@ class Drawing(QtCore.QObject):
         super(Drawing, self).__init__()
         self._id_drawnig= 0 
         self._datetime = datetime(2000,01,01,00,00)
-        self._drawing_type = 'None'
-        self._quality = 'None'
-        self._observer = 'None'
+        self._drawing_type = None
+        self._quality = None
+        self._observer = None
         self._carington_rotation = 0
         self._julian_date = 0.0
         self._calibrated = 0
@@ -431,8 +452,8 @@ class Drawing(QtCore.QObject):
         self._angle_L = 0.0
         self._angle_P = 0.0
         self._angle_scan = 0
-        self._path = 'None'
-        self._operator = 'None'
+        self._path = None
+        self._operator = None
         self._last_update_time = datetime.now()
        
         self._calibrated_center = coordinates.Cartesian(0,0)
@@ -440,14 +461,14 @@ class Drawing(QtCore.QObject):
         self._calibrated_radius = 0
         self._calibrated_angle_scan = 0
 
-        self._prefix = 'None'
+        self._prefix = None
         self._p_oriented = 0
         self._height = 0
         self._widht = 0
-        self._pt1_name = 'None'
+        self._pt1_name = None
         self._pt1_fraction_width = 0
         self._pt1_fraction_height = 0
-        self._pt2_name = 'None'
+        self._pt2_name = None
         self._pt2_fraction_width = 0
         self._pt2_fraction_height = 0
         
@@ -563,10 +584,13 @@ class Drawing(QtCore.QObject):
     
     @group_count.setter
     def group_count(self, value):
-        print("here we are changing the value of group_count to ", value)
-        self._group_count = value
-        self.changed = True
-        self.value_changed.emit()
+        """ 
+        change only via the update_group_number" function
+        """
+        print("here we CAN NOT change the value of group_count to ", value)
+        #self._group_count = value
+        #self.changed = True
+        #self.value_changed.emit()
 
     @property    
     def wolf(self):
@@ -574,10 +598,13 @@ class Drawing(QtCore.QObject):
     
     @wolf.setter
     def wolf(self, value):
-        print("here we are changing the value of wolf to ", value)
-        self._wolf = value
-        self.changed = True
-        self.value_changed.emit()
+        """
+        Wolf is only changed via add/delete a group or change the spots number of a group
+        """
+        print("here we CAN NOT change the value of wolf to ", value)
+        #self._wolf = value
+        #self.changed = True
+        #self.value_changed.emit()
             
     @property
     def angle_P(self):
@@ -825,7 +852,7 @@ class Drawing(QtCore.QObject):
         Then all the attribute of the drawing can be filled from the database
         """
         self.datetime = datetime
-        print("fill from database", datetime)
+        #print("fill from database", datetime)
 
         
         db = database.database()
@@ -902,11 +929,10 @@ class Drawing(QtCore.QObject):
             #self.group_lst[group_number].longitude,
             #self.group_lst[group_number].latitude)
 
-    def add_group(self, latitude, longitude, posX, posY):
+
+    def change_group_position(self, group_number, latitude, longitude, posX, posY):
         """
-        By clicking on the drawing, one add to the database:
-        - group_count + 1
-        - update the wolf number
+        Update the position of the group and all the quantities related to it.
         - the HGC latitude of the group
         - the HGC longitude of the group
         - the raw position of the group on the drawing
@@ -914,48 +940,120 @@ class Drawing(QtCore.QObject):
         - the center to limb angle
         - the quadrant
         """
+        print("update the position of the group!!!")
+        
+        self._group_lst[group_number]._latitude = latitude
+        self._group_lst[group_number]._longitude = longitude
+        self._group_lst[group_number]._posX = posX
+        self._group_lst[group_number]._posY = posY
 
-        self.group_count +=1
-        self.wolf += 10
-        group_tmp = Group()
-        group_tmp.number = self.group_count - 1
-        group_tmp.latitude = latitude
-        group_tmp.longitude = longitude
-        group_tmp.posX = posX
-        group_tmp.posY = posY
+        print("latitude : {} ".format(self._group_lst[group_number]._latitude))
+        print("longitude : {} ".format(self._group_lst[group_number]._longitude))
+        print("posX : {} ".format(self._group_lst[group_number]._posX))
+        print("posY : {} ".format(self._group_lst[group_number]._posY))
         
-        group_tmp.Lcm = self._angle_L - longitude * 180/math.pi
-        
+        self._group_lst[group_number]._Lcm = self._angle_L - longitude * 180/math.pi
         radius_from_center = math.sqrt((posX - self.calibrated_center.x )**2 +
                                        (posY - self.calibrated_center.y )**2)
         
-        group_tmp.CenterToLimb_angle = (math.asin(radius_from_center *
-                                                  1./self.calibrated_radius) *
-                                        180. /math.pi)
+        self._group_lst[group_number]._CenterToLimb_angle = (math.asin(radius_from_center *
+                                             1./self.calibrated_radius) * 180. /math.pi)
 
-        print("calibrated value: ", self.calibrated_center.x, self.calibrated_center.y)
-        print("pos :", posX, posY)
-        
         if posX > self.calibrated_center.x and posY > self.calibrated_center.y:
-            group_tmp.quadrant = "NE"
+            self._group_lst[group_number]._quadrant = "NE"
         elif posX > self.calibrated_center.x and posY < self.calibrated_center.y:
-            group_tmp.quadrant = "SE"
+            self._group_lst[group_number]._quadrant = "SE"
         elif posX < self.calibrated_center.x and posY > self.calibrated_center.y:
-            group_tmp.quadrant = "NW"
+            self._group_lst[group_number]._quadrant = "NW"
         elif posX < self.calibrated_center.x and posY < self.calibrated_center.y:
-            group_tmp.quadrant = "SW"   
+            self._group_lst[group_number]._quadrant = "SW"   
         
-        self._group_lst.append(group_tmp)
         self.changed = True
         self.value_changed.emit()
 
+
+    def update_g_spot(self, group_number, McIntosh, largest_spot):
+
+        sunspot_population_density = McIntosh[2]
+        print("try to update g spot")
+        print(McIntosh, largest_spot)
+        
+        if largest_spot=='L' and sunspot_population_density=='o':
+            self.group_lst[group_number]._g_spot = 1
+        elif largest_spot=='T' and sunspot_population_density=='o':
+            self.group_lst[group_number]._g_spot = 2
+        elif largest_spot=='E' and sunspot_population_density=='o':
+            self.group_lst[group_number]._g_spot = 3
+        elif largest_spot=='L' and sunspot_population_density=='i':
+            self.group_lst[group_number]._g_spot = 4
+        elif largest_spot=='T' and sunspot_population_density=='i':
+            self.group_lst[group_number]._g_spot = 5
+        elif largest_spot=='E' and sunspot_population_density=='i':
+            self.group_lst[group_number]._g_spot = 6
+        elif largest_spot=='L' and sunspot_population_density=='c':
+            self.group_lst[group_number]._g_spot = 7
+        elif largest_spot=='T' and sunspot_population_density=='c':
+            self.group_lst[group_number]._g_spot = 8
+        elif largest_spot=='E' and sunspot_population_density=='c':
+            self.group_lst[group_number]._g_spot = 9
+
+        print("g spot has been updated to ", self.group_lst[group_number].g_spot)
+            
+        self.changed = True
+        self.value_changed.emit()
+        
+    def update_spot_number(self, group_number, sunspot_number):
+        """
+        Change the sunspot number -> update:
+        - groups.spots
+        - drawings.spot_count
+        - drawings.wolf
+        """
+
+        print("update the sunspot_number!", sunspot_number)
+        
+        self._group_lst[group_number]._spots = sunspot_number
+        total_sunspots = 0
+        for group in self._group_lst:
+            total_sunspots +=  group._spots
+        self._spot_count = total_sunspots
+        self._wolf = self._group_count * 10 + self._spot_count
+        self.changed = True
+        self.value_changed.emit()
+
+    def update_group_number(self, group_number):
+        print("*********************update the group number", group_number)
+        self._group_count = group_number
+        total_sunspots = 0
+        for group in self._group_lst:
+            total_sunspots +=  group._spots
+
+            self._wolf = self._group_count * 10 + self._spot_count
+        self.changed = True
+        self.value_changed.emit()
+        
+    def add_group(self, latitude, longitude, posX, posY):
+        """
+        By clicking on the drawing, one add to the database:
+        - group_count + 1 -> update the wolf number
+        - group position and all the quantities related to it.
+        """
+
+        self.update_group_number(self.group_count + 1)
+        group_tmp = Group()
+        group_tmp.number = self.group_count - 1
+        self._group_lst.append(group_tmp)
+                               
+        self.change_group_position(self.group_count - 1, latitude, longitude, posX, posY)
 
     def delete_group(self, group_index):
         """
         Delete a group among the list of groups
         """
-        self.group_count -= 1
+        self.update_spot_number(group_index, 0)
+        self.update_group_number(self.group_count - 1)
         self._group_lst.pop(group_index)
+        
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
             

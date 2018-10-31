@@ -93,6 +93,9 @@ class QLabelDrawing(QtGui.QLabel):
 
         self.drawing_width = img.size[0]
         self.drawing_height = img.size[1]
+
+        print("width: ", self.drawing_width)
+        print("height: ", self.drawing_height)
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
         self.pen_width = int(self.drawing_height/700.)
@@ -300,8 +303,6 @@ class QLabelDrawing(QtGui.QLabel):
                               self.current_drawing.calibrated_north.y ) 
             
         if self.group_visu.value and self.current_drawing.calibrated :
-            # note: a column with the cartesian coord
-            #of group should be recorded in the db!
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.SolidLine)    
@@ -317,8 +318,11 @@ class QLabelDrawing(QtGui.QLabel):
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
                     
-                # here we should directly take x, y from the database 
-                x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
+                # here we should directly take x, y from the database
+                posX = self.current_drawing.group_lst[i].posX
+                posY = self.current_drawing.group_lst[i].posY
+                
+                """x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
                     self.current_drawing.calibrated_center.x,
                     self.current_drawing.calibrated_center.y,
                     self.current_drawing.calibrated_north.x,
@@ -330,8 +334,12 @@ class QLabelDrawing(QtGui.QLabel):
                     self.current_drawing.angle_L,
                     self.drawing_height)
 
-                painter.drawEllipse(QtCore.QPointF(x, y), radius, radius)
-                painter.drawEllipse(QtCore.QPointF(x, y), 40, 40)
+                print("*****************")
+                print("posX:", x, posX)
+                print("posY:", y, posY)
+                """
+                painter.drawEllipse(QtCore.QPointF(posX, posY), radius, radius)
+                painter.drawEllipse(QtCore.QPointF(posX, posY), 40, 40)
                 
         if self.dipole_visu.value and self.current_drawing.calibrated :
             # note: a column with the cartesian coord of group should be recorded in the db!
@@ -620,10 +628,10 @@ class QLabelDrawing(QtGui.QLabel):
             x, y, z = spherical_coord.convert_to_cartesian()
             cart_coord = coordinates.Cartesian(x, y, z)
 
-            cart_coord.rotate_around_y(self.current_drawing.angle_L)
-            cart_coord.rotate_around_x(-self.current_drawing.angle_B)
-            cart_coord.rotate_around_z(self.current_drawing.angle_P -
-                                       angle_calibration)
+            cart_coord.rotate_around_y(self.current_drawing.angle_L * math.pi/180.)
+            cart_coord.rotate_around_x(-self.current_drawing.angle_B * math.pi/180.)
+            cart_coord.rotate_around_z(
+                (self.current_drawing.angle_P - angle_calibration) * math.pi/180.)
             
             if cart_coord.z>0 :
                 x_array = np.append(x_array, [cart_coord.x])
@@ -655,18 +663,23 @@ class QLabelDrawing(QtGui.QLabel):
         init_height = 1000 # without any zoom
         pixmap_width = init_width / self.width_scale # is 1 without any zoom
         pixmap_height = init_height / self.height_scale # is 1 without any zoom
+
+        print("check change of coordinates")
+        print(self.pixmap_x_min, self.pixmap_y_min)
+        print(pixmap_width, pixmap_height)
         
         # change of coordinate system: qlabel -> pixmap
-        x_pixmap = (x_click - self.pixmap_x_min) * pixmap_width 
-        y_pixmap = (y_click - self.pixmap_y_min) * pixmap_height
+        x_pixmap = round((x_click - self.pixmap_x_min) * pixmap_width )
+        y_pixmap = round((y_click - self.pixmap_y_min) * pixmap_height )
         
-        #change of coordinaet system: qlabel -> drawing
-        x_drawing = (x_click - self.pixmap_x_min) * self.drawing_width / self.pixmap().width()
-        y_drawing = (y_click - self.pixmap_y_min) * self.drawing_height / self.pixmap().height()
+        #change of coordinate system: qlabel -> drawing
+        x_drawing = round((x_click - self.pixmap_x_min) * self.drawing_width / self.pixmap().width())
+        y_drawing = round((y_click - self.pixmap_y_min) * self.drawing_height / self.pixmap().height())
         
         x_center_drawing = ((self.current_drawing.calibrated_center.x -
                              self.pixmap_x_min) * self.drawing_width /
                             self.pixmap().width())
+        
         y_center_drawing = ((self.current_drawing.calibrated_center.y -
                              self.pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
@@ -709,7 +722,7 @@ class QLabelDrawing(QtGui.QLabel):
             print("latitude: ", latitude)
 
             if self.HGC_longitude < 0:
-                self.HGC_longitude = 2* math.pi + self.HGC_longitude
+                self.HGC_longitude = 2 * math.pi + self.HGC_longitude
                 print("positive longitude is ", self.HGC_longitude)
             
         if self.calibration_mode.value and self.center_done and not self.north_done:
@@ -791,11 +804,11 @@ class QLabelDrawing(QtGui.QLabel):
         qlabel_height = self.height()
         self.qlabel_x_center = qlabel_width/2.
         self.qlabel_y_center = qlabel_height/2.
-        
-        self.pixmap_x_min = self.qlabel_x_center - self.pixmap().width()/2.
-        self.pixmap_x_max = self.qlabel_x_center + self.pixmap().width()/2.
-        self.pixmap_y_min = self.qlabel_y_center - self.pixmap().height()/2.
-        self.pixmap_y_max = self.qlabel_y_center + self.pixmap().height()/2.
+
+        self.pixmap_x_min = math.floor(self.qlabel_x_center - self.pixmap().width()/2.)
+        self.pixmap_x_max = math.floor(self.qlabel_x_center + self.pixmap().width()/2.)
+        self.pixmap_y_min = math.floor(self.qlabel_y_center - self.pixmap().height()/2.)
+        self.pixmap_y_max = math.floor(self.qlabel_y_center + self.pixmap().height()/2.)
 
         #return self.pixmap_x_min, self.pixmap_x_max, self.pixmap_y_min, self.pixmap_y_max
     

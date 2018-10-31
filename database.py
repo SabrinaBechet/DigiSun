@@ -23,13 +23,12 @@ class database():
         self.db.commit()
         result = self.cursor.fetchall()
         field_lst = [x[0] for x in result]
-        #print(date_min, date_max, result)
         return field_lst
 
 
     def get_drawing_information(self, table_name, drawing_type):
 
-        print("fill the drawing type information...")
+        #print("fill the drawing type information...")
 
         self.cursor.execute('SELECT * FROM ' + table_name +
                             ' WHERE name <=> %s ;',
@@ -39,6 +38,16 @@ class database():
         result = self.cursor.fetchall()
         print(result)
         return result
+
+
+    def write_field_datetime(self, table_name, field, value, date, group_number):
+       
+        self.cursor.execute('UPDATE '+ table_name +
+                            ' set ' + field + '= %s '
+                            'WHERE DateTime <=> %s and Number <=> %s;',
+                            (str(value), str(date), str(group_number)))
+
+        self.db.commit()
     
     def get_field_datetime(self, table_name, field, date):
         """

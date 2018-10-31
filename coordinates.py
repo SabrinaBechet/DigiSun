@@ -32,6 +32,7 @@ class Cartesian(Coordinates):
     x = right-east
     y = up-north
     z = toward earth
+    All the angle are *IN RADIAN*
     """
     
     def __init__(self, x, y, z=0):
@@ -49,34 +50,34 @@ class Cartesian(Coordinates):
 
     def rotate_around_x(self, theta):
         """
-        Rotate counterclockwise of theta degrees.
+        Rotate counterclockwise around the x-axis of *theta radian*.
         """
-        y_rot = (self.y * math.cos(theta * math.pi/180.) -
-                 self.z * math.sin(theta * math.pi/180.))
-        z_rot = (self.y * math.sin(theta * math.pi/180.) +
-                 self.z * math.cos(theta * math.pi/180.))
+        y_rot = (self.y * math.cos(theta) -
+                 self.z * math.sin(theta))
+        z_rot = (self.y * math.sin(theta) +
+                 self.z * math.cos(theta))
         self.y = y_rot
         self.z = z_rot
         
     def rotate_around_y(self, theta):
         """
-        Rotate counterclockwise of theta degrees.
+        Rotate counterclockwise around the y-axis of *theta radian*.
         """
-        x_rot = (self.x * math.cos(theta * math.pi/180.) +
-                 self.z * math.sin(theta * math.pi/180.))
-        z_rot = (-self.x * math.sin(theta * math.pi/180.) +
-                 self.z * math.cos(theta * math.pi/180.))
+        x_rot = (self.x * math.cos(theta) +
+                 self.z * math.sin(theta))
+        z_rot = (-self.x * math.sin(theta) +
+                 self.z * math.cos(theta))
         self.x = x_rot
         self.z = z_rot
 
     def rotate_around_z(self, theta):
         """
-        Rotate counterclockwise of theta degrees.
+        Rotate counterclockwise around the z-axis of *theta radian*.
         """
-        x_rot = (self.x * math.cos(theta * math.pi/180.) -
-                 self.y * math.sin(theta * math.pi/180.))
-        y_rot = (self.x * math.sin(theta * math.pi/180.) +
-                 self.y * math.cos(theta * math.pi/180.))
+        x_rot = (self.x * math.cos(theta) -
+                 self.y * math.sin(theta))
+        y_rot = (self.x * math.sin(theta) +
+                 self.y * math.cos(theta))
         self.x = x_rot
         self.y = y_rot
         
@@ -89,23 +90,25 @@ class Cartesian(Coordinates):
                          (self.z - pointB.z)** 2)
     
     def angle_from_x_axis(self, pointB):
-        
-        #Return the angle in degree between the x-axis and vector formed with the point B
-        
-        return math.atan((self.y - pointB.y)/float(self.x - pointB.x)) * 180/math.pi
+        """
+        Return the angle *in radian* between the x-axis and 
+        vector formed with the point B
+        """
+        return math.atan((self.y - pointB.y)/float(self.x - pointB.x)) 
     
     def angle_from_y_axis(self, pointB):
-        
-        #Return the angle in degree between the x-axis and vector formed with the point B
-        
-        return math.atan((self.x - pointB.x)/float(self.y - pointB.y)) * 180/math.pi
+        """
+        Return the angle *in radian* between the x-axis and 
+        vector formed with the point B
+        """
+        return math.atan((self.x - pointB.x)/float(self.y - pointB.y)) 
         
     def normalize(self, value):
+        
         if value>0:
-            #print(self.x, self.y, self.z, value)
-            self.x = self.x/value
-            self.y = self.y/value
-            self.z = self.z/value
+            self.x *= value
+            self.y *= value
+            self.z *= value
         else:
             print("the value must be greater than 0!")
 
@@ -114,7 +117,7 @@ class Cartesian(Coordinates):
 
     def convert_to_spherical(self):
         """
-        Return the spherical coordinate theta and phi in radian
+        Return the spherical coordinate theta and phi *in radian*
         """
         radius = 1
         theta = math.atan2(self.x, self.z) 
@@ -136,15 +139,15 @@ def cartesian_from_HGC_upper_left_origin(x_center, y_center, x_north,
 
     (x_lower_left_origin,
      y_lower_left_origin,
-     z_lower_left_origin) = cartesian_from_HGC_lower_left_origin(x_center,
-                                                                 height - y_center,
-                                                                 x_north,
-                                                                 height - y_north,
-                                                                 HGC_long,
-                                                                 HGC_lat,
-                                                                 angle_P,
-                                                                 angle_B0,
-                                                                 angle_L0)
+     z_lower_left_origin) = cartesian_from_drawing(x_center,
+                                                   height - y_center,
+                                                   x_north,
+                                                   height - y_north,
+                                                   HGC_long,
+                                                   HGC_lat,
+                                                   angle_P,
+                                                   angle_B0,
+                                                   angle_L0)
 
     x_centered_upper_left_origin = x_center + x_lower_left_origin
     y_centered_upper_left_origin = y_center - y_lower_left_origin 
@@ -152,9 +155,9 @@ def cartesian_from_HGC_upper_left_origin(x_center, y_center, x_north,
 
     return x_centered_upper_left_origin, y_centered_upper_left_origin, 0
     
-def cartesian_from_HGC_lower_left_origin(x_center, y_center, x_north,
-                                         y_north, HGC_long, HGC_lat,
-                                         angle_P, angle_B0, angle_L0):
+def cartesian_from_drawing(x_center, y_center, x_north,
+                           y_north, HGC_long, HGC_lat,
+                           angle_P, angle_B0, angle_L0):
     
     """
     Given a heliographic longitude and latitude in radian, 
@@ -164,9 +167,10 @@ def cartesian_from_HGC_lower_left_origin(x_center, y_center, x_north,
     center = Cartesian(x_center, y_center)
     north = Cartesian(x_north, y_north)
     angle_calibration = center.angle_from_y_axis(north)
+    #angle_calibration_degree = angle_calibration * 180/math.pi
     radius = center.distance(north)
 
-    theta = (angle_L0 * math.pi/180) - HGC_long
+    theta = (angle_L0 * math.pi/180.) - HGC_long
     phi = math.pi/2 - HGC_lat
 
     sun_spherical = Spherical(1, theta, phi)
@@ -174,23 +178,25 @@ def cartesian_from_HGC_lower_left_origin(x_center, y_center, x_north,
 
     sun_cartesian = Cartesian(x, y, z)
     
-    sun_cartesian.rotate_around_x(angle_B0)
-    sun_cartesian.rotate_around_z(-angle_P)
+    sun_cartesian.rotate_around_x(angle_B0 * math.pi/180.)
+    sun_cartesian.rotate_around_z(-angle_P * math.pi/180. - angle_calibration)
     
     drawing = Cartesian(sun_cartesian.x,
                         sun_cartesian.y,
                         sun_cartesian.z)
-    drawing.rotate_around_z(-angle_calibration)
-    drawing.normalize(1./radius)
+    
+    #drawing.rotate_around_z(-angle_calibration)
+    drawing.normalize(radius)
 
     return drawing.x, drawing.y, drawing.z
-    
+
+
 def cartesian_from_drawing_method2(x_center, y_center, x_north,
                                    y_north, HGC_long, HGC_lat,
                                    angle_P, angle_B0, angle_L0):
     
     """
-    Given a heliographic longitude and latitude in radian, 
+    Given a heliographic longitude and latitude *in radian*, 
     returns the corresponding x, y, z positions on the drawing with
     center in the lower left corner
     """
@@ -206,16 +212,15 @@ def cartesian_from_drawing_method2(x_center, y_center, x_north,
     x, y, z = sun_spherical.convert_to_cartesian()
 
     sun_cartesian = Cartesian(x, y, z)
-
-    sun_cartesian.rotate_around_y(angle_L0)
-    sun_cartesian.rotate_around_x(angle_B0)
-    sun_cartesian.rotate_around_z(-angle_P)
+    sun_cartesian.rotate_around_y(angle_L0 * math.pi/180.)
+    sun_cartesian.rotate_around_x(angle_B0 * math.pi/180.)
+    sun_cartesian.rotate_around_z(-angle_P * math.pi/180.)
     
     drawing = Cartesian(sun_cartesian.x,
                            sun_cartesian.y,
                            sun_cartesian.z)
     drawing.rotate_around_z(-angle_calibration)
-    drawing.normalize(1./radius)
+    drawing.normalize(radius)
 
     return drawing.x, drawing.y, drawing.z
 
@@ -231,38 +236,21 @@ def heliographic_from_drawing(x_center, y_center, x_north,
     north = Cartesian(x_north, y_north)
     angle_calibration = center.angle_from_y_axis(north)
     radius = center.distance(north) 
-    #print("radius:", radius)
     drawing = Cartesian(x_drawing, y_drawing)
     
     disk_trigo = Cartesian(drawing.x, drawing.y)
-    #print("x:", disk_trigo.x)
-    #print("y:", disk_trigo.y)
-    disk_trigo.translate(-center.x, -center.y)
-    #print("x:", disk_trigo.x)
-    #print("y:", disk_trigo.y)
-    disk_trigo.normalize(radius)
-    #print("x:", disk_trigo.x)
-    #print("y:", disk_trigo.y)
-    #print("z:", disk_trigo.z)
+    disk_trigo.translate(-center.x, -center.y)    
+    disk_trigo.normalize(1./radius)
     disk_trigo.set_axis_z()
-    #print("z:", disk_trigo.z)
-    #disk_trigo.z = -math.fabs( disk_trigo.z)
     disk_trigo.rotate_around_z(angle_calibration)
         
-    sun = Cartesian(disk_trigo.x, disk_trigo.y, disk_trigo.z)
-    #sun.rotate_around_y(-angle_L0)
-    
-    sun.rotate_around_z(angle_P)
-    sun.rotate_around_x(-angle_B0)
-    sun.rotate_around_y(-angle_L0)
+    sun = Cartesian(disk_trigo.x, disk_trigo.y, disk_trigo.z)    
+    sun.rotate_around_z(angle_P * math.pi/180.)
+    sun.rotate_around_x(-angle_B0 * math.pi/180.)
+    sun.rotate_around_y(-angle_L0 * math.pi/180.)
     
     theta, phi = sun.convert_to_spherical()
 
-    """ print("theta", theta)
-    print("phi", phi)
-    """
-    #central_meridian_distance = theta
-    #HGC_longitude = (angle_L0 * math.pi/180) - theta
     HGC_longitude = - theta
     HGC_latitude = math.pi/2 - phi
     
