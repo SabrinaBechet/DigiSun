@@ -1040,9 +1040,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         g = relative importance of the leading spot and 
         density of the sunspot population
         """
-        print("update largest spot", largest_spot)
-
         group_index = self.listWidget_groupBox.currentRow()
+        
+        print("update largest spot",
+              largest_spot,
+              self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat)
         
         if largest_spot=='leading':
             self.drawing_lst[self.current_count]\
@@ -1070,7 +1072,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         if (self.drawing_lst[self.current_count].group_lst[group_index].zurich.upper()
             in self.zurich_dipolar and
-            (self.drawing_lst[self.current_count].group_lst[group_index].g_spot is None or
+            (self.drawing_lst[self.current_count].group_lst[group_index].largest_spot is None or
              self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat is None)):
             self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
