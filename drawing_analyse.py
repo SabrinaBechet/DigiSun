@@ -1041,36 +1041,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         density of the sunspot population
         """
         print("update largest spot", largest_spot)
+
+        group_index = self.listWidget_groupBox.currentRow()
         
         if largest_spot=='leading':
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()]\
-            .largest = 'L'
+            .group_lst[group_index].largest_spot = 'L'
         elif largest_spot=='egal':
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()]\
-            .largest = 'E'
+            .group_lst[group_index].largest_spot = 'E'
         elif largest_spot=='trailing':
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()]\
-            .largest = 'T'
+            .group_lst[group_index].largest_spot = 'T'
             
         self.drawing_lst[self.current_count].update_g_spot(
-            self.listWidget_groupBox.currentRow(),
+            group_index,
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()].McIntosh,
+            .group_lst[group_index].McIntosh,
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()]\
-            .largest)
+            .group_lst[group_index]\
+            .largest_spot)
             
         self.group_toolbox.update_largest_spot(
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()]\
-            .largest,
+            .group_lst[group_index].largest_spot,
             self.drawing_lst[self.current_count]\
-            .group_lst[self.listWidget_groupBox.currentRow()]\
-            .zurich)
+            .group_lst[group_index].zurich)
 
+        if (self.drawing_lst[self.current_count].group_lst[group_index].zurich.upper()
+            in self.zurich_dipolar and
+            (self.drawing_lst[self.current_count].group_lst[group_index].g_spot is None or
+             self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat is None)):
+            self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+        else:
+            self.groupBoxLineList[group_index]\
+                .dipole_button.setStyleSheet(
+                    "background-color: transparent")
+        
         """if self.drawing_lst[self.current_count]\
                .group_lst[self.listWidget_groupBox.currentRow()]\
                .g_spot in range(1,10):
@@ -1204,12 +1212,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.groupBoxLineList[n].zurich_combo.setStyleSheet("background-color: white")
             self.group_toolbox.zurich_combo.setStyleSheet("background-color: white")
 
-        """if ((new_zurich_type.upper() in self.zurich_dipolar and
+        if ((new_zurich_type.upper() in self.zurich_dipolar and
             old_zurich_type.upper() not in self.zurich_dipolar) or
             (new_zurich_type.upper() not in self.zurich_dipolar and
             old_zurich_type.upper() in self.zurich_dipolar)):
-            self.drawing_lst[self.current_count].group_lst[n].largest_spot = 'None'
-        """
+            self.drawing_lst[self.current_count].group_lst[n].largest_spot = None
+            self.drawing_lst[self.current_count].update_g_spot(
+                n,
+                self.drawing_lst[self.current_count].group_lst[n].McIntosh,
+                self.drawing_lst[self.current_count].group_lst[n].largest_spot)
         
         if (new_zurich_type.upper() in self.zurich_dipolar and
             (self.drawing_lst[self.current_count].group_lst[n].largest_spot is None or
@@ -1217,14 +1228,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print("condition satisfied, should be in orange")
             self.groupBoxLineList[n].dipole_button.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
-                
         else:
            self.groupBoxLineList[n].dipole_button.setStyleSheet(
                     "background-color: transparent")
         
 
         self.group_toolbox.update_largest_spot(
-            self.drawing_lst[self.current_count].group_lst[n].g_spot,
+            self.drawing_lst[self.current_count].group_lst[n].largest_spot,
             new_zurich_type)
         
         

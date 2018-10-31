@@ -977,6 +977,8 @@ class Drawing(QtCore.QObject):
         sunspot_population_density = McIntosh[2]
         print("try to update g spot")
         print(McIntosh, largest_spot)
+
+        self.group_lst[group_number]._g_spot = 0
         
         if largest_spot=='L' and sunspot_population_density=='o':
             self.group_lst[group_number]._g_spot = 1
