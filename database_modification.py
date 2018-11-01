@@ -10,24 +10,12 @@ import math
 from matplotlib import pyplot as plt
 import database, coordinates
 
-def play_with_database(table, field, date_min, date_max):
-    db = pymysql.connect(host='soldb.oma.be',
-                         user='usetdevadmin',
-                         passwd='usetdevadmin',
-                         db='uset_dev')
-    cursor = db.cursor()
-
-    cursor.execute('SELECT ' + field + ' from ' + table +
-                   ' where DateTime> %s and DateTime< %s',((date_min, date_max)))
-
-    db.commit()
-    result = cursor.fetchall()
-    print(result[0][0])
-    return result
-
+"""
+Here are all the scripts used to change the database for 
+the new version of DigiSun
+"""
 
 def get_height_from_image_lst(root_directory, datetime):
-    
     el=datetime
     filename = 'usd{}{:02d}{:02d}{:02d}{:02d}'.format(el.year,
                                                       el.month,
@@ -77,57 +65,72 @@ def get_list_drawings(root_path):
         nb_drawing_year[int(year)]=(len(drawing_year_set))
                     
     return path_drawing, nb_drawing_year
-        
 
-
-
-
-if __name__=='__main__':
-
-    archdrawing_path = '/media/archdrawings'
-    
-    """path_drawing, nb_drawing_year  = get_list_drawings(archdrawing_path)
-    print("nb de dessins au total: ", len(path_drawing))
-    print(nb_drawing_year)
-    plt.bar(nb_drawing_year.keys(), nb_drawing_year.values() )
-    plt.grid()
-    plt.show()
-    """
-
-    """get_height_from_image_lst(archdrawing_path)
-
-    """
+def fill_largest_spot():
     db = database.database()
     
-    datetime_group = db.get_field_time_interval("groups", "Datetime", "1940-03-01 00:00", "2018-05-31 23:00")
+    datetime_group = db.get_field_time_interval("groups",
+                                                "Datetime",
+                                                "1940-03-01 00:00",
+                                                "2018-05-31 23:00")
     datetime_group_set = set(datetime_group)
 
-    x_check = []
-    longitude_check = []
-    latitude_check = []
-    angle_P_check = []
-    angle_B_check = []
-    angle_L_check = []
-
-    angle_scan_check = []
-    angle_scan_from_database = []
-
-    x_center_check = []
-    radius_check  = []
-
-    theta_check = []
-    phi_check = []
-
-    zurich_check = []
-    gspot_check = []
-    largest_spot_check = []
-    
     for el in datetime_group_set:
-        print(el)
-
         try:
             calibrated = db.get_field_datetime("drawings", "Calibrated", el)[0]
+            
+            if calibrated >0 :
+                g_spot = db.get_field_datetime("groups", "GSpot", el)
+                zurich = db.get_field_datetime("groups", "Zurich", el)
+                
+                for group_el in range(len(g_spot)):
+                    largest_spot = None
+
+                    if g_spot[group_el] in [1, 4, 7]:
+                        largest_spot = 'L'
+                        db.write_field_datetime('groups',
+                                                'Largest_spot',
+                                                largest_spot,
+                                                el,
+                                                group_el)
+                    elif g_spot[group_el] in [2, 5, 8]:
+                        largest_spot = 'T'
+                        db.write_field_datetime('groups',
+                                                'Largest_spot',
+                                                largest_spot,
+                                                el,
+                                                group_el)
+                    elif g_spot[group_el] in [3, 6, 9]:
+                        largest_spot = 'E'
+                        db.write_field_datetime('groups',
+                                                'Largest_spot',
+                                                largest_spot,
+                                                el,
+                                                group_el)
+        except IndexError:
+            print("there is an index error for the date: {} ".format(el))
+
+
+            
+def fill_all_posX_posY():
+    """
+    Read the values of longitude, latitude, calibration center and north
+    calculate the posX and posY 
+    fill it in the database
+    """
+
+    db = database.database()
     
+    datetime_group = db.get_field_time_interval("groups",
+                                                "Datetime",
+                                                "1940-03-01 00:00",
+                                                "2018-05-31 23:00")
+    datetime_group_set = set(datetime_group)
+
+    for el in datetime_group_set:
+        try:
+            calibrated = db.get_field_datetime("drawings", "Calibrated", el)[0]
+            
             if calibrated >0 :
                 
                 longitude = db.get_field_datetime("groups", "Dipole1Long", el)
@@ -139,23 +142,13 @@ if __name__=='__main__':
                 angle_P = db.get_field_datetime("drawings", "AngleP", el)[0]
                 angle_B0 = db.get_field_datetime("drawings", "AngleB", el)[0]
                 angle_L0 = db.get_field_datetime("drawings", "AngleL", el)[0]
-                angle_calib  = db.get_field_datetime("drawings", "AngleScan", el)[0]
                 height = get_height_from_image_lst(archdrawing_path, el)
-                radius_database = db.get_field_datetime("calibrations", "Radius", el)[0]
-                g_spot = db.get_field_datetime("groups", "GSpot", el)
-                zurich = db.get_field_datetime("groups", "Zurich", el)
-
-                
-                #print(el, longitude, x_center,  angle_P, angle_B0, angle_L0, height, calibrated)
                 
                 center = coordinates.Cartesian(x_center, y_center)
                 north = coordinates.Cartesian(x_north, y_north)
-                angle_calibration = center.angle_from_y_axis(north)
-                radius = center.distance(north)
-                
                 
                 for group_el in range(len(longitude)):
-                    largest_spot = None
+        
                     longitude_group = longitude[group_el]
                     latitude_group = latitude[group_el]
                     
@@ -170,77 +163,42 @@ if __name__=='__main__':
                          longitude_group, latitude_group,
                          angle_P, angle_B0, angle_L0, height)
 
-                    if g_spot[group_el] in [1, 4, 7]:
-                        largest_spot = 'L'
-                        db.write_field_datetime('groups', 'Largest_spot', largest_spot, el, group_el)
-                    elif g_spot[group_el] in [2, 5, 8]:
-                        largest_spot = 'T'
-                        db.write_field_datetime('groups', 'Largest_spot', largest_spot, el, group_el)
-                    elif g_spot[group_el] in [3, 6, 9]:
-                        largest_spot = 'E'
-                        db.write_field_datetime('groups', 'Largest_spot', largest_spot, el, group_el)
-                        
-                    #largest_spot_check.append(largest_spot)
-                    #db.write_field_datetime('groups', 'Largest_spot', largest_spot, el, group_el)
-                    #db.write_field_datetime('groups', 'PosY', "{:.0f}".format(y_upper), el, group_el)
                     
-                    # check qu'on retrouve bien les bonnes lat et longitude en faisant le calcul inverse
-                    long2, lat2 = coordinates.heliographic_from_drawing(x_center, height - y_center,
-                                                                        x_north, height - y_north,
-                                                                        x_upper,
-                                                                        height - y_upper,
-                                                                        angle_P, angle_B0, angle_L0)
+                    db.write_field_datetime('groups',
+                                            'PosX',
+                                            "{:.0f}".format(x_upper),
+                                            el,
+                                            group_el)
+                    db.write_field_datetime('groups',
+                                            'PosY',
+                                            "{:.0f}".format(y_upper),
+                                            el,
+                                            group_el)
                     
+                    # check qu'on retrouve bien les bonnes lat et
+                    #longitude en faisant le calcul inverse
+                    """long2, lat2 = coordinates.heliographic_from_drawing(
+                    x_center, height - y_center,
+                    x_north, height - y_north,
+                    x_upper,
+                    height - y_upper,
+                    angle_P, angle_B0, angle_L0)
+                    """
                     """print("***check")
                     print("longitude:", longitude_group, long2)
                     print("latitude:", latitude_group, lat2)
                     """
                     """
                     print(longitude_group, latitude_group, x_center, x_north,
-                          x_upper, x_upper - int(x_upper), radius, radius_database, int(radius_database),
-                          angle_calibration, (radius - int(radius)))
+                          x_upper, x_upper - int(x_upper), radius, 
+                    radius_database, int(radius_database),
                     """
-                    #if (angle_calibration<0.000001) and (radius - int(radius)<0.00001):
-                    x_check.append(x_upper - int(x_upper))
-                    longitude_check.append(longitude_group * 180/math.pi)
-                    latitude_check.append(latitude_group * 180/math.pi)
-                    angle_P_check.append(angle_P)
-                    angle_B_check.append(angle_B0)
-                    angle_L_check.append(angle_L0)
-                    angle_scan_check.append(angle_calibration)
-                    zurich_check.append(zurich)
-                    gspot_check.append(g_spot)
-
-                    #print(group_el, zurich[group_el], g_spot[group_el], largest_spot)
-                    
-                    #theta_check.append(theta)
-                    
-                    x_center_check.append(x_center)
-                    radius_check.append(radius - int(radius))
-                    
-                    theta_check.append(theta)
-                    phi_check.append(phi)
-                    
-                    # inserver dans la base de donne dans la bonne colonne
-                
         except IndexError:
             print("there is an index error for the date: {} ".format(el))
-                
-        
-    #plt.hist(x_check, 100, (0,1))
-    """largest_spot_count = []
-    largest_spot_name = [0, 1, 2, 3]
-    largest_spot_count.append(largest_spot_check.count('L'))
-    largest_spot_count.append(largest_spot_check.count('E'))
-    largest_spot_count.append(largest_spot_check.count('T'))
-    largest_spot_count.append(largest_spot_check.count(None))
+            
+
+if __name__=='__main__':
+
+    archdrawing_path = '/media/archdrawings'
     
-    
-    plt.plot(largest_spot_name, largest_spot_count)
-    x_not_just = [x for x in x_check if (x > 0.1 and x < 0.9)]
-    print("tot", len(x_check), len(x_not_just))
-    #plt.scatter(x_check, latitude_check)
-    plt.grid()
-    plt.show()
-    """
     

@@ -235,7 +235,7 @@ class GroupBox(QtGui.QWidget):
                                     grid_position[1] + 1)
 
         
-    def update_largest_spot(self, largest_spot, zurich_type):
+    def update_largest_spot_buttons(self, largest_spot, zurich_type):
         """
         Need some adaptation when colum with largest_spot added in the database!
         then replace g_spot directly by largest_spot!
@@ -247,8 +247,7 @@ class GroupBox(QtGui.QWidget):
 
         print("update largest spot", largest_spot, zurich_type)
         
-        if (largest_spot is None and
-            zurich_type.upper() not in self.zurich_dipolar):
+        if (zurich_type.upper() not in self.zurich_dipolar):
             self.largest_spot_leading.setStyleSheet("background-color: lightblue")
             self.largest_spot_trailing.setStyleSheet("background-color: lightblue")
             self.largest_spot_egal.setStyleSheet("background-color: lightblue")
@@ -256,9 +255,11 @@ class GroupBox(QtGui.QWidget):
             self.largest_spot_trailing.setDisabled(True)
             self.largest_spot_egal.setDisabled(True)
             
-        elif largest_spot is None and zurich_type.upper() in self.zurich_dipolar:
-            self.largest_spot_leading.setStyleSheet("background-color: rgb(255, 165, 84)")
-            self.largest_spot_trailing.setStyleSheet("background-color: rgb(255, 165, 84)")
+        elif zurich_type.upper() in self.zurich_dipolar and largest_spot is None:
+            self.largest_spot_leading.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+            self.largest_spot_trailing.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
             self.largest_spot_egal.setStyleSheet("background-color: rgb(255, 165, 84)")
             self.largest_spot_leading.setDisabled(False)
             self.largest_spot_trailing.setDisabled(False)
@@ -271,7 +272,8 @@ class GroupBox(QtGui.QWidget):
             self.largest_spot_trailing.setDisabled(False)
             self.largest_spot_egal.setDisabled(False)
         elif largest_spot is 'T':
-            self.largest_spot_trailing.setStyleSheet("background-color: rgb(77, 185, 88)")
+            self.largest_spot_trailing.setStyleSheet(
+                "background-color: rgb(77, 185, 88)")
             self.largest_spot_leading.setStyleSheet("background-color: lightblue")
             self.largest_spot_egal.setStyleSheet("background-color: lightblue")
             self.largest_spot_leading.setDisabled(False)
@@ -307,7 +309,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position[0],
                                    grid_position[1] + 3)
         
-        self.update_largest_spot(largest_spot, zurich_type)
+        self.update_largest_spot_buttons(largest_spot, zurich_type)
             
     def set_surface(self, surface, grid_position):
         self.surface_label = QtGui.QLabel("Surface")

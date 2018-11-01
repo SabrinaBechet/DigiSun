@@ -40,8 +40,10 @@ class DrawingViewPage(QtGui.QWidget):
         left_column_maximum_width = 380
 
         self.scroll_widget_left_up = QtGui.QScrollArea()
-        self.scroll_widget_left_up .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scroll_widget_left_up .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll_widget_left_up\
+            .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.scroll_widget_left_up\
+            .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scroll_widget_left_up .setWidgetResizable(True)
         self.widget_left_up = QtGui.QWidget()
         self.widget_left_up.setMinimumWidth(left_column_maximum_width)
@@ -58,7 +60,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_middle.setMaximumHeight(self.width()/4.)#200)
+        self.widget_left_middle.setMaximumHeight(self.height()/3.)#200)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
@@ -68,12 +70,13 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down.setMinimumHeight(self.width()/4.)#200)
+        self.widget_left_down.setMinimumHeight(self.height()/4.)#200)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_left_down_layout.setSpacing(0)
-        self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
+        self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and
+                                                  QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
         
         self.widget_left_down_bis = QtGui.QWidget()
@@ -83,11 +86,15 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_down_bis_layout = QtGui.QVBoxLayout()
         self.widget_left_down_bis_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_left_down_bis_layout.setSpacing(0)
-        self.widget_left_down_bis_layout.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
+        self.widget_left_down_bis_layout.setAlignment(QtCore.Qt.AlignTop and
+                                                      QtCore.Qt.AlignRight)
         self.widget_left_down_bis.setLayout(self.widget_left_down_bis_layout)
         
         self.widget_middle_up = QtGui.QWidget()
+        
+        # trick to keep the surface panel closed by default
         self.widget_middle_up.setMaximumWidth(10)
+        
         self.widget_middle_up.setMinimumHeight(200)
         self.widget_middle_up.setStyleSheet("background-color:lightgray;")
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
@@ -163,7 +170,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
-        self.column_maximum_width = 600
+        self.column_maximum_width = 400
         self.add_drawing_information()
         self.add_current_session()
         self.add_surface()
@@ -217,7 +224,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         #self.statusBar = QtGui.QStatusBar()
         self.status_bar_mode_name = QtGui.QLabel()
-        self.status_bar_mode_name.setStyleSheet("QLabel { background-color : red; color : blue; }");
+        self.status_bar_mode_name.setStyleSheet(
+            "QLabel { background-color : red; color : blue; }");
         self.status_bar_mode_name.setAlignment(QtCore.Qt.AlignHCenter)
         self.status_bar_mode_name.setMinimumSize(self.status_bar_mode_name.sizeHint())
         self.status_bar_mode_comment = QtGui.QLabel()
@@ -654,17 +662,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print("fraction width: ", self.fraction_width)
         print("fraction height: ", self.fraction_height)
         
-        self.status_bar_mode_comment.setText("Click on the " + self.point_name + " position")
+        self.status_bar_mode_comment.setText("Click on the " +
+                                             self.point_name +
+                                             " position")
         
         self.vertical_scroll_bar.setMinimum(0)
         self.horizontal_scroll_bar.setMinimum(0)
-        self.vertical_scroll_bar.setMaximum(self.drawing_page.label_right.pixmap().height() -
-                                            self.vertical_scroll_bar.pageStep())
+        self.vertical_scroll_bar.setMaximum(
+            self.drawing_page.label_right.pixmap().height() -
+            self.vertical_scroll_bar.pageStep())
         self.horizontal_scroll_bar.setMaximum(self.drawing_page.label_right.pixmap().width() -
                                               self.horizontal_scroll_bar.pageStep() )
   
-        self.horizontal_scroll_bar.setValue(self.horizontal_scroll_bar.maximum() * self.fraction_width)
-        self.vertical_scroll_bar.setValue(self.vertical_scroll_bar.maximum() * self.fraction_height)
+        self.horizontal_scroll_bar.setValue(
+            self.horizontal_scroll_bar.maximum() * self.fraction_width)
+        self.vertical_scroll_bar.setValue(
+            self.vertical_scroll_bar.maximum() * self.fraction_height)
 
     def clean_status_bar(self):
         self.status_bar_mode_name.setText("")
@@ -694,7 +707,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.north_done = False
             print("start calibration",
                   self.drawing_page.label_right.calibration_mode.value,
-                  self.drawing_page.label_right.center_done, self.drawing_page.label_right.north_done)
+                  self.drawing_page.label_right.center_done,
+                  self.drawing_page.label_right.north_done)
         
             self.drawing_page.label_right.group_visu.value = False
             self.drawing_page.label_right.dipole_visu.value = False
@@ -706,15 +720,20 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
             
-            self.drawing_page.label_right.zoom_in(5./self.drawing_page.label_right.scaling_factor)
+            self.drawing_page.label_right.zoom_in(
+                5./self.drawing_page.label_right.scaling_factor)
             
-            self.fraction_width = self.drawing_lst[self.current_count].pt1_fraction_width
-            self.fraction_height = self.drawing_lst[self.current_count].pt1_fraction_height
+            self.fraction_width = self.drawing_lst[self.current_count]\
+                                      .pt1_fraction_width
+            self.fraction_height = self.drawing_lst[self.current_count]\
+                                       .pt1_fraction_height
             self.point_name = self.drawing_lst[self.current_count].pt1_name
             self.scroll_position()
             
-            self.fraction_width = self.drawing_lst[self.current_count].pt2_fraction_width
-            self.fraction_height = self.drawing_lst[self.current_count].pt2_fraction_height
+            self.fraction_width = self.drawing_lst[self.current_count]\
+                                      .pt2_fraction_width
+            self.fraction_height = self.drawing_lst[self.current_count]\
+                                       .pt2_fraction_height
             self.point_name = self.drawing_lst[self.current_count].pt2_name
             
             """self.drawing_page.label_right.group_visu.value = True
@@ -725,7 +744,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
         else:
             QtGui.QApplication.restoreOverrideCursor()
-            self.drawing_page.label_right.zoom_in(1/self.drawing_page.label_right.scaling_factor)
+            self.drawing_page.label_right.zoom_in(
+                1/self.drawing_page.label_right.scaling_factor)
             print("out of the calibration")
             self.clean_status_bar()
 
@@ -755,7 +775,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         # A widget is deleted when its parents is deleted.
         for i in reversed(range(self.drawing_page.widget_left_down_layout.count())):
-                self.drawing_page.widget_left_down_layout.itemAt(i).widget().setParent(None)
+                self.drawing_page.widget_left_down_layout\
+                                 .itemAt(i)\
+                                 .widget()\
+                                 .setParent(None)
 
         title_left_down = QtGui.QLabel("Group information")
         title_left_down.setAlignment(QtCore.Qt.AlignCenter)
@@ -841,10 +864,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
            
         self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
         
-        # not sure it is still needed??
-        # self.listWidget_group_toolbox.set_empty()
-        #self.listWidget_group_toolbox.set_welcome()
-
         # Signals related to the change of item in the group box
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.set_focus_group_box(
@@ -1026,11 +1045,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 lambda: self.update_HGC_position('longitude', -position_step))
             
             self.group_toolbox.largest_spot_leading.clicked.connect(
-                lambda: self.update_largest_spot('leading'))
+                lambda: self.update_largest_spot('L'))
             self.group_toolbox.largest_spot_egal.clicked.connect(
-                lambda: self.update_largest_spot('egal'))
+                lambda: self.update_largest_spot('E'))
             self.group_toolbox.largest_spot_trailing.clicked.connect(
-                lambda: self.update_largest_spot('trailing'))
+                lambda: self.update_largest_spot('T'))
 
         else:
             print("no toolbox because there are no groups")
@@ -1052,26 +1071,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.wolf_number.setText(str(self.drawing_lst[self.current_count].wolf))
         
     def update_largest_spot(self, largest_spot):
-        """ according to the USSPS defintion 
-        g = relative importance of the leading spot and 
-        density of the sunspot population
-        """
+        
         group_index = self.listWidget_groupBox.currentRow()
         
         print("update largest spot",
               largest_spot,
               self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat)
         
-        if largest_spot=='leading':
-            self.drawing_lst[self.current_count]\
-            .group_lst[group_index].largest_spot = 'L'
-        elif largest_spot=='egal':
-            self.drawing_lst[self.current_count]\
-            .group_lst[group_index].largest_spot = 'E'
-        elif largest_spot=='trailing':
-            self.drawing_lst[self.current_count]\
-            .group_lst[group_index].largest_spot = 'T'
-            
+        self.drawing_lst[self.current_count]\
+            .group_lst[group_index].largest_spot = largest_spot
+        
         self.drawing_lst[self.current_count].update_g_spot(
             group_index,
             self.drawing_lst[self.current_count]\
@@ -1080,30 +1089,38 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .group_lst[group_index]\
             .largest_spot)
             
-        self.group_toolbox.update_largest_spot(
-            self.drawing_lst[self.current_count]\
-            .group_lst[group_index].largest_spot,
+        self.group_toolbox.update_largest_spot_buttons(
+            largest_spot,
             self.drawing_lst[self.current_count]\
             .group_lst[group_index].zurich)
 
-        if (self.drawing_lst[self.current_count].group_lst[group_index].zurich.upper()
-            in self.zurich_dipolar and
-            (self.drawing_lst[self.current_count].group_lst[group_index].largest_spot is None or
-             self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat is None)):
-            self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
+
+        self.check_dipole_complete(
+            group_index,
+            self.drawing_lst[self.current_count].group_lst[group_index].zurich,
+            self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat,
+            self.drawing_lst[self.current_count].group_lst[group_index].largest_spot)
+
+        
+    def check_dipole_complete(self, index, zurich, latitude, largest_spot):
+        """
+        The information concerning the dipole (zurich in zurich dipolar) 
+        is complete when:
+        - position is filled
+        - LTS is filled
+        if one of the two condition is not met -> dipole button in red
+        else -> dipole button in green
+        """
+
+        if (zurich.upper() in self.zurich_dipolar and
+            (largest_spot is None or latitude is None)):
+            self.groupBoxLineList[index].dipole_button.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
         else:
-            self.groupBoxLineList[group_index]\
+            self.groupBoxLineList[index]\
                 .dipole_button.setStyleSheet(
                     "background-color: transparent")
         
-        """if self.drawing_lst[self.current_count]\
-               .group_lst[self.listWidget_groupBox.currentRow()]\
-               .g_spot in range(1,10):
-            self.groupBoxLineList[self.listWidget_groupBox.currentRow()]\
-                .dipole_button.setStyleSheet(
-                    "background-color: transparent")
-        """
     def update_HGC_position(self, coordinate, value):
         """
         Steps:
@@ -1224,12 +1241,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_toolbox.update_McIntosh_combo_box(new_zurich_type)
 
         if new_zurich_type == "X":
-            self.groupBoxLineList[n].zurich_combo.setStyleSheet("background-color: orange")
-            self.group_toolbox.zurich_combo.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.groupBoxLineList[n].zurich_combo.setStyleSheet(
+                "background-color: orange")
+            self.group_toolbox.zurich_combo.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
         else:
-            self.groupBoxLineList[n].zurich_combo.setStyleSheet("background-color: white")
+            self.groupBoxLineList[n].zurich_combo.setStyleSheet(
+                "background-color: white")
             self.group_toolbox.zurich_combo.setStyleSheet("background-color: white")
-
+    
         if ((new_zurich_type.upper() in self.zurich_dipolar and
             old_zurich_type.upper() not in self.zurich_dipolar) or
             (new_zurich_type.upper() not in self.zurich_dipolar and
@@ -1239,19 +1259,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 n,
                 self.drawing_lst[self.current_count].group_lst[n].McIntosh,
                 self.drawing_lst[self.current_count].group_lst[n].largest_spot)
-        
-        if (new_zurich_type.upper() in self.zurich_dipolar and
-            (self.drawing_lst[self.current_count].group_lst[n].largest_spot is None or
-             self.drawing_lst[self.current_count].group_lst[n].dipole1_lat is None)):
-            print("condition satisfied, should be in orange")
-            self.groupBoxLineList[n].dipole_button.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
-        else:
-           self.groupBoxLineList[n].dipole_button.setStyleSheet(
-                    "background-color: transparent")
-        
 
-        self.group_toolbox.update_largest_spot(
+        self.check_dipole_complete(
+            n,
+            new_zurich_type,
+            self.drawing_lst[self.current_count].group_lst[n].dipole1_lat,
+            self.drawing_lst[self.current_count].group_lst[n].largest_spot) 
+
+        self.group_toolbox.update_largest_spot_buttons(
             self.drawing_lst[self.current_count].group_lst[n].largest_spot,
             new_zurich_type)
         
@@ -1265,7 +1280,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             new_mcIntosh_type = str(self.group_toolbox.McIntosh_combo.currentText())
             new_mcIntosh_index = self.group_toolbox.McIntosh_combo.currentIndex()
         else:
-            new_mcIntosh_type = str(self.groupBoxLineList[n].McIntosh_combo.currentText())
+            new_mcIntosh_type = str(self.groupBoxLineList[n]
+                                    .McIntosh_combo.currentText())
             new_mcIntosh_index = self.groupBoxLineList[n].McIntosh_combo.currentIndex()
         
         if new_mcIntosh_type!=old_mcIntosh_type:
@@ -1292,17 +1308,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.form_layout1.setSpacing(10)
         
         self.drawing_operator = QtGui.QLineEdit(self)
-        #self.drawing_operator.setMaximumWidth(self.column_maximum_width)
+        self.drawing_operator.setMaximumWidth(self.column_maximum_width)
         self.drawing_operator.setEnabled(True)
-        self.drawing_operator.setStyleSheet("background-color: lightgray; color:black")
+        self.drawing_operator.setStyleSheet(
+            "background-color: lightgray; color:black")
         
         self.drawing_observer = QtGui.QLineEdit(self)
-        #self.drawing_observer.setMaximumWidth(self.column_maximum_width)
+        self.drawing_observer.setMaximumWidth(self.column_maximum_width)
         self.drawing_observer.setEnabled(True)
         self.drawing_observer.setStyleSheet("background-color: white; color:black")
         
         self.drawing_date = QtGui.QDateEdit()
-        #self.drawing_date.setMaximumWidth(self.column_maximum_width)
+        self.drawing_date.setMaximumWidth(self.column_maximum_width)
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
@@ -1310,13 +1327,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_date.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_time = QtGui.QLineEdit("00:00",self)
-        #self.drawing_time.setMaximumWidth(self.column_maximum_width)
+        self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setEnabled(False)
         self.drawing_time.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_quality = QtGui.QLineEdit(self)
-        #self.drawing_quality.setMaximumWidth(self.column_maximum_width)
+        self.drawing_quality.setMaximumWidth(self.column_maximum_width)
         #self.drawing_quality.setMinimum(1)
         #self.drawing_quality.setMaximum(5)
         #self.drawing_quality.setValue(3)
@@ -1324,7 +1341,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_quality.setStyleSheet("background-color: white; color:black")
         
         self.drawing_type = QtGui.QComboBox(self)
-        #self.drawing_type.setMaximumWidth(self.column_maximum_width)
+        self.drawing_type.setMaximumWidth(self.column_maximum_width)
         self.drawing_type.setEnabled(True)
         self.drawing_type.setStyleSheet("background-color: white; color:black")
         self.drawing_type.addItem('USET')
@@ -1332,41 +1349,41 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_type.addItem('USET41')
 
         self.wolf_number = QtGui.QLineEdit(self)
-        #self.wolf_number.setMaximumWidth(self.column_maximum_width)
+        self.wolf_number.setMaximumWidth(self.column_maximum_width)
         self.wolf_number.setStyleSheet("background-color: white; color:black")
         
         self.angleP = QtGui.QLineEdit(self)
-        #self.angleP.setMaximumWidth(self.column_maximum_width)
+        self.angleP.setMaximumWidth(self.column_maximum_width)
         self.angleP.setEnabled(False)
         self.angleP.setStyleSheet("background-color: lightgrey; color:black")
         
         self.angleB = QtGui.QLineEdit(self)
-        #self.angleB.setMaximumWidth(self.column_maximum_width)
+        self.angleB.setMaximumWidth(self.column_maximum_width)
         self.angleB.setEnabled(False)
         self.angleB.setStyleSheet("background-color: lightgrey; color:black")
         
         self.angleL = QtGui.QLineEdit(self)
-        #self.angleL.setMaximumWidth(self.column_maximum_width)
+        self.angleL.setMaximumWidth(self.column_maximum_width)
         self.angleL.setEnabled(False)
         self.angleL.setStyleSheet("background-color: lightgrey; color:black")
         
         self.rotation_number = QtGui.QLineEdit(self)
-        #self.rotation_number.setMaximumWidth(self.column_maximum_width)
+        self.rotation_number.setMaximumWidth(self.column_maximum_width)
         self.rotation_number.setEnabled(False)
         self.rotation_number.setStyleSheet("background-color: lightgrey; color:black")
 
         self.calibrated = QtGui.QLineEdit(self)
-        #self.calibrated.setMaximumWidth(self.column_maximum_width)
+        self.calibrated.setMaximumWidth(self.column_maximum_width)
         self.calibrated.setEnabled(False)
         self.calibrated.setStyleSheet("background-color: lightgrey; color:black")
         
         self.analyzed = QtGui.QLineEdit(self)
-        #self.analyzed.setMaximumWidth(self.column_maximum_width)
+        self.analyzed.setMaximumWidth(self.column_maximum_width)
         self.analyzed.setEnabled(False)
         self.analyzed.setStyleSheet("background-color: lightgrey; color:black")
         
         self.area_done = QtGui.QLineEdit(self)
-        #self.area_done.setMaximumWidth(self.column_maximum_width)
+        self.area_done.setMaximumWidth(self.column_maximum_width)
         self.area_done.setEnabled(False)
         self.area_done.setStyleSheet("background-color: lightgrey; color:black")
 
@@ -1395,7 +1412,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.wolf_number.textEdited.connect(self.update_wolf_number)
 
         widget_form = QtGui.QWidget()
-        #widget_form.setMaximumWidth(self.column_maximum_width)
+        widget_form.setMaximumWidth(self.column_maximum_width)
         widget_form.setLayout(self.form_layout1)
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
@@ -1417,7 +1434,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # to do: create the table in the database!!
         uset_db = database.database()
         
-        self.drawing_lst[self.current_count].quality = self.drawing_quality.text()
+        self.drawing_lst[self.current_count]\
+            .quality = self.drawing_quality.text()
         #    self.drawing_observer.setStyleSheet("background-color: rgb(125, 232, 164)")
         #else:
         #    self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
@@ -1427,7 +1445,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # to do: create the table in the database!!
         uset_db = database.database()
         
-        self.drawing_lst[self.current_count].drawing_type = self.drawing_type.currentText()
+        self.drawing_lst[self.current_count]\
+            .drawing_type = self.drawing_type.currentText()
         #    self.drawing_observer.setStyleSheet("background-color: rgb(125, 232, 164)")
         #else:
         #    self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
@@ -1450,8 +1469,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .label_middle_up\
             .polygon\
             .value_changed\
-            .connect(lambda: self.set_button_color(self.drawing_page.label_middle_up.polygon.value,
-                                                self.draw_polygon_but))
+            .connect(lambda: self.set_button_color(
+                self.drawing_page.label_middle_up.polygon.value,
+                self.draw_polygon_but))
         
         self.crop_but = QtGui.QToolButton()
         self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -1491,8 +1511,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .label_middle_up\
             .threshold\
             .value_changed\
-            .connect(lambda: self.set_button_color(self.drawing_page.label_middle_up.threshold.value,
-                                                self.threshold_but))
+            .connect(lambda: self.set_button_color(
+                self.drawing_page.label_middle_up.threshold.value,
+                self.threshold_but))
         
         self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")
         paint_layout = QtGui.QHBoxLayout()
@@ -1559,7 +1580,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_middle_up_layout.addLayout(paint_layout)
         self.drawing_page.widget_middle_up_layout.addWidget(self.convert_but)
         
-        self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
+        self.drawing_page.widget_middle_up_layout.addWidget(
+            self.drawing_page.label_middle_up)
         self.drawing_page.widget_middle_up_layout.addWidget(self.calculate_but)
         self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
         self.drawing_page.widget_middle_up_layout.addWidget(save_but)
