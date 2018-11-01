@@ -38,20 +38,27 @@ class DrawingViewPage(QtGui.QWidget):
         self.setLayout(QtGui.QVBoxLayout())
 
         left_column_maximum_width = 380
-    
+
+        self.scroll_widget_left_up = QtGui.QScrollArea()
+        self.scroll_widget_left_up .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll_widget_left_up .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scroll_widget_left_up .setWidgetResizable(True)
         self.widget_left_up = QtGui.QWidget()
         self.widget_left_up.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_up.setMaximumHeight(500)
-        self.widget_left_up.setStyleSheet("background-color:lightgray;")   
+        #self.widget_left_up.setMinimumHeight(self.width()/2.)#500)
+        self.widget_left_up.setStyleSheet("background-color:lightgray;")
+        self.scroll_widget_left_up.setWidget(self.widget_left_up)
+        
         self.widget_left_up_layout = QtGui.QVBoxLayout()
         self.widget_left_up_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_left_up_layout.setSpacing(0)
         self.widget_left_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_left_up.setLayout(self.widget_left_up_layout)
+        
 
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_middle.setMaximumHeight(200)
+        self.widget_left_middle.setMaximumHeight(self.width()/4.)#200)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
@@ -61,7 +68,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down.setMinimumHeight(200)
+        self.widget_left_down.setMinimumHeight(self.width()/4.)#200)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
@@ -119,7 +126,8 @@ class DrawingViewPage(QtGui.QWidget):
         
         splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_middle_down)
-        splitter_middle_down.addWidget(self.widget_left_up)
+        #splitter_middle_down.addWidget(self.widget_left_up)
+        splitter_middle_down.addWidget(self.scroll_widget_left_up)
         splitter_middle_down.addWidget(self.widget_left_middle)
         splitter_middle_down.addWidget(splitter_down)
               
@@ -148,7 +156,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page = DrawingViewPage()
         self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
         self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
-
         """print("scroll bar properties:")
         print("width: ",  self.vertical_scroll_bar.width())
         print("height: ",  self.vertical_scroll_bar.height())
@@ -164,9 +171,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_toolbar()
         self.set_status_bar()
         
-        self.drawing_page.label_right.center_clicked.connect(self.scroll_position)
-        self.drawing_page.label_right.north_clicked.connect(self.clean_status_bar)
-        self.drawing_page.label_right.group_added.connect(self.add_group_box)
+        self.drawing_page\
+            .label_right\
+            .center_clicked\
+            .connect(self.scroll_position)
+        self.drawing_page\
+            .label_right\
+            .north_clicked\
+            .connect(self.clean_status_bar)
+        self.drawing_page\
+            .label_right\
+            .group_added\
+            .connect(self.add_group_box)
         
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
@@ -1276,17 +1292,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.form_layout1.setSpacing(10)
         
         self.drawing_operator = QtGui.QLineEdit(self)
-        self.drawing_operator.setMaximumWidth(self.column_maximum_width)
+        #self.drawing_operator.setMaximumWidth(self.column_maximum_width)
         self.drawing_operator.setEnabled(True)
         self.drawing_operator.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_observer = QtGui.QLineEdit(self)
-        self.drawing_observer.setMaximumWidth(self.column_maximum_width)
+        #self.drawing_observer.setMaximumWidth(self.column_maximum_width)
         self.drawing_observer.setEnabled(True)
         self.drawing_observer.setStyleSheet("background-color: white; color:black")
         
         self.drawing_date = QtGui.QDateEdit()
-        self.drawing_date.setMaximumWidth(self.column_maximum_width)
+        #self.drawing_date.setMaximumWidth(self.column_maximum_width)
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
@@ -1294,13 +1310,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_date.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_time = QtGui.QLineEdit("00:00",self)
-        self.drawing_time.setMaximumWidth(self.column_maximum_width)
+        #self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setEnabled(False)
         self.drawing_time.setStyleSheet("background-color: lightgray; color:black")
         
         self.drawing_quality = QtGui.QLineEdit(self)
-        self.drawing_quality.setMaximumWidth(self.column_maximum_width)
+        #self.drawing_quality.setMaximumWidth(self.column_maximum_width)
         #self.drawing_quality.setMinimum(1)
         #self.drawing_quality.setMaximum(5)
         #self.drawing_quality.setValue(3)
@@ -1308,7 +1324,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_quality.setStyleSheet("background-color: white; color:black")
         
         self.drawing_type = QtGui.QComboBox(self)
-        self.drawing_type.setMaximumWidth(self.column_maximum_width)
+        #self.drawing_type.setMaximumWidth(self.column_maximum_width)
         self.drawing_type.setEnabled(True)
         self.drawing_type.setStyleSheet("background-color: white; color:black")
         self.drawing_type.addItem('USET')
@@ -1316,41 +1332,41 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_type.addItem('USET41')
 
         self.wolf_number = QtGui.QLineEdit(self)
-        self.wolf_number.setMaximumWidth(self.column_maximum_width)
+        #self.wolf_number.setMaximumWidth(self.column_maximum_width)
         self.wolf_number.setStyleSheet("background-color: white; color:black")
         
         self.angleP = QtGui.QLineEdit(self)
-        self.angleP.setMaximumWidth(self.column_maximum_width)
+        #self.angleP.setMaximumWidth(self.column_maximum_width)
         self.angleP.setEnabled(False)
         self.angleP.setStyleSheet("background-color: lightgrey; color:black")
         
         self.angleB = QtGui.QLineEdit(self)
-        self.angleB.setMaximumWidth(self.column_maximum_width)
+        #self.angleB.setMaximumWidth(self.column_maximum_width)
         self.angleB.setEnabled(False)
         self.angleB.setStyleSheet("background-color: lightgrey; color:black")
         
         self.angleL = QtGui.QLineEdit(self)
-        self.angleL.setMaximumWidth(self.column_maximum_width)
+        #self.angleL.setMaximumWidth(self.column_maximum_width)
         self.angleL.setEnabled(False)
         self.angleL.setStyleSheet("background-color: lightgrey; color:black")
         
         self.rotation_number = QtGui.QLineEdit(self)
-        self.rotation_number.setMaximumWidth(self.column_maximum_width)
+        #self.rotation_number.setMaximumWidth(self.column_maximum_width)
         self.rotation_number.setEnabled(False)
         self.rotation_number.setStyleSheet("background-color: lightgrey; color:black")
 
         self.calibrated = QtGui.QLineEdit(self)
-        self.calibrated.setMaximumWidth(self.column_maximum_width)
+        #self.calibrated.setMaximumWidth(self.column_maximum_width)
         self.calibrated.setEnabled(False)
         self.calibrated.setStyleSheet("background-color: lightgrey; color:black")
         
         self.analyzed = QtGui.QLineEdit(self)
-        self.analyzed.setMaximumWidth(self.column_maximum_width)
+        #self.analyzed.setMaximumWidth(self.column_maximum_width)
         self.analyzed.setEnabled(False)
         self.analyzed.setStyleSheet("background-color: lightgrey; color:black")
         
         self.area_done = QtGui.QLineEdit(self)
-        self.area_done.setMaximumWidth(self.column_maximum_width)
+        #self.area_done.setMaximumWidth(self.column_maximum_width)
         self.area_done.setEnabled(False)
         self.area_done.setStyleSheet("background-color: lightgrey; color:black")
 
@@ -1379,7 +1395,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.wolf_number.textEdited.connect(self.update_wolf_number)
 
         widget_form = QtGui.QWidget()
-        widget_form.setMaximumWidth(self.column_maximum_width)
+        #widget_form.setMaximumWidth(self.column_maximum_width)
         widget_form.setLayout(self.form_layout1)
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
@@ -1678,9 +1694,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.but_next = QtGui.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
-        self.but_next.clicked.connect(lambda: self.update_counter(self.current_count+1))
+        self.but_next.clicked.connect(
+            lambda: self.update_counter(self.current_count+1))
         self.but_next.clicked.connect(self.set_drawing)
-        self.but_previous.clicked.connect(lambda: self.update_counter(self.current_count-1))
+        self.but_previous.clicked.connect(
+            lambda: self.update_counter(self.current_count-1))
         self.but_previous.clicked.connect(self.set_drawing)
 
         layout_but = QtGui.QHBoxLayout()
@@ -1718,7 +1736,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.goto_drawing_label1.setText("Jump to drawing")
         self.goto_drawing_linedit.setText("1")
-        self.goto_drawing_linedit.setStyleSheet("background-color: white; color: black")
+        self.goto_drawing_linedit.setStyleSheet(
+            "background-color: white; color: black")
         self.goto_drawing_label2.setText("out of 0")
         self.goto_drawing_button.setText("Go!")
 
@@ -1743,7 +1762,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.current_count = value
         
-        if self.current_count > 0 and self.current_count < self.len_drawing_lst - 1:
+        if (self.current_count > 0 and
+            self.current_count < self.len_drawing_lst - 1):
+
             self.but_next.setEnabled(True)
             self.but_previous.setEnabled(True)
             
@@ -1800,20 +1821,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Fill the linEdits with the information of the drawing.
         """
-        self.drawing_operator.setText(self.drawing_lst[self.current_count].operator)
-        self.drawing_observer.setText(self.drawing_lst[self.current_count].observer)
-        self.drawing_date.setDate(QtCore.QDate(self.drawing_lst[self.current_count].datetime.year,
-                                               self.drawing_lst[self.current_count].datetime.month,
-                                               self.drawing_lst[self.current_count].datetime.day))
-        self.drawing_time.setText(str(self.drawing_lst[ self.current_count].datetime.strftime('%H')) +
-                                  ":" +
-                                  str(self.drawing_lst[ self.current_count].datetime.strftime('%M')))
-        
-        self.drawing_quality.setText(str(self.drawing_lst[self.current_count].quality))
+        self.drawing_operator.setText(
+            self.drawing_lst[self.current_count].operator)
+        self.drawing_observer.setText(
+            self.drawing_lst[self.current_count].observer)
+        self.drawing_date.setDate(
+            QtCore.QDate(self.drawing_lst[self.current_count].datetime.year,
+                         self.drawing_lst[self.current_count].datetime.month,
+                         self.drawing_lst[self.current_count].datetime.day))
+        self.drawing_time.setText(
+            str(self.drawing_lst[ self.current_count].datetime.strftime('%H')) +
+            ":" +
+            str(self.drawing_lst[ self.current_count].datetime.strftime('%M')))
+    
+        self.drawing_quality.setText(
+            str(self.drawing_lst[self.current_count].quality))
         
         self.drawing_type.blockSignals(True)
-        index_drawing_type = self.drawing_type\
-                                 .findText(self.drawing_lst[self.current_count].drawing_type)
+        index_drawing_type = self.drawing_type.findText(
+            self.drawing_lst[self.current_count].drawing_type)
         self.drawing_type.setCurrentIndex(index_drawing_type)
         self.drawing_type.blockSignals(False)
         
@@ -1825,38 +1851,49 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             self.but_save.setStyleSheet("background-color: lightgray")
 
-        self.angleP.setText('{0:.2f}'.format(self.drawing_lst[self.current_count].angle_P))
-        self.angleB.setText('{0:.2f}'.format(self.drawing_lst[self.current_count].angle_B))
-        self.angleL.setText('{0:.2f}'.format(self.drawing_lst[self.current_count].angle_L))
-        self.rotation_number.setText(str(self.drawing_lst[self.current_count].carington_rotation))
+        self.angleP.setText(
+            '{0:.2f}'.format(self.drawing_lst[self.current_count].angle_P))
+        self.angleB.setText(
+            '{0:.2f}'.format(self.drawing_lst[self.current_count].angle_B))
+        self.angleL.setText(
+            '{0:.2f}'.format(self.drawing_lst[self.current_count].angle_L))
+        self.rotation_number.setText(
+            str(self.drawing_lst[self.current_count].carington_rotation))
 
-        self.calibrated.setText(str(self.drawing_lst[self.current_count].calibrated))
-        self.analyzed.setText(str(self.drawing_lst[self.current_count].analyzed))
+        self.calibrated.setText(
+            str(self.drawing_lst[self.current_count].calibrated))
+        self.analyzed.setText(
+            str(self.drawing_lst[self.current_count].analyzed))
 
         self.wolf_number.setText(str(self.drawing_lst[self.current_count].wolf))
         
     def set_path_to_qlabel(self):
         """
-        set the path to the image of the drawing based on the information contained 
+        set the path to the image of the drawing based 
+        on the information contained 
         in the configuration file (digisun.ini).
         Here is fixed the structure of the filename and 
         the structure of the directory.
         """  
-        filename = (self.prefix +
-                    str(self.drawing_lst[self.current_count].datetime.year) +
-                    str(self.drawing_lst[self.current_count].datetime.strftime('%m')) +
-                    str(self.drawing_lst[self.current_count].datetime.strftime('%d')) +
-                    str(self.drawing_lst[self.current_count].datetime.strftime('%H')) +
-                    str(self.drawing_lst[self.current_count].datetime.strftime('%M')) +
-                    "." +
-                    self.extension)
+        filename = (
+            self.prefix +
+            str(self.drawing_lst[self.current_count].datetime.year) +
+            str(self.drawing_lst[self.current_count].datetime.strftime('%m')) +
+            str(self.drawing_lst[self.current_count].datetime.strftime('%d')) +
+            str(self.drawing_lst[self.current_count].datetime.strftime('%H')) +
+            str(self.drawing_lst[self.current_count].datetime.strftime('%M')) +
+            "." +
+            self.extension)
 
-        directory = os.path.join(self.archdrawing_directory,
-                                 str(self.drawing_lst[self.current_count].datetime.year),
-                                 self.drawing_lst[self.current_count].datetime.strftime('%m'))
+        directory = os.path.join(
+            self.archdrawing_directory,
+            str(self.drawing_lst[self.current_count].datetime.year),
+            self.drawing_lst[self.current_count].datetime.strftime('%m'))
         
         #print('directory: ', directory)
-        self.drawing_page.label_right.file_path = os.path.join(directory, filename)
+        self.drawing_page\
+            .label_right\
+            .file_path = os.path.join(directory, filename)
 
             
     def set_drawing(self):
@@ -1871,7 +1908,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         #print("show drawing")
         self.set_path_to_qlabel()
-        self.drawing_page.label_right.current_drawing = self.drawing_lst[self.current_count]
+        self.drawing_page\
+            .label_right\
+            .current_drawing = self.drawing_lst[self.current_count]
         self.drawing_page.label_right.group_visu_index = 0
 
         self.drawing_page.label_right.calibration_mode.value = False

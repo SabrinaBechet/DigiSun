@@ -26,16 +26,23 @@ class mainWindow(QtGui.QMainWindow):
 
     def __init__(self, operator=None, mode_index=0):
         super(mainWindow, self).__init__()
-        """width = self.frameGeometry().width()
-        self.setMinimumWidth(width)
-        height = self.frameGeometry().height()
-        self.setMinimumHeight(height)
-        """
+        #width = self.frameGeometry().width()
+        #self.setMinimumWidth(width)
+        #height = self.frameGeometry().height()
+        #self.setMinimumHeight(height)
+        #print("frame geometry", width, height)
+        
         self.setWindowTitle("DigiSun 2018")
 
         self.center()
-        screenShape = QtGui.QDesktopWidget().screenGeometry()
-        self.resize(screenShape.width(), screenShape.height())
+        screen_available_geometry = QtGui.QDesktopWidget()\
+                                         .availableGeometry()
+        self.setMinimumWidth(screen_available_geometry.width())
+        self.setMinimumHeight(screen_available_geometry.height())
+        print("screen available geometry",
+              screen_available_geometry.width(),
+              screen_available_geometry.height())
+        #self.resize(screenShape.width()/5., screenShape.height()/5.)
 
         self.operator = operator
         print("check opearator ", self.operator)
@@ -61,18 +68,46 @@ class mainWindow(QtGui.QMainWindow):
         if mode_index==0:
             self.init_scanner()
         
-        self.daily_scan.but_analyse.clicked.connect(lambda : self.stack.setCurrentIndex(3)) 
-        self.daily_scan.but_analyse.clicked.connect(self.daily_switch_to_drawing_analyse)
+        self.daily_scan\
+            .but_analyse\
+            .clicked\
+            .connect(lambda : self.stack.setCurrentIndex(3)) 
+        self.daily_scan\
+            .but_analyse\
+            .clicked\
+            .connect(self.daily_switch_to_drawing_analyse)
 
-        self.analyse_page.month_list_page.but_select.clicked.connect(self.analyse_page.drawing_selection_per_month)
-        self.analyse_page.month_list_page.but_select.clicked.connect(lambda : self.stack.setCurrentIndex(3)) 
-        self.analyse_page.month_list_page.but_select.clicked.connect(self.bulk_switch_to_drawing_analyse)
+        self.analyse_page\
+            .month_list_page\
+            .but_select\
+            .clicked\
+            .connect(self.analyse_page.drawing_selection_per_month)
+        self.analyse_page\
+            .month_list_page\
+            .but_select\
+            .clicked\
+            .connect(lambda : self.stack.setCurrentIndex(3)) 
+        self.analyse_page\
+            .month_list_page\
+            .but_select\
+            .clicked\
+            .connect(self.bulk_switch_to_drawing_analyse)
         
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
-        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
+        screen = QtGui\
+                 .QApplication\
+                 .desktop()\
+                 .screenNumber(QtGui.QApplication\
+                               .desktop()\
+                               .cursor()\
+                               .pos())
+        centerPoint = QtGui\
+                      .QApplication\
+                      .desktop()\
+                      .screenGeometry(screen)\
+                      .center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft()) 
 
@@ -114,10 +149,18 @@ class mainWindow(QtGui.QMainWindow):
         action_goTo_scan = QtGui.QAction('bulk scan', self)
         action_exit = QtGui.QAction('exit', self)
 
-        action_goTo_login.triggered.connect(lambda: self.change_login())
-        action_goTo_scanalyse.triggered.connect(lambda: self.stack.setCurrentIndex(0))
-        action_goTo_analyse.triggered.connect(lambda: self.stack.setCurrentIndex(1))
-        action_goTo_scan.triggered.connect(lambda: self.stack.setCurrentIndex(2))
+        action_goTo_login\
+            .triggered\
+            .connect(lambda: self.change_login())
+        action_goTo_scanalyse\
+            .triggered\
+            .connect(lambda: self.stack.setCurrentIndex(0))
+        action_goTo_analyse\
+            .triggered\
+            .connect(lambda: self.stack.setCurrentIndex(1))
+        action_goTo_scan\
+            .triggered\
+            .connect(lambda: self.stack.setCurrentIndex(2))
         
         action_exit.triggered.connect(app.quit)
         
