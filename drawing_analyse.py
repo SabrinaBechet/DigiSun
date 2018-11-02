@@ -479,7 +479,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             else:
                 self.status_bar_mode_comment.setText("Click on a the group" +
                                                      " position to add it")
-                cursor_img = "/home/sabrinabct/Projets/DigiSun_2018_gitlab/cursor/Pixel_perfect/target_24.png"
+                cursor_img = ("/home/sabrinabct/Projets/DigiSun_2018_gitlab/" +
+                              "cursor/Pixel_perfect/target_24.png")
                 cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
                 #QtGui.QApplication.setOverrideCursor(cursor_add_group)
                 self.drawing_page.label_right.setCursor(cursor_add_group)
@@ -897,11 +898,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
             self.status_bar_mode_name.setText("Add dipole mode")
             self.status_bar_mode_comment.setStyleSheet("QLabel { color : red; }");
-            self.status_bar_mode_comment.setText("Warning this is not a dipolar group!!")
+            self.status_bar_mode_comment.setText(
+                "Warning this is not a dipolar group!!")
             self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
 
         elif (self.drawing_page.label_right.add_dipole_mode.value and 
-              self.drawing_lst[self.current_count].group_lst[element_number].zurich.upper()
+              self.drawing_lst[self.current_count].group_lst[element_number]\
+              .zurich.upper()
               in self.zurich_dipolar):
             
             self.status_bar_mode_name.setText("Add dipole mode")
@@ -911,7 +914,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.setCursor(QtCore.Qt.SizeFDiagCursor)
 
         else:
-            print("condition 3")
             self.status_bar_mode_name.setText("") 
             self.status_bar_mode_comment.setText("")
             
@@ -988,12 +990,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             grid_position = [1, 0]
             self.group_toolbox.set_latitude(
-                self.drawing_lst[self.current_count].group_lst[n].latitude * 180/math.pi,
+                self.drawing_lst[self.current_count]\
+                .group_lst[n].latitude * 180/math.pi,
                 grid_position)
             
             grid_position[0]+=1
             self.group_toolbox.set_longitude(
-                self.drawing_lst[self.current_count].group_lst[n].longitude * 180/math.pi,
+                self.drawing_lst[self.current_count]\
+                .group_lst[n].longitude * 180/math.pi,
                 grid_position)
 
             grid_position[0]+=1
@@ -1094,15 +1098,59 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[self.current_count]\
             .group_lst[group_index].zurich)
 
+        self.update_dipole_button(group_index)
+           
+    def check_information_complete(self, index, level):
+        """
+        return the list missing_information with
+        all the information not filled for the group
+        of a given index and a given level of details.
+        """
 
-        self.check_dipole_complete(
-            group_index,
-            self.drawing_lst[self.current_count].group_lst[group_index].zurich,
-            self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat,
-            self.drawing_lst[self.current_count].group_lst[group_index].largest_spot)
+        group = self.drawing_lst[self.current_count].group_lst[index]
+
+        group_complete = {"posX":False, "posY":False,
+                          "zurich":False, "McIntosh":False, "spots":False}
+        dipole_complete = {"dipole1_posX":False, "dipole1_posY":False,
+                           "dipole2_posX":False, "dipole2_posY":False,
+                           "largest_spot":False}
+        area_complete = {"area":False}
+
+        if level=='group' or level=='dipole' or level=='area':
+            info_complete = group_complete
+            if group.posX :
+                info_complete["posX"] = True
+            if group.posY :
+                info_complete["posY"] = True
+            if group.zurich!='X' :
+                info_complete["zurich"] = True
+            if group.McIntosh != 'Xxx' :
+                info_complete["McIntosh"] = True
+            if group.spots:
+                info_complete["spots"] = True
+
+        if level=='dipole' and group.zurich.upper() in self.zurich_dipolar:
+            info_complete.update(dipole_complete)
+            if group.dipole1_lat :
+                info_complete["dipole1_posX"] = True
+            if group.dipole1_long :
+                info_complete["dipole1_posY"] = True
+            if group.dipole2_lat :
+                info_complete["dipole2_posX"] = True
+            if group.dipole2_long :
+                info_complete["dipole2_posY"] = True
+            if group.largest_spot :
+                info_complete["largest_spot"] = True
+
+        missing_info = []    
+        for key, value in info_complete.items():
+            if value is False:
+                missing_info.append(key)
+
+        return missing_info
 
         
-    def check_dipole_complete(self, index, zurich, latitude, largest_spot):
+    def update_dipole_button(self, index):
         """
         The information concerning the dipole (zurich in zurich dipolar) 
         is complete when:
@@ -1111,9 +1159,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if one of the two condition is not met -> dipole button in red
         else -> dipole button in green
         """
-
-        if (zurich.upper() in self.zurich_dipolar and
-            (largest_spot is None or latitude is None)):
+        missing_info = self.check_information_complete(index,
+                                                       'dipole')
+        if missing_info:
             self.groupBoxLineList[index].dipole_button.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
         else:
@@ -1260,12 +1308,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.drawing_lst[self.current_count].group_lst[n].McIntosh,
                 self.drawing_lst[self.current_count].group_lst[n].largest_spot)
 
-        self.check_dipole_complete(
-            n,
-            new_zurich_type,
-            self.drawing_lst[self.current_count].group_lst[n].dipole1_lat,
-            self.drawing_lst[self.current_count].group_lst[n].largest_spot) 
-
+        self.update_dipole_button(n)
         self.group_toolbox.update_largest_spot_buttons(
             self.drawing_lst[self.current_count].group_lst[n].largest_spot,
             new_zurich_type)
