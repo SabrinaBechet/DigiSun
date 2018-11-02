@@ -25,7 +25,15 @@ class database():
         field_lst = [x[0] for x in result]
         return field_lst
 
+    def get_values(self, field, table_name):
+        self.cursor.execute('SELECT ' + field + ' FROM ' +
+                            table_name)
 
+        self.db.commit()
+        result = self.cursor.fetchall()
+        print(result)
+        return result
+    
     def get_drawing_information(self, table_name, drawing_type):
 
         #print("fill the drawing type information...")
@@ -165,7 +173,8 @@ class database():
                             'from groups inner join drawings on ' +
                             'groups.DateTime=drawings.DateTime where ' +
                             'drawings.DateTime > %s && drawings.DateTime< %s ' +
-                            '&& (groups.Surface is NULL or groups.Surface=0) && drawings.Analyzed=%s;',
+                            '&& (groups.Surface is NULL or groups.Surface=0) ' +
+                            '&& drawings.Analyzed=%s;',
                             (str(value_min), str(value_max), str(1)))
         self.db.commit()
         result = self.cursor.fetchall()

@@ -454,7 +454,7 @@ class Drawing(QtCore.QObject):
         self._angle_scan = 0
         self._path = None
         self._operator = None
-        self._last_update_time = datetime.now()
+        self._last_update_time = None
        
         self._calibrated_center = coordinates.Cartesian(0,0)
         self._calibrated_north = coordinates.Cartesian(0,0)
@@ -476,24 +476,25 @@ class Drawing(QtCore.QObject):
 
         self.changed = False
 
-
     def radius(self, pt1, pt2):
-
         return math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
         
     def calibrate(self, point1_x, point1_y, point2_x, point2_y):
         if self.pt1_name == 'Center'  and self.pt2_name == 'North':
             self.calibrated_center = coordinates.Cartesian(point1_x, point1_y)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
-            self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)
+            self.calibrated_radius = self.calibrated_center.distance(
+                self.calibrated_north)
 
         elif self.pt1_name == 'South'  and self.pt2_name == 'North':
             self.calibrated_center = coordinates.Cartesian((point1_x + point2_x)/2,
                                                            (point1_y + point2_y)/2)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
-            self.calibrated_radius = self.calibrated_center.distance(self.calibrated_north)   
+            self.calibrated_radius = self.calibrated_center.distance(
+                self.calibrated_north)   
             
-        self.calibrated_angle_scan = self.calibrated_center.angle_from_y_axis(self.calibrated_north)
+        self.calibrated_angle_scan = self.calibrated_center.angle_from_y_axis(
+            self.calibrated_north)
         self.calibrated = 1
        
             
@@ -677,7 +678,8 @@ class Drawing(QtCore.QObject):
 
     @calibrated_center.setter
     def calibrated_center(self, value):
-        print("here we are changing the value of calibrated center to ", value.x, value.y)
+        print("here we are changing the value of calibrated center to ",
+              value.x, value.y)
         self._calibrated_center = coordinates.Cartesian(value.x, value.y)
         self.changed = True
         self.value_changed.emit()
@@ -713,7 +715,8 @@ class Drawing(QtCore.QObject):
 
     @calibrated_north.setter
     def calibrated_north(self, value):
-        print("here we are changing the value of calibrated north to ", value.x, value.y)
+        print("here we are changing the value of calibrated north to ",
+              value.x, value.y)
         self._calibrated_north = coordinates.Cartesian(value.x, value.y)
         self.changed = True
         self.value_changed.emit()
@@ -844,7 +847,17 @@ class Drawing(QtCore.QObject):
         #self.changed = True
         #self.value_changed.emit() 
 
-    
+    @property
+    def last_update_time(self):
+        ##rint("here we are reading the value of calibrated north")
+        return self._last_update_time
+
+    @last_update_time.setter
+    def last_update_time(self, value):
+        print("here we are changing the value of last update time to ", value)
+        self._last_update_time = value
+        self.changed = True
+        self.value_changed.emit()
              
     def fill_from_database(self, datetime):
         """

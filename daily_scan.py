@@ -86,19 +86,21 @@ class DailyScan(ScanPage):
         #self.form_layout.addWidget(self.but_scan)
         #self.form_layout.addWidget(self.but_analyse)
         
-        self.drawing_operator.textChanged.connect(lambda:
-                                                  self.check_valid_from_db('observers',
-                                                                           'namecode',
-                                                                           self.drawing_operator.text(),
-                                                                           self.drawing_operator,
-                                                                           self.operator_right_name))
+        self.drawing_operator.textChanged.connect(
+            lambda:
+            self.check_valid_from_db('observers',
+                                     'name',
+                                     self.drawing_operator.text(),
+                                     self.drawing_operator,
+                                     self.operator_right_name))
         
-        self.drawing_observer.textChanged.connect(lambda:
-                                                  self.check_valid_from_db('observers',
-                                                                           'namecode',
-                                                                           self.drawing_observer.text(),
-                                                                           self.drawing_observer,
-                                                                           self.observer_right_name))
+        self.drawing_observer.textChanged.connect(
+            lambda:
+            self.check_valid_from_db('observers',
+                                     'name',
+                                     self.drawing_observer.text(),
+                                     self.drawing_observer,
+                                     self.observer_right_name))
         self.drawing_time.textChanged.connect(self.check_valid_datetime)
 
 

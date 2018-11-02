@@ -46,7 +46,7 @@ class DrawingViewPage(QtGui.QWidget):
             .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scroll_widget_left_up .setWidgetResizable(True)
         self.widget_left_up = QtGui.QWidget()
-        self.widget_left_up.setMinimumWidth(left_column_maximum_width)
+        #self.widget_left_up.setMinimumWidth(left_column_maximum_width)
         #self.widget_left_up.setMinimumHeight(self.width()/2.)#500)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.scroll_widget_left_up.setWidget(self.widget_left_up)
@@ -144,12 +144,6 @@ class DrawingViewPage(QtGui.QWidget):
         splitter_main.addWidget(self.widget_middle_up)
         splitter_main.addWidget(self.widget_right)
     
-   
-    """def widget_left_down_add_box(self):
-        new_layout = QtGui.QVBoxLayout()
-        label = QtGui.QLabel("Ninja")
-        self.widget_left_down_layout.addWidget(label)"""
-    
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
     Page that shows the drawing and where the analyse is done.
@@ -163,14 +157,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page = DrawingViewPage()
         self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
         self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
-        """print("scroll bar properties:")
-        print("width: ",  self.vertical_scroll_bar.width())
-        print("height: ",  self.vertical_scroll_bar.height())
-        """
+        
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
-        self.column_maximum_width = 400
+        #self.column_maximum_width = 400
         self.add_drawing_information()
         self.add_current_session()
         self.add_surface()
@@ -1342,158 +1333,176 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.set_img()
         
     def add_drawing_information(self):
-
+        """
+        Add the linedit related to the drawing information
+        """
         title_left_up = QtGui.QLabel("Drawing information")
         title_left_up.setAlignment(QtCore.Qt.AlignCenter)
         title_left_up.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_up_layout.addWidget(title_left_up)
-        self.form_layout1 = QtGui.QFormLayout()
-        self.form_layout1.setSpacing(10)
+        
+        form_layout = QtGui.QFormLayout()
+        form_layout.setSpacing(10)
         
         self.drawing_operator = QtGui.QLineEdit(self)
-        self.drawing_operator.setMaximumWidth(self.column_maximum_width)
         self.drawing_operator.setEnabled(True)
         self.drawing_operator.setStyleSheet(
             "background-color: lightgray; color:black")
+
+        self.drawing_last_update = QtGui.QLineEdit(self)
+        self.drawing_last_update.setEnabled(True)
+        self.drawing_last_update.setStyleSheet(
+            "background-color: lightgray; color:black")
         
         self.drawing_observer = QtGui.QLineEdit(self)
-        self.drawing_observer.setMaximumWidth(self.column_maximum_width)
         self.drawing_observer.setEnabled(True)
-        self.drawing_observer.setStyleSheet("background-color: white; color:black")
+        self.drawing_observer.setStyleSheet(
+            "background-color: white; color:black")
         
         self.drawing_date = QtGui.QDateEdit()
-        self.drawing_date.setMaximumWidth(self.column_maximum_width)
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
         self.drawing_date.setEnabled(False)
-        self.drawing_date.setStyleSheet("background-color: lightgray; color:black")
+        self.drawing_date.setStyleSheet(
+            "background-color: lightgray; color:black")
         
         self.drawing_time = QtGui.QLineEdit("00:00",self)
-        self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setEnabled(False)
-        self.drawing_time.setStyleSheet("background-color: lightgray; color:black")
+        self.drawing_time.setStyleSheet(
+            "background-color: lightgray; color:black")
         
-        self.drawing_quality = QtGui.QLineEdit(self)
-        self.drawing_quality.setMaximumWidth(self.column_maximum_width)
-        #self.drawing_quality.setMinimum(1)
-        #self.drawing_quality.setMaximum(5)
-        #self.drawing_quality.setValue(3)
+        self.drawing_quality = QtGui.QComboBox(self) 
+        self.set_combo_box_drawing('name', 'quality', self.drawing_quality)
         self.drawing_quality.setEnabled(True)
-        self.drawing_quality.setStyleSheet("background-color: white; color:black")
+        self.drawing_quality.setStyleSheet(
+            "background-color: white; color:black")
         
         self.drawing_type = QtGui.QComboBox(self)
-        self.drawing_type.setMaximumWidth(self.column_maximum_width)
+        self.set_combo_box_drawing('name', 'drawing_type', self.drawing_type)
         self.drawing_type.setEnabled(True)
-        self.drawing_type.setStyleSheet("background-color: white; color:black")
-        self.drawing_type.addItem('USET')
-        self.drawing_type.addItem('USET77')
-        self.drawing_type.addItem('USET41')
-
+        self.drawing_type.setStyleSheet(
+            "background-color: white; color:black")
+        
         self.wolf_number = QtGui.QLineEdit(self)
-        self.wolf_number.setMaximumWidth(self.column_maximum_width)
-        self.wolf_number.setStyleSheet("background-color: white; color:black")
+        self.wolf_number.setEnabled(False)
+        self.wolf_number.setStyleSheet(
+            "background-color: lightgrey; color:black")
         
         self.angleP = QtGui.QLineEdit(self)
-        self.angleP.setMaximumWidth(self.column_maximum_width)
         self.angleP.setEnabled(False)
-        self.angleP.setStyleSheet("background-color: lightgrey; color:black")
+        self.angleP.setStyleSheet(
+            "background-color: lightgrey; color:black")
         
         self.angleB = QtGui.QLineEdit(self)
-        self.angleB.setMaximumWidth(self.column_maximum_width)
         self.angleB.setEnabled(False)
-        self.angleB.setStyleSheet("background-color: lightgrey; color:black")
+        self.angleB.setStyleSheet(
+            "background-color: lightgrey; color:black")
         
         self.angleL = QtGui.QLineEdit(self)
-        self.angleL.setMaximumWidth(self.column_maximum_width)
         self.angleL.setEnabled(False)
-        self.angleL.setStyleSheet("background-color: lightgrey; color:black")
+        self.angleL.setStyleSheet(
+            "background-color: lightgrey; color:black")
         
         self.rotation_number = QtGui.QLineEdit(self)
-        self.rotation_number.setMaximumWidth(self.column_maximum_width)
         self.rotation_number.setEnabled(False)
-        self.rotation_number.setStyleSheet("background-color: lightgrey; color:black")
+        self.rotation_number.setStyleSheet(
+            "background-color: lightgrey; color:black")
 
         self.calibrated = QtGui.QLineEdit(self)
-        self.calibrated.setMaximumWidth(self.column_maximum_width)
         self.calibrated.setEnabled(False)
-        self.calibrated.setStyleSheet("background-color: lightgrey; color:black")
+        self.calibrated.setStyleSheet(
+            "background-color: lightgrey; color:black")
         
         self.analyzed = QtGui.QLineEdit(self)
-        self.analyzed.setMaximumWidth(self.column_maximum_width)
         self.analyzed.setEnabled(False)
-        self.analyzed.setStyleSheet("background-color: lightgrey; color:black")
+        self.analyzed.setStyleSheet(
+            "background-color: lightgrey; color:black")
         
         self.area_done = QtGui.QLineEdit(self)
-        self.area_done.setMaximumWidth(self.column_maximum_width)
         self.area_done.setEnabled(False)
-        self.area_done.setStyleSheet("background-color: lightgrey; color:black")
+        self.area_done.setStyleSheet(
+            "background-color: lightgrey; color:black")
 
-        self.form_layout1.addRow('Date:', self.drawing_date)
-        self.form_layout1.addRow('Time:', self.drawing_time)
-        self.form_layout1.addRow('P angle:', self.angleP)
-        self.form_layout1.addRow('B angle:', self.angleB)
-        self.form_layout1.addRow('L angle:', self.angleL)
-        self.form_layout1.addRow('Carington rotation :', self.rotation_number)
+        form_layout.addRow('Date:', self.drawing_date)
+        form_layout.addRow('Time:', self.drawing_time)
+        form_layout.addRow('Observer:', self.drawing_observer)
+        form_layout.addRow('Wolf number:', self.wolf_number)
+        form_layout.addRow('Quality:', self.drawing_quality)
+        form_layout.addRow('Type:', self.drawing_type)
+        form_layout.addRow('P angle:', self.angleP)
+        form_layout.addRow('B angle:', self.angleB)
+        form_layout.addRow('L angle:', self.angleL)
+        form_layout.addRow('Carington rotation :', self.rotation_number)
         
-        self.form_layout1.addRow('Observer:', self.drawing_observer)
-        self.form_layout1.addRow('Last Operator:', self.drawing_operator)
-        self.form_layout1.addRow('Quality:', self.drawing_quality)
-        self.form_layout1.addRow('Type:', self.drawing_type)
+        form_layout.addRow('Last Operator:', self.drawing_operator)
+        form_layout.addRow('Last Update:', self.drawing_last_update)
+        form_layout.addRow('Calibrated:', self.calibrated)
+        form_layout.addRow('Analysed:', self.analyzed)
+        form_layout.addRow('Area done:', self.area_done)
         
-        self.form_layout1.addRow('Wolf number:', self.wolf_number)
+        self.drawing_observer.textEdited.connect(
+            lambda: self.update_linedit_drawing('observers',
+                                                self.drawing_observer))
+
+        self.drawing_quality.currentIndexChanged.connect(
+            lambda: self.update_combo_box_drawing('quality',
+                                                  self.drawing_quality))
         
-        self.form_layout1.addRow('Calibrated:', self.calibrated)
-        self.form_layout1.addRow('Analysed:', self.analyzed)
-        self.form_layout1.addRow('Area done:', self.area_done)
-        
-        
-        self.drawing_observer.textEdited.connect(self.update_observer)
-        self.drawing_quality.textEdited.connect(self.update_quality)
-        self.drawing_type.currentIndexChanged.connect(self.update_type)
-        self.wolf_number.textEdited.connect(self.update_wolf_number)
+        self.drawing_type.currentIndexChanged.connect(
+            lambda: self.update_combo_box_drawing('type',
+                                                  self.drawing_type))
 
         widget_form = QtGui.QWidget()
-        widget_form.setMaximumWidth(self.column_maximum_width)
-        widget_form.setLayout(self.form_layout1)
+        widget_form.setLayout(form_layout)
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
-    def update_wolf_number(self):
-        #check that the value from the linedit is a number between 1 and xxx
-        self.drawing_lst[self.current_count].wolf = self.wolf_number.text()
-
-    def update_observer(self):
-        # check that the value is in the database
+    def set_combo_box_drawing(self, field, table_name, linedit):
+        """
+        Define automatically the combo box list with all the element 
+        named in the database
+        """
         uset_db = database.database()
-        if uset_db.exist_in_db('observers', 'namecode', self.drawing_observer.text()):
-            self.drawing_lst[self.current_count].observer = self.drawing_observer.text()
-            self.drawing_observer.setStyleSheet("background-color: white")
-        else:
-            self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
-
-    def update_quality(self):
-        # check that the value is in the database
-        # to do: create the table in the database!!
+        values = uset_db.get_values(field, table_name)
+        for el in values:
+            linedit.addItem(el[0])
+        
+    def update_linedit_drawing(self, field, linedit):
+        """
+        Update the drawing object with the value given
+        in the line edit, check if this value exists in the 
+        database.
+        """
         uset_db = database.database()
-        
-        self.drawing_lst[self.current_count]\
-            .quality = self.drawing_quality.text()
-        #    self.drawing_observer.setStyleSheet("background-color: rgb(125, 232, 164)")
-        #else:
-        #    self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
-        
-    def update_type(self):
-        # check that the value is in the database
-        # to do: create the table in the database!!
-        uset_db = database.database()
-        
-        self.drawing_lst[self.current_count]\
-            .drawing_type = self.drawing_type.currentText()
-        #    self.drawing_observer.setStyleSheet("background-color: rgb(125, 232, 164)")
-        #else:
-        #    self.drawing_observer.setStyleSheet("background-color: rgb(232, 103, 101)")
+        if uset_db.exist_in_db(field,
+                               'name',
+                               linedit.text()):
+            if field == 'observers':
+                self.drawing_lst[self.current_count]\
+                    .observer = str(linedit.text())
                 
+            linedit.setStyleSheet("background-color: white")
+        else:
+            self.drawing_observer.setStyleSheet(
+                "background-color: rgb(232, 103, 101)")
+        
+    def update_combo_box_drawing(self, parameter_name, combo_box):
+        """
+        Update the drawing object with the value given
+        in the combo box, check if this value exists in the 
+        database.
+        """
+        if parameter_name == 'quality':
+            self.drawing_lst[self.current_count]\
+                .quality = str(combo_box.currentText())
+        elif parameter_name == 'type':
+            self.drawing_lst[self.current_count]\
+                .drawing_type = str(combo_box.currentText())
+        else:
+            print("your parameter name: {} does not" +
+                  " exist!".format(parameter_name))
+            
     def add_surface(self):
         
         qlabel_title = QtGui.QLabel("Surface calculation")
@@ -1741,18 +1750,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     def add_current_session(self):
         
-        form_layout2 = QtGui.QFormLayout()
-        form_layout2.setSpacing(15)
+        form_layout = QtGui.QFormLayout()
+        form_layout.setSpacing(15)
 
         title_left_middle = QtGui.QLabel("Current session")
         title_left_middle.setAlignment(QtCore.Qt.AlignCenter)
         title_left_middle.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_middle_layout.addWidget(title_left_middle)
         
-        self.current_operator = QtGui.QLineEdit(str(self.operator).upper(), self)
-        self.current_operator.setEnabled(False)
-        self.current_operator.setStyleSheet("background-color: white; color: black")
-        self.current_operator.setMaximumWidth(self.column_maximum_width)
+        current_operator_linedit = QtGui.QLineEdit(
+            str(self.operator).upper(), self)
+        current_operator_linedit.setEnabled(False)
+        current_operator_linedit.setStyleSheet(
+            "background-color: lightgray; color: black")
         
         self.but_previous = QtGui.QPushButton('previous', self)
         self.but_previous.setShortcut(QtGui.QKeySequence("Left"))
@@ -1773,27 +1783,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         layout_goto = self.jump_to_drawing_linedit()
         
         self.but_save = QtGui.QPushButton('save', self)
-        self.but_save.setMaximumWidth(self.column_maximum_width + 75)
-        #self.but_save.setStyleSheet("background-color: ")
-        #self.but_save.clicked.connect(lambda: self.set_drawing())
+        self.but_save.clicked.connect(self.save_drawing)
 
-        form_layout2.addRow("Current operator: ", self.current_operator)
-        form_layout2.setLayout(1,QtGui.QFormLayout.SpanningRole,layout_goto)
-        form_layout2.setLayout(2,
-                               QtGui.QFormLayout.SpanningRole,
-                               layout_but)
-        
-        form_layout2.setWidget(3,
-                               QtGui.QFormLayout.SpanningRole,
-                               self.but_save)
+        form_layout.addRow("Current operator: ", current_operator_linedit)
+        form_layout.setLayout(1, QtGui.QFormLayout.SpanningRole, layout_goto)
+        form_layout.setLayout(2, QtGui.QFormLayout.SpanningRole, layout_but)
+        form_layout.setWidget(3, QtGui.QFormLayout.SpanningRole, self.but_save)
 
-        
-        self.drawing_page.widget_left_middle_layout.addLayout(form_layout2)
+        self.drawing_page.widget_left_middle_layout.addLayout(form_layout)
         
     def jump_to_drawing_linedit(self):
-        """
-        TO DO: It should update the drawing and the group box which is not case now!!!
-        """
         self.goto_drawing_linedit = QtGui.QLineEdit()
         self.goto_drawing_label1 = QtGui.QLabel()
         self.goto_drawing_label2 = QtGui.QLabel()
@@ -1809,7 +1808,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.goto_drawing_button.clicked.connect(
             lambda: self.update_counter(int(self.goto_drawing_linedit.text())-1))
         self.goto_drawing_button.clicked.connect(
-            lambda: self.drawing_page.label_right.set_img())
+            lambda: self.set_drawing())
 
         layout_goto = QtGui.QHBoxLayout()
         layout_goto.addWidget(self.goto_drawing_label1)
@@ -1817,7 +1816,23 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         layout_goto.addWidget(self.goto_drawing_label2)
         layout_goto.addWidget(self.goto_drawing_button)     
         return layout_goto
-       
+
+    def save_drawing(self):
+        print("**save the drawing information in the database**")
+
+        self.drawing_lst[self.current_count].operator = str(self.operator).upper()
+        self.drawing_lst[self.current_count].last_update_time = datetime.now()
+
+        
+        if (self.drawing_lst[self.current_count].calibrated==1 and
+            self.drawing_lst[self.current_count].group_count==0):
+            # pop up that ask if it is normal?
+            pass
+
+        
+        
+        
+    
     def update_counter(self, value):
         
         if value >= self.len_drawing_lst:
@@ -1888,6 +1903,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         self.drawing_operator.setText(
             self.drawing_lst[self.current_count].operator)
+        self.drawing_last_update.setText(
+            self.drawing_lst[self.current_count].last_update_time)
         self.drawing_observer.setText(
             self.drawing_lst[self.current_count].observer)
         self.drawing_date.setDate(
@@ -1899,8 +1916,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             ":" +
             str(self.drawing_lst[ self.current_count].datetime.strftime('%M')))
     
-        self.drawing_quality.setText(
-            str(self.drawing_lst[self.current_count].quality))
+        #self.drawing_quality.setText(
+        #    str(self.drawing_lst[self.current_count].quality))
+
+        self.drawing_quality.blockSignals(True)
+        index_drawing_quality = self.drawing_quality.findText(
+            self.drawing_lst[self.current_count].quality)
+        self.drawing_quality.setCurrentIndex(index_drawing_quality)
+        self.drawing_quality.blockSignals(False)
         
         self.drawing_type.blockSignals(True)
         index_drawing_type = self.drawing_type.findText(
