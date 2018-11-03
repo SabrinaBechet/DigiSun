@@ -622,6 +622,7 @@ class QLabelDrawing(QtGui.QLabel):
         north = coordinates.Cartesian(self.current_drawing.calibrated_north.x,
                                       self.current_drawing.calibrated_north.y)
 
+        # angle given in radian
         angle_calibration = center.angle_from_y_axis(north)
      
         for spherical_coord in spherical_coord_lst:
@@ -631,7 +632,7 @@ class QLabelDrawing(QtGui.QLabel):
             cart_coord.rotate_around_y(self.current_drawing.angle_L * math.pi/180.)
             cart_coord.rotate_around_x(-self.current_drawing.angle_B * math.pi/180.)
             cart_coord.rotate_around_z(
-                (self.current_drawing.angle_P - angle_calibration) * math.pi/180.)
+                self.current_drawing.angle_P  * math.pi/180. - angle_calibration)
             
             if cart_coord.z>0 :
                 x_array = np.append(x_array, [cart_coord.x])
