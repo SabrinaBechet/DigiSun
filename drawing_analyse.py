@@ -47,7 +47,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.scroll_widget_left_up .setWidgetResizable(True)
         self.widget_left_up = QtGui.QWidget()
         #self.widget_left_up.setMinimumWidth(left_column_maximum_width)
-        #self.widget_left_up.setMinimumHeight(self.width()/2.)#500)
+        #self.widget_left_up.setMaximumHeight(self.width()/2.)#500)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.scroll_widget_left_up.setWidget(self.widget_left_up)
         
@@ -70,7 +70,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down.setMinimumHeight(self.height()/4.)#200)
+        self.widget_left_down.setMinimumHeight(self.height()/2.)#200)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
@@ -577,14 +577,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         print("update surface qlabel number:", n)
         if self.drawing_lst[self.current_count].calibrated:
-            longitude = self.drawing_lst[self.current_count]\
+            posX = self.drawing_lst[self.current_count]\
                             .group_lst[n]\
-                            .longitude
-            latitude = self.drawing_lst[self.current_count]\
+                            .posX
+            posY = self.drawing_lst[self.current_count]\
                            .group_lst[n]\
-                           .latitude
+                           .posY
+
+            coords = posX, posY, 0
             #coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
-            coords = 0,0,0
+            #coords = 0,0,0
             coords = list(coords)
             
             # don't forget to document this:
@@ -612,7 +614,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.small_grid_overlay.value = False
             self.drawing_page.label_right.group_visu.value = False
             self.drawing_page.label_right.dipole_visu.value = False
-            #self.drawing_page.label_right.set_img()
+            self.drawing_page.label_right.set_img()
             
             pixmap_group_surface = self.drawing_page\
                                        .label_right\
@@ -640,7 +642,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.group_visu.value = group_tmp
             self.drawing_page.label_right.dipole_visu.value = dipole_tmp
             
-            #self.drawing_page.label_right.set_img()
+            self.drawing_page.label_right.set_img()
 
 
     def scroll_position(self):

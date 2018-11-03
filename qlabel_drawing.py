@@ -313,7 +313,10 @@ class QLabelDrawing(QtGui.QLabel):
             print("current group count", self.current_drawing.group_count)
             
             for i in range(self.current_drawing.group_count):
-                radius = self.img_mean_dimension/2000.
+                #radius = self.img_mean_dimension/2000.
+                small_radius = self.drawing_height / 2000.
+                big_radius = self.drawing_height / 50.
+                print("radius", small_radius, big_radius)
                 painter.setPen(pen_border)               
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
@@ -338,8 +341,8 @@ class QLabelDrawing(QtGui.QLabel):
                 print("posX:", x, posX)
                 print("posY:", y, posY)
                 """
-                painter.drawEllipse(QtCore.QPointF(posX, posY), radius, radius)
-                painter.drawEllipse(QtCore.QPointF(posX, posY), 40, 40)
+                painter.drawEllipse(QtCore.QPointF(posX, posY), small_radius, small_radius)
+                painter.drawEllipse(QtCore.QPointF(posX, posY), big_radius, big_radius)
                 
         if self.dipole_visu.value and self.current_drawing.calibrated :
             # note: a column with the cartesian coord of group should be recorded in the db!
