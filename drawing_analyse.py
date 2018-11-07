@@ -575,7 +575,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Update the QLabelGroupSurface object which represent an image of the drawing 
         to calculate the surface.
-        This method uses heliographic coordinates so it needs the calibration to be done!
+        This method uses heliographic coordinates so it needs 
+        the calibration to be done!
         More: it need groups to be added... as it is the group surface!
         """
         print("update surface qlabel number:", n)
@@ -624,7 +625,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             img_pix = self.drawing_page.label_right.get_img_array()
 
-            bigger_matrix = np.ones((img_pix.shape[0] + 200, img_pix.shape[1] + 200), dtype=np.uint8) * 255
+            bigger_matrix = np.ones((img_pix.shape[0] + 200,
+                                     img_pix.shape[1] + 200), dtype=np.uint8) * 255
             bigger_matrix[100 : 100 + img_pix.shape[0],
                           100 : 100 + img_pix.shape[1]] = img_pix
             
@@ -1534,7 +1536,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         qlabel_title.setContentsMargins(0, 5, 0, 5)
 
         self.group_surface_widget = qlabel_group_surface.GroupSurfaceWidget()
-        self.drawing_page.widget_middle_up_layout.addWidget(self.group_surface_widget)
+        self.drawing_page.widget_middle_up_layout.addWidget(
+            self.group_surface_widget)
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
         
         """group_surface_widget.set_threshold_slider()

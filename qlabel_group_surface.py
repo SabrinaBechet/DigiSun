@@ -12,6 +12,8 @@ import time
 import sys
 import analyse_mode_bool
 import matplotlib.path as mpltPath
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
 
 sys.setrecursionlimit(100000) # check where it is exactly used...
 
@@ -43,7 +45,8 @@ class GroupSurfaceWidget(QtGui.QWidget):
          cut_polygon_but = QtGui.QToolButton()
          cut_polygon_but.setText("cut")
          cut_polygon_but.setMinimumWidth(self.width()/4.)
-         cut_polygon_but.clicked.connect(lambda : self.cut_polygon(threshold_slider.value()))
+         cut_polygon_but.clicked.connect(
+             lambda : self.cut_polygon(threshold_slider.value()))
 
          reset_but = QtGui.QToolButton()
          reset_but.setText("reset")
@@ -78,9 +81,12 @@ class GroupSurfaceWidget(QtGui.QWidget):
          self.projected_surface_linedit = QtGui.QLineEdit()
          self.deprojected_surface_linedit = QtGui.QLineEdit()
          
-         form_layout.addRow("Pixel Number:", self.pixel_number_linedit)
-         form_layout.addRow("Projected surface (msd):", self.projected_surface_linedit)
-         form_layout.addRow("Deprojected surface (msh):", self.deprojected_surface_linedit)
+         form_layout.addRow("Pixel Number:",
+                            self.pixel_number_linedit)
+         form_layout.addRow("Projected surface (msd):",
+                            self.projected_surface_linedit)
+         form_layout.addRow("Deprojected surface (msh):",
+                            self.deprojected_surface_linedit)
 
          
          self.layout.addWidget(qlabel_threshold)
@@ -110,6 +116,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
     def set_array(self, np_array, value=225):
         self.selection_array = np_array
         self.set_img(self.threshold(value))
+        self.qlabel_group_surface.pointsList = []
 
     def threshold(self, value=225):
         thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
@@ -179,6 +186,7 @@ class QLabelGroupSurface(QtGui.QLabel):
     def set_original_img(self, np_array):
         print("set the original image")
         original_pixmap = self.np2qpixmap(np_array).copy()
+        self.pointsList = []
         #self.original_pixmap = pixmap
         #self.setPixmap(original_pixmap)
         """bis = original_pixmap.scaled(int(self.width_scale),
@@ -212,7 +220,10 @@ class QLabelGroupSurface(QtGui.QLabel):
         print(type(np_img), np_img.shape)
         #frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
         frame = cv2.cvtColor(np_img,cv2.COLOR_GRAY2RGB)
-        img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
+        img = QtGui.QImage(frame,
+                           frame.shape[1],
+                           frame.shape[0],
+                           QtGui.QImage.Format_RGB888)
         return QtGui.QPixmap.fromImage(img)
 
         #frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
@@ -295,7 +306,7 @@ class QLabelGroupSurface(QtGui.QLabel):
 
     def cut_polygon(self, array):
         
-        
+        self.polygon.value = False
         print("polygon")
         print(self.pointsList)
 
@@ -304,6 +315,7 @@ class QLabelGroupSurface(QtGui.QLabel):
         
         path = mpltPath.Path(polygon_points)
 
+        polygon = Polygon(polygon_points)
         print(array.shape)
         count=0
         
@@ -312,7 +324,8 @@ class QLabelGroupSurface(QtGui.QLabel):
             if value>0 :
                 print(index, value)
                 count+=1
-                if  not path.contains_point(index):
+                if polygon.contains(Point(index)) == False:
+                    #(inex)path.contains_point(index)==False:
                     print("change the array")
                     array[index] = 0
 
@@ -389,7 +402,8 @@ class QLabelGroupSurface(QtGui.QLabel):
     def iter_fill(self,x_start,y_start,array):
         stack = [(x_start,y_start)]
         #C1, C2 and C3 are the colors in RGB that the pixel need to be in
-        #If the pen is white, then the pixels are turned black (0,0,0), otherwise they are turned red (0,0,255)
+        #If the pen is white, then the pixels are turned black (0,0,0),
+        #otherwise they are turned red (0,0,255)
         if self.pen.color() == QtCore.Qt.black:
             c1 = 0
             c2 = 0
