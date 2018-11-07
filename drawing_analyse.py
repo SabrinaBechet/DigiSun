@@ -8,6 +8,8 @@ from datetime import date, time, datetime, timedelta
 import math
 import configparser
 import time
+import numpy as np
+import cv2
 
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
@@ -60,14 +62,15 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_middle.setMaximumHeight(self.height()/3.)#200)
+        self.widget_left_middle.setMaximumHeight(self.height()/2.)#200)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_left_middle_layout.setSpacing(0)
         self.widget_left_middle_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_left_middle.setLayout(self.widget_left_middle_layout)
-
+        self.widget_left_middle_layout.setMargin(10)
+        
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
         self.widget_left_down.setMinimumHeight(self.height()/2.)#200)
@@ -95,14 +98,14 @@ class DrawingViewPage(QtGui.QWidget):
         # trick to keep the surface panel closed by default
         self.widget_middle_up.setMaximumWidth(10)
         
-        self.widget_middle_up.setMinimumHeight(200)
+        #self.widget_middle_up.setMinimumHeight(200)
         self.widget_middle_up.setStyleSheet("background-color:lightgray;")
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
         self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_middle_up_layout.setSpacing(0)
+        self.widget_middle_up_layout.setSpacing(10)
         self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
-        self.label_middle_up = qlabel_group_surface.QLabelGroupSurface()
+        #self.label_middle_up = qlabel_group_surface.QLabelGroupSurface()
         
         self.widget_right = QtGui.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
@@ -164,7 +167,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         #self.column_maximum_width = 400
         self.add_drawing_information()
         self.add_current_session()
-        self.add_surface()
+        self.add_surface_widget()
         self.drawing_lst = []
         self.set_toolbar()
         self.set_status_bar()
@@ -561,7 +564,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if self.drawing_page.label_right.surface_mode.value:
             self.drawing_page.widget_middle_up.setMaximumWidth(600)
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
-        
             self.update_surface_qlabel(n)
 
         elif self.drawing_page.label_right.surface_mode.value == False:
@@ -574,9 +576,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Update the QLabelGroupSurface object which represent an image of the drawing 
         to calculate the surface.
         This method uses heliographic coordinates so it needs the calibration to be done!
+        More: it need groups to be added... as it is the group surface!
         """
         print("update surface qlabel number:", n)
-        if self.drawing_lst[self.current_count].calibrated:
+        if (self.drawing_lst[self.current_count].calibrated and
+            self.drawing_page.label_right.surface_mode):
+            
             posX = self.drawing_lst[self.current_count]\
                             .group_lst[n]\
                             .posX
@@ -584,19 +589,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                            .group_lst[n]\
                            .posY
 
-            coords = posX, posY, 0
+            #coords = posX, posY, 0
             #coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
             #coords = 0,0,0
-            coords = list(coords)
+            #coords = list(coords)
             
             # don't forget to document this:
-            #print("------------------------------------CHECK!!!!!!!",
-            #      self.drawing_page.label_right.pixmap().height(),
-            #      self.drawing_page.label_right.drawing_pixMap.height())
+            print("------------------------------------CHECK!!!!!!!",
+                  self.drawing_page.label_right.pixmap().height(),
+                  self.drawing_page.label_right.drawing_pixMap.height())
             
             #self.drawing_page.label_middle_up = qlabel_drawing.QLabelGroupSurface()
             #Shift the coordinates to centre the group
-            if coords[0] > 150:
+            """if coords[0] > 150:
                 coords[0] = coords[0]-150
             else:
                 coords[0] = 0
@@ -604,8 +609,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if coords[1] > 150:
                 coords[1] = coords[1]-150
             else: coords[1] = 0
-
-            large_grid_tmp = self.drawing_page.label_right.large_grid_overlay.value
+            """
+            """large_grid_tmp = self.drawing_page.label_right.large_grid_overlay.value
             small_grid_tmp = self.drawing_page.label_right.small_grid_overlay.value
             group_tmp = self.drawing_page.label_right.group_visu.value
             dipole_tmp = self.drawing_page.label_right.dipole_visu.value
@@ -615,36 +620,53 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.group_visu.value = False
             self.drawing_page.label_right.dipole_visu.value = False
             self.drawing_page.label_right.set_img()
-            
-            pixmap_group_surface = self.drawing_page\
-                                       .label_right\
-                                       .drawing_pixMap.copy(coords[0],
-                                                            coords[1],
-                                                            300,
-                                                            300)
-            self.drawing_page\
-                .label_middle_up\
-                .original_pixmap = pixmap_group_surface.copy()
-            self.drawing_page\
-                .label_middle_up\
-                .setPixmap(pixmap_group_surface)
-            #self.drawing_page.label_middle_up.set_img()
-            
-            self.drawing_page.label_middle_up.threshold.value = False 
-            self.drawing_page.label_middle_up.threshold_done.value = False
-            self.drawing_page.label_middle_up.polygon.value = False
-            self.drawing_page.label_middle_up.crop_done.value = False
-            self.drawing_page.label_middle_up.pencil.value = False
-            self.drawing_page.label_middle_up.bucket.value = False
-            
-            self.drawing_page.label_right.large_grid_overlay.value = large_grid_tmp
-            self.drawing_page.label_right.small_grid_overlay.value = small_grid_tmp
-            self.drawing_page.label_right.group_visu.value = group_tmp
-            self.drawing_page.label_right.dipole_visu.value = dipole_tmp
-            
-            self.drawing_page.label_right.set_img()
+            """
 
+            img_pix = self.drawing_page.label_right.get_img_array()
 
+            bigger_matrix = np.ones((img_pix.shape[0] + 200, img_pix.shape[1] + 200), dtype=np.uint8) * 255
+            bigger_matrix[100 : 100 + img_pix.shape[0],
+                          100 : 100 + img_pix.shape[1]] = img_pix
+            
+            print("check img_pix size")
+            print(type(img_pix))
+            print(img_pix.shape)
+            print(type(bigger_matrix))
+            print(bigger_matrix.shape)
+
+            x_min = int(100 + posX - 150)
+            x_max = int(100 + posX + 150)
+            y_min = int(100 + posY - 150)
+            y_max = int(100 + posY + 150)
+
+            print("coordinates for the pixel matrix:")
+            print(type(img_pix))
+            print(img_pix.shape)
+            print(x_min, x_max, y_min, y_max)
+            
+            self.selection_array = bigger_matrix[y_min:y_max,x_min:x_max]
+            self.group_surface_widget.set_array(self.selection_array)
+            
+    """def update_img_threshold_value(self, value):
+        #print("check the slider value",self.slider_threshold.value() )
+
+        #pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)
+        thresh_value , pixel_matrix_thresh = cv2.threshold(self.selection_array,
+                                                           value,
+                                                           256,
+                                                           cv2.THRESH_BINARY_INV)
+
+        self.drawing_page.label_middle_up.set_original_img(pixel_matrix_thresh)
+        #self.drawing_page.label_middle_up.threshold_value = value
+        #self.drawing_page.label_middle_up.set_threshold_img(value)
+        
+        
+        
+        #nb_pixel = self.drawing_page.label_middle_up.count_pixel()
+        #self.pixel_number_linedit.setText(str(nb_pixel))
+    """
+
+            
     def scroll_position(self):
         """
         Automatically scroll to the position given 
@@ -1505,13 +1527,40 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print("your parameter name: {} does not" +
                   " exist!".format(parameter_name))
             
-    def add_surface(self):
+    def add_surface_widget(self):
         
         qlabel_title = QtGui.QLabel("Surface calculation")
         qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
         qlabel_title.setContentsMargins(0, 5, 0, 5)
-        
+
+        self.group_surface_widget = qlabel_group_surface.GroupSurfaceWidget()
+        self.drawing_page.widget_middle_up_layout.addWidget(self.group_surface_widget)
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
+        
+        """group_surface_widget.set_threshold_slider()
+        group_surface_widget.threshold_slider.setValue(self.drawing_page.label_middle_up.threshold_value)
+        group_surface_widget.threshold_slider.valueChanged.connect(
+            lambda: self.update_img_threshold_value(group_surface_widget.threshold_slider.value()))
+
+
+        form_layout = QtGui.QFormLayout()
+        self.pixel_number_linedit = QtGui.QLineEdit()
+        self.projected_surface_linedit = QtGui.QLineEdit()
+        self.deprojected_surface_linedit = QtGui.QLineEdit()
+        
+        form_layout.addRow("Pixel Number:", self.pixel_number_linedit)
+        form_layout.addRow("Projected surface (msd):", self.projected_surface_linedit)
+        form_layout.addRow("Deprojected surface (msh):", self.deprojected_surface_linedit)
+
+        
+        
+        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
+        self.drawing_page.widget_middle_up_layout.addWidget(group_surface_widget)
+        self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
+        self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
+        
+        """
+        """self.drawing_page.widget_middle_up_layout.setSpacing(10)
         qlabel_polygon = QtGui.QLabel("Selection tools:")
         selection_layout = QtGui.QHBoxLayout()
         
@@ -1655,12 +1704,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.bucket_fill_but.clicked.connect(self.draw_bucket)
         self.rubber_but.clicked.connect(self.rubber_method)
         self.calculate_but.clicked.connect(self.calculate_method)
-
-    def update_threshold_value(self):
-        print("check the slider value",self.slider_threshold.value() )
-        self.drawing_page.label_middle_up.threshold_value = self.slider_threshold.value()
-        if self.drawing_page.label_middle_up.threshold.value:
-            self.drawing_page.label_middle_up.set_img()
+        """
+    
+            
             
     def crop_method(self):
         self.drawing_page.label_middle_up.crop()
@@ -1832,9 +1878,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             pass
 
         
-        
-        
-    
     def update_counter(self, value):
         
         if value >= self.len_drawing_lst:

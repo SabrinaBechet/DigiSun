@@ -233,11 +233,11 @@ class BulkViewPage(QtGui.QWidget):
         
         self.widget_right = QtGui.QWidget()
         print("check size", self.width(), self.height())
-        #self.widget_right.setMinimumWidth(self.width()/3.)#1300)
+        #self.widget_right.setMinimumWidth(self.width()/2.)#1300)
         self.widget_right.setStyleSheet("background-color:lightgray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
-        self.widget_right_layout.setContentsMargins(0, 0, 0, 0) # this line
-        self.widget_right_layout.setSpacing(0)
+        #self.widget_right_layout.setContentsMargins(0, 0, 0, 0) # this line
+        #self.widget_right_layout.setSpacing(0)
         #self.widget_right_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.widget_right.setLayout(self.widget_right_layout)
      
@@ -251,7 +251,7 @@ class BulkViewPage(QtGui.QWidget):
         my_font = QtGui.QFont("Comic Sans MS", 15)
         self.label_left_up = QtGui.QLabel('Drawing selection per date')
         self.label_left_up.setFont(my_font)
-        self.label_left_up.setAlignment(QtCore.Qt.AlignCenter)
+        #self.label_left_up.setAlignment(QtCore.Qt.AlignCenter)
         #label_left.setStyleSheet("background-color:lightgray;")
         self.label_left_up.setContentsMargins(0, 0, 0, 0)
         #self.label_left_up.setMaximumWidth(300)
@@ -259,13 +259,15 @@ class BulkViewPage(QtGui.QWidget):
 
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setStyleSheet("background-color:white;")
+        #self.widget_left_down.setMinimumHeight(self.height())
+        #self.widget_left_down.setMinimumWidth(200)
         self.widget_left_layout_down = QtGui.QVBoxLayout()
         #self.widget_left_layout_down.setContentsMargins(0, 0, 0, 0) # this line
         #self.widget_left_layout_down.setSpacing(0)
         self.widget_left_down.setLayout(self.widget_left_layout_down)
         self.label_left_down = QtGui.QLabel('Drawing selection per year')
         self.label_left_down.setFont(my_font)
-        self.label_left_down.setAlignment(QtCore.Qt.AlignCenter)
+        #self.label_left_down.setAlignment(QtCore.Qt.AlignCenter)
         #label_left.setStyleSheet("background-color:lightgray;")
         self.label_left_down.setContentsMargins(0, 0, 0, 0)
         #self.label_left_down.setMaximumWidth(300)
@@ -296,6 +298,9 @@ class BulkAnalysePage(BulkViewPage):
         self.year_list_page = YearListPage()
         self.month_list_page = MonthListPage()
         self.date_selection_page = DateSelectionPage()
+
+        self.widget_left_up.setMaximumHeight(self.height()/2.) #200)
+        self.widget_left_down.setMinimumWidth(self.height()/2.)
         
         #self.drawing_analyse = drawing_analyse.DrawingAnalysePage(self.operator)
         

@@ -22,6 +22,10 @@ import analyse_mode_bool
         
     return norm_radian
 """
+
+def rgb2gray(rgb):
+    return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
+
 class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 
@@ -85,22 +89,37 @@ class QLabelDrawing(QtGui.QLabel):
        self.dipole_points = []
        self.dipole_angles = []
 
+
        
+    def get_img_array(self):
+        
+        with Image.open(self.file_path) as img:
+            im_arr = np.asarray(img)
+            try:
+                if im_arr.shape[2]==3:
+                    im_arr = rgb2gray(im_arr)
+            except IndexError:
+                print("the original file is in L format..")
+            #im_arr = np.fromstring(img.tobytes(), dtype=np.uint8)
+            #print("get im array", type(im_arr), im_arr.shape)
+            #im_arr = im_arr.reshape((img.size[1], img.size[0], 1))
+            
+        return im_arr
+            
     def set_img(self):
-
+    
         print("***set the img **")
-        img = Image.open(self.file_path)
-
-        self.drawing_width = img.size[0]
-        self.drawing_height = img.size[1]
-
+        with Image.open(self.file_path) as img:
+            self.drawing_width = img.size[0]
+            self.drawing_height = img.size[1]
+            qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
+            self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
+            
         print("width: ", self.drawing_width)
         print("height: ", self.drawing_height)
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
         self.pen_width = int(self.drawing_height/700.)
-        qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
-        self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
          
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
@@ -324,6 +343,9 @@ class QLabelDrawing(QtGui.QLabel):
                 # here we should directly take x, y from the database
                 posX = self.current_drawing.group_lst[i].posX
                 posY = self.current_drawing.group_lst[i].posY
+
+                # print("check position")
+                # print(posX, posY)
                 
                 """x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
                     self.current_drawing.calibrated_center.x,
