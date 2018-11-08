@@ -1531,10 +1531,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
     def add_surface_widget(self):
         
-        qlabel_title = QtGui.QLabel("Surface calculation")
+        """qlabel_title = QtGui.QLabel("Surface calculation")
         qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
         qlabel_title.setContentsMargins(0, 5, 0, 5)
-
+        """
         self.group_surface_widget = qlabel_group_surface.GroupSurfaceWidget()
         self.drawing_page.widget_middle_up_layout.addWidget(
             self.group_surface_widget)
