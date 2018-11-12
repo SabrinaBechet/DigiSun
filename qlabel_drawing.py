@@ -92,6 +92,10 @@ class QLabelDrawing(QtGui.QLabel):
 
        
     def get_img_array(self):
+        """
+        open an image specified with file_path and 
+        return its corresponding numpy array
+        """
         
         with Image.open(self.file_path) as img:
             im_arr = np.asarray(img)
@@ -100,10 +104,7 @@ class QLabelDrawing(QtGui.QLabel):
                     im_arr = rgb2gray(im_arr)
             except IndexError:
                 print("the original file is in L format..")
-            #im_arr = np.fromstring(img.tobytes(), dtype=np.uint8)
-            #print("get im array", type(im_arr), im_arr.shape)
-            #im_arr = im_arr.reshape((img.size[1], img.size[0], 1))
-            
+
         return im_arr
             
     def set_img(self):

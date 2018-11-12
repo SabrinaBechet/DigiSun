@@ -630,44 +630,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             bigger_matrix[100 : 100 + img_pix.shape[0],
                           100 : 100 + img_pix.shape[1]] = img_pix
             
-            print("check img_pix size")
+            """print("check img_pix size")
             print(type(img_pix))
             print(img_pix.shape)
             print(type(bigger_matrix))
             print(bigger_matrix.shape)
-
+            """
             x_min = int(100 + posX - 150)
             x_max = int(100 + posX + 150)
             y_min = int(100 + posY - 150)
             y_max = int(100 + posY + 150)
 
+            selection_array = bigger_matrix[y_min:y_max,x_min:x_max]
+            self.group_surface_widget.set_array(selection_array)
+
             print("coordinates for the pixel matrix:")
-            print(type(img_pix))
-            print(img_pix.shape)
+            print(type(selection_array))
+            print(selection_array.shape)
             print(x_min, x_max, y_min, y_max)
             
-            self.selection_array = bigger_matrix[y_min:y_max,x_min:x_max]
-            self.group_surface_widget.set_array(self.selection_array)
-            
-    """def update_img_threshold_value(self, value):
-        #print("check the slider value",self.slider_threshold.value() )
-
-        #pixMat_int8 = ((pixel_matrix * 255.) / pixel_matrix.max()).astype(np.uint8)
-        thresh_value , pixel_matrix_thresh = cv2.threshold(self.selection_array,
-                                                           value,
-                                                           256,
-                                                           cv2.THRESH_BINARY_INV)
-
-        self.drawing_page.label_middle_up.set_original_img(pixel_matrix_thresh)
-        #self.drawing_page.label_middle_up.threshold_value = value
-        #self.drawing_page.label_middle_up.set_threshold_img(value)
-        
-        
-        
-        #nb_pixel = self.drawing_page.label_middle_up.count_pixel()
-        #self.pixel_number_linedit.setText(str(nb_pixel))
-    """
-
             
     def scroll_position(self):
         """
@@ -1531,273 +1512,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
     def add_surface_widget(self):
         
-        """qlabel_title = QtGui.QLabel("Surface calculation")
-        qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
-        qlabel_title.setContentsMargins(0, 5, 0, 5)
-        """
         self.group_surface_widget = qlabel_group_surface.GroupSurfaceWidget()
         self.drawing_page.widget_middle_up_layout.addWidget(
             self.group_surface_widget)
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
-        
-        """group_surface_widget.set_threshold_slider()
-        group_surface_widget.threshold_slider.setValue(self.drawing_page.label_middle_up.threshold_value)
-        group_surface_widget.threshold_slider.valueChanged.connect(
-            lambda: self.update_img_threshold_value(group_surface_widget.threshold_slider.value()))
-
-
-        form_layout = QtGui.QFormLayout()
-        self.pixel_number_linedit = QtGui.QLineEdit()
-        self.projected_surface_linedit = QtGui.QLineEdit()
-        self.deprojected_surface_linedit = QtGui.QLineEdit()
-        
-        form_layout.addRow("Pixel Number:", self.pixel_number_linedit)
-        form_layout.addRow("Projected surface (msd):", self.projected_surface_linedit)
-        form_layout.addRow("Deprojected surface (msh):", self.deprojected_surface_linedit)
-
-        
-        
-        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
-        self.drawing_page.widget_middle_up_layout.addWidget(group_surface_widget)
-        self.drawing_page.widget_middle_up_layout.addWidget(self.drawing_page.label_middle_up)
-        self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
-        
-        """
-        """self.drawing_page.widget_middle_up_layout.setSpacing(10)
-        qlabel_polygon = QtGui.QLabel("Selection tools:")
-        selection_layout = QtGui.QHBoxLayout()
-        
-        self.draw_polygon_but = QtGui.QToolButton()
-        self.draw_polygon_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.draw_polygon_but.setText("Select mode")
-        self.draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
-        self.drawing_page\
-            .label_middle_up\
-            .polygon\
-            .value_changed\
-            .connect(lambda: self.set_button_color(
-                self.drawing_page.label_middle_up.polygon.value,
-                self.draw_polygon_but))
-        
-        self.crop_but = QtGui.QToolButton()
-        self.crop_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.crop_but.setText("Crop")
-        self.crop_but.setDisabled(True)
-        
-        self.zoom_in_but = QtGui.QToolButton()
-        self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.zoom_in_but.setText("zoom in")
-        self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
-
-        self.zoom_out_but = QtGui.QToolButton()
-        self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.zoom_out_but.setText("zoom out")
-        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
-
-        self.reset_but = QtGui.QToolButton()
-        self.reset_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.reset_but.setText("Reset")
-
-        selection_layout.addWidget(self.draw_polygon_but)
-        selection_layout.addWidget(self.crop_but)
-        selection_layout.addWidget(self.zoom_in_but)
-        selection_layout.addWidget(self.zoom_out_but)
-        selection_layout.addWidget(self.reset_but)
-        
-        qlabel_threshold = QtGui.QLabel("Threshold:")
-        self.slider_threshold = QtGui.QSlider(QtCore.Qt.Horizontal)
-        self.slider_threshold.setRange(0,256)
-        self.slider_threshold.setValue(self.drawing_page.label_middle_up.threshold_value)
-        self.slider_threshold.setDisabled(True)
-        
-        self.threshold_but = QtGui.QToolButton()
-        self.threshold_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.threshold_but.setText("threshold mode")
-        self.drawing_page\
-            .label_middle_up\
-            .threshold\
-            .value_changed\
-            .connect(lambda: self.set_button_color(
-                self.drawing_page.label_middle_up.threshold.value,
-                self.threshold_but))
-        
-        self.qlabel_paint_tool = QtGui.QLabel("Paint tool:")
-        paint_layout = QtGui.QHBoxLayout()
-
-        self.pencil_but = QtGui.QToolButton()
-        self.pencil_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.pencil_but.setText("Draw")
-        self.pencil_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/pencil.svg'))
-        self.pencil_but.setDisabled(True)
-        
-        self.bucket_fill_but = QtGui.QToolButton()
-        self.bucket_fill_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.bucket_fill_but.setText("Fill")
-        self.bucket_fill_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/bucket.svg'))
-        self.bucket_fill_but.setDisabled(True)
-               
-        self.rubber_but = QtGui.QToolButton()
-        self.rubber_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.rubber_but.setText("Erase")
-        self.rubber_but.setIcon(QtGui.QIcon('icons/Freepik/erase-text.svg'))
-        self.rubber_but.setDisabled(True)
-
-        form_layout = QtGui.QFormLayout()
-        self.pixel_number_linedit = QtGui.QLineEdit()
-        surface_linedit = QtGui.QLineEdit()
-
-        form_layout.addRow("Pixel Number:", self.pixel_number_linedit)
-        form_layout.addRow("Surface:", surface_linedit)
-        
-        paint_layout.addWidget(self.pencil_but)
-        paint_layout.addWidget(self.bucket_fill_but)
-        paint_layout.addWidget(self.rubber_but)
-
-        self.convert_but = QtGui.QToolButton()
-        self.convert_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.convert_but.setText("Convert")
-        #self.convert_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/pencil.svg'))
-        self.convert_but.setDisabled(True)
-
-        
-        save_but = QtGui.QToolButton()
-        save_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        save_but.setText("Save area")
-
-        next_but = QtGui.QToolButton()
-        next_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        next_but.setText("Next group")
-        
-        self.calculate_but = QtGui.QToolButton()
-        self.calculate_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.calculate_but.setText("Calculate")
-        
-        self.drawing_page.widget_middle_up_layout.setMargin(10)
-
-        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_title)
-        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_polygon)
-        self.drawing_page.widget_middle_up_layout.addLayout(selection_layout)
-        
-        self.drawing_page.widget_middle_up_layout.addWidget(qlabel_threshold)
-        self.drawing_page.widget_middle_up_layout.addWidget(self.threshold_but)
-        self.drawing_page.widget_middle_up_layout.addWidget(self.slider_threshold)
-        
-        self.drawing_page.widget_middle_up_layout.addWidget(self.qlabel_paint_tool)
-        self.drawing_page.widget_middle_up_layout.addLayout(paint_layout)
-        self.drawing_page.widget_middle_up_layout.addWidget(self.convert_but)
-        
-        self.drawing_page.widget_middle_up_layout.addWidget(
-            self.drawing_page.label_middle_up)
-        self.drawing_page.widget_middle_up_layout.addWidget(self.calculate_but)
-        self.drawing_page.widget_middle_up_layout.addLayout(form_layout)
-        self.drawing_page.widget_middle_up_layout.addWidget(save_but)
-        self.drawing_page.widget_middle_up_layout.addWidget(next_but)
-        
-        
-        self.draw_polygon_but.clicked.connect(self.draw_polygon)
-        self.crop_but.clicked.connect(self.crop_method)
-        self.reset_but.clicked.connect(self.reset)
-
-        self.slider_threshold.valueChanged.connect(self.update_threshold_value)
-       
-        self.threshold_but\
-            .clicked.connect(self.threshold)
-
-        self.pencil_but.clicked.connect(self.draw_pencil)
-        self.bucket_fill_but.clicked.connect(self.draw_bucket)
-        self.rubber_but.clicked.connect(self.rubber_method)
-        self.calculate_but.clicked.connect(self.calculate_method)
-        """
-    
-            
-            
-    def crop_method(self):
-        self.drawing_page.label_middle_up.crop()
-        self.draw_polygon_but.setDisabled(True)
-
-    def rubber_method(self):
-        self.drawing_page.label_middle_up.modify_rubber_color()
-
-    def calculate_method(self):
-        count = self.drawing_page.label_middle_up.calculate_area()
-        self.pixel_number_linedit.setText(str(count))
-
-    def threshold(self):
-        if self.drawing_page.label_middle_up.threshold.value :
-            self.drawing_page.label_middle_up.threshold.value = False
-            self.slider_threshold.setDisabled(True)
-        else:
-            print("set the threshold to true")
-            self.drawing_page.label_middle_up.threshold.value = True
-            self.slider_threshold.setEnabled(True)
-            
-        self.drawing_page.label_middle_up.polygon.value = False
-        self.drawing_page.label_middle_up.bucket.value = False
-        self.drawing_page.label_middle_up.pencil.value = False
-
-        
-        
-        #self.threshold_but.setDisabled(True)
-        self.drawing_page.label_middle_up.set_img()
-
-        #print(self.drawing_page.label_middle_up.crop_done.value)
-        if self.drawing_page.label_middle_up.crop_done.value :
-            self.draw_polygon_but.setDisabled(True)
-            self.crop_but.setDisabled(True)
-            
-        self.pencil_but.setEnabled(True)
-        self.bucket_fill_but.setEnabled(True)
-        self.rubber_but.setEnabled(True)
-            
-    def draw_pencil(self):
-        self.drawing_page.label_middle_up.pencil.value = True
-        self.drawing_page.label_middle_up.threshold.value = False
-        self.drawing_page.label_middle_up.polygon.value = False
-        self.drawing_page.label_middle_up.crop_done.value= False
-        self.drawing_page.label_middle_up.bucket.value = False
-    
-    def draw_bucket(self):
-        self.drawing_page.label_middle_up.bucket.value = True
-        self.drawing_page.label_middle_up.threshold.value = False
-        self.drawing_page.label_middle_up.polygon.value = False
-        self.drawing_page.label_middle_up.crop_done.value = False
-        self.drawing_page.label_middle_up.pencil.value = False
-        
-    def draw_polygon(self):
-        if self.drawing_page.label_middle_up.polygon.value :
-            self.drawing_page.label_middle_up.polygon.value = False
-        else:
-            self.drawing_page.label_middle_up.polygon.value = True
-            
-        self.drawing_page.label_middle_up.threshold.value = False
-        self.drawing_page.label_middle_up.crop_done.value = False
-        self.drawing_page.label_middle_up.pencil.value = False
-        self.drawing_page.label_middle_up.bucket.value = False
-        self.crop_but.setEnabled(True)
-        
-        # no function here but the click on the image
-        # will call set_img in the qlabel
-        
-        #if not self.drawing_page.label_middle_up.mode_draw_polygon.value:
-        #    self.drawing_page.label_middle_up.pointsList = []
-
-    def reset(self):
-        
-        self.drawing_page.label_middle_up.threshold.value = False
-        self.drawing_page.label_middle_up.polygon.value = False
-        self.drawing_page.label_middle_up.crop_done.value = False
-        self.drawing_page.label_middle_up.pencil.value = False
-        self.drawing_page.label_middle_up.bucket.value = False
-        
-        self.threshold_but.setEnabled(True)
-        self.draw_polygon_but.setEnabled(True)
-        self.crop_but.setEnabled(True)
-        self.drawing_page.label_middle_up.reset_img()
-        self.pencil_but.setDisabled(True)
-        self.bucket_fill_but.setDisabled(True)
-        self.rubber_but.setDisabled(True)
-        self.drawing_page.label_middle_up.crop_done.value = False
-        self.drawing_page.label_middle_up.threshold_done.value = False
         
     def add_current_session(self):
         
@@ -2053,7 +1771,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.helper_grid.value = False
         self.drawing_page.label_right.add_group_mode.value = False
         self.drawing_page.label_right.add_dipole_mode.value = False
-        self.drawing_page.label_right.surface_mode.value = False
+        #self.drawing_page.label_right.surface_mode.value = False
 
         self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
         self.drawing_page.label_right.set_img()

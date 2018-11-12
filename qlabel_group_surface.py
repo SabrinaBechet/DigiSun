@@ -23,7 +23,6 @@ class GroupSurfaceWidget(QtGui.QWidget):
          super(GroupSurfaceWidget, self).__init__()
          self.layout = QtGui.QVBoxLayout()
          self.layout.setSpacing(15)
-         #self.grid_layout = QtGui.QGridLayout()
          self.setLayout(self.layout)
 
          self.scroll = QtGui.QScrollArea()
@@ -42,13 +41,17 @@ class GroupSurfaceWidget(QtGui.QWidget):
          qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
          qlabel_title.setContentsMargins(0, 5, 0, 5)
          
-         qlabel_threshold = QtGui.QLabel("Threhsold selection:")
          threshold_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
          threshold_slider.setRange(0,256)
          threshold_slider.setTickPosition(QtGui.QSlider.TicksBelow)
          threshold_slider.setValue(225)
          threshold_slider.valueChanged.connect(
              lambda: self.update_img_threshold_value(threshold_slider.value()))
+         self.threshold_linedit = QtGui.QLineEdit(str(threshold_slider.value()))
+
+         threshold_layout = QtGui.QFormLayout()
+         threshold_layout.addRow("Threshold selection:",
+                            self.threshold_linedit)
 
          qlabel_general = QtGui.QLabel("General tools:")
          
@@ -86,16 +89,20 @@ class GroupSurfaceWidget(QtGui.QWidget):
          pencil_but = QtGui.QToolButton()
          pencil_but.setIcon(QtGui.QIcon('icons/Freepik/black_brush-stroke_32.png'))
          pencil_but.setMinimumWidth(self.width()/4.)
-         pencil_but.clicked.connect(lambda: self.draw_pencil(threshold_slider.value()))
+         pencil_but.clicked.connect(lambda: self.draw_pencil(0))
 
-         bucket_fill_but = QtGui.QToolButton()
-         bucket_fill_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/bucket.svg'))
-         bucket_fill_but.setMinimumWidth(self.width()/4.)
+         bucket_white_fill_but = QtGui.QToolButton()
+         bucket_white_fill_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/bucket.svg'))
+         bucket_white_fill_but.setMinimumWidth(self.width()/4.)
+         bucket_white_fill_but.clicked.connect(
+             lambda : self.qlabel_group_surface.set_bucket_fill(self.current_array,
+                                                                0,
+                                                                255))
          
          erase_but = QtGui.QToolButton()
          erase_but.setIcon(QtGui.QIcon('icons/Freepik/white_brush-stroke_32.png'))
          erase_but.setMinimumWidth(self.width()/4.)
-         
+         erase_but.clicked.connect(lambda: self.draw_pencil(255))
 
          layout_general = QtGui.QGridLayout()
          layout_general.addWidget(qlabel_general, 0, 0)
@@ -107,10 +114,9 @@ class GroupSurfaceWidget(QtGui.QWidget):
          layout_general.addWidget(cut_polygon_but, 3, 1)
          layout_general.addWidget(qlabel_paint, 4, 0)
          layout_general.addWidget(pencil_but, 5, 0)
-         layout_general.addWidget(bucket_fill_but, 5, 1)
-         layout_general.addWidget(erase_but, 5, 2)
+         layout_general.addWidget(erase_but, 5, 1)
+         layout_general.addWidget(bucket_white_fill_but, 5, 2)
          
-             
          form_layout = QtGui.QFormLayout()
          self.pixel_number_linedit = QtGui.QLineEdit()
          self.projected_surface_linedit = QtGui.QLineEdit()
@@ -123,30 +129,39 @@ class GroupSurfaceWidget(QtGui.QWidget):
          form_layout.addRow("Deprojected surface (msh):",
                             self.deprojected_surface_linedit)
 
+         save_but = QtGui.QPushButton("save")
+         
          self.layout.addWidget(qlabel_title)
-         self.layout.addWidget(qlabel_threshold)
+         self.layout.addLayout(threshold_layout)
          self.layout.addWidget(threshold_slider)
          self.layout.addLayout(layout_general)
-         self.layout.addWidget(self.scroll)#qlabel_group_surface)
+         self.layout.addWidget(self.scroll)
          self.layout.addLayout(form_layout)
+         self.layout.addWidget(save_but)
 
-    def draw_pencil(self, value):
-        thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
-                                                              value,
-                                                              256,
-                                                              cv2.THRESH_BINARY_INV)
-        self.qlabel_group_surface.draw_pencil(selection_array_thresh)
+         self.qlabel_group_surface.array_changed.connect(
+             lambda: self.set_img(self.qlabel_group_surface.array))
+
+         
+    def draw_pencil(self, new_value):
+        self.qlabel_group_surface.set_pencil_array(self.current_array, new_value)
+        
          
     def cut_polygon(self, value):
-        thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
-                                                              value,
-                                                              256,
-                                                              cv2.THRESH_BINARY_INV)
-        new_array = self.qlabel_group_surface.cut_polygon(selection_array_thresh)
-        self.set_img(new_array)
+        #thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
+        #                                                      value,
+        #                                                      256,
+        #                                                      cv2.THRESH_BINARY_INV)
+        cut_array = self.qlabel_group_surface.cut_polygon(self.current_array)#selection_array_thresh)
+        self.set_img(cut_array)
          
     def update_img_threshold_value(self, value):
+        self.qlabel_group_surface.polygon.value = False
+        self.qlabel_group_surface.pencil.value = False
+        self.qlabel_group_surface.bucket.value = False
+        
         new_selection_thresh = self.threshold(value)
+        self.threshold_linedit.setText(str(value))
         self.set_img(new_selection_thresh)
         self.qlabel_group_surface.pointsList = []
 
@@ -164,25 +179,23 @@ class GroupSurfaceWidget(QtGui.QWidget):
         return selection_array_thresh
     
     def set_img(self, img):
+        self.current_array = img
         self.qlabel_group_surface.set_original_img(img)
         nb_pixel = self.count_pixel(img)
         self.pixel_number_linedit.setText(str(nb_pixel))
 
     def count_pixel(self, img):
-        return np.count_nonzero(img) #count
+        return np.count_nonzero(img) 
 
 
         
 class QLabelGroupSurface(QtGui.QLabel):
 
-    mouse_pressed = QtCore.pyqtSignal()
+    array_changed = QtCore.pyqtSignal()
     
     def __init__(self):
         super(QLabelGroupSurface, self).__init__()
-        self.setFrameShape(QtGui.QFrame.Panel)
-        self.setFrameShadow(QtGui.QFrame.Plain)
-        self.setLineWidth(3)
-        
+       
         self.original_pixmap = QtGui.QPixmap() # used for the reset
         #self.threshold_pixmap = QtGui.QPixmap()
         self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
@@ -194,31 +207,15 @@ class QLabelGroupSurface(QtGui.QLabel):
         self.scaling_factor = 1
         self.pointsList = []
         
-        self.is_drawing = False
-        self.to_fill = False
-
-        self.threshold_value = 225
-
-        """self.mode_draw_polygon = analyseModeBool(False)
-        self.mode_threshold = analyseModeBool(False)
-        self.mode_pencil = analyseModeBool(False)
-        self.mode_bucket_fill = analyseModeBool(False)
-        self.mode_rubber = analyseModeBool(False)
-        self.first_view = analyseModeBool(True)
-        """
-
-        """self.threshold = analyse_mode_bool.analyseModeBool(False)
-        self.threshold_done = analyse_mode_bool.analyseModeBool(False)
-        """
+        # self.is_drawing = False
+        #self.to_fill = False
+        #self.threshold_value = 225
+        
         self.polygon = analyse_mode_bool.analyseModeBool(False)
         self.crop_done = analyse_mode_bool.analyseModeBool(False)
         self.pencil = analyse_mode_bool.analyseModeBool(False)
         self.bucket = analyse_mode_bool.analyseModeBool(False)
     
-        self.painter = QtGui.QPainter()
-        self.pen = QtGui.QPen(QtCore.Qt.red)
-        self.pen.setWidth(5)
-
     def zoom_in(self, scaling_factor):
         self.width_scale *=  scaling_factor
         self.height_scale *=  scaling_factor
@@ -235,7 +232,7 @@ class QLabelGroupSurface(QtGui.QLabel):
         self.setPixmap(bis)#original_pixmap)
     
     def set_original_img(self, np_array):
-        print("set the original image")
+        #print("set the original image")
         self.original_pixmap = self.np2qpixmap(np_array).copy()
         self.pointsList = []
         #self.original_pixmap = pixmap
@@ -267,8 +264,8 @@ class QLabelGroupSurface(QtGui.QLabel):
         """
         convert np array into pixmap
         """
-        print("np2qimage")
-        print(type(np_img), np_img.shape)
+        #print("np2qimage")
+        #print(type(np_img), np_img.shape)
         #frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
         frame = cv2.cvtColor(np_img,cv2.COLOR_GRAY2RGB)
         img = QtGui.QImage(frame,
@@ -277,20 +274,26 @@ class QLabelGroupSurface(QtGui.QLabel):
                            QtGui.QImage.Format_RGB888)
         return QtGui.QPixmap.fromImage(img)
 
-        #frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
-        
     
     def draw_polygon(self, position=None):
+        """
+        Method that has a *graphic* role. it shows the polygon on screen and 
+        records the list of points.
+        """
         self.polygon.value = True
         self.pencil.value = False
+
+        painter = QtGui.QPainter()
+        pen = QtGui.QPen(QtCore.Qt.red)
+        pen.setWidth(5)
         
         if position:
             self.pointsList.append(position)
         
-        print("enter the draw polygon", len(self.pointsList))
+        #print("enter the draw polygon", len(self.pointsList))
         
         if len(self.pointsList) == 0:
-            print("set the pixmap polygon", len(self.pointsList))
+            #print("set the pixmap polygon", len(self.pointsList))
             self.first_pixamp_polygon = self.pixmap().copy()
 
         #self.setPixmap(self.first_pixamp_polygon)
@@ -298,27 +301,23 @@ class QLabelGroupSurface(QtGui.QLabel):
                                                int(self.height_scale),
                                                QtCore.Qt.KeepAspectRatio)
         
-        
-        self.setPixmap(bis)#original_pixmap)
-        self.painter.begin(self.pixmap())
-            
-        
+        self.setPixmap(bis)
+        painter.begin(self.pixmap())
         pen_polygon = QtGui.QPen(QtCore.Qt.cyan)
         pen_polygon.setWidth(3)
-        self.painter.setPen(pen_polygon)
+        painter.setPen(pen_polygon)
         if len(self.pointsList) == 1:
-            self.painter.drawPoint(self.pointsList[-1])
+            painter.drawPoint(self.pointsList[-1])
             
         else:
             for i in range(len(self.pointsList)):
-                self.painter.drawLine(self.pointsList[i-1],self.pointsList[i])
-        self.painter.end()
-
-        self.update()
-        
-        #self.setPixmap(self.pixmap())
+                painter.drawLine(self.pointsList[i-1],self.pointsList[i])
+        painter.end()
 
     def cut_polygon(self, array):
+        """
+        Change the matrix of pixel and return a new array.
+        """
         
         self.polygon.value = False
         print("polygon")
@@ -344,83 +343,63 @@ class QLabelGroupSurface(QtGui.QLabel):
         print("total number of white pixels: ", count)
         return array
         
-
-    def draw_pencil(self, array):
-        print("draw pencil")
-        
+    def set_pencil_array(self, array, new_value):
+        print("set pencil array")
+        print(new_value)
+        print(array.max())
         self.polygon.value = False
         self.pencil.value = True
+        
+        self.array = array
+        self.new_value = new_value
+    
+    def set_bucket_fill(self, array, old_value, new_value):
 
         self.array = array
-        """
-        if position:
-            self.painter.begin(self.pixmap())
-            self.painter.setPen(self.pen)
-            self.painter.setBrush(QtCore.Qt.cyan)
-            self.painter.drawPoint(position)
-        """
-
-            
-        """def set_img(self):
+        self.new_value = new_value
+        self.old_value = old_value
+        self.polygon.value = False
+        self.pencil.value = False
+        self.bucket.value = True
         
-        Set the image in the surface calculation widget.
-        It the input pixamp is None, then use the previous pixmap in memory (self.pixmap())
-
-        If draw_polygon : select a region around the interesting group (for an ulterior crop)
-        If pencil : begin the painter for the drawing line (and rubber if color is white)
-        - allow to select a region for a later crop
-        
-        print("**** set img",
-              self.polygon.value,
-              self.pencil.value,
-              self.bucket.value,
-              self.crop_done.value)
-        
-        #if pixmap is not None:
-        #    self.setPixmap(pixmap)
-        # check if pixmap is None and self.pixmap is emppty -> message!!
-
-        #mode de depart quand on lance image pour la premiere fois
-        #if not self.mode_draw_polygon.value and not self.mode_threshold.value:
-        #    self.original_pixmap = pixmap.copy()
-            
-        self.painter.begin(self.pixmap())
-        pen_polygon = QtGui.QPen(QtCore.Qt.red)
-        pen_polygon.setWidth(10000)
-        self.painter.setPen(pen_polygon)
-        self.painter.end()
-        """
-        #if self.first_view:
-
-        """
-        if self.threshold.value :
-            print("threshold!!", self.threshold_value)
-            self.set_threshold_img(self.threshold_value)
-            
-        if self.polygon.value :
-            self.draw_polygon()
-
-        if self.pencil.value:
-             self.draw_pencil()
-
-        if self.bucket.value:
-             self.bucket_fill()   
-        
-       
-        self.show()
-        #self.first_view.value = False
-        """    
-    def bucket_fill(self):
-        x = self.position.x()
+        """x = self.position.x()
         y = self.position.y()
         image = self.pixmap().toImage()
         array_image = self.convertQImageToMat(image)
-        array_image = self.iter_fill(x,y,array_image)
+        array_image = self.iter_fill(x, y, array_image)
         newPixmap = self.np2qpixmap(array_image)
         self.setPixmap(newPixmap)
+        """
 
+    def bucket_fill(self, position_x, position_y):
 
-    def iter_fill(self,x_start,y_start,array):
+        print("enter in the bucket fill", position_x, position_y, self.array.shape[1], self.array.shape[0])
+        print("new value: ", self.new_value)
+        print("old value: ", self.old_value)
+        print("current value: ",self.array[position_x, position_y])
+        
+        if self.array[position_x, position_y] == self.new_value:
+            print("already done", position_x, position_y)
+            return
+        
+        self.array[position_x, position_y] = self.new_value
+
+        if position_x > 0:
+            print("go to the right", position_x, position_y)
+            self.bucket_fill(position_x - 1, position_y)
+        if position_x < self.array.shape[1] - 1 :
+            print("go to the left", position_x, position_y)
+            self.bucket_fill(position_x + 1, position_y)
+        if position_y > 0 :
+            print("go up", position_x, position_y)
+            self.bucket_fill(position_x , position_y - 1)
+        if position_y < self.array.shape[0] - 1 :
+            print("do down", position_x, position_y)
+            self.bucket_fill(position_x , position_y + 1)
+
+            
+        
+    """def iter_fill(self,x_start,y_start,array):
         stack = [(x_start,y_start)]
         #C1, C2 and C3 are the colors in RGB that the pixel need to be in
         #If the pen is white, then the pixels are turned black (0,0,0),
@@ -449,58 +428,42 @@ class QLabelGroupSurface(QtGui.QLabel):
                     stack.append((x, y + 1))
         return array
 
-    def modify_rubber_color(self):
-        if(self.pen.color() == QtCore.Qt.red):
-            self.pen.setColor(QtCore.Qt.black)
-        else:
-            self.pen.setColor(QtCore.Qt.red)
-
-
     def check_color(self,x,y,array,c1,c2,c3):
         return(array[y][x][0] == c1 and array[y][x][1] == c2 and array[y][x][2] == c3)
 
-
+    """
     def mousePressEvent(self, QMouseEvent):
         position =  QMouseEvent.pos()
         
         if self.polygon.value :
-            
             print("mouse press event: ", position)
             self.draw_polygon(position)
 
         elif self.pencil.value:
-            #self.draw_pencil(position)
-            print("pencil value ",
-                  position.y(),
-                  int(math.floor(position.y()/(2.* self.scaling_factor ))),
-                  position.x(),
-                  int(math.floor(position.x()/(2.* self.scaling_factor ))))
-            print(self.array.shape)
             self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
-                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = 0
-            self.set_original_img(self.array)
+                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = self.new_value
+            self.array_changed.emit()
+
+        elif self.bucket.value:
+            self.bucket_fill(int(math.floor(position.y()/(2.* self.scaling_factor ))),
+                             int(math.floor(position.x()/(2.* self.scaling_factor ))))
+            self.array_changed.emit()
+        
             
     def mouseMoveEvent(self, QMouseEvent):
-        
-        
         if self.pencil.value:
             print("mouse move event")
             position =  QMouseEvent.pos()
             self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
-                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = 0
-            self.set_original_img(self.array)
+                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = self.new_value
+            self.array_changed.emit()
             
-            #self.painter.drawPoint(QMouseEvent.pos())
-            #self.setPixmap(self.pixmap())
-    
     def mouseReleaseEvent(self,QMouseEvent):
         
         if self.pencil.value:
             print("enter in the mouse release and painter end")
             position =  QMouseEvent.pos()
             self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
-                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = 0
-            self.set_original_img(self.array)
+                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = self.new_value
+            self.array_changed.emit()
             
-            #self.painter.end()
-    
