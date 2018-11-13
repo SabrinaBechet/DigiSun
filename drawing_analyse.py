@@ -172,14 +172,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_toolbar()
         self.set_status_bar()
         
-        self.drawing_page\
-            .label_right\
-            .center_clicked\
-            .connect(self.scroll_position)
-        self.drawing_page\
-            .label_right\
-            .north_clicked\
-            .connect(self.clean_status_bar)
+        
         self.drawing_page\
             .label_right\
             .group_added\
@@ -443,9 +436,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
             
         else:
             self.clean_status_bar()
+            self.drawing_page.label_right.set_img()
        
     def set_group_mode(self):
         """
@@ -485,6 +480,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.helper_grid.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
 
         else:
             print("restore the old cursor")
@@ -545,6 +541,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
         else:
             print("restore the old cursor")
             QtGui.QApplication.restoreOverrideCursor()
@@ -559,7 +556,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
-
+            
+            self.drawing_page.label_right.zoom_in(
+                5./self.drawing_page.label_right.scaling_factor)
+            self.set_focus_group_box(0)
         
         if self.drawing_page.label_right.surface_mode.value:
             self.drawing_page.widget_middle_up.setMaximumWidth(600)
@@ -568,6 +568,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         elif self.drawing_page.label_right.surface_mode.value == False:
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
+            self.drawing_page.label_right.zoom_in(
+                1/self.drawing_page.label_right.scaling_factor)
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
 
 
@@ -599,50 +601,26 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print("------------------------------------CHECK!!!!!!!",
                   self.drawing_page.label_right.pixmap().height(),
                   self.drawing_page.label_right.drawing_pixMap.height())
-            
-            #self.drawing_page.label_middle_up = qlabel_drawing.QLabelGroupSurface()
-            #Shift the coordinates to centre the group
-            """if coords[0] > 150:
-                coords[0] = coords[0]-150
-            else:
-                coords[0] = 0
-            
-            if coords[1] > 150:
-                coords[1] = coords[1]-150
-            else: coords[1] = 0
-            """
-            """large_grid_tmp = self.drawing_page.label_right.large_grid_overlay.value
-            small_grid_tmp = self.drawing_page.label_right.small_grid_overlay.value
-            group_tmp = self.drawing_page.label_right.group_visu.value
-            dipole_tmp = self.drawing_page.label_right.dipole_visu.value
-            
-            self.drawing_page.label_right.large_grid_overlay.value = False
-            self.drawing_page.label_right.small_grid_overlay.value = False
-            self.drawing_page.label_right.group_visu.value = False
-            self.drawing_page.label_right.dipole_visu.value = False
-            self.drawing_page.label_right.set_img()
-            """
+
+            frame_size = math.floor(self.drawing_lst[self.current_count].calibrated_radius/400.) * 100
+            print("the frame size is: ", frame_size)
 
             img_pix = self.drawing_page.label_right.get_img_array()
 
+            #take a bigger matrix to have the border at 0
             bigger_matrix = np.ones((img_pix.shape[0] + 200,
                                      img_pix.shape[1] + 200), dtype=np.uint8) * 255
             bigger_matrix[100 : 100 + img_pix.shape[0],
                           100 : 100 + img_pix.shape[1]] = img_pix
             
-            """print("check img_pix size")
-            print(type(img_pix))
-            print(img_pix.shape)
-            print(type(bigger_matrix))
-            print(bigger_matrix.shape)
-            """
-            x_min = int(100 + posX - 150)
-            x_max = int(100 + posX + 150)
-            y_min = int(100 + posY - 150)
-            y_max = int(100 + posY + 150)
+            x_min = int(100 + posX - frame_size/2)
+            x_max = int(100 + posX + frame_size/2)
+            y_min = int(100 + posY - frame_size/2)
+            y_max = int(100 + posY + frame_size/2)
 
             selection_array = bigger_matrix[y_min:y_max,x_min:x_max]
             self.group_surface_widget.set_array(selection_array)
+            self.group_surface_widget.set_radius(self.drawing_lst[self.current_count].calibrated_radius)
 
             print("coordinates for the pixel matrix:")
             print(type(selection_array))
@@ -650,21 +628,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print(x_min, x_max, y_min, y_max)
             
             
-    def scroll_position(self):
+    def scroll_position(self, horizontal_pos, vertical_pos, point_name=None):
         """
         Automatically scroll to the position given 
         by the self.fraction_width and self.fraction_height.
         """
-        print("************scroll function")
+        """print("************scroll function")
         print("image width:", self.drawing_page.label_right.pixmap().width())
         print("image height: ", self.drawing_page.label_right.pixmap().height())
         print("fraction width: ", self.fraction_width)
         print("fraction height: ", self.fraction_height)
-        
-        self.status_bar_mode_comment.setText("Click on the " +
-                                             self.point_name +
-                                             " position")
-        
+        """
+        if point_name:
+            self.status_bar_mode_comment.setText("Click on the " +
+                                                 point_name +
+                                                 " position")
+            
         self.vertical_scroll_bar.setMinimum(0)
         self.horizontal_scroll_bar.setMinimum(0)
         self.vertical_scroll_bar.setMaximum(
@@ -674,9 +653,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                               self.horizontal_scroll_bar.pageStep() )
   
         self.horizontal_scroll_bar.setValue(
-            self.horizontal_scroll_bar.maximum() * self.fraction_width)
+            self.horizontal_scroll_bar.maximum() * horizontal_pos)
         self.vertical_scroll_bar.setValue(
-            self.vertical_scroll_bar.maximum() * self.fraction_height)
+            self.vertical_scroll_bar.maximum() * vertical_pos)
 
     def clean_status_bar(self):
         self.status_bar_mode_name.setText("")
@@ -718,22 +697,36 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
             
             self.drawing_page.label_right.zoom_in(
                 5./self.drawing_page.label_right.scaling_factor)
             
-            self.fraction_width = self.drawing_lst[self.current_count]\
+            fraction_width_pt1 = self.drawing_lst[self.current_count]\
                                       .pt1_fraction_width
-            self.fraction_height = self.drawing_lst[self.current_count]\
+            fraction_height_pt1 = self.drawing_lst[self.current_count]\
                                        .pt1_fraction_height
-            self.point_name = self.drawing_lst[self.current_count].pt1_name
-            self.scroll_position()
-            
-            self.fraction_width = self.drawing_lst[self.current_count]\
+            point_name_pt1 = self.drawing_lst[self.current_count].pt1_name
+            self.scroll_position(fraction_width_pt1,
+                                 fraction_height_pt1,
+                                 point_name_pt1)
+
+            fraction_width_pt2 = self.drawing_lst[self.current_count]\
                                       .pt2_fraction_width
-            self.fraction_height = self.drawing_lst[self.current_count]\
+            fraction_height_pt2 = self.drawing_lst[self.current_count]\
                                        .pt2_fraction_height
-            self.point_name = self.drawing_lst[self.current_count].pt2_name
+            point_name_pt2 = self.drawing_lst[self.current_count].pt2_name
+
+            self.drawing_page\
+                .label_right\
+                .center_clicked\
+                .connect(lambda : self.scroll_position(fraction_width_pt2,
+                                                       fraction_height_pt2,
+                                                       point_name_pt2))
+            self.drawing_page\
+                .label_right\
+                .north_clicked\
+                .connect(self.clean_status_bar)
             
             """self.drawing_page.label_right.group_visu.value = True
             self.drawing_page.label_right.dipole_visu.value = False
@@ -916,13 +909,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.status_bar_mode_comment.setText("")
             
     def set_focus_group_box(self, element_number):
+        """
+        - highlight the element under focus while the others are
+        disabled.
+        - updates the surface of the element under focus.
+        - scroll on the element under focus
+        """
 
         print("enter in the focus group box for the element: ",
               element_number)
         
-        # first element of the list widget initially highlighted and other disabled
-        # first element surface updated
-       
         if self.listWidget_groupBox.count()>0 and element_number>=0:
             self.listWidget_groupBox.blockSignals(True)
             # itemchanged -> update group tool box
@@ -930,7 +926,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.listWidget_groupBox.blockSignals(False)
             self.update_surface_qlabel(element_number)
             
-        #self.listWidget_groupBox.setFocus()
         self.listWidget_groupBox.setCurrentRow(element_number)
         # to change only the line on which the focus is
         for i in range(0, self.listWidget_groupBox.count()):
@@ -942,6 +937,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.groupBoxLineList[i].spot_number_linedit.setEnabled(False)
                 self.groupBoxLineList[i].zurich_combo.setEnabled(False)
                 self.groupBoxLineList[i].McIntosh_combo.setEnabled(False)
+
+        horizontal_pos = (self.drawing_lst[self.current_count].group_lst[element_number].posX /
+                          self.drawing_page.label_right.drawing_pixMap.width())
+        vertical_pos = (self.drawing_lst[self.current_count].group_lst[element_number].posY /
+                        self.drawing_page.label_right.drawing_pixMap.height())
+
+        print("check scrolling: ", horizontal_pos,
+              vertical_pos)
+                
+        self.scroll_position(horizontal_pos, vertical_pos)
 
     def set_group_toolbox(self, n=0):
         print("update the group toolbox for the element", n)

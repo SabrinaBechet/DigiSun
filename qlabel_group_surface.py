@@ -36,6 +36,8 @@ class GroupSurfaceWidget(QtGui.QWidget):
          self.qlabel_group_surface.setAlignment(QtCore.Qt.AlignTop and QtCore.Qt.AlignRight)
          #self.qlabel_group_surface.setMaximumSize(600,600)
          self.scroll.setWidget(self.qlabel_group_surface)#self.widget_left_up)
+
+         self.radius = 0
          
          qlabel_title = QtGui.QLabel("Surface calculation")
          qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
@@ -44,10 +46,11 @@ class GroupSurfaceWidget(QtGui.QWidget):
          threshold_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
          threshold_slider.setRange(0,256)
          threshold_slider.setTickPosition(QtGui.QSlider.TicksBelow)
-         threshold_slider.setValue(225)
+         self.default_threshold = 225
+         threshold_slider.setValue(self.default_threshold)
          threshold_slider.valueChanged.connect(
              lambda: self.update_img_threshold_value(threshold_slider.value()))
-         self.threshold_linedit = QtGui.QLineEdit(str(threshold_slider.value()))
+         self.threshold_linedit = QtGui.QLineEdit(str(self.default_threshold))
 
          threshold_layout = QtGui.QFormLayout()
          threshold_layout.addRow("Threshold selection:",
@@ -148,29 +151,27 @@ class GroupSurfaceWidget(QtGui.QWidget):
         
          
     def cut_polygon(self, value):
-        #thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
-        #                                                      value,
-        #                                                      256,
-        #                                                      cv2.THRESH_BINARY_INV)
-        cut_array = self.qlabel_group_surface.cut_polygon(self.current_array)#selection_array_thresh)
+        cut_array = self.qlabel_group_surface.cut_polygon(self.current_array)
         self.set_img(cut_array)
          
     def update_img_threshold_value(self, value):
         self.qlabel_group_surface.polygon.value = False
         self.qlabel_group_surface.pencil.value = False
         self.qlabel_group_surface.bucket.value = False
-        
+
+        self.default_threshold = value
         new_selection_thresh = self.threshold(value)
         self.threshold_linedit.setText(str(value))
         self.set_img(new_selection_thresh)
         self.qlabel_group_surface.pointsList = []
 
-    def set_array(self, np_array, value=225):
+    def set_array(self, np_array):
         self.selection_array = np_array
-        self.set_img(self.threshold(value))
+        self.set_img(self.threshold(self.default_threshold))
         self.qlabel_group_surface.pointsList = []
 
-    def threshold(self, value=225):
+    def threshold(self, value):
+        print("do the threshold for a value of ", value)
         thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
                                                               value,
                                                               256,
@@ -182,11 +183,22 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.current_array = img
         self.qlabel_group_surface.set_original_img(img)
         nb_pixel = self.count_pixel(img)
+        projected_area = self.projected_area_calculation(nb_pixel)
         self.pixel_number_linedit.setText(str(nb_pixel))
+        self.projected_surface_linedit.setText(str(projected_area))
 
     def count_pixel(self, img):
-        return np.count_nonzero(img) 
+        return np.count_nonzero(img)
 
+    def set_radius(self, radius):
+        self.radius = radius
+        print("****************** define the radius here", self.radius)
+    
+    def projected_area_calculation(self, nb_pixel):
+        if self.radius:
+            return nb_pixel * math.pow(10,6)/(math.pi * self.radius**2)
+        else:
+            return 0
 
         
 class QLabelGroupSurface(QtGui.QLabel):
@@ -197,20 +209,13 @@ class QLabelGroupSurface(QtGui.QLabel):
         super(QLabelGroupSurface, self).__init__()
        
         self.original_pixmap = QtGui.QPixmap() # used for the reset
-        #self.threshold_pixmap = QtGui.QPixmap()
         self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
-        self.pixmap_before_threshold = QtGui.QPixmap()
         
-        #self.setMaximumWidth(500)
         self.width_scale = 600
         self.height_scale = 600
         self.scaling_factor = 1
         self.pointsList = []
-        
-        # self.is_drawing = False
-        #self.to_fill = False
-        #self.threshold_value = 225
-        
+           
         self.polygon = analyse_mode_bool.analyseModeBool(False)
         self.crop_done = analyse_mode_bool.analyseModeBool(False)
         self.pencil = analyse_mode_bool.analyseModeBool(False)
@@ -222,14 +227,12 @@ class QLabelGroupSurface(QtGui.QLabel):
         
         self.scaling_factor *=scaling_factor
         print("the scaling factor is", self.scaling_factor)
-        #self.set_img()
-
+       
         bis = self.original_pixmap.scaled(int(self.width_scale),
                                           int(self.height_scale),
                                           QtCore.Qt.KeepAspectRatio)
         
-        
-        self.setPixmap(bis)#original_pixmap)
+        self.setPixmap(bis)
     
     def set_original_img(self, np_array):
         #print("set the original image")
@@ -323,12 +326,9 @@ class QLabelGroupSurface(QtGui.QLabel):
         print("polygon")
         print(self.pointsList)
 
-        polygon_points =  [(int(math.floor(a.y()/(2.* self.scaling_factor ))),
-                            int(math.floor(a.x()/(2. * self.scaling_factor)))) for a in self.pointsList]
+        polygon_points =  [(int(math.floor(a.y() * array.shape[1] / self.height_scale )),
+                            int(math.floor(a.x() * array.shape[0] / self.width_scale ))) for a in self.pointsList]
         print(polygon_points)
-
-        #path = mpltPath.Path(polygon_points)
-
         polygon = Polygon(polygon_points)
         print(array.shape)
         count=0
@@ -362,15 +362,6 @@ class QLabelGroupSurface(QtGui.QLabel):
         self.pencil.value = False
         self.bucket.value = True
         
-        """x = self.position.x()
-        y = self.position.y()
-        image = self.pixmap().toImage()
-        array_image = self.convertQImageToMat(image)
-        array_image = self.iter_fill(x, y, array_image)
-        newPixmap = self.np2qpixmap(array_image)
-        self.setPixmap(newPixmap)
-        """
-
     def bucket_fill(self, position_x, position_y):
 
         print("enter in the bucket fill", position_x, position_y, self.array.shape[1], self.array.shape[0])
@@ -397,41 +388,7 @@ class QLabelGroupSurface(QtGui.QLabel):
             print("do down", position_x, position_y)
             self.bucket_fill(position_x , position_y + 1)
 
-            
-        
-    """def iter_fill(self,x_start,y_start,array):
-        stack = [(x_start,y_start)]
-        #C1, C2 and C3 are the colors in RGB that the pixel need to be in
-        #If the pen is white, then the pixels are turned black (0,0,0),
-        #otherwise they are turned red (0,0,255)
-        if self.pen.color() == QtCore.Qt.black:
-            c1 = 0
-            c2 = 0
-            c3 = 0
-        else:
-            c1 = 0
-            c2 = 0
-            c3 = 255
-        while stack:
-            x, y, stack = stack[0][0], stack[0][1], stack[1:]
-            if not self.check_color(x,y,array,c1,c2,c3):
-                array[y][x][0] = c1
-                array[y][x][1] = c2
-                array[y][x][2] = c3
-                if x > 0:
-                    stack.append((x - 1, y))
-                if x < (len(array[y])-1):
-                    stack.append((x + 1, y))
-                if y > 0:
-                    stack.append((x, y - 1))
-                if y < (len(array)-1):
-                    stack.append((x, y + 1))
-        return array
-
-    def check_color(self,x,y,array,c1,c2,c3):
-        return(array[y][x][0] == c1 and array[y][x][1] == c2 and array[y][x][2] == c3)
-
-    """
+  
     def mousePressEvent(self, QMouseEvent):
         position =  QMouseEvent.pos()
         
@@ -440,13 +397,13 @@ class QLabelGroupSurface(QtGui.QLabel):
             self.draw_polygon(position)
 
         elif self.pencil.value:
-            self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
-                       int(math.floor(position.x()/(2.* self.scaling_factor )))] = self.new_value
+            self.array[int(math.floor(position.y() * self.array.shape[1] / self.height_scale )),
+                       int(math.floor(position.x() * self.array.shape[0] / self.width_scale ))] = self.new_value
             self.array_changed.emit()
 
         elif self.bucket.value:
-            self.bucket_fill(int(math.floor(position.y()/(2.* self.scaling_factor ))),
-                             int(math.floor(position.x()/(2.* self.scaling_factor ))))
+            self.bucket_fill(int(math.floor(position.y() * self.array.shape[1] / self.height_scale )),
+                             int(math.floor(position.x() * self.array.shape[0] / self.width_scale )))
             self.array_changed.emit()
         
             
@@ -454,8 +411,11 @@ class QLabelGroupSurface(QtGui.QLabel):
         if self.pencil.value:
             print("mouse move event")
             position =  QMouseEvent.pos()
-            self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
+            self.array[int(math.floor(position.y() * self.array.shape[1] / self.height_scale )),
+                       int(math.floor(position.x() * self.array.shape[0] / self.width_scale ))] = self.new_value
+            """self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
                        int(math.floor(position.x()/(2.* self.scaling_factor )))] = self.new_value
+            """
             self.array_changed.emit()
             
     def mouseReleaseEvent(self,QMouseEvent):
@@ -463,7 +423,10 @@ class QLabelGroupSurface(QtGui.QLabel):
         if self.pencil.value:
             print("enter in the mouse release and painter end")
             position =  QMouseEvent.pos()
-            self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
+            self.array[int(math.floor(position.y() * self.array.shape[1] / self.height_scale )),
+                       int(math.floor(position.x() * self.array.shape[0] / self.width_scale ))] = self.new_value
+            """self.array[int(math.floor(position.y()/(2.* self.scaling_factor ))),
                        int(math.floor(position.x()/(2.* self.scaling_factor )))] = self.new_value
+            """
             self.array_changed.emit()
             

@@ -88,8 +88,6 @@ class QLabelDrawing(QtGui.QLabel):
        self.scaling_factor = 1
        self.dipole_points = []
        self.dipole_angles = []
-
-
        
     def get_img_array(self):
         """
@@ -321,6 +319,7 @@ class QLabelDrawing(QtGui.QLabel):
                               self.current_drawing.calibrated_center.y )
             painter.drawPoint(self.current_drawing.calibrated_north.x ,
                               self.current_drawing.calibrated_north.y ) 
+
             
         if self.group_visu.value and self.current_drawing.calibrated :
             pen_border = QtGui.QPen(QtCore.Qt.blue)
@@ -330,25 +329,32 @@ class QLabelDrawing(QtGui.QLabel):
             pen_selected.setWidth(self.pen_width * 2)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
 
+            if self.surface_mode.value:
+                pen_border.setColor(QtGui.QColor("transparent"))
+                
             print("current group count", self.current_drawing.group_count)
             
             for i in range(self.current_drawing.group_count):
                 #radius = self.img_mean_dimension/2000.
                 small_radius = self.drawing_height / 2000.
                 big_radius = self.drawing_height / 50.
+                frame_size = math.floor(self.current_drawing.calibrated_radius/400.) * 100
+                
                 print("radius", small_radius, big_radius)
                 painter.setPen(pen_border)               
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
                     
                 # here we should directly take x, y from the database
-                posX = self.current_drawing.group_lst[i].posX
-                posY = self.current_drawing.group_lst[i].posY
+                #posX = self.current_drawing.group_lst[i].posX
+                #posY = self.current_drawing.group_lst[i].posY
 
                 # print("check position")
                 # print(posX, posY)
                 
-                """x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
+                # we calculate the x, y and uses it as a visual check that
+                # the calcualtion is correct
+                x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
                     self.current_drawing.calibrated_center.x,
                     self.current_drawing.calibrated_center.y,
                     self.current_drawing.calibrated_north.x,
@@ -360,12 +366,22 @@ class QLabelDrawing(QtGui.QLabel):
                     self.current_drawing.angle_L,
                     self.drawing_height)
 
-                print("*****************")
+                """print("*****************")
                 print("posX:", x, posX)
                 print("posY:", y, posY)
                 """
-                painter.drawEllipse(QtCore.QPointF(posX, posY), small_radius, small_radius)
-                painter.drawEllipse(QtCore.QPointF(posX, posY), big_radius, big_radius)
+                #painter.drawEllipse(QtCore.QPointF(x, y), small_radius, small_radius)
+                #painter.drawEllipse(QtCore.QPointF(x, y), big_radius, big_radius)
+
+                if self.surface_mode.value:
+                    x_min = int(x - frame_size/2)
+                    y_min = int(y - frame_size/2)
+                    painter.drawRect(x_min, y_min, frame_size, frame_size)
+                else:
+                   painter.drawEllipse(QtCore.QPointF(x, y), small_radius, small_radius)
+                   painter.drawEllipse(QtCore.QPointF(x, y), big_radius, big_radius) 
+                
+                
                 
         if self.dipole_visu.value and self.current_drawing.calibrated :
             # note: a column with the cartesian coord of group should be recorded in the db!
