@@ -560,6 +560,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.zoom_in(
                 5./self.drawing_page.label_right.scaling_factor)
             self.set_focus_group_box(0)
+            self.drawing_page.label_right.set_img()
         
         if self.drawing_page.label_right.surface_mode.value:
             self.drawing_page.widget_middle_up.setMaximumWidth(600)
@@ -572,7 +573,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 1/self.drawing_page.label_right.scaling_factor)
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
 
+    def update_frame_surface(self, step=0):
+        div_factor = 400. + step * 100
+        print("the div factor is ", div_factor)
+        self.frame_size = math.floor(
+            self.drawing_lst[self.current_count].calibrated_radius/div_factor) * 100
 
+        print("the frame is now: ", self.frame_size)
+
+        self.drawing_page.label_right.frame_size = self.frame_size
+            
     def update_surface_qlabel(self, n):
         """
         Update the QLabelGroupSurface object which represent an image of the drawing 
@@ -591,19 +601,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             posY = self.drawing_lst[self.current_count]\
                            .group_lst[n]\
                            .posY
-
-            #coords = posX, posY, 0
-            #coords = self.drawing_page.label_right.get_cartesian_coordinate_from_HGC(longitude, latitude)
-            #coords = 0,0,0
-            #coords = list(coords)
             
             # don't forget to document this:
             print("------------------------------------CHECK!!!!!!!",
                   self.drawing_page.label_right.pixmap().height(),
                   self.drawing_page.label_right.drawing_pixMap.height())
 
-            frame_size = math.floor(self.drawing_lst[self.current_count].calibrated_radius/400.) * 100
-            print("the frame size is: ", frame_size)
+            self.update_frame_surface()
+            #self.frame_size = math.floor(self.drawing_lst[self.current_count].calibrated_radius/200.) * 100
+            # here set the frame in qlabel_drawing
+            print("the frame size is: ", self.frame_size)
 
             img_pix = self.drawing_page.label_right.get_img_array()
 
@@ -613,14 +620,20 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             bigger_matrix[100 : 100 + img_pix.shape[0],
                           100 : 100 + img_pix.shape[1]] = img_pix
             
-            x_min = int(100 + posX - frame_size/2)
-            x_max = int(100 + posX + frame_size/2)
-            y_min = int(100 + posY - frame_size/2)
-            y_max = int(100 + posY + frame_size/2)
+            x_min = int(100 + posX - self.frame_size/2)
+            x_max = int(100 + posX + self.frame_size/2)
+            y_min = int(100 + posY - self.frame_size/2)
+            y_max = int(100 + posY + self.frame_size/2)
 
             selection_array = bigger_matrix[y_min:y_max,x_min:x_max]
             self.group_surface_widget.set_array(selection_array)
-            self.group_surface_widget.set_radius(self.drawing_lst[self.current_count].calibrated_radius)
+            self.group_surface_widget.set_info(
+                self.drawing_lst[self.current_count].calibrated_radius,
+                posX - self.frame_size/2,
+                posY - self.frame_size/2,
+                self.drawing_lst[self.current_count].calibrated_center.x,
+                self.drawing_lst[self.current_count].calibrated_center.y,
+                )
 
             print("coordinates for the pixel matrix:")
             print(type(selection_array))
@@ -938,15 +951,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.groupBoxLineList[i].zurich_combo.setEnabled(False)
                 self.groupBoxLineList[i].McIntosh_combo.setEnabled(False)
 
-        horizontal_pos = (self.drawing_lst[self.current_count].group_lst[element_number].posX /
-                          self.drawing_page.label_right.drawing_pixMap.width())
-        vertical_pos = (self.drawing_lst[self.current_count].group_lst[element_number].posY /
-                        self.drawing_page.label_right.drawing_pixMap.height())
-
-        print("check scrolling: ", horizontal_pos,
-              vertical_pos)
+        if self.drawing_page.label_right.surface_mode.value:
+            horizontal_pos = (self.drawing_lst[self.current_count].group_lst[element_number].posX /
+                              self.drawing_page.label_right.drawing_pixMap.width())
+            vertical_pos = (self.drawing_lst[self.current_count].group_lst[element_number].posY /
+                            self.drawing_page.label_right.drawing_pixMap.height())
+            
+            print("check scrolling: ", horizontal_pos,
+                  vertical_pos)
                 
-        self.scroll_position(horizontal_pos, vertical_pos)
+            self.scroll_position(horizontal_pos, vertical_pos)
 
     def set_group_toolbox(self, n=0):
         print("update the group toolbox for the element", n)
@@ -1521,6 +1535,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_middle_up_layout.addWidget(
             self.group_surface_widget)
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
+        self.group_surface_widget.bigger_frame.connect(lambda: self.update_frame_surface(1))
+        self.group_surface_widget.smaller_frame.connect(lambda: self.update_frame_surface(-1))
         
     def add_current_session(self):
         

@@ -966,10 +966,10 @@ class Drawing(QtCore.QObject):
         print("posY : {} ".format(self._group_lst[group_number]._posY))
         
         self._group_lst[group_number]._Lcm = self._angle_L - longitude * 180/math.pi
-        radius_from_center = math.sqrt((posX - self.calibrated_center.x )**2 +
-                                       (posY - self.calibrated_center.y )**2)
+        distance_from_center = math.sqrt((posX - self.calibrated_center.x )**2 +
+                                         (posY - self.calibrated_center.y )**2)
         
-        self._group_lst[group_number]._CenterToLimb_angle = (math.asin(radius_from_center *
+        self._group_lst[group_number]._CenterToLimb_angle = (math.asin(distance_from_center *
                                              1./self.calibrated_radius) * 180. /math.pi)
 
         if posX > self.calibrated_center.x and posY > self.calibrated_center.y:

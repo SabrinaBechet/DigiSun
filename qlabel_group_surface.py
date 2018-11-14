@@ -19,6 +19,9 @@ from shapely.geometry.polygon import Polygon
 
 class GroupSurfaceWidget(QtGui.QWidget):
 
+    bigger_frame = QtCore.pyqtSignal()
+    smaller_frame = QtCore.pyqtSignal()
+    
     def __init__(self):
          super(GroupSurfaceWidget, self).__init__()
          self.layout = QtGui.QVBoxLayout()
@@ -38,6 +41,10 @@ class GroupSurfaceWidget(QtGui.QWidget):
          self.scroll.setWidget(self.qlabel_group_surface)#self.widget_left_up)
 
          self.radius = 0
+         self.start_x = 0
+         self.start_y = 0
+         self.center_x = 0
+         self.center_y = 0
          
          qlabel_title = QtGui.QLabel("Surface calculation")
          qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
@@ -60,65 +67,109 @@ class GroupSurfaceWidget(QtGui.QWidget):
          
          zoom_in_but =QtGui.QToolButton()
          zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
-         zoom_in_but.setMinimumWidth(self.width()/4.)
+         zoom_in_but.setMinimumWidth(self.width()/5.)
          zoom_in_but.clicked.connect(
              lambda: self.qlabel_group_surface.zoom_in(2.))
 
          zoom_out_but = QtGui.QToolButton()
          zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
-         zoom_out_but.setMinimumWidth(self.width()/4.)
+         zoom_out_but.setMinimumWidth(self.width()/5.)
          zoom_out_but.clicked.connect(
              lambda: self.qlabel_group_surface.zoom_in(1/2.))
 
          reset_but = QtGui.QToolButton()
          reset_but.setText("reset")
-         reset_but.setMinimumWidth(self.width()/4.)
+         reset_but.setMinimumWidth(self.width()/5.)
          reset_but.clicked.connect(
              lambda: self.update_img_threshold_value(threshold_slider.value()))
+
+         undo_but = QtGui.QToolButton()
+         undo_but.setText("undo")
+         undo_but.setMinimumWidth(self.width()/5.)
+         #undo_but.clicked.connect(
+         #    lambda: self.update_img_threshold_value(threshold_slider.value()))
+
+         bigger_frame_but =QtGui.QToolButton()
+         bigger_frame_but.setText("bigger")
+         #zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
+         bigger_frame_but.setMinimumWidth(self.width()/5.)
+         bigger_frame_but.clicked.connect(
+             lambda: self.bigger_frame.emit())
+  
+         smaller_frame_but =QtGui.QToolButton()
+         smaller_frame_but.setText("smaller")
+         #zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
+         smaller_frame_but.setMinimumWidth(self.width()/5.)
+         smaller_frame_but.clicked.connect(
+             lambda: self.smaller_frame.emit())
+  
+
          
          draw_polygon_but = QtGui.QToolButton()
          draw_polygon_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
-         draw_polygon_but.setMinimumWidth(self.width()/4.)
+         draw_polygon_but.setMinimumWidth(self.width()/5.)
          draw_polygon_but.clicked.connect( self.qlabel_group_surface.draw_polygon)
          
          qlabel_polygon = QtGui.QLabel("Polygon selection:")
          cut_polygon_but = QtGui.QToolButton()
          cut_polygon_but.setText("cut")
-         cut_polygon_but.setMinimumWidth(self.width()/4.)
+         cut_polygon_but.setMinimumWidth(self.width()/5.)
          cut_polygon_but.clicked.connect(
              lambda : self.cut_polygon(threshold_slider.value()))
 
          qlabel_paint = QtGui.QLabel("paint tools:")
          pencil_but = QtGui.QToolButton()
          pencil_but.setIcon(QtGui.QIcon('icons/Freepik/black_brush-stroke_32.png'))
-         pencil_but.setMinimumWidth(self.width()/4.)
+         pencil_but.setMinimumWidth(self.width()/5.)
          pencil_but.clicked.connect(lambda: self.draw_pencil(0))
 
          bucket_white_fill_but = QtGui.QToolButton()
-         bucket_white_fill_but.setIcon(QtGui.QIcon('icons/Darrio_Ferrando/bucket.svg'))
-         bucket_white_fill_but.setMinimumWidth(self.width()/4.)
+         bucket_white_fill_but.setIcon(QtGui.QIcon('icons/kiranshastry/white_paint-bucket_32.png'))
+         bucket_white_fill_but.setMinimumWidth(self.width()/5.)
          bucket_white_fill_but.clicked.connect(
              lambda : self.qlabel_group_surface.set_bucket_fill(self.current_array,
                                                                 0,
                                                                 255))
-         
+         bucket_black_fill_but = QtGui.QToolButton()
+         bucket_black_fill_but.setIcon(QtGui.QIcon('icons/kiranshastry/black_paint-bucket_32.png'))
+         bucket_black_fill_but.setMinimumWidth(self.width()/5.)
+         bucket_black_fill_but.clicked.connect(
+             lambda : self.qlabel_group_surface.set_bucket_fill(self.current_array,
+                                                                255,
+                                                                0))
          erase_but = QtGui.QToolButton()
          erase_but.setIcon(QtGui.QIcon('icons/Freepik/white_brush-stroke_32.png'))
-         erase_but.setMinimumWidth(self.width()/4.)
+         erase_but.setMinimumWidth(self.width()/5.)
          erase_but.clicked.connect(lambda: self.draw_pencil(255))
+
+         cross_but = QtGui.QToolButton()
+         cross_but.setMinimumWidth(self.width()/5.)
+         cross_but.clicked.connect(lambda: self.draw_pencil(255))
+
+         pixel_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
+         pixel_slider.setRange(1,5)
+         pixel_slider.setTickPosition(QtGui.QSlider.TicksBelow)
+         pixel_slider.setValue(1)
+         
 
          layout_general = QtGui.QGridLayout()
          layout_general.addWidget(qlabel_general, 0, 0)
          layout_general.addWidget(zoom_in_but, 1, 0)
          layout_general.addWidget(zoom_out_but, 1, 1)
-         layout_general.addWidget(reset_but, 1, 2)
-         layout_general.addWidget(qlabel_polygon, 2, 0)
-         layout_general.addWidget(draw_polygon_but, 3, 0)
-         layout_general.addWidget(cut_polygon_but, 3, 1)
-         layout_general.addWidget(qlabel_paint, 4, 0)
-         layout_general.addWidget(pencil_but, 5, 0)
-         layout_general.addWidget(erase_but, 5, 1)
-         layout_general.addWidget(bucket_white_fill_but, 5, 2)
+         layout_general.addWidget(undo_but, 1, 2)
+         layout_general.addWidget(reset_but, 1, 3)
+         layout_general.addWidget(bigger_frame_but, 2, 0)
+         layout_general.addWidget(smaller_frame_but, 2, 1)
+         layout_general.addWidget(qlabel_polygon, 3, 0)
+         layout_general.addWidget(draw_polygon_but, 4, 0)
+         layout_general.addWidget(cut_polygon_but, 4, 1)
+         layout_general.addWidget(qlabel_paint, 5, 0)
+         layout_general.addWidget(erase_but, 6, 0)
+         layout_general.addWidget(pencil_but, 6, 1)
+         layout_general.addWidget(bucket_white_fill_but, 6, 2)
+         layout_general.addWidget(bucket_black_fill_but, 6, 3)
+         layout_general.addWidget(cross_but, 7, 0)
+         layout_general.addWidget(pixel_slider, 7, 1)
          
          form_layout = QtGui.QFormLayout()
          self.pixel_number_linedit = QtGui.QLineEdit()
@@ -171,7 +222,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.qlabel_group_surface.pointsList = []
 
     def threshold(self, value):
-        print("do the threshold for a value of ", value)
+        #print("do the threshold for a value of ", value)
         thresh_value , selection_array_thresh = cv2.threshold(self.selection_array,
                                                               value,
                                                               256,
@@ -184,16 +235,52 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.qlabel_group_surface.set_original_img(img)
         nb_pixel = self.count_pixel(img)
         projected_area = self.projected_area_calculation(nb_pixel)
+        deprojected_area = self.deprojected_area_calculation(img)
         self.pixel_number_linedit.setText(str(nb_pixel))
-        self.projected_surface_linedit.setText(str(projected_area))
-
+        self.projected_surface_linedit.setText('{0:.2f}'.format(projected_area))
+        self.deprojected_surface_linedit.setText('{0:.2f}'.format(deprojected_area))
+        
     def count_pixel(self, img):
         return np.count_nonzero(img)
 
-    def set_radius(self, radius):
+    def set_info(self, radius, start_x, start_y, center_x, center_y):
+        print("set info")
+        print(radius, start_x, start_y, center_x, center_y)
         self.radius = radius
-        print("****************** define the radius here", self.radius)
-    
+        self.start_x = start_x
+        self.start_y = start_y
+        self.center_x = center_x
+        self.center_y = center_y
+
+    def deprojected_area_calculation(self, img):
+        print("**** check the deprojected area calculation")
+        print("start value ", self.start_x, self.start_y)
+        if self.radius:
+            index_x, index_y = img.nonzero()
+            pos_x = [x + self.start_x for x in index_x]
+            pos_y = [x + self.start_y for x in index_y]
+
+            print(len(index_x), len(pos_x))
+            
+            deprojected_area_sum = 0
+            for i in range(len(pos_x)):
+                distance_from_center =  math.sqrt((pos_x[i] - self.center_x )**2 +
+                                                  (pos_y[i] - self.center_y )**2)
+                #print(i, pos_x[i], self.center_x, pos_y[i], self.center_y, distance_from_center)
+                #print(i, pos_x[i] - self.center_x , pos_y[i] - self.center_y)
+                #print(i, self.radius, distance_from_center, pos_x[i], pos_y[i])
+                if distance_from_center < self.radius:
+                    center_to_limb_angle = (math.asin(distance_from_center *
+                                                      1./self.radius))
+                    
+                    deprojected_area_sum += 1./math.cos(center_to_limb_angle)
+                    
+            return deprojected_area_sum * math.pow(10, 6) /(2 * math.pi * self.radius**2)
+                #else:
+                #    return 0
+        else:
+            return 0
+            
     def projected_area_calculation(self, nb_pixel):
         if self.radius:
             return nb_pixel * math.pow(10,6)/(math.pi * self.radius**2)

@@ -88,6 +88,8 @@ class QLabelDrawing(QtGui.QLabel):
        self.scaling_factor = 1
        self.dipole_points = []
        self.dipole_angles = []
+
+       self.frame_size = 0
        
     def get_img_array(self):
         """
@@ -338,7 +340,7 @@ class QLabelDrawing(QtGui.QLabel):
                 #radius = self.img_mean_dimension/2000.
                 small_radius = self.drawing_height / 2000.
                 big_radius = self.drawing_height / 50.
-                frame_size = math.floor(self.current_drawing.calibrated_radius/400.) * 100
+                #frame_size = math.floor(self.current_drawing.calibrated_radius/200.) * 100
                 
                 print("radius", small_radius, big_radius)
                 painter.setPen(pen_border)               
@@ -374,9 +376,9 @@ class QLabelDrawing(QtGui.QLabel):
                 #painter.drawEllipse(QtCore.QPointF(x, y), big_radius, big_radius)
 
                 if self.surface_mode.value:
-                    x_min = int(x - frame_size/2)
-                    y_min = int(y - frame_size/2)
-                    painter.drawRect(x_min, y_min, frame_size, frame_size)
+                    x_min = int(x - self.frame_size/2)
+                    y_min = int(y - self.frame_size/2)
+                    painter.drawRect(x_min, y_min, self.frame_size, self.frame_size)
                 else:
                    painter.drawEllipse(QtCore.QPointF(x, y), small_radius, small_radius)
                    painter.drawEllipse(QtCore.QPointF(x, y), big_radius, big_radius) 
