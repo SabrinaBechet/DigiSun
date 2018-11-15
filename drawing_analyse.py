@@ -9,7 +9,7 @@ import math
 import configparser
 import time
 import numpy as np
-import cv2
+
 
 """
 The classes defined here contains only information related to the GUI of the drawing analyse.
@@ -62,7 +62,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_middle = QtGui.QWidget()
         self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_middle.setMaximumHeight(self.height()/2.)#200)
+        self.widget_left_middle.setMaximumHeight(self.height()/2.)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
@@ -73,7 +73,7 @@ class DrawingViewPage(QtGui.QWidget):
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down.setMinimumHeight(self.height()/2.)#200)
+        self.widget_left_down.setMinimumHeight(self.height()/2.)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
@@ -94,10 +94,9 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_down_bis.setLayout(self.widget_left_down_bis_layout)
         
         self.widget_middle_up = QtGui.QWidget()
-        
+        self.widget_middle_up.setMaximumWidth(left_column_maximum_width)
         # trick to keep the surface panel closed by default
         self.widget_middle_up.setMaximumWidth(10)
-        
         #self.widget_middle_up.setMinimumHeight(200)
         self.widget_middle_up.setStyleSheet("background-color:lightgray;")
         self.widget_middle_up_layout = QtGui.QVBoxLayout()
@@ -171,7 +170,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst = []
         self.set_toolbar()
         self.set_status_bar()
-        
+
+        self.div_factor = 400
         
         self.drawing_page\
             .label_right\
@@ -563,7 +563,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.set_img()
         
         if self.drawing_page.label_right.surface_mode.value:
-            self.drawing_page.widget_middle_up.setMaximumWidth(600)
+            self.drawing_page.widget_middle_up.setMaximumWidth(380)
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
             self.update_surface_qlabel(n)
 
@@ -574,16 +574,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
 
     def update_frame_surface(self, step=0):
-        div_factor = 400. + step * 100
-        print("the div factor is ", div_factor)
+        self.div_factor +=  step * 100
+        print("the div factor is ", self.div_factor)
         self.frame_size = math.floor(
-            self.drawing_lst[self.current_count].calibrated_radius/div_factor) * 100
+            self.drawing_lst[self.current_count].calibrated_radius / self.div_factor) * 100
 
         print("the frame is now: ", self.frame_size)
 
         self.drawing_page.label_right.frame_size = self.frame_size
+        self.drawing_page.label_right.set_img()
             
-    def update_surface_qlabel(self, n):
+    def update_surface_qlabel(self, n, step=0):
         """
         Update the QLabelGroupSurface object which represent an image of the drawing 
         to calculate the surface.
@@ -606,8 +607,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print("------------------------------------CHECK!!!!!!!",
                   self.drawing_page.label_right.pixmap().height(),
                   self.drawing_page.label_right.drawing_pixMap.height())
-
-            self.update_frame_surface()
+            
+            """div_factor = 400. + step * 100
+            self.frame_size = math.floor(
+            self.drawing_lst[self.current_count].calibrated_radius/div_factor) * 100
+            """
+            self.update_frame_surface(step)
             #self.frame_size = math.floor(self.drawing_lst[self.current_count].calibrated_radius/200.) * 100
             # here set the frame in qlabel_drawing
             print("the frame size is: ", self.frame_size)
@@ -1535,8 +1540,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_middle_up_layout.addWidget(
             self.group_surface_widget)
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
-        self.group_surface_widget.bigger_frame.connect(lambda: self.update_frame_surface(1))
-        self.group_surface_widget.smaller_frame.connect(lambda: self.update_frame_surface(-1))
+        self.group_surface_widget.bigger_frame.connect(
+            lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow(),
+                                               1))
+        self.group_surface_widget.smaller_frame.connect(
+            lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow(),
+                                               -1))
         
     def add_current_session(self):
         
