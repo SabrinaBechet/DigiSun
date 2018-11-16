@@ -28,6 +28,8 @@ class GroupSurfaceWidget(QtGui.QWidget):
          self.layout.setSpacing(15)
          self.setLayout(self.layout)
 
+         self.radius_division_factor = 400
+
          self.scroll = QtGui.QScrollArea()
          self.scroll\
              .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
