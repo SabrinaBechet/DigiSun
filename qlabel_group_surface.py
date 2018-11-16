@@ -88,30 +88,28 @@ class GroupSurfaceWidget(QtGui.QWidget):
          
          bigger_frame_but =QtGui.QToolButton()
          bigger_frame_but.setIcon(
-             QtGui.QIcon('icons/Linh_Pham/frame-square-symbol-with-four-angles.svg'))
+             QtGui.QIcon('icons/Linh_Pham/mine_bigger_frame.png'))
          bigger_frame_but.clicked.connect(
              lambda: self.bigger_frame.emit())
   
          smaller_frame_but =QtGui.QToolButton()
          smaller_frame_but.setIcon(
-             QtGui.QIcon('icons/Linh_Pham/frame-square-symbol-with-four-angles.svg'))
+             QtGui.QIcon('icons/Linh_Pham/mine_smaller_frame.png'))
          smaller_frame_but.clicked.connect(
              lambda: self.smaller_frame.emit())
   
-        
          draw_polygon_but = QtGui.QToolButton()
          draw_polygon_but.setIcon(
              QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
-         draw_polygon_but.clicked.connect( self.qlabel_group_surface.draw_polygon)
+         draw_polygon_but.clicked.connect(
+             self.qlabel_group_surface.draw_polygon)
          
          cut_polygon_but = QtGui.QToolButton()
          cut_polygon_but.setIcon(
              QtGui.QIcon('icons/Freepik/crop.svg'))
-         #cut_polygon_but.setMinimumWidth(self.width()/6.)
          cut_polygon_but.clicked.connect(
              lambda : self.cut_polygon(threshold_slider.value()))
 
-         #qlabel_paint = QtGui.QLabel("paint tools:")
          draw_1pixel_black_but = QtGui.QToolButton()
          draw_1pixel_black_but.setIcon(
              QtGui.QIcon('icons/Freepik/1pix_black_square.svg'))

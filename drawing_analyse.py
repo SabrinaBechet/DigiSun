@@ -403,8 +403,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.calibration_but.clicked.connect(self.start_calibration)
         self.add_group_but.clicked.connect(self.set_group_mode)
         self.add_dipole_but.clicked.connect(self.set_dipole_mode)
-        self.surface_but.clicked.connect(self.calculate_surface)
-
+        self.surface_but.clicked.connect(
+            lambda : self.calculate_surface(self.listWidget_groupBox.currentRow()))
+        
 
     def set_helper_grid(self):
         """
@@ -436,6 +437,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
             
         else:
@@ -480,6 +482,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.helper_grid.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
 
         else:
@@ -541,48 +544,76 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
         else:
             print("restore the old cursor")
             QtGui.QApplication.restoreOverrideCursor()
             self.clean_status_bar()
             
-    def calculate_surface(self, n):
+    def calculate_surface(self, n=0):
         QtGui.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.surface_mode.set_opposite_value()
 
+        self.surface_module_size_min = 380
+        
         if self.drawing_page.label_right.surface_mode.value:
+            self.drawing_page.widget_middle_up.setMinimumWidth(self.surface_module_size_min)
+            self.drawing_page.widget_middle_up.setMaximumWidth(580)
+            
             self.drawing_page.label_right.helper_grid.value = False
             self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
+            self.drawing_page.label_right.large_grid_overlay.value = False
+            self.drawing_page.label_right.small_grid_overlay.value = False
+            
+            
+            #self.update_surface_qlabel(n)
+            
+            #self.set_focus_group_box(n)
+            #self.drawing_page.label_right.group_visu_index = n
             
             self.drawing_page.label_right.zoom_in(
                 5./self.drawing_page.label_right.scaling_factor)
-            self.set_focus_group_box(0)
-            self.drawing_page.label_right.set_img()
-        
-        if self.drawing_page.label_right.surface_mode.value:
-            self.drawing_page.widget_middle_up.setMaximumWidth(380)
-            #self.drawing_page.widget_middle_up.setMinimumHeight(580)
-            self.update_surface_qlabel(n)
-
+            
+            self.set_focus_group_box(n)
+            
+            """horizontal_pos = (self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].posX /
+                              self.drawing_page.label_right.drawing_pixMap.width())
+            vertical_pos = (self.drawing_lst[self.current_count].group_lst[self.listWidget_groupBox.currentRow()].posY /
+                            self.drawing_page.label_right.drawing_pixMap.height())
+            
+            print("check scrolling: ", horizontal_pos,
+                  vertical_pos)
+                
+            self.scroll_position(horizontal_pos, vertical_pos)
+            """
+            
+            
         elif self.drawing_page.label_right.surface_mode.value == False:
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
+            self.drawing_page.label_right.large_grid_overlay.value = True
             self.drawing_page.label_right.zoom_in(
                 1/self.drawing_page.label_right.scaling_factor)
+            
             #self.drawing_page.widget_middle_up.setMinimumHeight(580)
 
     def update_frame_surface(self, step=0):
-        self.div_factor +=  step * 100
-        print("the div factor is ", self.div_factor)
-        self.frame_size = math.floor(
-            self.drawing_lst[self.current_count].calibrated_radius / self.div_factor) * 100
+        div_factor_tmp =  self.div_factor + step * 100
+        print("the div factor is ", div_factor_tmp)
+        frame_size_tmp = math.floor(
+            self.drawing_lst[self.current_count].calibrated_radius / div_factor_tmp) * 100
 
+        if frame_size_tmp>0:
+            self.frame_size = frame_size_tmp
+            self.div_factor = div_factor_tmp
         print("the frame is now: ", self.frame_size)
-
+        
         self.drawing_page.label_right.frame_size = self.frame_size
-        self.drawing_page.label_right.set_img()
+        if step!=0:
+            self.drawing_page.label_right.set_img()
             
     def update_surface_qlabel(self, n, step=0):
         """
@@ -657,6 +688,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         print("fraction width: ", self.fraction_width)
         print("fraction height: ", self.fraction_height)
         """
+        
         if point_name:
             self.status_bar_mode_comment.setText("Click on the " +
                                                  point_name +
@@ -668,8 +700,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.pixmap().height() -
             self.vertical_scroll_bar.pageStep())
         self.horizontal_scroll_bar.setMaximum(self.drawing_page.label_right.pixmap().width() -
-                                              self.horizontal_scroll_bar.pageStep() )
-  
+                                              self.horizontal_scroll_bar.pageStep() +
+                                              self.surface_module_size_min)
+
+        print("*************",
+              self.horizontal_scroll_bar.maximum(),
+              self.drawing_page.label_right.pixmap().width(),
+              self.horizontal_scroll_bar.pageStep(),
+              self.vertical_scroll_bar.maximum(),
+              self.drawing_page.label_right.pixmap().height(),
+              self.vertical_scroll_bar.pageStep())
+        
         self.horizontal_scroll_bar.setValue(
             self.horizontal_scroll_bar.maximum() * horizontal_pos)
         self.vertical_scroll_bar.setValue(
@@ -715,10 +756,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.add_dipole_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
             
             self.drawing_page.label_right.zoom_in(
                 5./self.drawing_page.label_right.scaling_factor)
+            
             
             fraction_width_pt1 = self.drawing_lst[self.current_count]\
                                       .pt1_fraction_width
@@ -930,7 +973,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         - highlight the element under focus while the others are
         disabled.
-        - updates the surface of the element under focus.
         - scroll on the element under focus
         """
 
@@ -942,7 +984,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             # itemchanged -> update group tool box
             self.listWidget_groupBox.item(element_number).setSelected(True) 
             self.listWidget_groupBox.blockSignals(False)
-            self.update_surface_qlabel(element_number)
+            #self.update_surface_qlabel(element_number)
             
         self.listWidget_groupBox.setCurrentRow(element_number)
         # to change only the line on which the focus is
@@ -966,7 +1008,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                   vertical_pos)
                 
             self.scroll_position(horizontal_pos, vertical_pos)
-
+        
     def set_group_toolbox(self, n=0):
         print("update the group toolbox for the element", n)
 
@@ -1542,10 +1584,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
         self.group_surface_widget.bigger_frame.connect(
             lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow(),
-                                               1))
+                                               -1))
         self.group_surface_widget.smaller_frame.connect(
             lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow(),
-                                               -1))
+                                               1))
         
     def add_current_session(self):
         
@@ -1609,6 +1651,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.goto_drawing_button.clicked.connect(
             lambda: self.set_drawing())
 
+        self.goto_drawing_button.clicked.connect(
+            lambda: self.update_surface_qlabel(0))
+
         layout_goto = QtGui.QHBoxLayout()
         layout_goto.addWidget(self.goto_drawing_label1)
         layout_goto.addWidget(self.goto_drawing_linedit)
@@ -1665,7 +1710,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if el.changed:
                 self.but_save.setStyleSheet("background-color: rgb(255, 165, 84)")
           
-        
     def set_drawing_lst(self, drawing_lst):
         """
         Get the list of drawings from bulk analysis page.
@@ -1802,7 +1846,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.add_group_mode.value = False
         self.drawing_page.label_right.add_dipole_mode.value = False
         #self.drawing_page.label_right.surface_mode.value = False
-
+        
         self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
         self.drawing_page.label_right.set_img()
 
@@ -1812,6 +1856,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         
         self.set_group_toolbox()
+        self.update_surface_qlabel(0)
         self.status_bar_mode_name.setText("")
         self.status_bar_mode_comment.setText("")
         #self.drawing_page.label_right.show()
