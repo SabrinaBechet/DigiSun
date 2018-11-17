@@ -12,17 +12,6 @@ import time
 import sys
 import analyse_mode_bool
 
-"""def radian_between_zero_pi(radian):
-    #if radian > 0 and radian < math.pi:
-    norm_radian = radian
-    if radian > 2*math.pi:
-        norm_radian = radian % 2*math.pi
-    elif radian<0:
-        norm_radian = math.pi - math.fabs(norm_radian)
-        
-    return norm_radian
-"""
-
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
@@ -403,7 +392,8 @@ class QLabelDrawing(QtGui.QLabel):
             for i in range(self.current_drawing.group_count):
 
                 zurich_type = self.current_drawing.group_lst[i].zurich.upper()
-                if zurich_type in ["B","C","D","E","F","G"]:
+                if (zurich_type in ["B","C","D","E","F","G"] and
+                    self.current_drawing.group_lst[i].dipole1_long):
                     
                     # here we should directly take x, y from the database 
                     (dip1_x,

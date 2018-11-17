@@ -137,6 +137,9 @@ def cartesian_from_HGC_upper_left_origin(x_center, y_center, x_north,
     y_lower_left_origin = - y_upper_left_origin
     """
 
+    print("latitude: ", HGC_lat)
+    print("longitude: ", HGC_long)
+    
     (x_lower_left_origin,
      y_lower_left_origin,
      z_lower_left_origin) = cartesian_from_drawing(x_center,

@@ -284,6 +284,26 @@ class GroupSurfaceWidget(QtGui.QWidget):
         else:
             return 0
 
+    def update_frame_surface(self, radius, step=0):
+        """
+        change the size of the frame around the surface selection.
+        """
+        div_factor = self.radius_division_factor
+        div_factor_tmp =  div_factor + step * 100
+        print("the div factor is ", div_factor_tmp)
+        
+        if div_factor_tmp:
+            frame_size_tmp = math.floor(radius / div_factor_tmp) * 100
+            if frame_size_tmp > 0:
+                frame_size = frame_size_tmp
+                self.radius_division_factor = div_factor_tmp
+            
+            
+        else:
+            frame_size = math.floor(radius / self.radius_division_factor) * 100
+
+        print("the frame is now: ", frame_size)
+        return frame_size
         
 class QLabelGroupSurface(QtGui.QLabel):
 

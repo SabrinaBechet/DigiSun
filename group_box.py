@@ -237,52 +237,58 @@ class GroupBox(QtGui.QWidget):
         
     def update_largest_spot_buttons(self, largest_spot, zurich_type):
         """
-        Need some adaptation when colum with largest_spot added in the database!
-        then replace g_spot directly by largest_spot!
-        value of g_spot:
-        0 for unipolar group -> button should be dissabled
-        1->9 for dipolar group -> green to indicate the type of the largest spot
-        NULL if not filled -> button should be in orange
+        Update the colors of the LTS buttons if needed.
+        - if group not dipolar -> lightblue and disabled
+        - if group dipolar and lts not filled -> orange and enabled
+        - if group dipolar and lts filled -> L, T or E in green and enabled
         """
-
-        print("update largest spot", largest_spot, zurich_type)
         
         if (zurich_type.upper() not in self.zurich_dipolar):
-            self.largest_spot_leading.setStyleSheet("background-color: lightblue")
-            self.largest_spot_trailing.setStyleSheet("background-color: lightblue")
-            self.largest_spot_egal.setStyleSheet("background-color: lightblue")
+            self.largest_spot_leading.setStyleSheet(
+                "background-color: lightblue")
+            self.largest_spot_trailing.setStyleSheet(
+                "background-color: lightblue")
+            self.largest_spot_egal.setStyleSheet(
+                "background-color: lightblue")
             self.largest_spot_leading.setDisabled(True)
             self.largest_spot_trailing.setDisabled(True)
-            self.largest_spot_egal.setDisabled(True)
-            
+            self.largest_spot_egal.setDisabled(True)    
         elif zurich_type.upper() in self.zurich_dipolar and largest_spot is None:
             self.largest_spot_leading.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
             self.largest_spot_trailing.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
-            self.largest_spot_egal.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.largest_spot_egal.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
             self.largest_spot_leading.setDisabled(False)
             self.largest_spot_trailing.setDisabled(False)
             self.largest_spot_egal.setDisabled(False)
         elif largest_spot is 'L':
-            self.largest_spot_leading.setStyleSheet("background-color: rgb(77, 185, 88)")
+            self.largest_spot_leading.setStyleSheet(
+                "background-color: rgb(77, 185, 88)")
             self.largest_spot_trailing.setStyleSheet("background-color: lightblue")
-            self.largest_spot_egal.setStyleSheet("background-color: lightblue")
+            self.largest_spot_egal.setStyleSheet(
+                "background-color: lightblue")
             self.largest_spot_leading.setDisabled(False)
             self.largest_spot_trailing.setDisabled(False)
             self.largest_spot_egal.setDisabled(False)
         elif largest_spot is 'T':
             self.largest_spot_trailing.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
-            self.largest_spot_leading.setStyleSheet("background-color: lightblue")
-            self.largest_spot_egal.setStyleSheet("background-color: lightblue")
+            self.largest_spot_leading.setStyleSheet(
+                "background-color: lightblue")
+            self.largest_spot_egal.setStyleSheet(
+                "background-color: lightblue")
             self.largest_spot_leading.setDisabled(False)
             self.largest_spot_trailing.setDisabled(False)
             self.largest_spot_egal.setDisabled(False)
         elif largest_spot is 'E':
-            self.largest_spot_egal.setStyleSheet("background-color: rgb(77, 185, 88)")
-            self.largest_spot_leading.setStyleSheet("background-color: lightblue")
-            self.largest_spot_trailing.setStyleSheet("background-color: lightblue")
+            self.largest_spot_egal.setStyleSheet(
+                "background-color: rgb(77, 185, 88)")
+            self.largest_spot_leading.setStyleSheet(
+                "background-color: lightblue")
+            self.largest_spot_trailing.setStyleSheet(
+                "background-color: lightblue")
             self.largest_spot_leading.setDisabled(False)
             self.largest_spot_trailing.setDisabled(False)
             self.largest_spot_egal.setDisabled(False)

@@ -3,7 +3,7 @@
 import os
 from PyQt4 import QtGui, QtCore
 
-import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates
+import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates, toolbar, statusbar, drawing_view_page
 from datetime import date, time, datetime, timedelta
 import math
 import configparser
@@ -18,136 +18,13 @@ Keep the analyse itself somwhere else!
 - DrawingAnalysePage: the page itself with all the widgets
 """
 
-class DrawingViewPage(QtGui.QWidget):
-    """
-    Contains the template of the DrawingViewPage
-    The attribute are:
-    - widget_left_up (the drawing information)
-    - widget_left_up_layout 
-    - widget_left_middle (the current session)
-    - widget_left_middle_layout 
-    - widget_left_down (the group information)
-    - widget_left_down_layout 
-    - widget_right (the right column, where the drawing is displayed)
-    - widget_right_layout (the layout of the right column)
-    - label_right (the drawing) 
-    There is a splitter that divides the right/left columns.
-    """
-
-    def __init__(self):
-        super(DrawingViewPage, self).__init__()
-
-        self.setLayout(QtGui.QVBoxLayout())
-
-        left_column_maximum_width = 380
-
-        self.scroll_widget_left_up = QtGui.QScrollArea()
-        self.scroll_widget_left_up\
-            .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.scroll_widget_left_up\
-            .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.scroll_widget_left_up .setWidgetResizable(True)
-        self.widget_left_up = QtGui.QWidget()
-        #self.widget_left_up.setMinimumWidth(left_column_maximum_width)
-        #self.widget_left_up.setMaximumHeight(self.width()/2.)#500)
-        self.widget_left_up.setStyleSheet("background-color:lightgray;")
-        self.scroll_widget_left_up.setWidget(self.widget_left_up)
-        
-        self.widget_left_up_layout = QtGui.QVBoxLayout()
-        self.widget_left_up_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_left_up_layout.setSpacing(0)
-        self.widget_left_up_layout.setAlignment(QtCore.Qt.AlignTop)
-        self.widget_left_up.setLayout(self.widget_left_up_layout)
-        
-
-        self.widget_left_middle = QtGui.QWidget()
-        self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_middle.setMaximumHeight(self.height()/2.)
-        self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
-        self.widget_left_middle_layout = QtGui.QVBoxLayout()
-        self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_left_middle_layout.setSpacing(0)
-        self.widget_left_middle_layout.setAlignment(QtCore.Qt.AlignTop)
-        self.widget_left_middle.setLayout(self.widget_left_middle_layout)
-        self.widget_left_middle_layout.setMargin(10)
-        
-        self.widget_left_down = QtGui.QWidget()
-        self.widget_left_down.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down.setMinimumHeight(self.height()/2.)
-        self.widget_left_down.setStyleSheet("background-color:lightblue;")   
-        self.widget_left_down_layout = QtGui.QVBoxLayout()
-        self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_left_down_layout.setSpacing(0)
-        self.widget_left_down_layout.setAlignment(QtCore.Qt.AlignTop and
-                                                  QtCore.Qt.AlignRight)
-        self.widget_left_down.setLayout(self.widget_left_down_layout)
-        
-        self.widget_left_down_bis = QtGui.QWidget()
-        self.widget_left_down_bis.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down_bis.setMaximumHeight(200)
-        self.widget_left_down_bis.setStyleSheet("background-color:lightblue;")   
-        self.widget_left_down_bis_layout = QtGui.QVBoxLayout()
-        self.widget_left_down_bis_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_left_down_bis_layout.setSpacing(0)
-        self.widget_left_down_bis_layout.setAlignment(QtCore.Qt.AlignTop and
-                                                      QtCore.Qt.AlignRight)
-        self.widget_left_down_bis.setLayout(self.widget_left_down_bis_layout)
-        
-        self.widget_middle_up = QtGui.QWidget()
-        self.widget_middle_up.setMaximumWidth(left_column_maximum_width)
-        # trick to keep the surface panel closed by default
-        self.widget_middle_up.setMaximumWidth(10)
-        #self.widget_middle_up.setMinimumHeight(200)
-        self.widget_middle_up.setStyleSheet("background-color:lightgray;")
-        self.widget_middle_up_layout = QtGui.QVBoxLayout()
-        self.widget_middle_up_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_middle_up_layout.setSpacing(10)
-        self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop)
-        self.widget_middle_up.setLayout(self.widget_middle_up_layout)
-        #self.label_middle_up = qlabel_group_surface.QLabelGroupSurface()
-        
-        self.widget_right = QtGui.QWidget()
-        self.widget_right.setStyleSheet("background-color:gray;")
-        self.widget_right_layout = QtGui.QVBoxLayout()
-        self.widget_right_layout.setContentsMargins(0, 0, 0, 0) 
-        self.widget_right_layout.setSpacing(0)
-        self.widget_right.setLayout(self.widget_right_layout)
-        self.label_right = qlabel_drawing.QLabelDrawing()
-
-        #self.label_middle_up = qlabel_drawing.QLabelGroupSurface()
-        
-        #self.widget_right.layout().addWidget(self.label_middle_up)
-        #self.widget_right.layout().addWidget(self.label_right)
-  
-        self.scroll = QtGui.QScrollArea()
-        self.scroll.setWidget(self.label_right)
-        
-        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scroll.setWidgetResizable(True)
- 
-        self.widget_right_layout.addWidget(self.scroll)
-        
-        splitter_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
-        self.layout().addWidget(splitter_down)
-        splitter_down.addWidget(self.widget_left_down)
-        splitter_down.addWidget(self.widget_left_down_bis)
-        
-        splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
-        self.layout().addWidget(splitter_middle_down)
-        #splitter_middle_down.addWidget(self.widget_left_up)
-        splitter_middle_down.addWidget(self.scroll_widget_left_up)
-        splitter_middle_down.addWidget(self.widget_left_middle)
-        splitter_middle_down.addWidget(splitter_down)
-              
-        splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
-        self.layout().addWidget(splitter_main)
-        splitter_main.addWidget(splitter_middle_down)
-        splitter_main.addWidget(self.widget_middle_up)
-        splitter_main.addWidget(self.widget_right)
-    
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
+    Depending on the info_analysed list,it will shows:
+    - only the info related to groups
+    - additional info related to dipoles
+    - additional info related to area
+
     Page that shows the drawing and where the analyse is done.
     Attributes:
     - config
@@ -160,15 +37,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     
     
     Methods:
-    - set_conifiguration
+    - set_configuration
     - setCentralWidget
     - add_drawing_information
     - add_current_session
-    - add_surface_widget
     - set_toolbar
     - set_status_bar
-
-    - add_group_box : when one click on the drawing with add group mode on
+    - set_button_color
 
     - set_large_grid
     - set_small_grid
@@ -181,12 +56,29 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     - set_add_dipole_mode
     - set_surface_mode
 
-    - set_group_widget
-    - set_focus_group_box
-    
-    - check_dipole ??
-    
+    ----general:
+    - scroll_position: scroll to a given position
 
+    ----related to groups:
+    - add_group_box : when one click on the drawing with add group mode on
+    - set_group_widget : associate a widget to each group
+    - set_group_toolbox : associate a toolbox for the group on focus
+    - set_focus_group_box : highlight the element on focus
+    - update_group_visu : update the index of the group on focus for the visualisation
+    - delete_group : delete a group by clicking on the red cross in the group toolbox
+
+   
+    ----related to dipole:
+    - check_dipole
+    - update_largest_spot : update the largest spot when clicking on the LTS button
+
+    ----related to area:
+    - add_surface_widget
+    - update_surface_qlabel
+    - set_green_frame_around_surface
+
+    - set_focus_group_box  
+  
     """
     def __init__(self, operator=None):
         super(DrawingAnalysePage, self).__init__()
@@ -194,17 +86,20 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.config = configparser.ConfigParser()
         self.config_file = "digisun.ini"
         self.set_configuration()
-        self.drawing_page = DrawingViewPage()
+        self.drawing_page = drawing_view_page.DrawingViewPage()
         self.vertical_scroll_bar = self.drawing_page.scroll.verticalScrollBar()
         self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
         
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
+        self.level_info = ['dipole', 'area'] # group always included
         
         self.add_drawing_information()
         self.add_current_session()
-        self.add_surface_widget()
+        if 'area' in self.level_info:
+            self.add_surface_widget()
+            
         self.drawing_lst = []
         self.set_toolbar()
         self.set_status_bar()
@@ -217,7 +112,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
         self.zurich_dipolar = ["B","C","D","E","F","G", "X"]
-
+ 
     def set_configuration(self):
         """
         TO DO:
@@ -233,214 +128,108 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         except IOError:
             print('IOError - config file not found !!')
         
-        
-    def set_button_color(self, mode_bool, but):
-        if mode_bool==True:
-            but.setStyleSheet("background-color: lightblue")
-        elif mode_bool==False:
-            but.setStyleSheet("background-color: lightgray")
-
-
     def set_status_bar(self):
-        """
-        This is maybe heavy, a more elegant and lighter solution?
-        """
-        #self.statusBar = QtGui.QStatusBar()
-        self.status_bar_mode_name = QtGui.QLabel()
-        self.status_bar_mode_name.setStyleSheet(
-            "QLabel { background-color : red; color : blue; }");
-        self.status_bar_mode_name.setAlignment(QtCore.Qt.AlignHCenter)
-        self.status_bar_mode_name.setMinimumSize(self.status_bar_mode_name.sizeHint())
-        self.status_bar_mode_comment = QtGui.QLabel()
-        self.status_bar_mode_comment.setIndent(3)
-              
-        #locationLabel = QtGui.QLabel(" this is a test of the status bar... ")
-        #self.setStatusBar(self.statusBar)
+        digisun_status_bar = statusbar.StatusBar()
+        self.setStatusBar(digisun_status_bar)
         
-        self.statusBar().addWidget(self.status_bar_mode_name)
-        self.statusBar().addWidget(self.status_bar_mode_comment)
-        
-        """
-        self.statusBar().setStyleSheet("background-color : red; color : blue; ");
-        self.statusBar().showMessage("this is a test")
-        self.statusBar().setMinimumSize(locationLabel.sizeHint())
-        """ 
     def set_toolbar(self):
-        """Note : The QToolBar class inherit from QWidget.
+        """ 
+        Define the digisun toolbar.
+        if dipole in the level of info -> dipole button
+        if surface in the level of info -> surface button
         """
 
-        toolbar = self.addToolBar("view")
-        toolbar.setIconSize(QtCore.QSize(30, 30));
-
-        zoom_in_but = QtGui.QToolButton(toolbar)
-        zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        zoom_in_but.setText("zoom in")
-        zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
-
-        zoom_out_but = QtGui.QToolButton(toolbar)
-        zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        zoom_out_but.setText("zoom out")
-        zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
-   
-        large_grid_but = QtGui.QToolButton(toolbar)
-        large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        large_grid_but.setText("large grid")
-        large_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
-        self.drawing_page.label_right\
-                         .large_grid_overlay\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.large_grid_overlay.value,
-                             large_grid_but ))
-        if self.drawing_page.label_right.large_grid_overlay.value :
-            large_grid_but.setStyleSheet("background-color: lightblue")
-            
-        small_grid_but = QtGui.QToolButton(toolbar)
-        small_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        small_grid_but.setText("small grid")
-        small_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
-        self.drawing_page.label_right\
-                         .small_grid_overlay\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.small_grid_overlay.value,
-                             small_grid_but))
-        if self.drawing_page.label_right.small_grid_overlay.value :
-            small_grid_but.setStyleSheet("background-color: lightblue")
-
-        group_visu_but = QtGui.QToolButton(toolbar)
-        group_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        group_visu_but.setText("group view")
-        group_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share_1.svg'))
-        self.drawing_page.label_right\
-                         .group_visu\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.group_visu.value,
-                             group_visu_but))
-        if self.drawing_page.label_right.group_visu.value :
-            group_visu_but.setStyleSheet("background-color: lightblue")
-
-
-        dipole_visu_but = QtGui.QToolButton(toolbar)
-        dipole_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        dipole_visu_but.setText("dipole view")
-        dipole_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
-        self.drawing_page.label_right\
-                         .dipole_visu\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.dipole_visu.value,
-                             dipole_visu_but))
-        if self.drawing_page.label_right.dipole_visu.value :
-            dipole_visu_but.setStyleSheet("background-color: lightblue")
-
-        helper_grid_but = QtGui.QToolButton(toolbar)
-        helper_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        helper_grid_but.setText("helper grid")
-        helper_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
-        self.drawing_page.label_right\
-                         .helper_grid\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.helper_grid.value,
-                             helper_grid_but))
-        if self.drawing_page.label_right.helper_grid.value :
-            helper_grid_but.setStyleSheet("background-color: lightblue")
-            
-        calibration_but = QtGui.QToolButton(toolbar)
-        calibration_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        calibration_but.setText("calibrate")
-        calibration_but.setIcon(QtGui.QIcon('icons/Smashicons/target.svg'))
-        self.drawing_page.label_right\
-                         .calibration_mode\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.calibration_mode.value,
-                             calibration_but))
-        if self.drawing_page.label_right.calibration_mode.value :
-            calibration_but.setStyleSheet("background-color: lightblue")
-
-        add_group_but = QtGui.QToolButton(toolbar)
-        add_group_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        add_group_but.setText("add group")
-        add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
-        self.drawing_page.label_right\
-                         .add_group_mode\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.add_group_mode.value,
-                             add_group_but))
-        if self.drawing_page.label_right.add_group_mode.value :
-            add_group_but.setStyleSheet("background-color: lightblue")
-
-        add_dipole_but = QtGui.QToolButton(toolbar)
-        add_dipole_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        add_dipole_but.setText("add dipole")
-        add_dipole_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
-        self.drawing_page.label_right\
-                         .add_dipole_mode\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.add_dipole_mode.value,
-                             add_dipole_but))
-        if self.drawing_page.label_right.add_dipole_mode.value :
-            add_dipole_but.setStyleSheet("background-color: lightblue")
-
-        surface_but = QtGui.QToolButton(toolbar)
-        surface_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        surface_but.setText("surface")
-        surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))
-        self.drawing_page.label_right\
-                         .surface_mode\
-                         .value_changed\
-                         .connect(lambda: self.set_button_color(
-                             self.drawing_page.label_right.surface_mode.value,
-                             surface_but))
-        if self.drawing_page.label_right.surface_mode.value :
-            surface_but.setStyleSheet("background-color: lightblue")
-            
-         
-        vertical_line_widget = QtGui.QWidget()
-        vertical_line_widget.setFixedWidth(2)
-        vertical_line_widget.setStyleSheet("background-color: black")
-
-        vertical_line_widget2 = QtGui.QWidget()
-        vertical_line_widget2.setFixedWidth(2)
-        vertical_line_widget2.setStyleSheet("background-color: black")
-
-        toolbar.addWidget(zoom_in_but)
-        toolbar.addWidget(zoom_out_but)
-        toolbar.addWidget(large_grid_but)
-        toolbar.addWidget(small_grid_but)
-        toolbar.addWidget(group_visu_but)
-        toolbar.addWidget(dipole_visu_but)
-        toolbar.addWidget(vertical_line_widget)
-        toolbar.addWidget(helper_grid_but)
-        #toolbar.addWidget(vertical_line_widget2)
-        toolbar.addWidget(calibration_but)
-        toolbar.addWidget(add_group_but)
-        toolbar.addWidget(add_dipole_but)
-        toolbar.addWidget(surface_but)
+        digisun_toolbar = toolbar.Toolbar(self.drawing_page, self.level_info)
+        self.addToolBar(digisun_toolbar)
         
-        zoom_in_but\
-            .clicked\
-            .connect(lambda : self.drawing_page.label_right.zoom_in(1.1))
-        zoom_out_but\
-            .clicked\
-            .connect(lambda : self.drawing_page.label_right.zoom_in(1/1.1))
-        large_grid_but.clicked.connect(self.set_large_grid)
-        small_grid_but.clicked.connect(self.set_small_grid)
-        group_visu_but.clicked.connect(self.set_group_visualisation)
-        dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
+        digisun_toolbar.zoom_in_but.clicked.connect(
+            lambda : self.drawing_page.label_right.zoom_in(1.1))
+        digisun_toolbar.zoom_out_but.clicked.connect(
+            lambda : self.drawing_page.label_right.zoom_in(1/1.1))
+        digisun_toolbar.large_grid_but.clicked.connect(self.set_large_grid)
+        digisun_toolbar.small_grid_but.clicked.connect(self.set_small_grid)
+        digisun_toolbar.group_visu_but.clicked.connect(self.set_group_visualisation)
+        digisun_toolbar.dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
 
-        helper_grid_but.clicked.connect(self.set_helper_grid)
-        calibration_but.clicked.connect(self.start_calibration)
-        add_group_but.clicked.connect(self.set_add_group_mode)
-        add_dipole_but.clicked.connect(self.set_add_dipole_mode)
-        surface_but.clicked.connect(
-            lambda : self.set_surface_mode(self.listWidget_groupBox.currentRow()))
+        digisun_toolbar.helper_grid_but.clicked.connect(self.set_helper_grid)
+        digisun_toolbar.calibration_but.clicked.connect(self.start_calibration)
+        digisun_toolbar.add_group_but.clicked.connect(self.set_add_group_mode)
         
+        if 'dipole' in self.level_info:
+            digisun_toolbar.add_dipole_but.clicked.connect(self.set_add_dipole_mode)
+            
+        if 'area' in self.level_info:
+            digisun_toolbar.surface_but.clicked.connect(
+                lambda : self.set_surface_mode(self.listWidget_groupBox.currentRow()))
+        
+        
+    def start_calibration(self):
+        """
+        Contains two parts:
+        1. put the drawing on the center and click on the center -> signal
+        2. put the drawing on the north and click on the norht -> signal
+        here it is what happens when one click on the calibrate button
+        (the rest is described in the mouse event)
+        """
+        self.drawing_page.label_right.calibration_mode.set_opposite_value()
+        QtGui.QApplication.restoreOverrideCursor()
+
+        if self.drawing_page.label_right.calibration_mode.value:    
+            self.drawing_page.label_right.setCursor(QtCore.Qt.CrossCursor)
+            self.statusBar().name.setText("Calibration mode")
+        
+            self.drawing_page.label_right.calibration_mode.value = True
+            self.drawing_page.label_right.center_done = False
+            self.drawing_page.label_right.north_done = False
+            
+            self.drawing_page.label_right.group_visu.value = False
+            self.drawing_page.label_right.dipole_visu.value = False
+            self.drawing_page.label_right.large_grid_overlay.value = False
+            self.drawing_page.label_right.small_grid_overlay.value = False
+
+            self.drawing_page.label_right.helper_grid.value = False
+            self.drawing_page.label_right.add_group_mode.value = False
+            self.drawing_page.label_right.add_dipole_mode.value = False
+            self.drawing_page.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
+            
+            self.drawing_page.label_right.zoom_in(
+                5./self.drawing_page.label_right.scaling_factor)
+            
+            fraction_width_pt1 = self.drawing_lst[self.current_count]\
+                                      .pt1_fraction_width
+            fraction_height_pt1 = self.drawing_lst[self.current_count]\
+                                       .pt1_fraction_height
+            point_name_pt1 = self.drawing_lst[self.current_count].pt1_name
+            self.scroll_position(fraction_width_pt1,
+                                 fraction_height_pt1,
+                                 0,
+                                 point_name_pt1)
+
+            fraction_width_pt2 = self.drawing_lst[self.current_count]\
+                                      .pt2_fraction_width
+            fraction_height_pt2 = self.drawing_lst[self.current_count]\
+                                       .pt2_fraction_height
+            point_name_pt2 = self.drawing_lst[self.current_count].pt2_name
+
+            self.drawing_page\
+                .label_right\
+                .center_clicked\
+                .connect(lambda : self.scroll_position(fraction_width_pt2,
+                                                       fraction_height_pt2,
+                                                       0,
+                                                       point_name_pt2))
+            self.drawing_page\
+                .label_right\
+                .north_clicked\
+                .connect(self.statusBar().clean)
+            
+        else:
+            QtGui.QApplication.restoreOverrideCursor()
+            self.drawing_page.label_right.zoom_in(
+                1/self.drawing_page.label_right.scaling_factor)
+            self.statusBar().clean()
 
     def set_helper_grid(self):
         """
@@ -455,17 +244,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.helper_grid.set_opposite_value()
         
         if self.drawing_page.label_right.helper_grid.value:
-            self.status_bar_mode_name.setText("Helper grid mode")
+            self.statusBar().name.setText("Helper grid mode")
             if self.drawing_lst[self.current_count].calibrated==0:
-                self.status_bar_mode_comment.setText(" Warning :" +
-                                                     " The calibration must" +
-                                                     " be  done before using" +
-                                                     " the helper grid!")
+                
+                self.statusBar().comment.setText(" Warning :" +
+                                                 " The calibration must" +
+                                                 " be  done before using" +
+                                                 " the helper grid!")
             else:
-                self.status_bar_mode_comment.setText("Click on a point" +
-                                                     " on the solar disk" +
-                                                     " to see the helper" +
-                                                     " grid ")
+                self.statusBar().comment.setText("Click on a point" +
+                                                 " on the solar disk" +
+                                                 " to see the helper" +
+                                                 " grid ")
+                
             if self.drawing_page.label_right.calibration_mode.value:
                 self.start_calibration()   
             self.drawing_page.label_right.add_group_mode.value = False
@@ -475,9 +266,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
             
         else:
-            self.clean_status_bar()
+            self.statusBar().clean()
             self.drawing_page.label_right.set_img()
-       
+            
     def set_add_group_mode(self):
         """
         - reset the cursor to its original shape
@@ -489,19 +280,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.add_group_mode.set_opposite_value()
         
         if self.drawing_page.label_right.add_group_mode.value:
-            self.status_bar_mode_name.setText("Add group mode")
+            self.statusBar().name.setText("Add group mode")
             
             if not self.drawing_page.label_right.group_visu.value:
                 self.drawing_page.label_right.group_visu.value = True
                 self.drawing_page.label_right.set_img()
 
             if self.drawing_lst[self.current_count].calibrated==0:
-                self.status_bar_mode_comment.setText(" Warning :" +
-                                                     " The calibration must" +
-                                                     " be  done before adding" +
-                                                     " groups!")
+                self.statusBar().comment.setText(" Warning :" +
+                                                 " The calibration must" +
+                                                 " be  done before adding" +
+                                                 " groups!")
             else:
-                self.status_bar_mode_comment.setText("Click on a the group" +
+                self.statusBar().comment.setText("Click on a the group" +
                                                      " position to add it")
                 cursor_img = ("/home/sabrinabct/Projets/DigiSun_2018_gitlab/" +
                               "cursor/Pixel_perfect/target_24.png")
@@ -522,16 +313,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             print("restore the old cursor")
             #QtGui.QApplication.restoreOverrideCursor()
             self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
-            self.clean_status_bar()
-
+            self.statusBar().clean()
+            
     def add_group_box(self):
         """
         Fonction triggered when one click on the drawing while
         the add_group_mode is on.
+        - add a widget for the new group
+        - put the focus on the new group
+        - add a toolbox for the new group
+        - display the updated wolf number
         """
-        #print("Enter in the add group function..")
-        #print("group count", self.drawing_lst[self.current_count].group_count)
-        
         self.set_group_widget()
         self.set_focus_group_box(self.drawing_lst[self.current_count].group_count - 1)
         self.set_group_toolbox(self.drawing_lst[self.current_count].group_count - 1)
@@ -550,37 +342,38 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
         
         if self.drawing_page.label_right.add_dipole_mode.value:
-            self.status_bar_mode_name.setText("Add dipole mode")
+            self.statusBar().name.setText("Add dipole mode")
+            
             if not self.drawing_page.label_right.dipole_visu.value:
                 self.drawing_page.label_right.dipole_visu.value = True
                 self.drawing_page.label_right.set_img()
-            if self.drawing_lst[self.current_count].calibrated==0:
-                self.status_bar_mode_comment.setText(" Warning :" +
+                if self.drawing_lst[self.current_count].calibrated==0:
+                    self.statusBar().comment.setText(" Warning :" +
                                                      " The calibration must" +
                                                      " be  done before adding" +
                                                      " dipole!")
                 
-            elif (self.drawing_lst[self.current_count].calibrated==1 and
-                  self.drawing_lst[self.current_count].group_count==0):
-                self.status_bar_mode_comment.setText(" Warning :" +
+                elif (self.drawing_lst[self.current_count].calibrated==1 and
+                self.drawing_lst[self.current_count].group_count==0):
+                    self.statusBar().comment.setText(" Warning :" +
                                                      " Dipolar groups must" +
                                                      " be  added before adding" +
                                                      " dipole!")
-                
+                    
             elif (self.drawing_lst[self.current_count].calibrated==1 and
                   self.drawing_lst[self.current_count].group_count > 0):
                 self.check_dipole(self.listWidget_groupBox.currentRow())
-                
+
+            if self.drawing_page.label_right.calibration_mode.value:
+                self.start_calibration() 
             self.drawing_page.label_right.helper_grid.value = False
-            self.drawing_page.label_right.calibration_mode.value = False
             self.drawing_page.label_right.add_group_mode.value = False
             self.drawing_page.label_right.surface_mode.value = False
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
         else:
-            #print("restore the old cursor")
             QtGui.QApplication.restoreOverrideCursor()
-            self.clean_status_bar()
+            self.statusBar().clean()
             
     def set_surface_mode(self, n=0):
         """
@@ -614,8 +407,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.zoom_in(
                 5./self.drawing_page.label_right.scaling_factor)
             
-            #self.set_focus_group_box(n)
-
             if self.drawing_lst[self.current_count].group_count > 0:
                 pos_x = (self.drawing_lst[self.current_count]\
                          .group_lst[self.listWidget_groupBox.currentRow()].posX /
@@ -623,10 +414,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 pos_y = (self.drawing_lst[self.current_count]\
                          .group_lst[self.listWidget_groupBox.currentRow()].posY /
                          self.drawing_page.label_right.drawing_pixMap.height())
-                #print("check scrolling: ", pos_x, pos_y)   
                 self.scroll_position(pos_x, pos_y, surface_module_size_max)
                 
-            
         elif self.drawing_page.label_right.surface_mode.value == False:
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
@@ -634,37 +423,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.zoom_in(
                 1/self.drawing_page.label_right.scaling_factor)
 
-    def update_frame_surface(self, step=0):
-
-        div_factor = self.group_surface_widget.radius_division_factor
-        div_factor_tmp =  div_factor + step * 100
-        print("the div factor is ", div_factor_tmp)
-
-        frame_size_tmp = math.floor(
-            self.drawing_lst[self.current_count].calibrated_radius /
-            div_factor_tmp) * 100
-
-        if frame_size_tmp>0:
-            frame_size = frame_size_tmp
-            self.group_surface_widget.radius_division_factor = div_factor_tmp
-        print("the frame is now: ", frame_size)
-        
-        self.drawing_page.label_right.frame_size = frame_size
-        if step!=0:
-            self.drawing_page.label_right.set_img()
-
-        return frame_size
-    
     def update_surface_qlabel(self, n, step=0):
         """
-        Update the QLabelGroupSurface object which represent an image of the drawing 
+        Update the QLabelGroupSurface object which represents an image of the drawing 
         to calculate the surface.
-        This method uses heliographic coordinates so it needs 
-        the calibration to be done!
-        More: it need groups to be added... as it is the group surface!
-        """
-        print("update surface qlabel number:", n)
-        
+        """    
         if (self.drawing_lst[self.current_count].calibrated and
             self.drawing_page.label_right.surface_mode):
 
@@ -682,7 +445,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 #self.drawing_page.label_right.drawing_pixMap.height())
             
             
-                frame_size = self.update_frame_surface(step)
+                frame_size = self.group_surface_widget.update_frame_surface(
+                    self.drawing_lst[self.current_count].calibrated_radius,
+                    step)
+                
+                self.drawing_page.label_right.frame_size = frame_size
+                if step!=0:
+                    self.drawing_page.label_right.set_img()
 
                 img_pix = self.drawing_page.label_right.get_img_array()
 
@@ -722,17 +491,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Automatically scroll to the position given 
         by the self.fraction_width and self.fraction_height.
         """
-        """print("************scroll function")
-        print("image width:", self.drawing_page.label_right.pixmap().width())
-        print("image height: ", self.drawing_page.label_right.pixmap().height())
-        print("fraction width: ", self.fraction_width)
-        print("fraction height: ", self.fraction_height)
-        """
-        
         if point_name:
-            self.status_bar_mode_comment.setText("Click on the " +
-                                                 point_name +
-                                                 " position")
+            self.statusBar().comment.setText(
+                "Click on the " + point_name + " position")
+            
         self.vertical_scroll_bar.setMinimum(0)
         self.horizontal_scroll_bar.setMinimum(0)
         self.vertical_scroll_bar.setMaximum(
@@ -742,94 +504,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.label_right.pixmap().width() -
             self.horizontal_scroll_bar.pageStep() +
             extra_width)
-
-        """print("*************",
-              self.horizontal_scroll_bar.maximum(),
-              self.drawing_page.label_right.pixmap().width(),
-              self.horizontal_scroll_bar.pageStep(),
-              self.vertical_scroll_bar.maximum(),
-              self.drawing_page.label_right.pixmap().height(),
-              self.vertical_scroll_bar.pageStep())
-        """
+        
         self.horizontal_scroll_bar.setValue(
             self.horizontal_scroll_bar.maximum() * pos_x)
         self.vertical_scroll_bar.setValue(
             self.vertical_scroll_bar.maximum() * pos_y)
-
-    def clean_status_bar(self):
-        self.status_bar_mode_name.setText("")
-        self.status_bar_mode_comment.setText("")
     
-    def start_calibration(self):
-        """
-        Contains two parts:
-        1. put the drawing on the center and click on the center -> signal
-        2. put the drawing on the north and click on the norht -> signal
-        here it is what happens when one click on the calibrate button
-        (the rest is described in the mouse event)
-        """
-        self.drawing_page.label_right.calibration_mode.set_opposite_value()
-        QtGui.QApplication.restoreOverrideCursor()
-
-        if self.drawing_page.label_right.calibration_mode.value:    
-            self.drawing_page.label_right.setCursor(QtCore.Qt.CrossCursor)
-            self.status_bar_mode_name.setText("Calibration mode")
-        
-            self.drawing_page.label_right.calibration_mode.value = True
-            self.drawing_page.label_right.center_done = False
-            self.drawing_page.label_right.north_done = False
-            
-            self.drawing_page.label_right.group_visu.value = False
-            self.drawing_page.label_right.dipole_visu.value = False
-            self.drawing_page.label_right.large_grid_overlay.value = False
-            self.drawing_page.label_right.small_grid_overlay.value = False
-
-            self.drawing_page.label_right.helper_grid.value = False
-            self.drawing_page.label_right.add_group_mode.value = False
-            self.drawing_page.label_right.add_dipole_mode.value = False
-            self.drawing_page.label_right.surface_mode.value = False
-            self.drawing_page.widget_middle_up.setMinimumWidth(0)
-            self.drawing_page.widget_middle_up.setMaximumWidth(10)
-            
-            self.drawing_page.label_right.zoom_in(
-                5./self.drawing_page.label_right.scaling_factor)
-            
-            
-            fraction_width_pt1 = self.drawing_lst[self.current_count]\
-                                      .pt1_fraction_width
-            fraction_height_pt1 = self.drawing_lst[self.current_count]\
-                                       .pt1_fraction_height
-            point_name_pt1 = self.drawing_lst[self.current_count].pt1_name
-            self.scroll_position(fraction_width_pt1,
-                                 fraction_height_pt1,
-                                 0,
-                                 point_name_pt1)
-
-            fraction_width_pt2 = self.drawing_lst[self.current_count]\
-                                      .pt2_fraction_width
-            fraction_height_pt2 = self.drawing_lst[self.current_count]\
-                                       .pt2_fraction_height
-            point_name_pt2 = self.drawing_lst[self.current_count].pt2_name
-
-            self.drawing_page\
-                .label_right\
-                .center_clicked\
-                .connect(lambda : self.scroll_position(fraction_width_pt2,
-                                                       fraction_height_pt2,
-                                                       0,
-                                                       point_name_pt2))
-            self.drawing_page\
-                .label_right\
-                .north_clicked\
-                .connect(self.clean_status_bar)
-            
-        else:
-            QtGui.QApplication.restoreOverrideCursor()
-            self.drawing_page.label_right.zoom_in(
-                1/self.drawing_page.label_right.scaling_factor)
-            print("out of the calibration")
-            self.clean_status_bar()
-
     def set_group_visualisation(self):
         self.drawing_page.label_right.group_visu.set_opposite_value()
         self.drawing_page.label_right.set_img()
@@ -968,16 +648,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         
     def check_dipole(self, element_number):
-        print("check dipole")
         
         if (self.drawing_page.label_right.add_dipole_mode.value and 
             self.drawing_lst[self.current_count]\
             .group_lst[element_number]\
             .zurich.upper() not in self.zurich_dipolar):
             
-            self.status_bar_mode_name.setText("Add dipole mode")
-            self.status_bar_mode_comment.setStyleSheet("QLabel { color : red; }");
-            self.status_bar_mode_comment.setText(
+            self.statusBar().name.setText("Add dipole mode")
+            self.statusBar().comment.setStyleSheet("QLabel { color : red; }");
+            self.statusBar().comment.setText(
                 "Warning this is not a dipolar group!!")
             self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
 
@@ -986,20 +665,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
               .zurich.upper()
               in self.zurich_dipolar):
             
-            self.status_bar_mode_name.setText("Add dipole mode")
-            self.status_bar_mode_comment.setStyleSheet("QLabel { color : black; }");
-            self.status_bar_mode_comment.setText("Click on a dipole" +
+            self.statusBar().name.setText("Add dipole mode")
+            self.statusBar().comment.setStyleSheet("QLabel { color : black; }");
+            self.statusBar().comment.setText("Click on a dipole" +
                                                      " positions to add it")
             self.drawing_page.label_right.setCursor(QtCore.Qt.SizeFDiagCursor)
 
         else:
-            self.status_bar_mode_name.setText("") 
-            self.status_bar_mode_comment.setText("")
+            self.statusBar().clean()
+            
             
     def set_focus_group_box(self, element_number):
         """
-        - highlight the element under focus while the others are
-        disabled.
+        - highlight the element under focus while the others are disabled.
         - if area mode: scroll on the element under focus
         """
 
@@ -1028,7 +706,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if (self.drawing_page.label_right.surface_mode.value and
             self.listWidget_groupBox.count()>0):
             self.set_green_frame_around_surface(element_number)
-                
+
+            
     def set_green_frame_around_surface(self, element_number):
         """
         Put a green frame around the surface on the focus.
@@ -1042,11 +721,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                      .group_lst[element_number].posY /
                      self.drawing_page.label_right.drawing_pixMap.height())
             self.scroll_position(pos_x, pos_y)
-        
+
+            
     def set_group_toolbox(self, n=0):
-
-        print("update the group toolbox for the element", n)
-
+        """
+        Associate a toolbox with more detailled information for the group on focus.
+        """
         # A widget is deleted when its parents is deleted.
         layout_object = self.drawing_page.widget_left_down_bis_layout.count()
         for i in reversed(range(layout_object)):
@@ -1174,12 +854,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.wolf_number.setText(str(self.drawing_lst[self.current_count].wolf))
         
     def update_largest_spot(self, largest_spot):
+        """
+        - update the largest spot when clicking on the LTS buttons.
+        - update the g_spot value.
+        - change the color of the group box if needed
+        """
         
         group_index = self.listWidget_groupBox.currentRow()
-        
-        print("update largest spot",
-              largest_spot,
-              self.drawing_lst[self.current_count].group_lst[group_index].dipole1_lat)
         
         self.drawing_lst[self.current_count]\
             .group_lst[group_index].largest_spot = largest_spot
@@ -1436,7 +1117,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         
     def update_group_visu(self, n):
-        print("update_group_visu")
+        """
+        Update the index of the group on the focus, 
+        this group is then shown in green.
+        """
         self.drawing_page.label_right.group_visu_index = n
         self.drawing_page.label_right.set_img()
         
@@ -1778,8 +1462,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         self.drawing_operator.setText(
             self.drawing_lst[self.current_count].operator)
-        self.drawing_last_update.setText(
-            self.drawing_lst[self.current_count].last_update_time)
+        if self.drawing_lst[self.current_count].last_update_time:
+            self.drawing_last_update.setText(
+                str(self.drawing_lst[self.current_count].last_update_time.strftime('%Y')) +
+                "/" +
+                str(self.drawing_lst[self.current_count].last_update_time.strftime('%m')) +
+                "/" +
+                str(self.drawing_lst[self.current_count].last_update_time.strftime('%d')))
         self.drawing_observer.setText(
             self.drawing_lst[self.current_count].observer)
         self.drawing_date.setDate(
@@ -1889,10 +1578,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.set_focus_group_box(0)
         
-        
         self.set_group_toolbox()
         self.update_surface_qlabel(0)
-        self.status_bar_mode_name.setText("")
-        self.status_bar_mode_comment.setText("")
-        #self.drawing_page.label_right.show()
+        
+        self.statusBar().name.setText("")
+        self.statusBar().comment.setText("")
+        self.drawing_page.label_right.show()
     
