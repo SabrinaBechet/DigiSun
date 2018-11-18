@@ -20,12 +20,12 @@ Keep the analyse itself somwhere else!
 
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
+    Page that shows the drawing and where the analyse is done.
     Depending on the info_analysed list,it will shows:
     - only the info related to groups
     - additional info related to dipoles
     - additional info related to area
-
-    Page that shows the drawing and where the analyse is done.
+    
     Attributes:
     - config
     - config_file : name of configuration file
@@ -91,6 +91,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.horizontal_scroll_bar = self.drawing_page.scroll.horizontalScrollBar()
         
         self.setCentralWidget(self.drawing_page)
+
+        #self.group_scroll = analyse_mode_bool.analyseModeBool(True)
         
         self.operator = operator
         self.level_info = ['dipole', 'area'] # group always included
@@ -108,6 +110,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             .label_right\
             .group_added\
             .connect(self.add_group_box)
+
+        self.drawing_page\
+            .label_right\
+            .dipole_added\
+            .connect(self.update_dipole_button)
         
         self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
 
@@ -116,7 +123,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def set_configuration(self):
         """
         TO DO:
-        the prefix should be read from the database (prefix from the drawing_type table)
+        the prefix should be read from the database 
+        (prefix from the drawing_type table)
         and from the initialization file
         """
         try:
@@ -146,11 +154,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             lambda : self.drawing_page.label_right.zoom_in(1.1))
         digisun_toolbar.zoom_out_but.clicked.connect(
             lambda : self.drawing_page.label_right.zoom_in(1/1.1))
+
+        """digisun_toolbar.group_scroll_but.clicked.connect(
+            self.set_group_scroll_mode)
+        """
         digisun_toolbar.large_grid_but.clicked.connect(self.set_large_grid)
         digisun_toolbar.small_grid_but.clicked.connect(self.set_small_grid)
         digisun_toolbar.group_visu_but.clicked.connect(self.set_group_visualisation)
         digisun_toolbar.dipole_visu_but.clicked.connect(self.set_dipole_visualisation)
-
         digisun_toolbar.helper_grid_but.clicked.connect(self.set_helper_grid)
         digisun_toolbar.calibration_but.clicked.connect(self.start_calibration)
         digisun_toolbar.add_group_but.clicked.connect(self.set_add_group_mode)
@@ -294,8 +305,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             else:
                 self.statusBar().comment.setText("Click on a the group" +
                                                      " position to add it")
-                cursor_img = ("/home/sabrinabct/Projets/DigiSun_2018_gitlab/" +
-                              "cursor/Pixel_perfect/target_24.png")
+                cursor_img = ("cursor/Pixel_perfect/target_24.png")
                 cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
                 #QtGui.QApplication.setOverrideCursor(cursor_add_group)
                 self.drawing_page.label_right.setCursor(cursor_add_group)
@@ -347,22 +357,26 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if not self.drawing_page.label_right.dipole_visu.value:
                 self.drawing_page.label_right.dipole_visu.value = True
                 self.drawing_page.label_right.set_img()
-                if self.drawing_lst[self.current_count].calibrated==0:
-                    self.statusBar().comment.setText(" Warning :" +
-                                                     " The calibration must" +
-                                                     " be  done before adding" +
-                                                     " dipole!")
                 
-                elif (self.drawing_lst[self.current_count].calibrated==1 and
-                self.drawing_lst[self.current_count].group_count==0):
-                    self.statusBar().comment.setText(" Warning :" +
-                                                     " Dipolar groups must" +
-                                                     " be  added before adding" +
-                                                     " dipole!")
+            if self.drawing_lst[self.current_count].calibrated==0:
+                self.statusBar().comment.setText(" Warning :" +
+                                                 " The calibration must" +
+                                                 " be  done before adding" +
+                                                 " dipole!")
+                
+            elif (self.drawing_lst[self.current_count].calibrated==1 and
+                  self.drawing_lst[self.current_count].group_count==0):
+                self.statusBar().comment.setText(" Warning :" +
+                                                 " Dipolar groups must" +
+                                                 " be  added before adding" +
+                                                 " dipole!")
                     
             elif (self.drawing_lst[self.current_count].calibrated==1 and
                   self.drawing_lst[self.current_count].group_count > 0):
+                self.drawing_page.label_right.setCursor(
+                    QtCore.Qt.SizeFDiagCursor)
                 self.check_dipole(self.listWidget_groupBox.currentRow())
+                
 
             if self.drawing_page.label_right.calibration_mode.value:
                 self.start_calibration() 
@@ -390,6 +404,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         surface_module_size_max = 580
         
         if self.drawing_page.label_right.surface_mode.value:
+            #self.scroll_group.value = True
             self.drawing_page\
                 .widget_middle_up\
                 .setMinimumWidth(surface_module_size_min)
@@ -489,7 +504,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def scroll_position(self, pos_x, pos_y, extra_width=0 ,point_name=None):
         """
         Automatically scroll to the position given 
-        by the self.fraction_width and self.fraction_height.
+        by the pos_x and pos_y.
         """
         if point_name:
             self.statusBar().comment.setText(
@@ -623,7 +638,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             item.setSizeHint(groupBoxLine.sizeHint())
             self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
            
-        self.drawing_page.widget_left_down_layout.addWidget(self.listWidget_groupBox)
+        self.drawing_page.widget_left_down_layout.addWidget(
+            self.listWidget_groupBox)
         
         # Signals related to the change of item in the group box
         self.listWidget_groupBox.itemSelectionChanged.connect(
@@ -646,8 +662,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             lambda: self.check_dipole(
                 self.listWidget_groupBox.currentRow()))
 
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.scroll_group_position(
+                self.listWidget_groupBox.currentRow()))
+
         
     def check_dipole(self, element_number):
+        """
+        Only for the add_dipole_mode.
+        Check if the type of the element_number is dipolar and write
+        the relevant message in the status bar.
+        """
         
         if (self.drawing_page.label_right.add_dipole_mode.value and 
             self.drawing_lst[self.current_count]\
@@ -658,7 +683,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.statusBar().comment.setStyleSheet("QLabel { color : red; }");
             self.statusBar().comment.setText(
                 "Warning this is not a dipolar group!!")
-            self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
+            #self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
 
         elif (self.drawing_page.label_right.add_dipole_mode.value and 
               self.drawing_lst[self.current_count].group_lst[element_number]\
@@ -669,8 +694,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.statusBar().comment.setStyleSheet("QLabel { color : black; }");
             self.statusBar().comment.setText("Click on a dipole" +
                                                      " positions to add it")
-            self.drawing_page.label_right.setCursor(QtCore.Qt.SizeFDiagCursor)
-
         else:
             self.statusBar().clean()
             
@@ -705,15 +728,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         if (self.drawing_page.label_right.surface_mode.value and
             self.listWidget_groupBox.count()>0):
-            self.set_green_frame_around_surface(element_number)
+            self.scroll_group_position(element_number)
 
+    """def set_group_scroll_mode(self):
+        self.drawing_page.label_right.group_scroll.set_opposite_value()
+    """        
+    def scroll_group_position(self, element_number):
+        """
+        Scroll to the position of the group given by
+        the element_number.
+        """
+        if (self.listWidget_groupBox.count()>0):
             
-    def set_green_frame_around_surface(self, element_number):
-        """
-        Put a green frame around the surface on the focus.
-        """
-        if (self.drawing_page.label_right.surface_mode.value and
-            self.listWidget_groupBox.count()>0):
             pos_x = (self.drawing_lst[self.current_count]\
                      .group_lst[element_number].posX /
                      self.drawing_page.label_right.drawing_pixMap.width())
@@ -878,7 +904,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[self.current_count]\
             .group_lst[group_index].zurich)
 
-        self.update_dipole_button(group_index)
+        self.update_dipole_button()
            
     def check_information_complete(self, index, level):
         """
@@ -929,8 +955,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         return missing_info
 
-        
-    def update_dipole_button(self, index):
+    def update_dipole_button(self):
         """
         The information concerning the dipole (zurich in zurich dipolar) 
         is complete when:
@@ -939,13 +964,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if one of the two condition is not met -> dipole button in red
         else -> dipole button in green
         """
-        missing_info = self.check_information_complete(index,
+        group_index = self.listWidget_groupBox.currentRow()
+        missing_info = self.check_information_complete(group_index,
                                                        'dipole')
+        #print("update dipole button")
+        #print(missing_info)
+        
         if missing_info:
-            self.groupBoxLineList[index].dipole_button.setStyleSheet(
+            self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
         else:
-            self.groupBoxLineList[index]\
+            self.groupBoxLineList[group_index]\
                 .dipole_button.setStyleSheet(
                     "background-color: transparent")
         
@@ -998,9 +1027,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                       posY)
         
         self.group_toolbox.longitude_linedit.setText('{0:.2f}'.format(
-                self.drawing_lst[index].group_lst[group_index].longitude * 180/math.pi))
+            self.drawing_lst[index].group_lst[group_index].longitude *
+            180/math.pi))
         self.group_toolbox.latitude_linedit.setText('{0:.2f}'.format(
-                self.drawing_lst[index].group_lst[group_index].latitude * 180/math.pi))
+            self.drawing_lst[index].group_lst[group_index].latitude *
+            180/math.pi))
         
         self.drawing_page.label_right.set_img()
       
@@ -1016,8 +1047,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             new_sunspot_number = self.group_toolbox.spot_number_linedit.text()
             
         else:
-            new_sunspot_number = self.groupBoxLineList[n].spot_number_linedit.text()   
-
+            new_sunspot_number = self.groupBoxLineList[n].spot_number_linedit.text()
+            
         self.drawing_lst[self.current_count].update_spot_number(
             self.listWidget_groupBox.currentRow(),
             int(new_sunspot_number))
@@ -1035,6 +1066,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             str(self.drawing_lst[self.current_count].group_lst[n].spots))
 
         self.wolf_number.setText(str(self.drawing_lst[self.current_count].wolf))
+        self.update_dipole_button()
 
     def modify_drawing_zurich(self, n, is_toolbox):
         """
@@ -1088,11 +1120,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.drawing_lst[self.current_count].group_lst[n].McIntosh,
                 self.drawing_lst[self.current_count].group_lst[n].largest_spot)
 
-        self.update_dipole_button(n)
+        self.update_dipole_button()
         self.group_toolbox.update_largest_spot_buttons(
             self.drawing_lst[self.current_count].group_lst[n].largest_spot,
             new_zurich_type)
-        
+
+        self.check_dipole(n)
         
     def modify_drawing_mcIntosh(self, n, is_toolbox):
         old_mcIntosh_type = self.drawing_lst[self.current_count]\
@@ -1153,8 +1186,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.drawing_date = QtGui.QDateEdit()
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
-        today = QtCore.QDate.currentDate()
-        self.drawing_date.setDate(today)
+        #today = QtCore.QDate.currentDate()
+        #self.drawing_date.setDate(today)
         self.drawing_date.setEnabled(False)
         self.drawing_date.setStyleSheet(
             "background-color: lightgray; color:black")
@@ -1311,11 +1344,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def add_current_session(self):
         
         form_layout = QtGui.QFormLayout()
-        form_layout.setSpacing(15)
+        form_layout.setSpacing(5)
 
         title_left_middle = QtGui.QLabel("Current session")
         title_left_middle.setAlignment(QtCore.Qt.AlignCenter)
-        title_left_middle.setContentsMargins(0, 5, 0, 5)
+        title_left_middle.setContentsMargins(0, 2, 0, 2)
         self.drawing_page.widget_left_middle_layout.addWidget(title_left_middle)
         
         current_operator_linedit = QtGui.QLineEdit(
@@ -1391,7 +1424,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[self.current_count].group_count==0):
             # pop up that ask if it is normal?
             pass
-
         
     def update_counter(self, value):
         
@@ -1462,13 +1494,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         self.drawing_operator.setText(
             self.drawing_lst[self.current_count].operator)
-        if self.drawing_lst[self.current_count].last_update_time:
+
+        if (self.drawing_lst[self.current_count].last_update_time and
+            isinstance(self.drawing_lst[self.current_count].last_update_time, datetime)):
             self.drawing_last_update.setText(
                 str(self.drawing_lst[self.current_count].last_update_time.strftime('%Y')) +
                 "/" +
                 str(self.drawing_lst[self.current_count].last_update_time.strftime('%m')) +
                 "/" +
                 str(self.drawing_lst[self.current_count].last_update_time.strftime('%d')))
+            
+        elif (self.drawing_lst[self.current_count].last_update_time and
+              isinstance(self.drawing_lst[self.current_count].last_update_time, str)):
+            self.drawing_last_update.setText(
+                str(self.drawing_lst[self.current_count].last_update_time))
+                
         self.drawing_observer.setText(
             self.drawing_lst[self.current_count].observer)
         self.drawing_date.setDate(
@@ -1580,7 +1620,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.set_group_toolbox()
         self.update_surface_qlabel(0)
-        
+        #self.scroll_group_position(0)
         self.statusBar().name.setText("")
         self.statusBar().comment.setText("")
         self.drawing_page.label_right.show()

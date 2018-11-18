@@ -3,12 +3,7 @@
 import os
 from PyQt4 import QtGui, QtCore
 
-import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates, toolbar, statusbar
-from datetime import date, time, datetime, timedelta
-import math
-import configparser
-import time
-import numpy as np
+import qlabel_drawing #, qlabel_group_surface, coordinates, toolbar, statusbar
 
 class DrawingViewPage(QtGui.QWidget):
     """
@@ -65,7 +60,7 @@ class DrawingViewPage(QtGui.QWidget):
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down.setMinimumHeight(self.height()/2.)
+        self.widget_left_down.setMinimumHeight(self.height()/3.)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")   
         self.widget_left_down_layout = QtGui.QVBoxLayout()
         self.widget_left_down_layout.setContentsMargins(0, 0, 0, 0) 

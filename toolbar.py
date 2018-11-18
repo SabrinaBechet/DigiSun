@@ -11,6 +11,13 @@ class Toolbar(QtGui.QToolBar):
     def __init__(self, drawing_page, level_info):
         super(Toolbar, self).__init__()
 
+        self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
+
+        """self.group_scroll_but = QtGui.QToolButton(self)
+        self.group_scroll_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.group_scroll_but.setText("group scroll")
+        self.group_scroll_but.setIcon(QtGui.QIcon('icons/Smashicons/route.svg'))
+        """
         self.zoom_in_but = QtGui.QToolButton(self)
         self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_in_but.setText("zoom in")
@@ -60,6 +67,7 @@ class Toolbar(QtGui.QToolBar):
         vertical_line_widget.setFixedWidth(2)
         vertical_line_widget.setStyleSheet("background-color: black")
 
+        #self.addWidget(self.group_scroll_but)
         self.addWidget(self.zoom_in_but)
         self.addWidget(self.zoom_out_but)
         self.addWidget(self.large_grid_but)
@@ -84,7 +92,14 @@ class Toolbar(QtGui.QToolBar):
             self.surface_but.setText("surface")
             self.surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))
             self.addWidget(self.surface_but)
-            
+
+        """drawing_page.label_right.group_scroll.value_changed.connect(
+            lambda: self.set_button_color(
+                drawing_page.label_right.group_scroll.value,
+                self.group_scroll_but ))
+        if drawing_page.label_right.group_scroll.value :
+            self.group_scroll_but.setStyleSheet("background-color: lightblue")
+        """    
         drawing_page.label_right.large_grid_overlay.value_changed.connect(
             lambda: self.set_button_color(
                 drawing_page.label_right.large_grid_overlay.value,

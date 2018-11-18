@@ -38,6 +38,7 @@ class QLabelDrawing(QtGui.QLabel):
     center_clicked = QtCore.pyqtSignal()
     north_clicked = QtCore.pyqtSignal()
     group_added = QtCore.pyqtSignal()
+    dipole_added = QtCore.pyqtSignal()
     
     def __init__(self):
        super(QLabelDrawing, self).__init__()
@@ -298,12 +299,18 @@ class QLabelDrawing(QtGui.QLabel):
                     
                 if self.grid_draw_point:    
                     for i in range(len(x_lst_0_90)):
-                        painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst_0_90[i],
-                                          self.current_drawing.calibrated_center.y + y_lst_0_90[i])
-
+                        painter.drawPoint(
+                            self.current_drawing.calibrated_center.x +
+                            x_lst_0_90[i],
+                            self.current_drawing.calibrated_center.y +
+                            y_lst_0_90[i])
+                    
                     for i in range(len(x_lst_minus90_0)):
-                        painter.drawPoint(self.current_drawing.calibrated_center.x + x_lst_minus90_0[i],
-                                          self.current_drawing.calibrated_center.y + y_lst_minus90_0[i])
+                        painter.drawPoint(
+                            self.current_drawing.calibrated_center.x +
+                            x_lst_minus90_0[i],
+                            self.current_drawing.calibrated_center.y +
+                            y_lst_minus90_0[i])
 
             painter.setPen(large_pen)
             painter.drawPoint(self.current_drawing.calibrated_center.x ,
@@ -312,26 +319,18 @@ class QLabelDrawing(QtGui.QLabel):
                               self.current_drawing.calibrated_north.y ) 
 
             
-        if self.group_visu.value and self.current_drawing.calibrated :
+        if (self.group_visu.value and self.current_drawing.calibrated) :
             pen_border = QtGui.QPen(QtCore.Qt.blue)
-            pen_border.setWidth(self.pen_width)
-            pen_border.setStyle(QtCore.Qt.SolidLine)    
-            pen_selected = QtGui.QPen()
-            pen_selected.setWidth(self.pen_width * 2)
+            pen_border.setWidth(self.pen_width/2.)
+            pen_border.setStyle(QtCore.Qt.DotLine)    
+            pen_selected = QtGui.QPen(QtCore.Qt.DotLine)
+            pen_selected.setWidth(self.pen_width)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
-
             if self.surface_mode.value:
                 pen_border.setColor(QtGui.QColor("transparent"))
-                
-            print("current group count", self.current_drawing.group_count)
-            
             for i in range(self.current_drawing.group_count):
-                #radius = self.img_mean_dimension/2000.
                 small_radius = self.drawing_height / 2000.
                 big_radius = self.drawing_height / 50.
-                #frame_size = math.floor(self.current_drawing.calibrated_radius/200.) * 100
-                
-                print("radius", small_radius, big_radius)
                 painter.setPen(pen_border)               
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
@@ -361,41 +360,35 @@ class QLabelDrawing(QtGui.QLabel):
                 print("posX:", x, posX)
                 print("posY:", y, posY)
                 """
-                #painter.drawEllipse(QtCore.QPointF(x, y), small_radius, small_radius)
-                #painter.drawEllipse(QtCore.QPointF(x, y), big_radius, big_radius)
-
+                
                 if self.surface_mode.value:
                     x_min = int(x - self.frame_size/2)
                     y_min = int(y - self.frame_size/2)
-                    painter.drawRect(x_min, y_min, self.frame_size, self.frame_size)
+                    painter.drawRect(
+                        x_min, y_min, self.frame_size, self.frame_size)
                 else:
-                   painter.drawEllipse(QtCore.QPointF(x, y), small_radius, small_radius)
-                   painter.drawEllipse(QtCore.QPointF(x, y), big_radius, big_radius) 
+                   painter.drawEllipse(
+                       QtCore.QPointF(x, y), small_radius, small_radius)
+                   painter.drawEllipse(
+                       QtCore.QPointF(x, y), big_radius, big_radius) 
                 
-                
-                
-        if self.dipole_visu.value and self.current_drawing.calibrated :
-            # note: a column with the cartesian coord of group should be recorded in the db!
-            print("draw the existing dipole..")
+        if (self.dipole_visu.value and self.current_drawing.calibrated) :
             pen_point = QtGui.QPen(QtCore.Qt.blue)
             pen_point.setWidth(self.pen_width * 2 )
             pen_line = QtGui.QPen(QtCore.Qt.blue)
             pen_line.setWidth(self.pen_width/2. )
-
             pen_point_selected = QtGui.QPen()
             pen_point_selected.setWidth(self.pen_width * 2)
             pen_point_selected.setColor(QtGui.QColor(77, 185, 88))
             pen_line_selected = QtGui.QPen()
             pen_line_selected.setWidth(self.pen_width /2. )
             pen_line_selected.setColor(QtGui.QColor(77, 185, 88))
-    
+            
             for i in range(self.current_drawing.group_count):
-
                 zurich_type = self.current_drawing.group_lst[i].zurich.upper()
-                if (zurich_type in ["B","C","D","E","F","G"] and
+                if (zurich_type in ["B","C","D","E","F","G", "X"] and
                     self.current_drawing.group_lst[i].dipole1_long):
-                    
-                    # here we should directly take x, y from the database 
+                    # here we calculate x, y from the HGC coordinates as a test
                     (dip1_x,
                      dip1_y,
                      dip1_z) = coordinates.cartesian_from_HGC_upper_left_origin(
@@ -410,7 +403,7 @@ class QLabelDrawing(QtGui.QLabel):
                          self.current_drawing.angle_L,
                          self.drawing_height)
                     
-                    # here we should directly take x, y from the database 
+                    # here we calculate x, y from the HGC coordinates as a test
                     (dip2_x,
                      dip2_y,
                      dip2_z) = coordinates.cartesian_from_HGC_upper_left_origin(
@@ -430,32 +423,35 @@ class QLabelDrawing(QtGui.QLabel):
                         painter.setPen(pen_point_selected)
                     painter.drawPoints(QtCore.QPointF(dip1_x,dip1_y),
                                        QtCore.QPointF(dip2_x,dip2_y))
-
                     painter.setPen(pen_line)
                     if self.group_visu_index==i:
                         painter.setPen(pen_line_selected)
                     painter.drawLine(dip1_x, dip1_y, dip2_x, dip2_y)
 
-        if self.add_dipole_mode.value and self.current_drawing.calibrated :
-            print("draw the added dipole..")
-            
+        if (self.add_dipole_mode.value and self.current_drawing.calibrated) :
             pen_point = QtGui.QPen(QtCore.Qt.blue)
             pen_point.setWidth(self.pen_width * 2 )
             pen_line = QtGui.QPen(QtCore.Qt.blue)
             pen_line.setWidth(self.pen_width/2. )
-
             pen_point_selected = QtGui.QPen()
             pen_point_selected.setWidth(self.pen_width * 2)
             pen_point_selected.setColor(QtGui.QColor(77, 185, 88))
             pen_line_selected = QtGui.QPen()
             pen_line_selected.setWidth(self.pen_width /2. )
             pen_line_selected.setColor(QtGui.QColor(77, 185, 88))
-
+            
             if len(self.dipole_points)==2:
-                painter.drawPoint(QtCore.QPointF(self.dipole_points[0], self.dipole_points[1]))
+                painter.drawPoint(
+                    QtCore.QPointF(self.dipole_points[0],
+                                   self.dipole_points[1]))
+                
             elif len(self.dipole_points)==4:
-                painter.drawPoint(QtCore.QPointF(self.dipole_points[0], self.dipole_points[1]))
-                painter.drawPoint(QtCore.QPointF(self.dipole_points[2], self.dipole_points[3]))
+                painter.drawPoint(
+                    QtCore.QPointF(self.dipole_points[0],
+                                   self.dipole_points[1]))
+                painter.drawPoint(
+                    QtCore.QPointF(self.dipole_points[2],
+                                   self.dipole_points[3]))
                 painter.drawLine(self.dipole_points[0], self.dipole_points[1],
                                  self.dipole_points[2], self.dipole_points[3])
                 self.dipole_points = []
@@ -465,14 +461,13 @@ class QLabelDrawing(QtGui.QLabel):
                 print(len(self.dipole_points))
                 self.dipole_points = []
                 self.dipole_angles = []
-                
+             
         painter.end()
         pixmap = self.drawing_pixMap.scaled(int(self.width_scale),
                                             int(self.height_scale),
                                             QtCore.Qt.KeepAspectRatio)
 
         #print(pixmap.height(), pixmap.width())
-    
         self.setPixmap(pixmap)
           
     def set_drawing_path_small_step(self, x_lst, y_lst):
@@ -480,17 +475,21 @@ class QLabelDrawing(QtGui.QLabel):
         Input : the list of poits
         Output : the path
         """
-        start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[0],
-                                     self.current_drawing.calibrated_center.y + y_lst[0])
+        start_point = QtCore.QPointF(
+            self.current_drawing.calibrated_center.x + x_lst[0],
+            self.current_drawing.calibrated_center.y + y_lst[0])
         path = QtGui.QPainterPath(start_point)
         
         for i in range(1, len(x_lst)-1, 1):
-            start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
-                                         self.current_drawing.calibrated_center.y + y_lst[i-1])
-            middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
-                                          self.current_drawing.calibrated_center.y + y_lst[i])
-            end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
-                                       self.current_drawing.calibrated_center.y + y_lst[i+1])
+            start_point = QtCore.QPointF(
+                self.current_drawing.calibrated_center.x + x_lst[i-1],
+                self.current_drawing.calibrated_center.y + y_lst[i-1])
+            middle_point = QtCore.QPointF(
+                self.current_drawing.calibrated_center.x + x_lst[i],
+                self.current_drawing.calibrated_center.y + y_lst[i])
+            end_point = QtCore.QPointF(
+                self.current_drawing.calibrated_center.x + x_lst[i+1],
+                self.current_drawing.calibrated_center.y + y_lst[i+1])
             path.cubicTo(start_point, middle_point, end_point)
 
         return path
@@ -501,134 +500,106 @@ class QLabelDrawing(QtGui.QLabel):
         Input : the list of poits
         Output : the path
         """
-        start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[0],
-                                     self.current_drawing.calibrated_center.y + y_lst[0])
+        start_point = QtCore.QPointF(
+            self.current_drawing.calibrated_center.x + x_lst[0],
+            self.current_drawing.calibrated_center.y + y_lst[0])
         path = QtGui.QPainterPath(start_point)
 
         if len(x_lst)<10:
             for i in range(1, len(x_lst)-1, 1):
-                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
-                                             self.current_drawing.calibrated_center.y + y_lst[i-1])
-                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
-                                              self.current_drawing.calibrated_center.y + y_lst[i])
-                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
-                                           self.current_drawing.calibrated_center.y + y_lst[i+1])
+                start_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i-1],
+                    self.current_drawing.calibrated_center.y + y_lst[i-1])
+                middle_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i],
+                    self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i+1],
+                    self.current_drawing.calibrated_center.y + y_lst[i+1])
                 path.cubicTo(start_point, middle_point, end_point)
                 
         if len(x_lst)>10:
             for i in range(1, 10, 1):
-                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
-                                             self.current_drawing.calibrated_center.y + y_lst[i-1])
-                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
-                                              self.current_drawing.calibrated_center.y + y_lst[i])
-                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
-                                           self.current_drawing.calibrated_center.y + y_lst[i+1])
+                start_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i-1],
+                    self.current_drawing.calibrated_center.y + y_lst[i-1])
+                middle_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i],
+                    self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i+1],
+                    self.current_drawing.calibrated_center.y + y_lst[i+1])
                 path.cubicTo(start_point, middle_point, end_point)
-                #print(y_lst_minus180_0[i-1], y_lst_minus180_0[i], y_lst_minus180_0[i+1])
+                #print(y_lst_minus180_0[i-1],
+                #y_lst_minus180_0[i], y_lst_minus180_0[i+1])
                 
         if len(x_lst)>20:       
             for i in range(15, len(x_lst) - 20, 10):
-                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-5],
-                                             self.current_drawing.calibrated_center.y + y_lst[i-5])
-                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
-                                              self.current_drawing.calibrated_center.y + y_lst[i])
-                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+5],
-                                           self.current_drawing.calibrated_center.y + y_lst[i+5])
+                start_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i-5],
+                    self.current_drawing.calibrated_center.y + y_lst[i-5])
+                middle_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i],
+                    self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i+5],
+                    self.current_drawing.calibrated_center.y + y_lst[i+5])
                 path.cubicTo(start_point, middle_point, end_point)
-                #print(y_lst_minus180_0[i-5], y_lst_minus180_0[i], y_lst_minus180_0[i+5])
-                    
-                        
+                #print(y_lst_minus180_0[i-5],
+                #y_lst_minus180_0[i], y_lst_minus180_0[i+5])
+                           
             for i in range(len(x_lst)-19, len(x_lst)-1, 1):
-                start_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i-1],
-                                             self.current_drawing.calibrated_center.y + y_lst[i-1])
-                middle_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i],
-                                              self.current_drawing.calibrated_center.y + y_lst[i])
-                end_point = QtCore.QPointF(self.current_drawing.calibrated_center.x + x_lst[i+1],
-                                           self.current_drawing.calibrated_center.y + y_lst[i+1])
+                start_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i-1],
+                    self.current_drawing.calibrated_center.y + y_lst[i-1])
+                middle_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i],
+                    self.current_drawing.calibrated_center.y + y_lst[i])
+                end_point = QtCore.QPointF(
+                    self.current_drawing.calibrated_center.x + x_lst[i+1],
+                    self.current_drawing.calibrated_center.y + y_lst[i+1])
                 path.cubicTo(start_point, middle_point, end_point)
-                #print(y_lst_minus180_0[i-1], y_lst_minus180_0[i], y_lst_minus180_0[i+1])
+                #print(y_lst_minus180_0[i-1],
+                #y_lst_minus180_0[i], y_lst_minus180_0[i+1])
                            
         return path
                          
-    
-    """def get_cartesian_coordinate_from_HGC(self, longitude, latitude):
-
-        (x_upper_left_origin,
-         y_upper_left_origin,
-         z_upper_left_origin) = coordinates.cartesian_from_drawing(
-             self.current_drawing.calibrated_center.x,
-             self.drawing_height - self.current_drawing.calibrated_center.y,
-             self.current_drawing.calibrated_north.x,
-             self.drawing_height - self.current_drawing.calibrated_north.y,
-             longitude,
-             latitude,
-             self.current_drawing.angle_P,
-             self.current_drawing.angle_B,
-             self.current_drawing.angle_L)
-
-
-       
-        
-        (x_upper_left_origin2,
-         y_upper_left_origin2,
-         z_upper_left_origin2) = coordinates.cartesian_from_drawing_method2(
-             self.current_drawing.calibrated_center.x,
-             self.drawing_height -
-             self.current_drawing.calibrated_center.y,
-             self.current_drawing.calibrated_north.x,
-             self.drawing_height -
-             self.current_drawing.calibrated_north.y,
-             longitude,
-             latitude,
-             self.current_drawing.angle_P,
-             self.current_drawing.angle_B,
-             self.current_drawing.angle_L)
-        
-        x_centered_lower_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
-        y_centered_lower_left_origin = self.current_drawing.calibrated_center.y - y_upper_left_origin
-
-        x_centered_upper_left_origin = self.current_drawing.calibrated_center.x + x_upper_left_origin
-        y_centered_upper_left_origin = self.current_drawing.calibrated_center.y + y_upper_left_origin
-
-        lon, lat = coordinates.heliographic_from_drawing(
-            self.current_drawing.calibrated_center.x,
-            self.drawing_height - self.current_drawing.calibrated_center.y,
-            self.current_drawing.calibrated_north.x,
-            self.drawing_height - self.current_drawing.calibrated_north.y,
-            x_centered_lower_left_origin,
-            self.drawing_height - y_centered_lower_left_origin,
-            self.current_drawing.angle_P,
-            self.current_drawing.angle_B,
-            self.current_drawing.angle_L)
-        
-        return x_centered_lower_left_origin, y_centered_lower_left_origin
-    """
-
-    def get_spherical_coord_latitude(self, longitude, radius, range_min, range_max, step=1):
+    def get_spherical_coord_latitude(self, longitude, radius,
+                                     range_min, range_max, step=1):
         spherical_coord_lst = []
         scale = 100 # to have a range integer, even for decimal value (ex 1.25)
-        for latitude in range(int(range_min * scale), int(range_max * scale), int(step * scale)):    
+        for latitude in range(int(range_min * scale),
+                              int(range_max * scale),
+                              int(step * scale)):    
             spherical_coord =  coordinates.Spherical(radius,
-                                                     math.pi/2 - latitude/scale * math.pi/180.,
+                                                     math.pi/2 - latitude/scale *
+                                                     math.pi/180.,
                                                      longitude * math.pi/180.)
             spherical_coord_lst.append(spherical_coord)
         return spherical_coord_lst
 
-    def get_spherical_coord_longitude(self, latitude, radius, range_min, range_max, step=1):
+    def get_spherical_coord_longitude(self, latitude, radius,
+                                      range_min, range_max, step=1):
         spherical_coord_lst = []
         scale = 100 # to have a range integer, even for decimal value (ex 1.25)
-        for longitude in range(int(range_min * scale), int(range_max * scale), int(step * scale)):
+        for longitude in range(int(range_min * scale),
+                               int(range_max * scale),
+                               int(step * scale)):
             spherical_coord =  coordinates.Spherical(radius,
-                                                     math.pi/2 - latitude * math.pi/180.,
-                                                     longitude/scale * math.pi/180.)
+                                                     math.pi/2 - latitude *
+                                                     math.pi/180.,
+                                                     longitude/scale *
+                                                     math.pi/180.)
             spherical_coord_lst.append(spherical_coord)
         return spherical_coord_lst
     
-    def get_line_on_sphere(self, angle, radius, line_type, range_min, range_max, step=1):
+    def get_line_on_sphere(self, angle, radius,
+                           line_type, range_min, range_max, step=1):
         """
         get the list of x and y position along a 
         given line on a sphere (longitude or latitude) for the other line
-        (respectively latitude or longitude) of the angle given by the first parameter.
+        (respectively latitude or longitude) of the angle given 
+        by the first parameter.
         Input:
         - angle of the line 
         - radius of the circle
@@ -676,103 +647,109 @@ class QLabelDrawing(QtGui.QLabel):
 
   
     def zoom_in(self, scaling_factor):
-            
         self.width_scale *=  scaling_factor
         self.height_scale *=  scaling_factor
-        #print("zoom in", self.width_scale, self.height_scale)
         self.scaling_factor *=scaling_factor
-        print("the scaling factor is", self.scaling_factor)
         self.set_img()   
 
     def mousePressEvent(self, QMouseEvent):
-        """ Associate a  mousePress event to a signal if the coordinate
-        of the click position (QtGui.QMouseEvent.x, QtGui.QMouseEvent.y)
-        corresponds to a line in the rectangle.
+        """ Associate a  mousePress event to a signal that depends on
+        the mode activated.
         """
         x_click = QMouseEvent.x()
         y_click = QMouseEvent.y()
 
-        self.get_pixmap_coordinate_range()
+        pixmap_x_min, pixmap_y_min = self.get_pixmap_coordinate_range()
         
         init_width = 1000 # without any zoom
         init_height = 1000 # without any zoom
         pixmap_width = init_width / self.width_scale # is 1 without any zoom
         pixmap_height = init_height / self.height_scale # is 1 without any zoom
 
-        print("check change of coordinates")
-        print(self.pixmap_x_min, self.pixmap_y_min)
-        print(pixmap_width, pixmap_height)
+        #print("check change of coordinates")
+        #print(self.pixmap_x_min, self.pixmap_y_min)
+        #print(pixmap_width, pixmap_height)
         
         # change of coordinate system: qlabel -> pixmap
-        x_pixmap = round((x_click - self.pixmap_x_min) * pixmap_width )
-        y_pixmap = round((y_click - self.pixmap_y_min) * pixmap_height )
+        x_pixmap = round((x_click - pixmap_x_min) * pixmap_width )
+        y_pixmap = round((y_click - pixmap_y_min) * pixmap_height )
         
         #change of coordinate system: qlabel -> drawing
-        x_drawing = round((x_click - self.pixmap_x_min) * self.drawing_width / self.pixmap().width())
-        y_drawing = round((y_click - self.pixmap_y_min) * self.drawing_height / self.pixmap().height())
+        x_drawing = round((x_click - pixmap_x_min) * self.drawing_width /
+                          self.pixmap().width())
+        y_drawing = round((y_click - pixmap_y_min) * self.drawing_height /
+                          self.pixmap().height())
         
         x_center_drawing = ((self.current_drawing.calibrated_center.x -
-                             self.pixmap_x_min) * self.drawing_width /
+                             pixmap_x_min) * self.drawing_width /
                             self.pixmap().width())
         
         y_center_drawing = ((self.current_drawing.calibrated_center.y -
-                             self.pixmap_y_min) * self.drawing_height /
+                             pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
         
-        self.x_drawing = x_drawing
-        self.y_drawing = y_drawing
+        #self.x_drawing = x_drawing
+        #self.y_drawing = y_drawing
         
         print("click coordinate: ", x_click, y_click)
         print("pixmap coord: ", x_pixmap, y_pixmap)
         print("drawing coord:", x_drawing, y_drawing)
-        print("drawing coord lower left origin:", x_drawing, self.drawing_height - y_drawing)
+        print("drawing coord lower left origin:",
+              x_drawing, self.drawing_height - y_drawing)
         print("drawing coord of the center:",
               self.current_drawing.calibrated_center.x,
               self.current_drawing.calibrated_center.y)
         
-        if self.add_group_mode.value or self.add_dipole_mode.value or self.helper_grid.value:
+        if (self.add_group_mode.value or
+            self.add_dipole_mode.value or
+            self.helper_grid.value):
             
             center_x_lower_left_origin = self.current_drawing.calibrated_center.x
-            center_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_center.y
+            center_y_lower_left_origin = (self.drawing_height -
+                                          self.current_drawing.calibrated_center.y)
             north_x_lower_left_origin = self.current_drawing.calibrated_north.x
-            north_y_lower_left_origin = self.drawing_height - self.current_drawing.calibrated_north.y
+            north_y_lower_left_origin = (self.drawing_height -
+                                         self.current_drawing.calibrated_north.y)
             drawing_x_lower_left_origin = x_drawing
             drawing_y_lower_left_origin = self.drawing_height - y_drawing
             (longitude,
-             latitude) = coordinates\
-                         .heliographic_from_drawing(center_x_lower_left_origin,
-                                                    center_y_lower_left_origin,
-                                                    north_x_lower_left_origin,
-                                                    north_y_lower_left_origin,
-                                                    drawing_x_lower_left_origin,
-                                                    drawing_y_lower_left_origin,
-                                                    self.current_drawing.angle_P,
-                                                    self.current_drawing.angle_B,
-                                                    self.current_drawing.angle_L)
-            
+             latitude) = coordinates.heliographic_from_drawing(
+                 center_x_lower_left_origin,
+                 center_y_lower_left_origin,
+                 north_x_lower_left_origin,
+                 north_y_lower_left_origin,
+                 drawing_x_lower_left_origin,
+                 drawing_y_lower_left_origin,
+                 self.current_drawing.angle_P,
+                 self.current_drawing.angle_B,
+                 self.current_drawing.angle_L)
             
             self.HGC_longitude = longitude
             self.HGC_latitude = latitude
-            print("longitude: ", longitude)
-            print("latitude: ", latitude)
-
+            #print("longitude: ", longitude)
+            #print("latitude: ", latitude)
             if self.HGC_longitude < 0:
                 self.HGC_longitude = 2 * math.pi + self.HGC_longitude
-                print("positive longitude is ", self.HGC_longitude)
+                #print("positive longitude is ", self.HGC_longitude)
             
-        if self.calibration_mode.value and self.center_done and not self.north_done:
-            print("Enter in the calibration of the north..",
-                  self.calibration_mode.value,
-                  self.center_done, self.north_done)
+        if (self.calibration_mode.value and
+            self.center_done and
+            not self.north_done):
+            #print("Enter in the calibration of the north..",
+            #      self.calibration_mode.value,
+            #      self.center_done, self.north_done)
             self.north_done = True
                 
-            calib_pt2_x = self.x_drawing
-            calib_pt2_y = self.y_drawing
+            calib_pt2_x = x_drawing
+            calib_pt2_y = y_drawing
             """
-            self.current_drawing.calibrated_north_x = self.x_drawing
-            self.current_drawing.calibrated_north_y = self.y_drawing
+            self.current_drawing.calibrated_north_x = x_drawing
+            self.current_drawing.calibrated_north_y = y_drawing
             """
-            self.current_drawing.calibrate(self.calib_pt1_x, self.calib_pt1_y, calib_pt2_x, calib_pt2_y)
+            self.current_drawing.calibrate(self.calib_pt1_x,
+                                           self.calib_pt1_y,
+                                           calib_pt2_x,
+                                           calib_pt2_y)
             
             self.zoom_in(1/5.)
             self.large_grid_overlay.value = True
@@ -783,53 +760,50 @@ class QLabelDrawing(QtGui.QLabel):
             QtGui.QApplication.restoreOverrideCursor()
             self.north_clicked.emit()
             
-        elif self.calibration_mode.value and not self.center_done and not self.north_done:
-            print("Enter in the calibration of the center/south..",
-                  self.calibration_mode.value,
-                  self.center_done, self.north_done)
+        elif (self.calibration_mode.value and
+              not self.center_done and
+              not self.north_done):
+            #print("Enter in the calibration of the center/south..",
+            #      self.calibration_mode.value,
+            #      self.center_done, self.north_done)
 
             self.current_drawing.calibrated = 0
             
-            self.calib_pt1_x = self.x_drawing
-            self.calib_pt1_y = self.y_drawing
+            self.calib_pt1_x = x_drawing
+            self.calib_pt1_y = y_drawing
                          
             self.center_done = True
             self.center_clicked.emit()
 
-        if self.current_drawing.calibrated and self.helper_grid.value:
-           print("Enter in the helper grid mode")
-           self.helper_grid_center_x = self.x_drawing
-           self.helper_grid_center_y = self.y_drawing
+        if (self.current_drawing.calibrated and
+            self.helper_grid.value):
+           self.helper_grid_center_x = x_drawing
+           self.helper_grid_center_y = y_drawing
            self.helper_grid_position_clicked = True
            self.set_img()
 
-        if self.add_group_mode.value and self.current_drawing.calibrated :
-  
+        if (self.add_group_mode.value and
+            self.current_drawing.calibrated) :
             self.current_drawing.add_group(self.HGC_latitude,
                                            self.HGC_longitude,
-                                           self.x_drawing,
-                                           self.y_drawing)
+                                           x_drawing,
+                                           y_drawing)
             self.group_added.emit()
 
-        if self.current_drawing.calibrated and self.add_dipole_mode.value:
-
-            print("****** group visu index: ", self.group_visu_index)
-
+        if (self.current_drawing.calibrated and
+            self.add_dipole_mode.value):
             if (self.current_drawing.group_lst[self.group_visu_index].zurich.upper()
-                in ["B","C","D","E","F","G"]):
-                self.dipole_points.append(self.x_drawing)
-                self.dipole_points.append(self.y_drawing)
+                in ["B","C","D","E","F","G","X"]):
+                self.dipole_points.append(x_drawing)
+                self.dipole_points.append(y_drawing)
                 self.dipole_angles.append(self.HGC_latitude)
                 self.dipole_angles.append(self.HGC_longitude)
-
                 self.current_drawing.add_dipole(self.group_visu_index,
                                                 self.dipole_points,
                                                 self.dipole_angles)
                 self.set_img()
-                
-            
-        
-            
+                self.dipole_added.emit()
+                        
     def get_pixmap_coordinate_range(self):
         """
         get the pixmap minimum and maximum coordinate values
@@ -837,13 +811,17 @@ class QLabelDrawing(QtGui.QLabel):
         """
         qlabel_width = self.width()
         qlabel_height = self.height()
-        self.qlabel_x_center = qlabel_width/2.
-        self.qlabel_y_center = qlabel_height/2.
+        qlabel_x_center = qlabel_width/2.
+        qlabel_y_center = qlabel_height/2.
+        pixmap_x_min = math.floor(qlabel_x_center -
+                                  self.pixmap().width()/2.)
+        pixmap_x_max = math.floor(qlabel_x_center +
+                                  self.pixmap().width()/2.)
+        pixmap_y_min = math.floor(qlabel_y_center -
+                                  self.pixmap().height()/2.)
+        pixmap_y_max = math.floor(qlabel_y_center +
+                                  self.pixmap().height()/2.)
 
-        self.pixmap_x_min = math.floor(self.qlabel_x_center - self.pixmap().width()/2.)
-        self.pixmap_x_max = math.floor(self.qlabel_x_center + self.pixmap().width()/2.)
-        self.pixmap_y_min = math.floor(self.qlabel_y_center - self.pixmap().height()/2.)
-        self.pixmap_y_max = math.floor(self.qlabel_y_center + self.pixmap().height()/2.)
-
-        #return self.pixmap_x_min, self.pixmap_x_max, self.pixmap_y_min, self.pixmap_y_max
+        return pixmap_x_min, pixmap_y_min
+        
     

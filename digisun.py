@@ -38,7 +38,7 @@ class mainWindow(QtGui.QMainWindow):
         screen_available_geometry = QtGui.QDesktopWidget()\
                                          .availableGeometry()
         self.setMinimumWidth(screen_available_geometry.width())
-        self.setMinimumHeight(screen_available_geometry.height())
+        self.setMinimumHeight(screen_available_geometry.height() - 50)
         print("screen available geometry",
               screen_available_geometry.width(),
               screen_available_geometry.height())
