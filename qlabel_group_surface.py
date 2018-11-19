@@ -15,7 +15,7 @@ import analyse_mode_bool
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
-sys.setrecursionlimit(100000) # check where it is exactly used...
+sys.setrecursionlimit(10000) 
 
 class GroupSurfaceWidget(QtWidgets.QWidget):
 
@@ -324,7 +324,9 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         self.crop_done = analyse_mode_bool.analyseModeBool(False)
         self.pencil = analyse_mode_bool.analyseModeBool(False)
         self.bucket = analyse_mode_bool.analyseModeBool(False)
-    
+
+        self.max_count = 0
+        
     def zoom_in(self, scaling_factor):
         self.width_scale *=  scaling_factor
         self.height_scale *=  scaling_factor
@@ -468,35 +470,41 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         self.pencil.value = False
         self.bucket.value = True
         
-    def bucket_fill(self, position_x, position_y):
+    def bucket_fill(self, position_x, position_y, count=0):
 
-        print("enter in the bucket fill", position_x,
-              position_y, self.array.shape[1], self.array.shape[0])
-        
-        print("new value: ", self.new_value)
-        print("old value: ", self.old_value)
-        print("current value: ",self.array[position_x, position_y])
-        
-        if self.array[position_x, position_y] == self.new_value:
-            print("already done", position_x, position_y)
-            return
-        
-        self.array[position_x, position_y] = self.new_value
+        try:
+            self.max_count = max(self.max_count, count)
+            print("enter in the bucket fill", count,
+                  self.max_count, position_x,
+                  position_y, self.array.shape[1], self.array.shape[0])
+            
+            """print("new value: ", self.new_value)
+            print("old value: ", self.old_value)
+            print("current value: ",self.array[position_x, position_y])
+            """
+            
+            if self.array[position_x, position_y] == self.new_value:
+                print("already done", position_x, position_y)
+                return
+            
+            self.array[position_x, position_y] = self.new_value
+            
+            if position_x > 0:
+                print("go to the right", position_x, position_y)
+                self.bucket_fill(position_x - 1, position_y, count+1)
+            if position_x < self.array.shape[1] - 1 :
+                print("go to the left", position_x, position_y)
+                self.bucket_fill(position_x + 1, position_y, count+1)
+            if position_y > 0 :
+                print("go up", position_x, position_y)
+                self.bucket_fill(position_x , position_y - 1, count+1)
+            if position_y < self.array.shape[0] - 1 :
+                print("do down", position_x, position_y)
+                self.bucket_fill(position_x , position_y + 1, count+1)
 
-        if position_x > 0:
-            print("go to the right", position_x, position_y)
-            self.bucket_fill(position_x - 1, position_y)
-        if position_x < self.array.shape[1] - 1 :
-            print("go to the left", position_x, position_y)
-            self.bucket_fill(position_x + 1, position_y)
-        if position_y > 0 :
-            print("go up", position_x, position_y)
-            self.bucket_fill(position_x , position_y - 1)
-        if position_y < self.array.shape[0] - 1 :
-            print("do down", position_x, position_y)
-            self.bucket_fill(position_x , position_y + 1)
-
-  
+        except RuntimeError :
+            print("Time too long, check that the border is closed!")
+                
     def mousePressEvent(self, QMouseEvent):
         position =  QMouseEvent.pos()
 

@@ -21,8 +21,8 @@ class ListPage(QtWidgets.QWidget):
         the fraction of calibrated/analysed/area done.
         """
         self.table.horizontalHeader().setDefaultSectionSize(150)
-        self.table.setHorizontalHeaderLabels(["date", " # total",
-                                              "calibrated", "analysed"])
+        self.table.setHorizontalHeaderLabels(["date", " # total","calibrated",
+                                              "analysed", "area"])
         for i in range(len(list_drawings)):
             date_drawing = QtWidgets.QTableWidgetItem(str(list_drawings[i]))
             #date_drawing.setFlags(QtCore.Qt.ItemIsSelectable and
@@ -44,9 +44,10 @@ class ListPage(QtWidgets.QWidget):
                 progressBar_calib.setValue(frac_calibrated)
                 frac_analysed = self.lst_analysed[i] * 100. / self.lst_tot[i]
                 progressBar_analysed.setValue(frac_analysed)
-                frac_area =  100 - (self.lst_area_not_done[i] * 100. / self.lst_tot[i])
+                frac_area =  100 - (self.lst_area_not_done[i] * 100. /
+                                    self.lst_tot[i])
                 progressBar_area.setValue(frac_area)
-                #print(frac_area, self.lst_area_not_done[i] * 100. / self.lst_tot[i])
+                
             else:
                 progressBar_calib.setValue(100)
                 progressBar_analysed.setValue(100)

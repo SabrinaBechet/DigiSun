@@ -101,11 +101,15 @@ class QLabelDrawing(QtWidgets.QLabel):
     def set_img(self):
     
         print("***set the img **")
-        with Image.open(self.file_path) as img:
+        try:
+            img = Image.open(self.file_path) 
             self.drawing_width = img.size[0]
             self.drawing_height = img.size[1]
             qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object
             self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
+            
+        except IOError:
+            print("did not find the image!")
             
         print("width: ", self.drawing_width)
         print("height: ", self.drawing_height)
