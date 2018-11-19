@@ -1,17 +1,15 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 import os
-from PyQt4 import QtGui, QtCore
-from PIL import Image
-from PIL.ImageQt import ImageQt
+from PyQt5 import QtGui, QtCore, QtWidgets
 import database, drawing
 from datetime import date, time, datetime
 
-class ScanPage(QtGui.QWidget):
+class ScanPage(QtWidgets.QWidget):
     def __init__(self, operator=None):
         super(ScanPage, self).__init__()
 
-        self.widget_left_layout = QtGui.QVBoxLayout()     
+        self.widget_left_layout = QtWidgets.QVBoxLayout()     
         self.widget_left_layout.setContentsMargins(10, 10, 10, 10) 
         self.widget_left_layout.setSpacing(5)
         
@@ -32,46 +30,47 @@ class DailyScan(ScanPage):
         self.operator = operator
         
         self.column_maximum_width = 600
-        #self.but_scan = QtGui.QPushButton('Scan and save', self)
+        #self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         #self.widget_left_layout.addWidget(self.but_scan)
         self.add_formLayout_lineEdit()
         
         #to do: height plus grand pour le bouton du scan. Icon de scanner?
-        #self.but_scan = QtGui.QPushButton('Scan and save', self)
+        #self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         #self.widget_left_layout.addWidget(self.but_scan)
+
         self.add_formLayout_button()
         self.fill_default_buttons()
      
     def add_formLayout_lineEdit(self):
 
-        groupBox = QtGui.QGroupBox(self)
+        groupBox = QtWidgets.QGroupBox(self)
         groupBox.setTitle("general information")
         #groupBox.setStyleSheet("QGroupBox { border: 2px solid gray; border-radius: 3px;}")
         
-        self.form_layout1 = QtGui.QFormLayout()
+        self.form_layout1 = QtWidgets.QFormLayout()
         self.form_layout1.setSpacing(10)
         self.form_layout1.addWidget(groupBox)
         
-        self.drawing_operator = QtGui.QLineEdit(self)
+        self.drawing_operator = QtWidgets.QLineEdit(self)
         #self.drawing_operator.setMaximumWidth(self.column_maximum_width)
-        self.drawing_observer = QtGui.QLineEdit(self)
+        self.drawing_observer = QtWidgets.QLineEdit(self)
         #self.drawing_observer.setMaximumWidth(self.column_maximum_width)
-        self.drawing_date = QtGui.QDateEdit()
+        self.drawing_date = QtWidgets.QDateEdit()
         #self.drawing_date.setMaximumWidth(self.column_maximum_width)
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
-        self.drawing_time = QtGui.QLineEdit("00:00",self)
+        self.drawing_time = QtWidgets.QLineEdit("00:00",self)
         #self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setStyleSheet("background-color: red")
         
-        self.drawing_quality = QtGui.QSpinBox(self)
+        self.drawing_quality = QtWidgets.QSpinBox(self)
         #self.drawing_quality.setMaximumWidth(self.column_maximum_width)
         self.drawing_quality.setMinimum(1)
         self.drawing_quality.setMaximum(5)
         self.drawing_quality.setValue(3)
-        self.drawing_type = QtGui.QComboBox(self)
+        self.drawing_type = QtWidgets.QComboBox(self)
         #self.drawing_type.setMaximumWidth(self.column_maximum_width)
         self.drawing_type.addItem('USET')
         self.drawing_type.addItem('USET77')
@@ -104,7 +103,7 @@ class DailyScan(ScanPage):
         self.drawing_time.textChanged.connect(self.check_valid_datetime)
 
 
-        widget_form = QtGui.QWidget()
+        widget_form = QtWidgets.QWidget()
         widget_form.setMaximumWidth(self.column_maximum_width)
         widget_form.setLayout(self.form_layout1)
         
@@ -112,23 +111,23 @@ class DailyScan(ScanPage):
 
     def add_formLayout_button(self):
         
-        self.form_layout2 = QtGui.QFormLayout()
+        self.form_layout2 = QtWidgets.QFormLayout()
         self.form_layout2.setSpacing(15)
         
-        self.but_scan = QtGui.QPushButton('Scan and save', self)
+        self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         self.but_scan.setMaximumWidth(self.column_maximum_width + 75)
         self.but_scan.setDisabled(True)
-        self.but_analyse = QtGui.QPushButton('analyse', self)
+        self.but_analyse = QtWidgets.QPushButton('analyse', self)
         self.but_analyse.setMaximumWidth(self.column_maximum_width + 75)
        
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
         #self.but_analyse.clicked.connect(lambda: self.show_drawing())
         
         self.form_layout2.setWidget(6,
-                                   QtGui.QFormLayout.SpanningRole,
+                                   QtWidgets.QFormLayout.SpanningRole,
                                    self.but_scan)
         self.form_layout2.setWidget(7,
-                                   QtGui.QFormLayout.SpanningRole,
+                                   QtWidgets.QFormLayout.SpanningRole,
                                    self.but_analyse)
         
         #groupBox.setLayout(self.form_layout)
@@ -247,14 +246,15 @@ class DailyScan(ScanPage):
             directory = my_scanner.get_directory()
             file_input = os.path.join(directory, filename)
             if os.path.isfile(file_input):
-                response = QtGui.QMessageBox.question(self,
-                                                      'same drawing found'
-                                                      '',
-                                                      'This drawing alreay exists. Re-scan?',
-                                                      QtGui.QMessageBox.Yes| QtGui.QMessageBox.No)
-                if response == QtGui.QMessageBox.Yes:
+                response = QtWidgets.QMessageBox.question(
+                    self,
+                    'same drawing found'
+                    '',
+                    'This drawing alreay exists. Re-scan?',
+                    QtWidgets.QMessageBox.Yes| QtWidgets.QMessageBox.No)
+                if response == QtWidgets.QMessageBox.Yes:
                     pass
-                elif response == QtGui.QMessageBox.No:
+                elif response == QtWidgets.QMessageBox.No:
                     return
             drawing_scanned = my_scanner.scan(self.filename)
             self.set_drawing()

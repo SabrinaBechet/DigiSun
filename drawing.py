@@ -1,13 +1,10 @@
+# !/usr/bin/env python
+#coding: utf-8
+
 from datetime import date, time, datetime
 import database, coordinates
-from PyQt4 import QtCore
-
+from PyQt5 import QtCore
 import math
-
-"""
-to do:
-- method the print the drawing information in a nice way.
-"""
 
 class Group(QtCore.QObject):
     """

@@ -1,13 +1,13 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
+
 from PIL import Image
 from PIL.ImageQt import ImageQt
 import numpy as np
 import math
 import coordinates
 import cv2
-import numpy as np
 import time
 import sys
 import analyse_mode_bool
@@ -15,7 +15,7 @@ import analyse_mode_bool
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
-class QLabelDrawing(QtGui.QLabel):
+class QLabelDrawing(QtWidgets.QLabel):
     """
     Class to show the drawing, 
     display the grid, groups, dipoles, etc
@@ -30,8 +30,10 @@ class QLabelDrawing(QtGui.QLabel):
     """
 
     """
-    A signal (specifically an unbound signal) is an attribute of a class that is a sub-class of QObject. 
-    When a signal is referenced as an attribute of an instance of the class then PyQt5 automatically 
+    A signal (specifically an unbound signal) is an attribute of a class 
+    that is a sub-class of QObject. 
+    When a signal is referenced as an attribute of an instance of the class 
+    then PyQt5 automatically 
     binds the instance to the signal in order to create a bound signal.
     """
     #drawing_clicked = QtCore.pyqtSignal()
@@ -85,8 +87,7 @@ class QLabelDrawing(QtGui.QLabel):
         """
         open an image specified with file_path and 
         return its corresponding numpy array
-        """
-        
+        """    
         with Image.open(self.file_path) as img:
             im_arr = np.asarray(img)
             try:
@@ -321,7 +322,7 @@ class QLabelDrawing(QtGui.QLabel):
             
         if (self.group_visu.value and self.current_drawing.calibrated) :
             pen_border = QtGui.QPen(QtCore.Qt.blue)
-            pen_border.setWidth(self.pen_width/2.)
+            pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.DotLine)    
             pen_selected = QtGui.QPen(QtCore.Qt.DotLine)
             pen_selected.setWidth(self.pen_width)
@@ -757,7 +758,7 @@ class QLabelDrawing(QtGui.QLabel):
             self.set_img()
             self.calibration_mode.value = False
             
-            QtGui.QApplication.restoreOverrideCursor()
+            QtWidgets.QApplication.restoreOverrideCursor()
             self.north_clicked.emit()
             
         elif (self.calibration_mode.value and

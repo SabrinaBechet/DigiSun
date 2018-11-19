@@ -1,6 +1,5 @@
 import pymysql
 
-
 class database():
     """
     Object to interact with the database.

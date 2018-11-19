@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 import os
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates, toolbar, statusbar, drawing_view_page
 from datetime import date, time, datetime, timedelta
@@ -18,7 +18,7 @@ Keep the analyse itself somwhere else!
 - DrawingAnalysePage: the page itself with all the widgets
 """
 
-class DrawingAnalysePage(QtGui.QMainWindow):
+class DrawingAnalysePage(QtWidgets.QMainWindow):
     """
     Page that shows the drawing and where the analyse is done.
     Depending on the info_analysed list,it will shows:
@@ -183,7 +183,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         (the rest is described in the mouse event)
         """
         self.drawing_page.label_right.calibration_mode.set_opposite_value()
-        QtGui.QApplication.restoreOverrideCursor()
+        QtWidgets.QApplication.restoreOverrideCursor()
 
         if self.drawing_page.label_right.calibration_mode.value:    
             self.drawing_page.label_right.setCursor(QtCore.Qt.CrossCursor)
@@ -237,7 +237,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 .connect(self.statusBar().clean)
             
         else:
-            QtGui.QApplication.restoreOverrideCursor()
+            QtWidgets.QApplication.restoreOverrideCursor()
             self.drawing_page.label_right.zoom_in(
                 1/self.drawing_page.label_right.scaling_factor)
             self.statusBar().clean()
@@ -287,7 +287,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         - if group visu mode not activated -> activate it 
         - set the cursor to one showing that we are in the add group mode
         """
-        QtGui.QApplication.restoreOverrideCursor()
+        QtWidgets.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_group_mode.set_opposite_value()
         
         if self.drawing_page.label_right.add_group_mode.value:
@@ -307,7 +307,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                      " position to add it")
                 cursor_img = ("cursor/Pixel_perfect/target_24.png")
                 cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
-                #QtGui.QApplication.setOverrideCursor(cursor_add_group)
+                #QtWidgets.QApplication.setOverrideCursor(cursor_add_group)
                 self.drawing_page.label_right.setCursor(cursor_add_group)
                 
 
@@ -321,7 +321,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         else:
             print("restore the old cursor")
-            #QtGui.QApplication.restoreOverrideCursor()
+            #QtWidgets.QApplication.restoreOverrideCursor()
             self.drawing_page.label_right.setCursor(QtCore.Qt.ArrowCursor)
             self.statusBar().clean()
             
@@ -348,7 +348,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         - set the cursor to one showing that we are in the add dipole mode
         - check that the group is dipolar
         """
-        QtGui.QApplication.restoreOverrideCursor()
+        QtWidgets.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.add_dipole_mode.set_opposite_value()
         
         if self.drawing_page.label_right.add_dipole_mode.value:
@@ -386,7 +386,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
         else:
-            QtGui.QApplication.restoreOverrideCursor()
+            QtWidgets.QApplication.restoreOverrideCursor()
             self.statusBar().clean()
             
     def set_surface_mode(self, n=0):
@@ -397,7 +397,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         - zoom the original drawing x5
         - scroll at the group position
         """
-        QtGui.QApplication.restoreOverrideCursor()
+        QtWidgets.QApplication.restoreOverrideCursor()
         self.drawing_page.label_right.surface_mode.set_opposite_value()
 
         surface_module_size_min = 380
@@ -556,14 +556,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                  .widget()\
                                  .setParent(None)
 
-        title_left_down = QtGui.QLabel("Group information")
+        title_left_down = QtWidgets.QLabel("Group information")
         title_left_down.setAlignment(QtCore.Qt.AlignCenter)
         title_left_down.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_down_layout.addWidget(title_left_down)
         
         group_count = self.drawing_lst[self.current_count].group_count
                                          
-        self.listWidget_groupBox = QtGui.QListWidget(self)
+        self.listWidget_groupBox = QtWidgets.QListWidget(self)
         self.listWidget_groupBox.setStyleSheet(
             "QListView::item:selected {background : rgb(77, 185, 88);}")
         
@@ -634,7 +634,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
             self.groupBoxLineList.append(groupBoxLine)
             
-            item = QtGui.QListWidgetItem(self.listWidget_groupBox)
+            item = QtWidgets.QListWidgetItem(self.listWidget_groupBox)
             item.setSizeHint(groupBoxLine.sizeHint())
             self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
            
@@ -1161,30 +1161,30 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Add the linedit related to the drawing information
         """
-        title_left_up = QtGui.QLabel("Drawing information")
+        title_left_up = QtWidgets.QLabel("Drawing information")
         title_left_up.setAlignment(QtCore.Qt.AlignCenter)
         title_left_up.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_up_layout.addWidget(title_left_up)
         
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setSpacing(10)
         
-        self.drawing_operator = QtGui.QLineEdit(self)
+        self.drawing_operator = QtWidgets.QLineEdit(self)
         self.drawing_operator.setEnabled(True)
         self.drawing_operator.setStyleSheet(
             "background-color: lightgray; color:black")
 
-        self.drawing_last_update = QtGui.QLineEdit(self)
+        self.drawing_last_update = QtWidgets.QLineEdit(self)
         self.drawing_last_update.setEnabled(True)
         self.drawing_last_update.setStyleSheet(
             "background-color: lightgray; color:black")
         
-        self.drawing_observer = QtGui.QLineEdit(self)
+        self.drawing_observer = QtWidgets.QLineEdit(self)
         self.drawing_observer.setEnabled(True)
         self.drawing_observer.setStyleSheet(
             "background-color: white; color:black")
         
-        self.drawing_date = QtGui.QDateEdit()
+        self.drawing_date = QtWidgets.QDateEdit()
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         #today = QtCore.QDate.currentDate()
         #self.drawing_date.setDate(today)
@@ -1192,60 +1192,60 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_date.setStyleSheet(
             "background-color: lightgray; color:black")
         
-        self.drawing_time = QtGui.QLineEdit("00:00",self)
+        self.drawing_time = QtWidgets.QLineEdit("00:00",self)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setEnabled(False)
         self.drawing_time.setStyleSheet(
             "background-color: lightgray; color:black")
         
-        self.drawing_quality = QtGui.QComboBox(self) 
+        self.drawing_quality = QtWidgets.QComboBox(self) 
         self.set_combo_box_drawing('name', 'quality', self.drawing_quality)
         self.drawing_quality.setEnabled(True)
         self.drawing_quality.setStyleSheet(
             "background-color: white; color:black")
         
-        self.drawing_type = QtGui.QComboBox(self)
+        self.drawing_type = QtWidgets.QComboBox(self)
         self.set_combo_box_drawing('name', 'drawing_type', self.drawing_type)
         self.drawing_type.setEnabled(True)
         self.drawing_type.setStyleSheet(
             "background-color: white; color:black")
         
-        self.wolf_number = QtGui.QLineEdit(self)
+        self.wolf_number = QtWidgets.QLineEdit(self)
         self.wolf_number.setEnabled(False)
         self.wolf_number.setStyleSheet(
             "background-color: lightgrey; color:black")
         
-        self.angleP = QtGui.QLineEdit(self)
+        self.angleP = QtWidgets.QLineEdit(self)
         self.angleP.setEnabled(False)
         self.angleP.setStyleSheet(
             "background-color: lightgrey; color:black")
         
-        self.angleB = QtGui.QLineEdit(self)
+        self.angleB = QtWidgets.QLineEdit(self)
         self.angleB.setEnabled(False)
         self.angleB.setStyleSheet(
             "background-color: lightgrey; color:black")
         
-        self.angleL = QtGui.QLineEdit(self)
+        self.angleL = QtWidgets.QLineEdit(self)
         self.angleL.setEnabled(False)
         self.angleL.setStyleSheet(
             "background-color: lightgrey; color:black")
         
-        self.rotation_number = QtGui.QLineEdit(self)
+        self.rotation_number = QtWidgets.QLineEdit(self)
         self.rotation_number.setEnabled(False)
         self.rotation_number.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.calibrated = QtGui.QLineEdit(self)
+        self.calibrated = QtWidgets.QLineEdit(self)
         self.calibrated.setEnabled(False)
         self.calibrated.setStyleSheet(
             "background-color: lightgrey; color:black")
         
-        self.analyzed = QtGui.QLineEdit(self)
+        self.analyzed = QtWidgets.QLineEdit(self)
         self.analyzed.setEnabled(False)
         self.analyzed.setStyleSheet(
             "background-color: lightgrey; color:black")
         
-        self.area_done = QtGui.QLineEdit(self)
+        self.area_done = QtWidgets.QLineEdit(self)
         self.area_done.setEnabled(False)
         self.area_done.setStyleSheet(
             "background-color: lightgrey; color:black")
@@ -1279,7 +1279,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             lambda: self.update_combo_box_drawing('type',
                                                   self.drawing_type))
 
-        widget_form = QtGui.QWidget()
+        widget_form = QtWidgets.QWidget()
         widget_form.setLayout(form_layout)
         self.drawing_page.widget_left_up_layout.addWidget(widget_form)
 
@@ -1343,23 +1343,23 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     def add_current_session(self):
         
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setSpacing(5)
 
-        title_left_middle = QtGui.QLabel("Current session")
+        title_left_middle = QtWidgets.QLabel("Current session")
         title_left_middle.setAlignment(QtCore.Qt.AlignCenter)
         title_left_middle.setContentsMargins(0, 2, 0, 2)
         self.drawing_page.widget_left_middle_layout.addWidget(title_left_middle)
         
-        current_operator_linedit = QtGui.QLineEdit(
+        current_operator_linedit = QtWidgets.QLineEdit(
             str(self.operator).upper(), self)
         current_operator_linedit.setEnabled(False)
         current_operator_linedit.setStyleSheet(
             "background-color: lightgray; color: black")
         
-        self.but_previous = QtGui.QPushButton('previous', self)
+        self.but_previous = QtWidgets.QPushButton('previous', self)
         self.but_previous.setShortcut(QtGui.QKeySequence("Left"))
-        self.but_next = QtGui.QPushButton('next', self)
+        self.but_next = QtWidgets.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
 
         self.but_next.clicked.connect(
@@ -1369,27 +1369,27 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             lambda: self.update_counter(self.current_count-1))
         self.but_previous.clicked.connect(self.set_drawing)
 
-        layout_but = QtGui.QHBoxLayout()
+        layout_but = QtWidgets.QHBoxLayout()
         layout_but.addWidget(self.but_previous)
         layout_but.addWidget(self.but_next)
         
         layout_goto = self.jump_to_drawing_linedit()
         
-        self.but_save = QtGui.QPushButton('save', self)
+        self.but_save = QtWidgets.QPushButton('save', self)
         self.but_save.clicked.connect(self.save_drawing)
 
         form_layout.addRow("Current operator: ", current_operator_linedit)
-        form_layout.setLayout(1, QtGui.QFormLayout.SpanningRole, layout_goto)
-        form_layout.setLayout(2, QtGui.QFormLayout.SpanningRole, layout_but)
-        form_layout.setWidget(3, QtGui.QFormLayout.SpanningRole, self.but_save)
+        form_layout.setLayout(1, QtWidgets.QFormLayout.SpanningRole, layout_goto)
+        form_layout.setLayout(2, QtWidgets.QFormLayout.SpanningRole, layout_but)
+        form_layout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.but_save)
 
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout)
         
     def jump_to_drawing_linedit(self):
-        self.goto_drawing_linedit = QtGui.QLineEdit()
-        self.goto_drawing_label1 = QtGui.QLabel()
-        self.goto_drawing_label2 = QtGui.QLabel()
-        self.goto_drawing_button = QtGui.QPushButton()
+        self.goto_drawing_linedit = QtWidgets.QLineEdit()
+        self.goto_drawing_label1 = QtWidgets.QLabel()
+        self.goto_drawing_label2 = QtWidgets.QLabel()
+        self.goto_drawing_button = QtWidgets.QPushButton()
         
         self.goto_drawing_label1.setText("Jump to drawing")
         self.goto_drawing_linedit.setText("1")
@@ -1406,7 +1406,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.goto_drawing_button.clicked.connect(
             lambda: self.update_surface_qlabel(0))
 
-        layout_goto = QtGui.QHBoxLayout()
+        layout_goto = QtWidgets.QHBoxLayout()
         layout_goto.addWidget(self.goto_drawing_label1)
         layout_goto.addWidget(self.goto_drawing_linedit)
         layout_goto.addWidget(self.goto_drawing_label2)

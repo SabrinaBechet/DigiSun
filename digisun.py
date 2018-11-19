@@ -1,27 +1,22 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 import sys, os
-import pymysql
-from PyQt4.QtCore import QCoreApplication
-import scanner, database, daily_scan, drawing_analyse, login, bulk_analyse
-from datetime import date, time, datetime
-from PIL import Image
-from PIL.ImageQt import ImageQt
+import login, daily_scan , bulk_analyse, drawing_analyse
 
-###############################################################
-###############################################################     
-class BulkScanPage(QtGui.QWidget):
+
+    
+class BulkScanPage(QtWidgets.QWidget):
 
     def __init__(self, operator=None):
         super(BulkScanPage, self).__init__()
         
-        welcome_msg = QtGui.QLabel('bulk scan...' + operator, self)
-        self.layout = QtGui.QGridLayout()
+        welcome_msg = QtWidgets.QLabel('bulk scan...' + operator, self)
+        self.layout = QtWidgets.QGridLayout()
         self.layout.addWidget(welcome_msg, 0, 0, 1, 3)
         self.setLayout(self.layout)
           
-class mainWindow(QtGui.QMainWindow):
+class mainWindow(QtWidgets.QMainWindow):
     " Represent the Qt interface."
 
     def __init__(self, operator=None, mode_index=0):
@@ -35,7 +30,7 @@ class mainWindow(QtGui.QMainWindow):
         self.setWindowTitle("DigiSun 2018")
 
         self.center()
-        screen_available_geometry = QtGui.QDesktopWidget()\
+        screen_available_geometry = QtWidgets.QDesktopWidget()\
                                          .availableGeometry()
         self.setMinimumWidth(screen_available_geometry.width())
         self.setMinimumHeight(screen_available_geometry.height() - 50)
@@ -47,13 +42,13 @@ class mainWindow(QtGui.QMainWindow):
         self.operator = operator
         print("check opearator ", self.operator)
         
-        self.stack = QtGui.QStackedLayout()
+        self.stack = QtWidgets.QStackedLayout()
         self.daily_scan = daily_scan.DailyScan(self.operator)
         self.analyse_page = bulk_analyse.BulkAnalysePage()
         self.bulk_scan_page = BulkScanPage(self.operator)
         self.drawing_analyse = drawing_analyse.DrawingAnalysePage(self.operator)
- 
-        self.central_zone = QtGui.QWidget()
+        
+        self.central_zone = QtWidgets.QWidget()
         self.central_zone.setLayout(self.stack)
         self.setCentralWidget(self.central_zone)
         
@@ -61,13 +56,13 @@ class mainWindow(QtGui.QMainWindow):
         self.stack.addWidget(self.analyse_page)
         self.stack.addWidget(self.bulk_scan_page)
         self.stack.addWidget(self.drawing_analyse)
-
+        
         self.set_menuBar()
         self.stack.setCurrentIndex(mode_index)
         
         if mode_index==0:
             self.init_scanner()
-        
+         
         self.daily_scan\
             .but_analyse\
             .clicked\
@@ -93,17 +88,17 @@ class mainWindow(QtGui.QMainWindow):
             .clicked\
             .connect(self.bulk_switch_to_drawing_analyse)
         
-
+       
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui\
+        screen = QtWidgets\
                  .QApplication\
                  .desktop()\
-                 .screenNumber(QtGui.QApplication\
+                 .screenNumber(QtWidgets.QApplication\
                                .desktop()\
                                .cursor()\
                                .pos())
-        centerPoint = QtGui\
+        centerPoint = QtWidgets\
                       .QApplication\
                       .desktop()\
                       .screenGeometry(screen)\
@@ -137,17 +132,17 @@ class mainWindow(QtGui.QMainWindow):
                   
     def set_menuBar(self):
 
-        menuBar = QtGui.QMenuBar()
+        menuBar = QtWidgets.QMenuBar()
         self.setMenuBar(menuBar)
         
         menu_mode = menuBar.addMenu('Mode')
         menu_about = menuBar.addMenu('About')
         
-        action_goTo_login = QtGui.QAction('login', self)
-        action_goTo_scanalyse = QtGui.QAction('daily scan', self)
-        action_goTo_analyse = QtGui.QAction('bulk analyse', self)
-        action_goTo_scan = QtGui.QAction('bulk scan', self)
-        action_exit = QtGui.QAction('exit', self)
+        action_goTo_login = QtWidgets.QAction('login', self)
+        action_goTo_scanalyse = QtWidgets.QAction('daily scan', self)
+        action_goTo_analyse = QtWidgets.QAction('bulk analyse', self)
+        action_goTo_scan = QtWidgets.QAction('bulk scan', self)
+        action_exit = QtWidgets.QAction('exit', self)
 
         action_goTo_login\
             .triggered\
@@ -177,12 +172,15 @@ class mainWindow(QtGui.QMainWindow):
         pass
 
 if __name__=='__main__':
-    app = QtGui.QApplication(sys.argv)
-
+    app = QtWidgets.QApplication(sys.argv)
+    """form = QtWidgets.QDialog()
+    form.show()
+    app.exec_()
+    """
     login = login.dialog_login()
     login.show()
 
-    if login.exec_() == QtGui.QDialog.Accepted:
+    if login.exec_() == QtWidgets.QDialog.Accepted:
         operator_name = login.get_operator()
         print("get op")
         mode_index = login.get_mode()

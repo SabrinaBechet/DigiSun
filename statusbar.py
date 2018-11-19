@@ -1,9 +1,9 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 import os
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtCore, QtWidgets
 
-class StatusBar(QtGui.QStatusBar):
+class StatusBar(QtWidgets.QStatusBar):
     """
     Use a Label instead of the Qt status bar to have more precise control
     on the way the text is deplayed.
@@ -11,12 +11,12 @@ class StatusBar(QtGui.QStatusBar):
     def __init__(self):
         super(StatusBar, self).__init__()
 
-        self.name = QtGui.QLabel()
+        self.name = QtWidgets.QLabel()
         self.name.setStyleSheet(
             "QLabel { background-color : red; color : blue; }");
         self.name.setAlignment(QtCore.Qt.AlignHCenter)
         self.name.setMinimumSize(self.name.sizeHint())
-        self.comment = QtGui.QLabel()
+        self.comment = QtWidgets.QLabel()
         self.comment.setIndent(3)
 
         self.addWidget(self.name)

@@ -2,7 +2,7 @@
 # -*- coding:utf-8-*-
 
 import math
-from matplotlib import pylab as plt
+
 
 class Coordinates():
 
@@ -137,8 +137,8 @@ def cartesian_from_HGC_upper_left_origin(x_center, y_center, x_north,
     y_lower_left_origin = - y_upper_left_origin
     """
 
-    print("latitude: ", HGC_lat)
-    print("longitude: ", HGC_long)
+    #print("latitude: ", HGC_lat)
+    #print("longitude: ", HGC_long)
     
     (x_lower_left_origin,
      y_lower_left_origin,
