@@ -3,7 +3,7 @@
 import os
 from PyQt5 import QtGui, QtCore, QtWidgets
 
-import qlabel_drawing #, qlabel_group_surface, coordinates, toolbar, statusbar
+import qlabel_drawing 
 
 class DrawingViewPage(QtWidgets.QWidget):
     """
@@ -99,13 +99,8 @@ class DrawingViewPage(QtWidgets.QWidget):
         self.widget_right_layout.setContentsMargins(0, 0, 0, 0) 
         self.widget_right_layout.setSpacing(0)
         self.widget_right.setLayout(self.widget_right_layout)
-        self.label_right = qlabel_drawing.QLabelDrawing()
+        """self.label_right = qlabel_drawing.QLabelDrawing()
 
-        #self.label_middle_up = qlabel_drawing.QLabelGroupSurface()
-        
-        #self.widget_right.layout().addWidget(self.label_middle_up)
-        #self.widget_right.layout().addWidget(self.label_right)
-  
         self.scroll = QtWidgets.QScrollArea()
         self.scroll.setWidget(self.label_right)
         
@@ -114,7 +109,7 @@ class DrawingViewPage(QtWidgets.QWidget):
         self.scroll.setWidgetResizable(True)
  
         self.widget_right_layout.addWidget(self.scroll)
-        
+        """
         splitter_down = QtWidgets.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_down)
         splitter_down.addWidget(self.widget_left_down)

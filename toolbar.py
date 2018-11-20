@@ -8,7 +8,7 @@ class Toolbar(QtWidgets.QToolBar):
     """Note : The QToolBar class inherit from QWidget.
     """
     
-    def __init__(self, drawing_page, level_info):
+    def __init__(self, label_right, level_info):
         super(Toolbar, self).__init__()
 
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
@@ -93,76 +93,75 @@ class Toolbar(QtWidgets.QToolBar):
             self.surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))
             self.addWidget(self.surface_but)
 
-        """drawing_page.label_right.group_scroll.value_changed.connect(
+        """label_right.group_scroll.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.group_scroll.value,
+                label_right.group_scroll.value,
                 self.group_scroll_but ))
-        if drawing_page.label_right.group_scroll.value :
+        if label_right.group_scroll.value :
             self.group_scroll_but.setStyleSheet("background-color: lightblue")
         """    
-        drawing_page.label_right.large_grid_overlay.value_changed.connect(
+        label_right.large_grid_overlay.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.large_grid_overlay.value,
+                label_right.large_grid_overlay.value,
                 self.large_grid_but ))
-        if drawing_page.label_right.large_grid_overlay.value :
+        if label_right.large_grid_overlay.value :
             self.large_grid_but.setStyleSheet("background-color: lightblue")
                 
-        drawing_page.label_right.small_grid_overlay.value_changed.connect(
+        label_right.small_grid_overlay.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.small_grid_overlay.value,
+                label_right.small_grid_overlay.value,
                 self.small_grid_but))
-        if drawing_page.label_right.small_grid_overlay.value :
+        if label_right.small_grid_overlay.value :
             self.small_grid_but.setStyleSheet("background-color: lightblue")
 
-        drawing_page.label_right.group_visu.value_changed.connect(
+        label_right.group_visu.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.group_visu.value,
+                label_right.group_visu.value,
                 self.group_visu_but))
-        if drawing_page.label_right.group_visu.value :
+        if label_right.group_visu.value :
             self.group_visu_but.setStyleSheet("background-color: lightblue")
 
-        drawing_page.label_right.dipole_visu.value_changed.connect(
+        label_right.dipole_visu.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.dipole_visu.value,
+                label_right.dipole_visu.value,
                 self.dipole_visu_but))
-        if drawing_page.label_right.dipole_visu.value :
+        if label_right.dipole_visu.value :
             self.dipole_visu_but.setStyleSheet("background-color: lightblue")
 
-       
-        drawing_page.label_right.helper_grid.value_changed.connect(
+        label_right.helper_grid.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.helper_grid.value,
+                label_right.helper_grid.value,
                 self.helper_grid_but))
-        if drawing_page.label_right.helper_grid.value :
+        if label_right.helper_grid.value :
             self.helper_grid_but.setStyleSheet("background-color: lightblue")
             
        
-        drawing_page.label_right.calibration_mode.value_changed.connect(
+        label_right.calibration_mode.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.calibration_mode.value,
+                label_right.calibration_mode.value,
                 self.calibration_but))
-        if drawing_page.label_right.calibration_mode.value :
+        if label_right.calibration_mode.value :
             self.calibration_but.setStyleSheet("background-color: lightblue")
         
-        drawing_page.label_right.add_group_mode.value_changed.connect(
+        label_right.add_group_mode.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.add_group_mode.value,
+                label_right.add_group_mode.value,
                 self.add_group_but))
-        if drawing_page.label_right.add_group_mode.value :
+        if label_right.add_group_mode.value :
             self.add_group_but.setStyleSheet("background-color: lightblue")
         
-        drawing_page.label_right.add_dipole_mode.value_changed.connect(
+        label_right.add_dipole_mode.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.add_dipole_mode.value,
+                label_right.add_dipole_mode.value,
                 self.add_dipole_but))
-        if drawing_page.label_right.add_dipole_mode.value :
+        if label_right.add_dipole_mode.value :
             self.add_dipole_but.setStyleSheet("background-color: lightblue")
 
-        drawing_page.label_right.surface_mode.value_changed.connect(
+        label_right.surface_mode.value_changed.connect(
             lambda: self.set_button_color(
-                drawing_page.label_right.surface_mode.value,
+                label_right.surface_mode.value,
                 self.surface_but))
-        if drawing_page.label_right.surface_mode.value :
+        if label_right.surface_mode.value :
             self.surface_but.setStyleSheet("background-color: lightblue")
                  
     def set_button_color(self, mode_bool, but):

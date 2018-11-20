@@ -43,52 +43,54 @@ class QLabelDrawing(QtWidgets.QLabel):
     dipole_added = QtCore.pyqtSignal()
     
     def __init__(self):
-       super(QLabelDrawing, self).__init__()
-       my_font = QtGui.QFont("Comic Sans MS", 20)
-       self.setText('No drawings corresponding to this entry')
-       self.setFont(my_font)
-       self.setAlignment(QtCore.Qt.AlignCenter)
-       self.setContentsMargins(0, 0, 0, 0)
-       #self.setMinimumWidth(300)
-       self.width_scale = 1000
-       self.height_scale = 1000
 
-       # overlay mode
-       self.large_grid_overlay = analyse_mode_bool.analyseModeBool(True)
-       self.small_grid_overlay = analyse_mode_bool.analyseModeBool(False)
-       self.grid_draw_point = False
-       self.grid_interpolate_point = True
-       self.group_visu = analyse_mode_bool.analyseModeBool(True)
-       self.dipole_visu = analyse_mode_bool.analyseModeBool(False)
-
-       #helper mode
-       self.helper_grid = analyse_mode_bool.analyseModeBool(False)
-       self.helper_grid_position_clicked = False
-       
-       #action mode
-       #only one action mode at the time!
-       self.calibration_mode = analyse_mode_bool.analyseModeBool(False)
-       self.center_done = False
-       self.north_done = False
-       #self.approximate_center = [0., 0.]
-       self.add_group_mode = analyse_mode_bool.analyseModeBool(False)
-       self.add_dipole_mode = analyse_mode_bool.analyseModeBool(False)
-       self.surface_mode = analyse_mode_bool.analyseModeBool(False)
-
-       self.group_visu_index = 0
-
-       self.scaling_factor = 1
-       self.dipole_points = []
-       self.dipole_angles = []
-
-       self.frame_size = 0
+        super(QLabelDrawing, self).__init__()
+        my_font = QtGui.QFont("Comic Sans MS", 20)
+        self.setText('No drawings corresponding to this entry')
+        self.setFont(my_font)
+        self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setContentsMargins(0, 0, 0, 0)
+        #self.setMinimumWidth(300)
+        self.width_scale = 1000
+        self.height_scale = 1000
+        
+        # overlay mode
+        self.large_grid_overlay = analyse_mode_bool.analyseModeBool(True)
+        self.small_grid_overlay = analyse_mode_bool.analyseModeBool(False)
+        self.grid_draw_point = False
+        self.grid_interpolate_point = True
+        self.group_visu = analyse_mode_bool.analyseModeBool(True)
+        self.dipole_visu = analyse_mode_bool.analyseModeBool(False)
+        
+        #helper mode
+        self.helper_grid = analyse_mode_bool.analyseModeBool(False)
+        self.helper_grid_position_clicked = False
+        
+        #action mode
+        #only one action mode at the time!
+        self.calibration_mode = analyse_mode_bool.analyseModeBool(False)
+        self.center_done = False
+        self.north_done = False
+        #self.approximate_center = [0., 0.]
+        self.add_group_mode = analyse_mode_bool.analyseModeBool(False)
+        self.add_dipole_mode = analyse_mode_bool.analyseModeBool(False)
+        self.surface_mode = analyse_mode_bool.analyseModeBool(False)
+        
+        self.group_visu_index = 0
+        
+        self.scaling_factor = 1
+        self.dipole_points = []
+        self.dipole_angles = []
+        
+        self.frame_size = 0
        
     def get_img_array(self):
         """
         open an image specified with file_path and 
         return its corresponding numpy array
-        """    
-        with Image.open(self.file_path) as img:
+        """
+        try:
+            img = Image.open(self.file_path)
             im_arr = np.asarray(img)
             try:
                 if im_arr.shape[2]==3:
@@ -96,11 +98,15 @@ class QLabelDrawing(QtWidgets.QLabel):
             except IndexError:
                 print("the original file is in L format..")
 
-        return im_arr
+            return im_arr
+        
+        except IOError:
+            print("this file does not exist")
+            return
             
     def set_img(self):
     
-        print("***set the img **")
+        #print("***set the img **")
         try:
             img = Image.open(self.file_path) 
             self.drawing_width = img.size[0]
@@ -110,16 +116,17 @@ class QLabelDrawing(QtWidgets.QLabel):
             
         except IOError:
             print("did not find the image!")
+            return
             
-        print("width: ", self.drawing_width)
-        print("height: ", self.drawing_height)
+        #print("width: ", self.drawing_width)
+        #print("height: ", self.drawing_height)
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
         self.pen_width = int(self.drawing_height/700.)
-         
+        
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
-
+            
         if (self.helper_grid_position_clicked and
             self.current_drawing.calibrated):
             
@@ -664,6 +671,7 @@ class QLabelDrawing(QtWidgets.QLabel):
         x_click = QMouseEvent.x()
         y_click = QMouseEvent.y()
 
+        
         pixmap_x_min, pixmap_y_min = self.get_pixmap_coordinate_range()
         
         init_width = 1000 # without any zoom

@@ -23,6 +23,6 @@ class StatusBar(QtWidgets.QStatusBar):
         self.addWidget(self.comment)
 
     def clean(self):
-        print("cleaning function..")
+        #print("cleaning function..")
         self.name.setText("")
         self.comment.setText("")

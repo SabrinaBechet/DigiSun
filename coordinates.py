@@ -113,7 +113,10 @@ class Cartesian(Coordinates):
             print("the value must be greater than 0!")
 
     def set_axis_z(self):
-        self.z = math.sqrt(1 - self.x**2 - self.y**2)
+        try:
+            self.z = math.sqrt(1 - self.x**2 - self.y**2)
+        except ValueError:
+            print("click outside of the solar disk!")
 
     def convert_to_spherical(self):
         """

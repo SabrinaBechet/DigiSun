@@ -21,14 +21,7 @@ class mainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, operator=None, mode_index=0):
         super(mainWindow, self).__init__()
-        #width = self.frameGeometry().width()
-        #self.setMinimumWidth(width)
-        #height = self.frameGeometry().height()
-        #self.setMinimumHeight(height)
-        #print("frame geometry", width, height)
-        
         self.setWindowTitle("DigiSun 2018")
-
         self.center()
         screen_available_geometry = QtWidgets.QDesktopWidget()\
                                          .availableGeometry()
