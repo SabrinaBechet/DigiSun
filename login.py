@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt5 import QtGui, QtCore, QtWidgets
-import sys, os
+from PyQt4 import QtGui, QtCore
+import sys
 import database
 
 
-class dialog_login(QtWidgets.QDialog):
+class dialog_login(QtGui.QDialog):
 
     def __init__(self):
         super(dialog_login, self).__init__()
@@ -17,11 +17,11 @@ class dialog_login(QtWidgets.QDialog):
         #self.resize(width, height)
         self.setWindowTitle("DigiSun 2018")
         
-        self.layout = QtWidgets.QGridLayout()
+        self.layout = QtGui.QGridLayout()
         self.setLayout(self.layout)
-        welcome_msg = QtWidgets.QLabel('DigiSun 2018', self)
+        welcome_msg = QtGui.QLabel('DigiSun 2018', self)
         width_widget = 150
-        sun_logo = QtWidgets.QLabel()
+        sun_logo = QtGui.QLabel()
         
         sun_logo.setPixmap(QtGui.QPixmap("sun-logo-th.png"))
         sun_logo.setMinimumWidth(width_widget)
@@ -30,24 +30,24 @@ class dialog_login(QtWidgets.QDialog):
         #layout_welcome.addWidget(welcome_msg)
         #layout_welcome.addWidget(sun_logo)
 
-        self.operator_name = QtWidgets.QLineEdit(self)
+        self.operator_name = QtGui.QLineEdit(self)
         self.operator_name.setMinimumWidth(width_widget)
         self.operator_name.setMaximumWidth(width_widget)
-        #form_layout = QtWidgets.QFormLayout()
+        #form_layout = QtGui.QFormLayout()
         #form_layout.addRow('Welcome in DigiSun', sun_logo)
         #form_layout.addRow('operator name:', self.operator_name)
-        operator_selection = QtWidgets.QLabel('operator name: ', self)
+        operator_selection = QtGui.QLabel('operator name: ', self)
         operator_selection.setMinimumWidth(width_widget)
         operator_selection.setMaximumWidth(width_widget)
-        #widget_form = QtWidgets.QWidget()
+        #widget_form = QtGui.QWidget()
         #widget_form.setLayout(form_layout)
         
         #self.layout.addLayout(layout_welcome)
         
-        application_selection = QtWidgets.QLabel('Applications: ', self)
-        daily_scan_but = QtWidgets.QPushButton("daily scan")
-        bulk_analyse_but = QtWidgets.QPushButton("bulk analyse")
-        bulk_scan_but = QtWidgets.QPushButton("bulk scan")
+        application_selection = QtGui.QLabel('Applications: ', self)
+        daily_scan_but = QtGui.QPushButton("daily scan")
+        bulk_analyse_but = QtGui.QPushButton("bulk analyse")
+        bulk_scan_but = QtGui.QPushButton("bulk scan")
         
         application_selection.setMinimumWidth(width_widget)
         application_selection.setMaximumWidth(width_widget)
@@ -92,19 +92,19 @@ class dialog_login(QtWidgets.QDialog):
 
         self.center()
 
-        """welcome_msg = QtWidgets.QLabel('Welcome in DigiSun', self)
+        """welcome_msg = QtGui.QLabel('Welcome in DigiSun', self)
         
-        self.operator_name = QtWidgets.QLineEdit(self)
-        select_application = QtWidgets.QLabel('Select an application:', self)
-        self.digiSun_mode = QtWidgets.QComboBox(self)
+        self.operator_name = QtGui.QLineEdit(self)
+        select_application = QtGui.QLabel('Select an application:', self)
+        self.digiSun_mode = QtGui.QComboBox(self)
         self.digiSun_mode.addItem('scan and analyse')
         self.digiSun_mode.addItem('bulk analyse')
         self.digiSun_mode.addItem('bulk scan')
         
-        but_login = QtWidgets.QPushButton('Enter', self)
+        but_login = QtGui.QPushButton('Enter', self)
         but_login.clicked.connect(self.handleLogin)
 
-        form_layout = QtWidgets.QFormLayout()
+        form_layout = QtGui.QFormLayout()
         form_layout.addRow('operator name', self.operator_name)
 
         self.layout.addWidget(welcome_msg)
@@ -124,7 +124,7 @@ class dialog_login(QtWidgets.QDialog):
         if (uset_db.exist_in_db('observers', 'name', self.operator_name.text())):
             self.accept()
         else:
-            QtWidgets.QMessageBox.warning(
+            QtGui.QMessageBox.warning(
                 self, 'Error', 'Bad operator name')
             
     def get_operator(self):
@@ -135,19 +135,19 @@ class dialog_login(QtWidgets.QDialog):
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtWidgets.QApplication.desktop().screenNumber(QtWidgets.QApplication.desktop().cursor().pos())
-        centerPoint = QtWidgets.QApplication.desktop().screenGeometry(screen).center()
+        screen = QtGui.QApplication.desktop().screenNumber(QtGui.QApplication.desktop().cursor().pos())
+        centerPoint = QtGui.QApplication.desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())     
     """def show_buttons(self):
-        welcome_msg = QtWidgets.QLabel('DigiSun prototype', self)
+        welcome_msg = QtGui.QLabel('DigiSun prototype', self)
 
-        my_font = QtWidgets.QFont("Courier",30)
+        my_font = QtGui.QFont("Courier",30)
         welcome_msg.setFont(my_font)
 
-        but_scananalyse = QtWidgets.QPushButton('Scanalyse', self)
-        but_analyse = QtWidgets.QPushButton('bulk Analyse', self)
-        but_scan = QtWidgets.QPushButton('bulk Scan', self)
+        but_scananalyse = QtGui.QPushButton('Scanalyse', self)
+        but_analyse = QtGui.QPushButton('bulk Analyse', self)
+        but_scan = QtGui.QPushButton('bulk Scan', self)
                 
         self.layout.addWidget(welcome_msg, 0, 0, 1, 3)
         
@@ -157,14 +157,14 @@ class dialog_login(QtWidgets.QDialog):
 
         return but_scananalyse, but_scan, but_analyse
    """ 
-"""class Login_old(QtWidgets.QDialog):
+"""class Login_old(QtGui.QDialog):
     def __init__(self, parent=None):
         super(Login, self).__init__(parent)
-        self.textName = QtWidgets.QLineEdit(self)
-        self.textPass = QtWidgets.QLineEdit(self)
-        self.buttonLogin = QtWidgets.QPushButton('Login', self)
+        self.textName = QtGui.QLineEdit(self)
+        self.textPass = QtGui.QLineEdit(self)
+        self.buttonLogin = QtGui.QPushButton('Login', self)
         self.buttonLogin.clicked.connect(self.handleLogin)
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = QtGui.QVBoxLayout(self)
         layout.addWidget(self.textName)
         layout.addWidget(self.textPass)
         layout.addWidget(self.buttonLogin)
@@ -174,10 +174,10 @@ class dialog_login(QtWidgets.QDialog):
             self.textPass.text() == 'bar'):
             self.accept()
         else:
-            QtWidgets.QMessageBox.warning(
+            QtGui.QMessageBox.warning(
                 self, 'Error', 'Bad user or password')
 
-class Window(QtWidgets.QMainWindow):
+class Window(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
         # self.ui = Ui_MainWindow()
@@ -186,10 +186,10 @@ class Window(QtWidgets.QMainWindow):
 if __name__ == '__main__':
 
     import sys
-    app = QtWidgets.QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     login = Login()
 
-    if login.exec_() == QtWidgets.QDialog.Accepted:
+    if login.exec_() == QtGui.QDialog.Accepted:
         window = Window()
         window.show()
         sys.exit(app.exec_())

@@ -1,10 +1,10 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 import os
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt4 import QtGui, QtCore
 
 
-class Toolbar(QtWidgets.QToolBar):
+class Toolbar(QtGui.QToolBar):
     """Note : The QToolBar class inherit from QWidget.
     """
     
@@ -13,57 +13,57 @@ class Toolbar(QtWidgets.QToolBar):
 
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
 
-        """self.group_scroll_but = QtWidgets.QToolButton(self)
+        """self.group_scroll_but = QtGui.QToolButton(self)
         self.group_scroll_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.group_scroll_but.setText("group scroll")
         self.group_scroll_but.setIcon(QtGui.QIcon('icons/Smashicons/route.svg'))
         """
-        self.zoom_in_but = QtWidgets.QToolButton(self)
+        self.zoom_in_but = QtGui.QToolButton(self)
         self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_in_but.setText("zoom in")
         self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
 
-        self.zoom_out_but = QtWidgets.QToolButton(self)
+        self.zoom_out_but = QtGui.QToolButton(self)
         self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_out_but.setText("zoom out")
         self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
    
-        self.large_grid_but = QtWidgets.QToolButton(self)
+        self.large_grid_but = QtGui.QToolButton(self)
         self.large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.large_grid_but.setText("large grid")
         self.large_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
 
-        self.small_grid_but = QtWidgets.QToolButton(self)
+        self.small_grid_but = QtGui.QToolButton(self)
         self.small_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.small_grid_but.setText("small grid")
         self.small_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
 
-        self.group_visu_but = QtWidgets.QToolButton(self)
+        self.group_visu_but = QtGui.QToolButton(self)
         self.group_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.group_visu_but.setText("group view")
         self.group_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share_1.svg'))
 
-        self.dipole_visu_but = QtWidgets.QToolButton(self)
+        self.dipole_visu_but = QtGui.QToolButton(self)
         self.dipole_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.dipole_visu_but.setText("dipole view")
         self.dipole_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
 
-        self.helper_grid_but = QtWidgets.QToolButton(self)
+        self.helper_grid_but = QtGui.QToolButton(self)
         self.helper_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.helper_grid_but.setText("helper grid")
         self.helper_grid_but.setIcon(QtGui.QIcon('icons/Smashicons/internet.svg'))
 
-        self.calibration_but = QtWidgets.QToolButton(self)
+        self.calibration_but = QtGui.QToolButton(self)
         self.calibration_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.calibration_but.setText("calibrate")
         self.calibration_but.setIcon(QtGui.QIcon('icons/Smashicons/target.svg'))
 
-        self.add_group_but = QtWidgets.QToolButton(self)
+        self.add_group_but = QtGui.QToolButton(self)
         self.add_group_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.add_group_but.setText("add group")
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
 
-        vertical_line_widget = QtWidgets.QWidget()
+        vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
         vertical_line_widget.setStyleSheet("background-color: black")
 
@@ -80,14 +80,14 @@ class Toolbar(QtWidgets.QToolBar):
         self.addWidget(self.add_group_but)
         
         if 'dipole' in level_info:
-            self.add_dipole_but = QtWidgets.QToolButton(self)
+            self.add_dipole_but = QtGui.QToolButton(self)
             self.add_dipole_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.add_dipole_but.setText("add dipole")
             self.add_dipole_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
             self.addWidget(self.add_dipole_but)
 
         if 'area' in level_info:
-            self.surface_but = QtWidgets.QToolButton(self)
+            self.surface_but = QtGui.QToolButton(self)
             self.surface_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.surface_but.setText("surface")
             self.surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))

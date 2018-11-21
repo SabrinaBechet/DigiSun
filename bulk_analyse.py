@@ -1,18 +1,18 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt4 import QtGui, QtCore
 from datetime import datetime, timedelta
 import database, drawing
 
 
-class ListPage(QtWidgets.QWidget):
+class ListPage(QtGui.QWidget):
     """
     Mother class that shows a list (of years or months) 
     with the percentage of drawing calibrated/analysed/with area done
     """
     def __init__(self):
         super(ListPage, self).__init__()
-        self.table = QtWidgets.QTableWidget()
+        self.table = QtGui.QTableWidget()
         self.table.setColumnCount(5)
 
     def draw_table(self, list_drawings):
@@ -24,20 +24,20 @@ class ListPage(QtWidgets.QWidget):
         self.table.setHorizontalHeaderLabels(["date", " # total","calibrated",
                                               "analysed", "area"])
         for i in range(len(list_drawings)):
-            date_drawing = QtWidgets.QTableWidgetItem(str(list_drawings[i]))
+            date_drawing = QtGui.QTableWidgetItem(str(list_drawings[i]))
             #date_drawing.setFlags(QtCore.Qt.ItemIsSelectable and
             #                      QtCore.Qt.ItemIsEnabled)
             
-            tot_number_drawing = QtWidgets.QTableWidgetItem(str(self.lst_tot[i]))
+            tot_number_drawing = QtGui.QTableWidgetItem(str(self.lst_tot[i]))
             #tot_number_drawing.setFlags(QtCore.Qt.ItemIsSelectable and
             #                            QtCore.Qt.ItemIsEnabled)
 
             self.table.setItem(i, 0, date_drawing)
             self.table.setItem(i, 1, tot_number_drawing)
             
-            progressBar_calib = QtWidgets.QProgressBar()
-            progressBar_analysed = QtWidgets.QProgressBar()
-            progressBar_area = QtWidgets.QProgressBar()
+            progressBar_calib = QtGui.QProgressBar()
+            progressBar_analysed = QtGui.QProgressBar()
+            progressBar_area = QtGui.QProgressBar()
             
             if self.lst_tot[i] > 0:
                 frac_calibrated = self.lst_calib[i] * 100. / self.lst_tot[i]
@@ -133,8 +133,8 @@ class MonthListPage(ListPage):
         - the table widget
         """
         super(MonthListPage, self).__init__() 
-        self.but_select = QtWidgets.QPushButton("select", self)
-        month_list_layout = QtWidgets.QVBoxLayout()
+        self.but_select = QtGui.QPushButton("select", self)
+        month_list_layout = QtGui.QVBoxLayout()
         month_list_layout.addWidget(self.table)
         month_list_layout.addWidget(self.but_select)
         self.setLayout(month_list_layout)
@@ -171,8 +171,8 @@ class YearListPage(ListPage):
         super(YearListPage, self).__init__()
         self.lst_year = []
         self.set_year()
-        self.but_select = QtWidgets.QPushButton("select", self)
-        self.layout = QtWidgets.QVBoxLayout()
+        self.but_select = QtGui.QPushButton("select", self)
+        self.layout = QtGui.QVBoxLayout()
         self.layout.addWidget(self.table)
         self.layout.addWidget(self.but_select)
         self.setLayout(self.layout)
@@ -200,21 +200,21 @@ class YearListPage(ListPage):
         self.lst_year = list(set_year)
 
 
-class DateSelectionPage(QtWidgets.QWidget):
+class DateSelectionPage(QtGui.QWidget):
 
     def __init__(self):
         super(DateSelectionPage, self).__init__()
         
-        layout_date_selection = QtWidgets.QHBoxLayout()
+        layout_date_selection = QtGui.QHBoxLayout()
 
-        form_layout = QtWidgets.QFormLayout()
+        form_layout = QtGui.QFormLayout()
 
-        self.start_date = QtWidgets.QDateEdit()
+        self.start_date = QtGui.QDateEdit()
         self.start_date.setDisplayFormat("dd/MM/yyyy")
-        self.end_date = QtWidgets.QDateEdit()
+        self.end_date = QtGui.QDateEdit()
         self.end_date.setDisplayFormat("dd/MM/yyyy")
 
-        self.but_select = QtWidgets.QPushButton("select")
+        self.but_select = QtGui.QPushButton("select")
         
         form_layout.addRow('start date: ', self.start_date)
         form_layout.addRow('end date: ', self.end_date)
@@ -223,32 +223,32 @@ class DateSelectionPage(QtWidgets.QWidget):
         layout_date_selection.addLayout(form_layout)
         self.setLayout(layout_date_selection)
         
-class BulkViewPage(QtWidgets.QWidget):
+class BulkViewPage(QtGui.QWidget):
     """ Template for the BulkAnalysePage. 
     """
     def __init__(self):
         super(BulkViewPage, self).__init__()
-        self.setLayout(QtWidgets.QVBoxLayout())
+        self.setLayout(QtGui.QVBoxLayout())
         
-        self.widget_right = QtWidgets.QWidget()
+        self.widget_right = QtGui.QWidget()
         print("check size", self.width(), self.height())
         #self.widget_right.setMinimumWidth(self.width()/2.)#1300)
         self.widget_right.setStyleSheet("background-color:lightgray;")
-        self.widget_right_layout = QtWidgets.QVBoxLayout()
+        self.widget_right_layout = QtGui.QVBoxLayout()
         #self.widget_right_layout.setContentsMargins(0, 0, 0, 0) # this line
         #self.widget_right_layout.setSpacing(0)
         #self.widget_right_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.widget_right.setLayout(self.widget_right_layout)
      
-        self.widget_left_up = QtWidgets.QWidget()
+        self.widget_left_up = QtGui.QWidget()
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         #self.widget_left_up.setMinimumHeight(self.height()/4.) #200)
-        self.widget_left_layout_up = QtWidgets.QVBoxLayout()
+        self.widget_left_layout_up = QtGui.QVBoxLayout()
         #self.widget_left_layout_up.setContentsMargins(0, 0, 0, 0) # this line
         #self.widget_left_layout_up.setSpacing(0)
         self.widget_left_up.setLayout(self.widget_left_layout_up)
         my_font = QtGui.QFont("Comic Sans MS", 15)
-        self.label_left_up = QtWidgets.QLabel('Drawing selection per date')
+        self.label_left_up = QtGui.QLabel('Drawing selection per date')
         self.label_left_up.setFont(my_font)
         #self.label_left_up.setAlignment(QtCore.Qt.AlignCenter)
         #label_left.setStyleSheet("background-color:lightgray;")
@@ -256,15 +256,15 @@ class BulkViewPage(QtWidgets.QWidget):
         #self.label_left_up.setMaximumWidth(300)
         self.widget_left_up.layout().addWidget(self.label_left_up)
 
-        self.widget_left_down = QtWidgets.QWidget()
+        self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setStyleSheet("background-color:white;")
         #self.widget_left_down.setMinimumHeight(self.height())
         #self.widget_left_down.setMinimumWidth(200)
-        self.widget_left_layout_down = QtWidgets.QVBoxLayout()
+        self.widget_left_layout_down = QtGui.QVBoxLayout()
         #self.widget_left_layout_down.setContentsMargins(0, 0, 0, 0) # this line
         #self.widget_left_layout_down.setSpacing(0)
         self.widget_left_down.setLayout(self.widget_left_layout_down)
-        self.label_left_down = QtWidgets.QLabel('Drawing selection per year')
+        self.label_left_down = QtGui.QLabel('Drawing selection per year')
         self.label_left_down.setFont(my_font)
         #self.label_left_down.setAlignment(QtCore.Qt.AlignCenter)
         #label_left.setStyleSheet("background-color:lightgray;")
@@ -272,12 +272,12 @@ class BulkViewPage(QtWidgets.QWidget):
         #self.label_left_down.setMaximumWidth(300)
         self.widget_left_down.layout().addWidget(self.label_left_down)
 
-        splitter_left = QtWidgets.QSplitter(QtCore.Qt.Vertical, self)
+        splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_left)
         splitter_left.addWidget(self.widget_left_up)
         splitter_left.addWidget(self.widget_left_down)
 
-        splitter_main = QtWidgets.QSplitter(QtCore.Qt.Horizontal, self)
+        splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
         splitter_main.addWidget(self.widget_right)

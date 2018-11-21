@@ -1,13 +1,12 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt4 import QtGui, QtCore
 
 from PIL import Image
 from PIL.ImageQt import ImageQt
 import numpy as np
 import math
 import coordinates
-import cv2
 import time
 import sys
 import analyse_mode_bool
@@ -15,7 +14,7 @@ import analyse_mode_bool
 def rgb2gray(rgb):
     return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
 
-class QLabelDrawing(QtWidgets.QLabel):
+class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 
     display the grid, groups, dipoles, etc
@@ -770,7 +769,7 @@ class QLabelDrawing(QtWidgets.QLabel):
             self.set_img()
             self.calibration_mode.value = False
             
-            QtWidgets.QApplication.restoreOverrideCursor()
+            QtGui.QApplication.restoreOverrideCursor()
             self.north_clicked.emit()
             
         elif (self.calibration_mode.value and

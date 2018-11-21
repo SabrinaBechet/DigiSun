@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PIL import Image
+from PyQt4 import QtGui, QtCore
+#from PIL import Image
 from PIL.ImageQt import ImageQt
 import numpy as np
 import math
@@ -16,7 +16,7 @@ from shapely.geometry.polygon import Polygon
 
 sys.setrecursionlimit(10000) 
 
-class GroupSurfaceWidget(QtWidgets.QWidget):
+class GroupSurfaceWidget(QtGui.QWidget):
 
     bigger_frame = QtCore.pyqtSignal()
     smaller_frame = QtCore.pyqtSignal()
@@ -24,13 +24,13 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
     
     def __init__(self):
         super(GroupSurfaceWidget, self).__init__()
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtGui.QVBoxLayout()
         self.layout.setSpacing(15)
         self.setLayout(self.layout)
         
         self.radius_division_factor = 400
         
-        self.scroll = QtWidgets.QScrollArea()
+        self.scroll = QtGui.QScrollArea()
         self.scroll\
             .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.scroll\
@@ -49,58 +49,58 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         self.center_x = 0
         self.center_y = 0
         
-        qlabel_title = QtWidgets.QLabel("Surface calculation")
+        qlabel_title = QtGui.QLabel("Surface calculation")
         qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
         qlabel_title.setContentsMargins(0, 5, 0, 5)
         
-        threshold_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        threshold_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
         threshold_slider.setRange(0,256)
-        threshold_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        threshold_slider.setTickPosition(QtGui.QSlider.TicksBelow)
         
         self.default_threshold = 225
         threshold_slider.setValue(self.default_threshold)
         threshold_slider.valueChanged.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
-        self.threshold_linedit = QtWidgets.QLineEdit(str(self.default_threshold))
+        self.threshold_linedit = QtGui.QLineEdit(str(self.default_threshold))
         
-        threshold_layout = QtWidgets.QFormLayout()
+        threshold_layout = QtGui.QFormLayout()
         threshold_layout.addRow("Threshold selection:",
                                 self.threshold_linedit)
         
-        qlabel_general = QtWidgets.QLabel("General tools:")
+        qlabel_general = QtGui.QLabel("General tools:")
         
-        zoom_in_but =QtWidgets.QToolButton()
+        zoom_in_but =QtGui.QToolButton()
         zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
         zoom_in_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(2.))
         
-        zoom_out_but = QtWidgets.QToolButton()
+        zoom_out_but = QtGui.QToolButton()
         zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
         zoom_out_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(1/2.))
         
-        reset_but = QtWidgets.QToolButton()
+        reset_but = QtGui.QToolButton()
         reset_but.setText("reset")
         reset_but.setIcon(QtGui.QIcon('icons/Pixel_perfect/settings.svg'))
         reset_but.clicked.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
         
-        undo_but = QtWidgets.QToolButton()
+        undo_but = QtGui.QToolButton()
         undo_but.setIcon(QtGui.QIcon('icons/Eleonor_Wang/undo.svg'))
         
-        bigger_frame_but =QtWidgets.QToolButton()
+        bigger_frame_but =QtGui.QToolButton()
         bigger_frame_but.setIcon(
             QtGui.QIcon('icons/Linh_Pham/mine_bigger_frame.png'))
         bigger_frame_but.clicked.connect(
             lambda: self.bigger_frame.emit())
   
-        smaller_frame_but =QtWidgets.QToolButton()
+        smaller_frame_but =QtGui.QToolButton()
         smaller_frame_but.setIcon(
             QtGui.QIcon('icons/Linh_Pham/mine_smaller_frame.png'))
         smaller_frame_but.clicked.connect(
             lambda: self.smaller_frame.emit())
         
-        draw_polygon_but = QtWidgets.QToolButton()
+        draw_polygon_but = QtGui.QToolButton()
         draw_polygon_but.setIcon(
             QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
         draw_polygon_but.clicked.connect(
@@ -109,13 +109,13 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         draw_polygon_but.clicked.connect(
             self.qlabel_group_surface.draw_polygon)
         
-        cut_polygon_but = QtWidgets.QToolButton()
+        cut_polygon_but = QtGui.QToolButton()
         cut_polygon_but.setIcon(
             QtGui.QIcon('icons/Freepik/crop.svg'))
         cut_polygon_but.clicked.connect(
             lambda : self.cut_polygon(threshold_slider.value()))
         
-        draw_1pixel_black_but = QtWidgets.QToolButton()
+        draw_1pixel_black_but = QtGui.QToolButton()
         draw_1pixel_black_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_black_square.svg'))
         draw_1pixel_black_but.clicked.connect(
@@ -123,7 +123,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
                 self.qlabel_group_surface.black_pencil_mode))
         draw_1pixel_black_but.clicked.connect(lambda: self.draw_pencil(0))
 
-        draw_1pixel_white_but = QtWidgets.QToolButton()
+        draw_1pixel_white_but = QtGui.QToolButton()
         draw_1pixel_white_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_white_square.svg'))
         draw_1pixel_white_but.clicked.connect(
@@ -131,7 +131,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
                 self.qlabel_group_surface.white_pencil_mode))
         draw_1pixel_white_but.clicked.connect(lambda: self.draw_pencil(255))
         
-        bucket_white_fill_but = QtWidgets.QToolButton()
+        bucket_white_fill_but = QtGui.QToolButton()
         bucket_white_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/white-bucket.svg'))
         bucket_white_fill_but.clicked.connect(
@@ -141,7 +141,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
             lambda : self.qlabel_group_surface.set_bucket_fill(self.current_array,
                                                                0,
                                                                255))
-        bucket_black_fill_but = QtWidgets.QToolButton()
+        bucket_black_fill_but = QtGui.QToolButton()
         bucket_black_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/black-bucket.svg'))
         bucket_black_fill_but.clicked.connect(
@@ -153,13 +153,13 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
                                                                0))
         
         
-        """cross_but = QtWidgets.QToolButton()
+        """cross_but = QtGui.QToolButton()
         cross_but.setMinimumWidth(self.width()/6.)
         cross_but.clicked.connect(lambda: self.draw_pencil(255))
         
-        pixel_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        pixel_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
         pixel_slider.setRange(1,5)
-        pixel_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        pixel_slider.setTickPosition(QtGui.QSlider.TicksBelow)
         pixel_slider.setValue(1)
         """
         
@@ -198,7 +198,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         if self.qlabel_group_surface.black_bucket_mode.value:
             bucket_black_fill_but.setStyleSheet("background-color: lightblue")
              
-        layout_general = QtWidgets.QGridLayout()
+        layout_general = QtGui.QGridLayout()
         layout_general.addWidget(qlabel_general, 0, 0, 1, -1)
         layout_general.addWidget(zoom_in_but, 1, 0)
         layout_general.addWidget(zoom_out_but, 1, 1)
@@ -216,10 +216,10 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         """layout_general.addWidget(cross_but, 7, 0)
         layout_general.addWidget(pixel_slider, 7, 1)
         """
-        form_layout = QtWidgets.QFormLayout()
-        self.pixel_number_linedit = QtWidgets.QLineEdit()
-        self.projected_surface_linedit = QtWidgets.QLineEdit()
-        self.deprojected_surface_linedit = QtWidgets.QLineEdit()
+        form_layout = QtGui.QFormLayout()
+        self.pixel_number_linedit = QtGui.QLineEdit()
+        self.projected_surface_linedit = QtGui.QLineEdit()
+        self.deprojected_surface_linedit = QtGui.QLineEdit()
         
         form_layout.addRow("Pixel Number:",
                            self.pixel_number_linedit)
@@ -228,7 +228,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         form_layout.addRow("Deprojected surface (msh):",
                            self.deprojected_surface_linedit)
         
-        save_but = QtWidgets.QPushButton("save")
+        save_but = QtGui.QPushButton("save")
 
         save_but.clicked.connect(self.fill_surface_info)
         
@@ -298,6 +298,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         return selection_array_thresh
     
     def set_img(self, img):
+        print("set img")
         self.current_array = img
         self.qlabel_group_surface.set_original_img(img)
         self.nb_pixel = self.count_pixel(img)
@@ -308,6 +309,8 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
             '{0:.2f}'.format(self.projected_area))
         self.deprojected_surface_linedit.setText(
             '{0:.2f}'.format(self.deprojected_area))
+
+        print(self.nb_pixel, self.projected_area, self.deprojected_area )
         
     def count_pixel(self, img):
         return np.count_nonzero(img)
@@ -316,11 +319,14 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         self.drawing.group_lst[self.index].surface = self.deprojected_area
         self.drawing.group_lst[self.index].raw_surface_px = self.nb_pixel
         self.drawing.group_lst[self.index].raw_surface_msd = self.projected_area
-        self.surface_saved.emit()
+        print("fill surface info")
+        print("deproj area ", self.deprojected_area, type(self.deprojected_area))
+        print("pixel ", self.nb_pixel, type(self.nb_pixel))
     
+        self.surface_saved.emit()
+
+        
     def set_group_info(self, drawing, index, start_x, start_y):
-        #print("set info")
-        #print(radius, start_x, start_y, center_x, center_y)
         self.drawing = drawing
         self.radius = drawing.calibrated_radius
         self.start_x = start_x
@@ -330,8 +336,6 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         self.index = index
 
     def deprojected_area_calculation(self, img):
-        #print("**** check the deprojected area calculation")
-        #print("start value ", self.start_x, self.start_y)
         if self.radius:
             index_x, index_y = img.nonzero()
             pos_x = [x + self.start_x for x in index_x]
@@ -384,7 +388,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         #print("the frame is now: ", frame_size)
         return frame_size
         
-class QLabelGroupSurface(QtWidgets.QLabel):
+class QLabelGroupSurface(QtGui.QLabel):
 
     array_changed = QtCore.pyqtSignal()
     
@@ -587,7 +591,6 @@ class QLabelGroupSurface(QtWidgets.QLabel):
             self.array_changed.emit()
             
     def mouseReleaseEvent(self,QMouseEvent):
-        
         if self.white_pencil_mode.value or self.black_pencil_mode.value:
             #print("enter in the mouse release and painter end")
             position =  QMouseEvent.pos()

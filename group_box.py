@@ -1,27 +1,27 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt4 import QtGui, QtCore
 
 def inputVoid(self):
     pass
 
       
-class QLabelClickable(QtWidgets.QLabel):
+class QLabelClickable(QtGui.QLabel):
     """
     Label on which one can click (used to delete group)
     """    
     clicked = QtCore.pyqtSignal()
         
     def __init__(self):
-        super(QtWidgets.QLabel, self).__init__()
+        super(QtGui.QLabel, self).__init__()
         
     def mouseReleaseEvent(self, QMouseEvent):
         print("one click on the label!!")
         self.clicked.emit()
         
 
-class GroupBox(QtWidgets.QWidget):
+class GroupBox(QtGui.QWidget):
     """
     Represent the box associated to a group.
     It is used in the group_widget and in the group_toolbox.
@@ -40,8 +40,8 @@ class GroupBox(QtWidgets.QWidget):
     """
     def __init__(self):
         super(GroupBox, self).__init__()
-        layout = QtWidgets.QVBoxLayout()
-        self.grid_layout = QtWidgets.QGridLayout()
+        layout = QtGui.QVBoxLayout()
+        self.grid_layout = QtGui.QGridLayout()
         self.setStyleSheet("color: darkblue")
         self.setLayout(self.grid_layout)      
         self.zurich_dipolar = ["B","C","D","E","F","G", "X"]
@@ -49,7 +49,7 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_title(self, title, grid_position):
         """ title on the top of the group box"""
-        title_label = QtWidgets.QLabel(title)
+        title_label = QtGui.QLabel(title)
         title_label.setStyleSheet("background-color: transparent")
         self.grid_layout.addWidget(title_label,
                                    grid_position[0],
@@ -98,22 +98,22 @@ class GroupBox(QtWidgets.QWidget):
 		
     def set_arrows_buttons(self, grid_position):
         
-        self.button_up = QtWidgets.QPushButton()
+        self.button_up = QtGui.QPushButton()
         arrow_up_pix = QtGui.QPixmap("icons/arrow_up.png");
         arrow_up = QtGui.QIcon(arrow_up_pix)
         self.button_up.setIcon(arrow_up);
         
-        self.button_down = QtWidgets.QPushButton()
+        self.button_down = QtGui.QPushButton()
         arrow_down_pix = QtGui.QPixmap("icons/arrow_down.png");
         arrow_down = QtGui.QIcon(arrow_down_pix)
         self.button_down.setIcon(arrow_down);
         
-        self.button_left = QtWidgets.QPushButton()
+        self.button_left = QtGui.QPushButton()
         arrow_left_pix = QtGui.QPixmap("icons/arrow_left.png");
         arrow_left = QtGui.QIcon(arrow_left_pix)
         self.button_left.setIcon(arrow_left);
         
-        self.button_right = QtWidgets.QPushButton()
+        self.button_right = QtGui.QPushButton()
         self.button_right.setMinimumWidth(self.widget_maximum_width)
         self.button_right.setMaximumWidth(self.widget_maximum_width)
         arrow_right_pix = QtGui.QPixmap("icons/arrow_right.png");
@@ -134,7 +134,7 @@ class GroupBox(QtWidgets.QWidget):
                                    grid_position[1] + 2)
 
     def set_spot_count(self, spot_count, grid_position):
-        self.spot_number_linedit = QtWidgets.QLineEdit(str(spot_count))
+        self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
         self.spot_number_linedit.setMaximumWidth(self.widget_maximum_width)
         self.spot_number_linedit.setStyleSheet("background-color: white; color: black")
         self.grid_layout.addWidget(self.spot_number_linedit,
@@ -143,7 +143,7 @@ class GroupBox(QtWidgets.QWidget):
        
 
     def set_zurich_combox_box(self, group_zurich_type, grid_position):
-        self.zurich_combo = QtWidgets.QComboBox(self)
+        self.zurich_combo = QtGui.QComboBox(self)
         self.zurich_combo.setStyleSheet("background-color: white; color:black")
         #Cancel the usual Mouse Wheel Event by giving to it a void function
         self.zurich_combo.wheelEvent = inputVoid
@@ -196,7 +196,7 @@ class GroupBox(QtWidgets.QWidget):
                 self.McIntosh_combo.addItem(el)
     
     def set_mcIntosh_combo_box(self, mcIntosh_type, zurich_type, grid_position):
-        self.McIntosh_combo = QtWidgets.QComboBox(self)
+        self.McIntosh_combo = QtGui.QComboBox(self)
         #self.McIntosh_combo.setMaximumWidth(70)
         
         self.update_McIntosh_combo_box(zurich_type)
@@ -209,8 +209,8 @@ class GroupBox(QtWidgets.QWidget):
         
     def set_longitude(self, longitude, grid_position):
         
-        self.longitude_label = QtWidgets.QLabel("Longitude")
-        self.longitude_linedit = QtWidgets.QLineEdit(self)
+        self.longitude_label = QtGui.QLabel("Longitude")
+        self.longitude_linedit = QtGui.QLineEdit(self)
         self.longitude_linedit.setText('{0:.2f}'.format(longitude))
         #self.longitude_linedit.setMaximumWidth(self.widget_maximum_width)
         self.longitude_linedit.setStyleSheet("background-color: white; color: black")
@@ -222,8 +222,8 @@ class GroupBox(QtWidgets.QWidget):
                                    grid_position[1] + 1)
         
     def set_latitude(self, latitude, grid_position):
-        self.latitude_label = QtWidgets.QLabel("Latitude")
-        self.latitude_linedit = QtWidgets.QLineEdit(self)
+        self.latitude_label = QtGui.QLabel("Latitude")
+        self.latitude_linedit = QtGui.QLineEdit(self)
         self.latitude_linedit.setText('{0:.2f}'.format(latitude))
         #self.latitude_linedit.setMaximumWidth(self.widget_maximum_width)
         self.latitude_linedit.setStyleSheet("background-color: white; color: black")
@@ -297,10 +297,10 @@ class GroupBox(QtWidgets.QWidget):
         """
         Create the widget and update the value of it.
         """
-        self.largest_spot_label = QtWidgets.QLabel("Lead/Trail")
-        self.largest_spot_leading = QtWidgets.QPushButton("L")
-        self.largest_spot_egal = QtWidgets.QPushButton("=")
-        self.largest_spot_trailing = QtWidgets.QPushButton("T")
+        self.largest_spot_label = QtGui.QLabel("Lead/Trail")
+        self.largest_spot_leading = QtGui.QPushButton("L")
+        self.largest_spot_egal = QtGui.QPushButton("=")
+        self.largest_spot_trailing = QtGui.QPushButton("T")
         
         self.grid_layout.addWidget(self.largest_spot_label,
                                    grid_position[0],
@@ -318,8 +318,8 @@ class GroupBox(QtWidgets.QWidget):
         self.update_largest_spot_buttons(largest_spot, zurich_type)
             
     def set_surface(self, surface, grid_position):
-        self.surface_label = QtWidgets.QLabel("Surface")
-        self.surface_linedit = QtWidgets.QLineEdit(self)
+        self.surface_label = QtGui.QLabel("Surface")
+        self.surface_linedit = QtGui.QLineEdit(self)
         #self.surface_linedit.setMaximumWidth(self.widget_maximum_width)
         self.grid_layout.addWidget(self.surface_label,
                                    grid_position[0],

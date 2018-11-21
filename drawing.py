@@ -3,7 +3,7 @@
 
 from datetime import date, time, datetime
 import database, coordinates
-from PyQt5 import QtCore
+from PyQt4 import QtCore
 import math
 
 class Group(QtCore.QObject):
