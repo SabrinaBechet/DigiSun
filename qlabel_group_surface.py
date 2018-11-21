@@ -11,7 +11,6 @@ import numpy as np
 import time
 import sys
 import analyse_mode_bool
-#import matplotlib.path as mpltPath
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
@@ -105,6 +104,9 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         draw_polygon_but.setIcon(
             QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
         draw_polygon_but.clicked.connect(
+            lambda : self.set_opposite_value(
+                self.qlabel_group_surface.polygon_mode))
+        draw_polygon_but.clicked.connect(
             self.qlabel_group_surface.draw_polygon)
         
         cut_polygon_but = QtWidgets.QToolButton()
@@ -116,16 +118,25 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         draw_1pixel_black_but = QtWidgets.QToolButton()
         draw_1pixel_black_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_black_square.svg'))
+        draw_1pixel_black_but.clicked.connect(
+            lambda : self.set_opposite_value(
+                self.qlabel_group_surface.black_pencil_mode))
         draw_1pixel_black_but.clicked.connect(lambda: self.draw_pencil(0))
 
         draw_1pixel_white_but = QtWidgets.QToolButton()
         draw_1pixel_white_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_white_square.svg'))
+        draw_1pixel_white_but.clicked.connect(
+            lambda : self.set_opposite_value(
+                self.qlabel_group_surface.white_pencil_mode))
         draw_1pixel_white_but.clicked.connect(lambda: self.draw_pencil(255))
         
         bucket_white_fill_but = QtWidgets.QToolButton()
         bucket_white_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/white-bucket.svg'))
+        bucket_white_fill_but.clicked.connect(
+            lambda : self.set_opposite_value(
+                self.qlabel_group_surface.white_bucket_mode))
         bucket_white_fill_but.clicked.connect(
             lambda : self.qlabel_group_surface.set_bucket_fill(self.current_array,
                                                                0,
@@ -133,6 +144,9 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         bucket_black_fill_but = QtWidgets.QToolButton()
         bucket_black_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/black-bucket.svg'))
+        bucket_black_fill_but.clicked.connect(
+            lambda : self.set_opposite_value(
+                self.qlabel_group_surface.black_bucket_mode))
         bucket_black_fill_but.clicked.connect(
             lambda : self.qlabel_group_surface.set_bucket_fill(self.current_array,
                                                                255,
@@ -183,8 +197,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
                 bucket_black_fill_but))
         if self.qlabel_group_surface.black_bucket_mode.value:
             bucket_black_fill_but.setStyleSheet("background-color: lightblue")
-            
-            
+             
         layout_general = QtWidgets.QGridLayout()
         layout_general.addWidget(qlabel_general, 0, 0, 1, -1)
         layout_general.addWidget(zoom_in_but, 1, 0)
@@ -230,7 +243,12 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         
         self.qlabel_group_surface.array_changed.connect(
             lambda: self.set_img(self.qlabel_group_surface.array))
-        
+
+    def set_opposite_value(self, mode):
+        if mode.value:
+            mode.value = False
+        else:
+            mode.value = True
         
     def set_button_color(self, mode_bool, but):
         if mode_bool==True:
@@ -260,6 +278,12 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         self.qlabel_group_surface.pointsList = []
 
     def set_array(self, np_array):
+        print("new array ")
+        self.qlabel_group_surface.polygon_mode.value = False
+        self.qlabel_group_surface.white_pencil_mode.value = False
+        self.qlabel_group_surface.black_pencil_mode.value = False
+        self.qlabel_group_surface.white_bucket_mode.value = False
+        self.qlabel_group_surface.black_bucket_mode.value = False
         self.selection_array = np_array
         self.set_img(self.threshold(self.default_threshold))
         self.qlabel_group_surface.pointsList = []
@@ -280,22 +304,21 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         self.projected_area = self.projected_area_calculation(self.nb_pixel)
         self.deprojected_area = self.deprojected_area_calculation(img)
         self.pixel_number_linedit.setText(str(self.nb_pixel))
-        self.projected_surface_linedit.setText('{0:.2f}'.format(self.projected_area))
-        self.deprojected_surface_linedit.setText('{0:.2f}'.format(self.deprojected_area))
+        self.projected_surface_linedit.setText(
+            '{0:.2f}'.format(self.projected_area))
+        self.deprojected_surface_linedit.setText(
+            '{0:.2f}'.format(self.deprojected_area))
         
     def count_pixel(self, img):
         return np.count_nonzero(img)
 
-
     def fill_surface_info(self):
-
         self.drawing.group_lst[self.index].surface = self.deprojected_area
         self.drawing.group_lst[self.index].raw_surface_px = self.nb_pixel
         self.drawing.group_lst[self.index].raw_surface_msd = self.projected_area
         self.surface_saved.emit()
     
     def set_group_info(self, drawing, index, start_x, start_y):
-
         #print("set info")
         #print(radius, start_x, start_y, center_x, center_y)
         self.drawing = drawing
@@ -327,7 +350,6 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
                 if distance_from_center < self.radius:
                     center_to_limb_angle = (math.asin(distance_from_center *
                                                       1./self.radius))
-                    
                     deprojected_area_sum += 1./math.cos(center_to_limb_angle)
                     
             return (deprojected_area_sum * math.pow(10, 6) /
@@ -356,7 +378,6 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
                 frame_size = frame_size_tmp
                 self.radius_division_factor = div_factor_tmp
             
-            
         else:
             frame_size = math.floor(radius / self.radius_division_factor) * 100
 
@@ -379,11 +400,6 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         self.scaling_factor = 1
         self.pointsList = []
            
-        """self.polygon = analyse_mode_bool.analyseModeBool(False)
-        self.crop_done = analyse_mode_bool.analyseModeBool(False)
-        self.pencil = analyse_mode_bool.analyseModeBool(False)
-        self.bucket = analyse_mode_bool.analyseModeBool(False)
-        """
         self.polygon_mode = analyse_mode_bool.analyseModeBool(False)
         self.white_pencil_mode = analyse_mode_bool.analyseModeBool(False)
         self.black_pencil_mode = analyse_mode_bool.analyseModeBool(False)
@@ -395,48 +411,22 @@ class QLabelGroupSurface(QtWidgets.QLabel):
     def zoom_in(self, scaling_factor):
         self.width_scale *=  scaling_factor
         self.height_scale *=  scaling_factor
-        
         self.scaling_factor *=scaling_factor
-        #print("the scaling factor is", self.scaling_factor)
-       
         bis = self.original_pixmap.scaled(int(self.width_scale),
                                           int(self.height_scale),
                                           QtCore.Qt.KeepAspectRatio)
         self.setPixmap(bis)
         
-        
-        
-    
     def set_original_img(self, np_array):
         self.original_pixmap = self.np2qpixmap(np_array).copy()
         self.pointsList = []
         bis = self.original_pixmap.scaled(int(self.width_scale),
                                           int(self.height_scale),
                                           QtCore.Qt.KeepAspectRatio)
-        
-        
-        self.setPixmap(bis)#original_pixmap)
-    """def convertQImageToMat(self, incomingImage):
-        '''  Converts a QImage into an opencv MAT format  '''
-
-        incomingImage = incomingImage.convertToFormat(3)
-        width = incomingImage.width()
-        height = incomingImage.height()
-
-        #print("convert to mat ", width, height)
-        
-        ptr = incomingImage.bits()
-        ptr.setsize(incomingImage.byteCount())
-        arr = np.array(ptr).reshape(height, width, 1)  #  Copies the data
-        return arr
-    """    
+        self.setPixmap(bis)
+      
     def np2qpixmap(self, np_img):
-        """
-        convert np array into pixmap
-        """
-        #print("np2qimage")
-        #print(type(np_img), np_img.shape)
-        #frame = cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB)
+        """convert np array into pixmap"""
         frame = cv2.cvtColor(np_img,cv2.COLOR_GRAY2RGB)
         img = QtGui.QImage(frame,
                            frame.shape[1],
@@ -444,21 +434,16 @@ class QLabelGroupSurface(QtWidgets.QLabel):
                            QtGui.QImage.Format_RGB888)
         return QtGui.QPixmap.fromImage(img)
 
-    
     def draw_polygon(self, position=None):
         """
         Method that has a *graphic* role. it shows the polygon on screen and 
         records the list of points.
         """
-        #self.polygon.value = True
-        #self.pencil.value = False
-
-        self.polygon_mode.value = True
         self.white_pencil_mode.value = False
         self.black_pencil_mode.value = False
         self.white_bucket_mode.value = False
         self.black_bucket_mode.value = False
-        
+    
         painter = QtGui.QPainter()
         pen = QtGui.QPen(QtCore.Qt.red)
         pen.setWidth(5)
@@ -484,6 +469,7 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         else:
             for i in range(len(self.pointsList)):
                 painter.drawLine(self.pointsList[i-1],self.pointsList[i])
+                
         painter.end()
 
     def cut_polygon(self, array):
@@ -495,11 +481,12 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         self.black_pencil_mode.value = False
         self.white_bucket_mode.value = False
         self.black_bucket_mode.value = False
-
         
-        polygon_points =  [(int(math.floor(a.y() * array.shape[1] / self.height_scale )),
-                            int(math.floor(a.x() * array.shape[0] / self.width_scale )))
-                           for a in self.pointsList]
+        polygon_points = [(int(math.floor(a.y() * array.shape[1] /
+                                          self.height_scale )),
+                           int(math.floor(a.x() * array.shape[0] /
+                                          self.width_scale )))
+                          for a in self.pointsList]
         
         polygon = Polygon(polygon_points)
         count = 0
@@ -515,12 +502,14 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         
     def set_pencil_array(self, array, new_value):
 
+        print("set the pencil array")
+        
         self.polygon_mode.value = False
         if new_value ==0 :
             self.white_pencil_mode.value = False
-            self.black_pencil_mode.value = True    
+            #self.black_pencil_mode.value = True    
         else:
-            self.white_pencil_mode.value = True
+            #self.white_pencil_mode.value = True
             self.black_pencil_mode.value = False
         self.white_bucket_mode.value = False
         self.black_bucket_mode.value = False
@@ -535,9 +524,9 @@ class QLabelGroupSurface(QtWidgets.QLabel):
         self.black_pencil_mode.value = False
         if new_value ==0 :
             self.white_bucket_mode.value =  False
-            self.black_bucket_mode.value =  True
+            #self.black_bucket_mode.value =  True
         else:
-            self.white_bucket_mode.value =  True
+            #self.white_bucket_mode.value =  True
             self.black_bucket_mode.value =  False
    
         self.array = array

@@ -4,6 +4,8 @@ import os
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 import database
+from datetime import datetime
+
 
 class DrawingInformationWidget(QtWidgets.QWidget):
 
@@ -21,7 +23,6 @@ class DrawingInformationWidget(QtWidgets.QWidget):
         self.drawing_last_update.setEnabled(True)
         self.drawing_last_update.setStyleSheet(
             "background-color: lightgray; color:black")
-        
         self.drawing_observer = QtWidgets.QLineEdit(self)
         self.drawing_observer.setEnabled(True)
         self.drawing_observer.setStyleSheet(
@@ -127,3 +128,53 @@ class DrawingInformationWidget(QtWidgets.QWidget):
         values = uset_db.get_values(field, table_name)
         for el in values:
             linedit.addItem(el[0])
+
+    def set_drawing_linedit(self, current_drawing):
+        """
+        Fill the linEdits with the information of the drawing.
+        """
+        self.drawing_operator.setText(current_drawing.operator)
+
+        if (current_drawing.last_update_time and
+            isinstance(current_drawing.last_update_time, datetime)):
+            self.drawing_last_update.setText(
+                str(current_drawing.last_update_time.strftime('%Y')) + "/" +
+                str(current_drawing.last_update_time.strftime('%m')) + "/" +
+                str(current_drawing.last_update_time.strftime('%d')))
+            
+        elif (current_drawing.last_update_time and
+              isinstance(current_drawing.last_update_time, str)):
+            self.drawing_last_update.setText(
+                str(current_drawing.last_update_time))
+                
+        self.drawing_observer.setText(current_drawing.observer)
+
+        self.drawing_date.setDate(
+            QtCore.QDate(current_drawing.datetime.year,
+                         current_drawing.datetime.month,
+                         current_drawing.datetime.day))
+
+        self.drawing_time.setText(
+            str(current_drawing.datetime.strftime('%H')) + ":" +
+            str(current_drawing.datetime.strftime('%M')))
+    
+        self.drawing_quality.blockSignals(True)
+        index_drawing_quality = self.drawing_quality.findText(
+            current_drawing.quality)
+        self.drawing_quality.setCurrentIndex(index_drawing_quality)
+        self.drawing_quality.blockSignals(False)
+        
+        self.drawing_type.blockSignals(True)
+        index_drawing_type = self.drawing_type.findText(
+            current_drawing.drawing_type)
+        self.drawing_type.setCurrentIndex(index_drawing_type)
+        self.drawing_type.blockSignals(False)
+        
+        self.angleP.setText('{0:.2f}'.format(current_drawing.angle_P))
+        self.angleB.setText('{0:.2f}'.format(current_drawing.angle_B))
+        self.angleL.setText('{0:.2f}'.format(current_drawing.angle_L))
+        self.rotation_number.setText(str(current_drawing.carington_rotation))
+        self.calibrated.setText(str(current_drawing.calibrated))
+        self.analyzed.setText(str(current_drawing.analyzed))
+        self.wolf_number.setText(str(current_drawing.wolf))
+        

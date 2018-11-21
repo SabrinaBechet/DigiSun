@@ -479,9 +479,10 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
     def update_surface_qlabel(self, n, step=0):
         """
-        Update the QLabelGroupSurface object which represents an image of the drawing 
-        to calculate the surface.
-        """    
+        Update the QLabelGroupSurface object which represents 
+        an image of the drawing to calculate the surface.
+        """
+        print("update surface ", n)
         if (self.drawing_lst[self.current_count].calibrated and
             self.label_right.surface_mode and
             self.label_right.get_img_array() is not None):
@@ -1184,13 +1185,17 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         self.group_toolbox.McIntosh_combo.setCurrentIndex(new_mcIntosh_index)
         
     def update_surface(self):
-        surface = str(self.drawing_lst[self.current_count].group_lst[self.current_count].surface)
-        self.group_toolbox.surface_linedit.setText(
-            '{0:.2f}'.format(surface))
+        surface = self.drawing_lst[self.current_count]\
+                      .group_lst[self.current_count].surface
+        if isinstance(surface, str):
+            self.group_toolbox.surface_linedit.setText(
+                '{0:.2f}'.format(surface))
         if surface==0.:
-            self.group_toolbox.surface_linedit.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.group_toolbox.surface_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
         else:
-            self.group_toolbox.surface_linedit.setStyleSheet("background-color: white; color: black")
+            self.group_toolbox.surface_linedit.setStyleSheet(
+                "background-color: white; color: black")
      
         
         
@@ -1433,69 +1438,13 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         """
         Fill the linEdits with the information of the drawing.
         """
-        self.drawing_info.drawing_operator.setText(
-            self.drawing_lst[self.current_count].operator)
 
-        if (self.drawing_lst[self.current_count].last_update_time and
-            isinstance(self.drawing_lst[self.current_count].last_update_time, datetime)):
-            self.drawing_info.drawing_last_update.setText(
-                str(self.drawing_lst[self.current_count].last_update_time.strftime('%Y')) +
-                "/" +
-                str(self.drawing_lst[self.current_count].last_update_time.strftime('%m')) +
-                "/" +
-                str(self.drawing_lst[self.current_count].last_update_time.strftime('%d')))
-            
-        elif (self.drawing_lst[self.current_count].last_update_time and
-              isinstance(self.drawing_lst[self.current_count].last_update_time, str)):
-            self.drawing_last_update.setText(
-                str(self.drawing_lst[self.current_count].last_update_time))
-                
-        self.drawing_info.drawing_observer.setText(
-            self.drawing_lst[self.current_count].observer)
-        self.drawing_info.drawing_date.setDate(
-            QtCore.QDate(self.drawing_lst[self.current_count].datetime.year,
-                         self.drawing_lst[self.current_count].datetime.month,
-                         self.drawing_lst[self.current_count].datetime.day))
-        self.drawing_info.drawing_time.setText(
-            str(self.drawing_lst[ self.current_count].datetime.strftime('%H')) +
-            ":" +
-            str(self.drawing_lst[ self.current_count].datetime.strftime('%M')))
-    
-        self.drawing_info.drawing_quality.blockSignals(True)
-        index_drawing_quality = self.drawing_info.drawing_quality.findText(
-            self.drawing_lst[self.current_count].quality)
-        self.drawing_info.drawing_quality.setCurrentIndex(index_drawing_quality)
-        self.drawing_info.drawing_quality.blockSignals(False)
-        
-        self.drawing_info.drawing_type.blockSignals(True)
-        index_drawing_type = self.drawing_info.drawing_type.findText(
-            self.drawing_lst[self.current_count].drawing_type)
-        self.drawing_info.drawing_type.setCurrentIndex(index_drawing_type)
-        self.drawing_info.drawing_type.blockSignals(False)
-        
-
-        print(self.drawing_lst[self.current_count].changed)
-        
         if self.drawing_lst[self.current_count].changed:
             self.but_save.setStyleSheet("background-color: rgb(255, 165, 84)")
         else:
             self.but_save.setStyleSheet("background-color: lightgray")
 
-        self.drawing_info.angleP.setText(
-            '{0:.2f}'.format(self.drawing_lst[self.current_count].angle_P))
-        self.drawing_info.angleB.setText(
-            '{0:.2f}'.format(self.drawing_lst[self.current_count].angle_B))
-        self.drawing_info.angleL.setText(
-            '{0:.2f}'.format(self.drawing_lst[self.current_count].angle_L))
-        self.drawing_info.rotation_number.setText(
-            str(self.drawing_lst[self.current_count].carington_rotation))
-
-        self.drawing_info.calibrated.setText(
-            str(self.drawing_lst[self.current_count].calibrated))
-        self.drawing_info.analyzed.setText(
-            str(self.drawing_lst[self.current_count].analyzed))
-
-        self.drawing_info.wolf_number.setText(str(self.drawing_lst[self.current_count].wolf))
+        self.drawing_info.set_drawing_linedit(self.drawing_lst[self.current_count])
         
     def set_path_to_qlabel(self):
         """

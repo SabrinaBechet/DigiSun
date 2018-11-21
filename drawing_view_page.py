@@ -48,8 +48,9 @@ class DrawingViewPage(QtWidgets.QWidget):
         
 
         self.widget_left_middle = QtWidgets.QWidget()
-        self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
-        self.widget_left_middle.setMaximumHeight(self.height()/2.)
+        #self.widget_left_middle.setMinimumWidth(left_column_maximum_width)
+        #self.widget_left_middle.setMinimumHeight(self.height()/3.)
+        #self.widget_left_middle.setMaximumHeight(self.height()/2.)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")   
         self.widget_left_middle_layout = QtWidgets.QVBoxLayout()
         self.widget_left_middle_layout.setContentsMargins(0, 0, 0, 0) 
