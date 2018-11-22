@@ -58,7 +58,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     ----general:
 
-nu    - scroll_position: scroll to a given position
+    - scroll_position: scroll to a given position
     - check_information_complete 
     - update_linedit_drawing
     - update_combo_box_drawing
@@ -114,7 +114,7 @@ nu    - scroll_position: scroll to a given position
         self.operator = operator
         self.level_info = ['dipole', 'area'] # group always included
         
-        if os.path.isdir(self.archdrawing_directory):
+        if self.archdrawing_directory and os.path.isdir(self.archdrawing_directory):
             self.add_drawing_information()
             self.add_current_session()
             self.label_right = qlabel_drawing.QLabelDrawing()

@@ -121,8 +121,10 @@ class QLabelDrawing(QtGui.QLabel):
         #print("height: ", self.drawing_height)
         
         self.img_mean_dimension = (self.drawing_width + self.drawing_height)/2.
-        self.pen_width = int(self.drawing_height/700.)
         
+        self.pen_width = int(self.drawing_height * 1000/(700.*self.height_scale))
+        #print("pen width: ", self.drawing_height, self.height_scale, self.pen_width)
+            
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
             
@@ -341,12 +343,12 @@ class QLabelDrawing(QtGui.QLabel):
             if self.surface_mode.value:
                 pen_border.setColor(QtGui.QColor("transparent"))
             for i in range(self.current_drawing.group_count):
-                small_radius = self.drawing_height / 2000.
-                big_radius = self.drawing_height / 50.
+                radius = self.drawing_height / 2000.
+                #big_radius = self.drawing_height / 50.
                 painter.setPen(pen_border)               
                 if self.group_visu_index==i:
-                    painter.setPen(pen_selected)
-                    
+                    #painter.setPen(pen_selected)
+                    radius = self.drawing_height / 50.
                 # here we should directly take x, y from the database
                 #posX = self.current_drawing.group_lst[i].posX
                 #posY = self.current_drawing.group_lst[i].posY
@@ -379,10 +381,17 @@ class QLabelDrawing(QtGui.QLabel):
                     painter.drawRect(
                         x_min, y_min, self.frame_size, self.frame_size)
                 else:
-                   painter.drawEllipse(
-                       QtCore.QPointF(x, y), small_radius, small_radius)
-                   painter.drawEllipse(
-                       QtCore.QPointF(x, y), big_radius, big_radius) 
+                    pen_point = QtGui.QPen(QtCore.Qt.blue)
+                    pen_point.setStyle(QtCore.Qt.SolidLine)
+                    pen_point.setWidth( 5 * 1000/ (self.height_scale) )
+                    painter.setPen(pen_point)
+                    painter.drawPoint(QtCore.QPointF(x,y))
+                    
+                    painter.setPen(pen_border)
+                    painter.drawEllipse(
+                        QtCore.QPointF(x, y), radius, radius)
+                   #painter.drawEllipse(
+                   #    QtCore.QPointF(x, y), big_radius, big_radius) 
                 
         if (self.dipole_visu.value and self.current_drawing.calibrated) :
             pen_point = QtGui.QPen(QtCore.Qt.blue)
@@ -662,7 +671,8 @@ class QLabelDrawing(QtGui.QLabel):
         self.width_scale *=  scaling_factor
         self.height_scale *=  scaling_factor
         self.scaling_factor *=scaling_factor
-        self.set_img()   
+        #pen_width = int(self.drawing_height/(700. * scaling_factor))
+        self.set_img() #pen_width)   
 
     def mousePressEvent(self, QMouseEvent):
         """ Associate a  mousePress event to a signal that depends on

@@ -298,7 +298,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         return selection_array_thresh
     
     def set_img(self, img):
-        print("set img")
+        #print("set img")
         self.current_array = img
         self.qlabel_group_surface.set_original_img(img)
         self.nb_pixel = self.count_pixel(img)
@@ -310,7 +310,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.deprojected_surface_linedit.setText(
             '{0:.2f}'.format(self.deprojected_area))
 
-        print(self.nb_pixel, self.projected_area, self.deprojected_area )
+        #print(self.nb_pixel, self.projected_area, self.deprojected_area )
         
     def count_pixel(self, img):
         return np.count_nonzero(img)

@@ -175,11 +175,11 @@ if __name__=='__main__':
 
     if login.exec_() == QtGui.QDialog.Accepted:
         operator_name = login.get_operator()
-        print("get op")
+        #print("get op")
         mode_index = login.get_mode()
-        print("get mode")
+        #print("get mode")
         fen = mainWindow(operator_name, mode_index)
-        print("main windows")
+        #print("main windows")
         fen.show()
         sys.exit(app.exec_())
 

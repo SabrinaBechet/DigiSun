@@ -41,8 +41,8 @@ class Group(QtCore.QObject):
     def __init__(self, *param):
         super(Group, self).__init__()
 
-        print("*******************")
-        print(len(param), len(param[0]))
+        #print("*******************")
+        #print(len(param), len(param[0]))
         
         if len(param[0])== 29:
             (self._id_,
@@ -443,9 +443,10 @@ class Drawing(QtCore.QObject):
 
         super(Drawing, self).__init__()
 
-        print("check param", type(param),
+        """print("check param", type(param),
               len(param), param)
         print(param)
+        """
         
         if len(param[0])==19:
             (self._id_drawing,
@@ -492,8 +493,8 @@ class Drawing(QtCore.QObject):
         self._calibrated_center = coordinates.Cartesian(0,0)
         self._calibrated_north = coordinates.Cartesian(0,0)
 
-        print("check set calibration")
-        print(len(param[0]))
+        #print("check set calibration")
+        #print(len(param[0]))
         
         if len(param[0])==9:
             (self._id_calibration,

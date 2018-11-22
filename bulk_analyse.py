@@ -395,12 +395,12 @@ class BulkAnalysePage(BulkViewPage):
         lst_groups = [el for el in tuple_groups]
         drawing_lst = []
 
-        print('type', type(lst_drawing))
-        print(lst_drawing[0])
+        #print('type', type(lst_drawing))
+        #print(lst_drawing[0])
         
         for el in lst_drawing:
             drawing_tmp = drawing.Drawing(el)
-            print(type(drawing_tmp), drawing_tmp)
+            #print(type(drawing_tmp), drawing_tmp)
             
             for calib in lst_calibrations:
                 if drawing_tmp.datetime == calib[1]:
@@ -409,7 +409,7 @@ class BulkAnalysePage(BulkViewPage):
 
             for group in lst_groups:
                 if drawing_tmp.datetime == group[1]:
-                    print("group: ", group)
+                    #print("group: ", group)
                     drawing_tmp.set_group(group)
     
             drawing_lst.append(drawing_tmp)
