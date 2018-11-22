@@ -2,7 +2,7 @@
 #coding: utf-8
 
 from datetime import date, time, datetime
-import database, coordinates
+import coordinates
 from PyQt4 import QtCore
 import math
 
@@ -38,39 +38,43 @@ class Group(QtCore.QObject):
     
     value_changed = QtCore.pyqtSignal()
     
-    def __init__(self):
+    def __init__(self, *param):
         super(Group, self).__init__()
-        
-        self._id_ = 0
-        self._datetime = datetime(2000,01,01,00,00)
-        self._drawing_type = None
-        self._number = 0
-        self._longitude = None
-        self._latitude = None
-        self._posX= None
-        self._posY = None
-        self._Lcm = None
-        self._CenterToLimb_angle = None
-        self._L0 = None
-        self._quadrant = None
-        self._McIntosh = 'Xxx'
-        self._zurich = 'X'
-        self._spots = 0
-        self._dipole1_lat = None
-        self._dipole1_long = None
-        self._dipole2_lat = None
-        self._dipole2_long = None
-        self._dipole1_posX = None
-        self._dipole1_posY = None
-        self._dipole2_posX = None
-        self._dipole2_posY = None
-        self._dipole_defined = 0
-        self._surface = 0
-        self._raw_surface_px = 0
-        self._raw_surface_msd = 0
-        self._g_spot = 0
-        self._largest_spot = None
 
+        print("*******************")
+        print(len(param), len(param[0]))
+        
+        if len(param[0])== 29:
+            (self._id_,
+             self._datetime,
+             self._drawing_type,
+             self._number,
+             self._latitude,
+             self._longitude,
+             self._Lcm,
+             self._CenterToLimb_angle,
+             self._L0,
+             self._quadrant,
+             self._McIntosh,
+             self._zurich,
+             self._spots,
+             self._dipole1_lat,
+             self._dipole1_long,
+             self._dipole2_lat,
+             self._dipole2_long,
+             self._dipole_defined,
+             self._surface,
+             self._raw_surface_px,
+             self._raw_surface_msd,
+             self._g_spot,
+             self._posX,
+             self._posY,
+             self._dipole1_posX,
+             self.dipoel1_posY,
+             self.dipole2_posX,
+             self.dipole2_posY,
+             self._largest_spot) = param[0]
+            
         self.changed = False
 
 
@@ -373,11 +377,10 @@ class Group(QtCore.QObject):
         self.value_changed.emit()
         
         
-    def fill_from_database(self, datetime, group_number):
-        """
+    """def fill_from_database(self, datetime, group_number):
+        
         A drawing can be identified uniquely with its datetime.
         Then all the attribute of the drawing can be filled from the database
-        """
         self._datetime = datetime
         
         db = database.database()
@@ -418,61 +421,117 @@ class Group(QtCore.QObject):
         #self._latitude = self._latitude * 180/math.pi
         #self._longitude = self._longitude * 180/math.pi
 
-    
+    """
 class Drawing(QtCore.QObject):
     """
     It represents all the information extracted from the drawing
     and stored in the database.
-    All the attribute are 'private' (in the python convention with the underscore
+    All the attribute are 'private' 
+    (in the python convention with the underscore
     before the name).
     """
 
     value_changed = QtCore.pyqtSignal()
     
-    def __init__(self):
+    """lst_default = (0, datetime(2000,01,01,00,00), None, None, None, 0, 0.0, 0, 0,
+    0, 0, 0, 0.0, 0.0, 0.0, 0, None, None, None)
+    coordinates.Cartesian(0,0), coordinates.Cartesian(0,0),
+    0, 0, None, 0, 0, 0, None, 0, 0, None, 0, 0]
+    """
+                   
+    def __init__(self, *param):
 
-        #print("initialize a drawing..")
         super(Drawing, self).__init__()
-        self._id_drawnig= 0 
-        self._datetime = datetime(2000,01,01,00,00)
-        self._drawing_type = None
-        self._quality = None
-        self._observer = None
-        self._carington_rotation = 0
-        self._julian_date = 0.0
-        self._calibrated = 0
-        self._analyzed = 0
-        self._group_count = 0
-        self._spot_count = 0
-        self._wolf = 0
-        self._angle_B = 0.0
-        self._angle_L = 0.0
-        self._angle_P = 0.0
-        self._angle_scan = 0
-        self._path = None
-        self._operator = None
-        self._last_update_time = None
-       
-        self._calibrated_center = coordinates.Cartesian(0,0)
-        self._calibrated_north = coordinates.Cartesian(0,0)
-        self._calibrated_radius = 0
-        self._calibrated_angle_scan = 0
 
-        self._prefix = None
-        self._p_oriented = 0
-        self._height = 0
-        self._widht = 0
-        self._pt1_name = None
-        self._pt1_fraction_width = 0
-        self._pt1_fraction_height = 0
-        self._pt2_name = None
-        self._pt2_fraction_width = 0
-        self._pt2_fraction_height = 0
+        print("check param", type(param),
+              len(param), param)
+        print(param)
         
+        if len(param[0])==19:
+            (self._id_drawing,
+             self._datetime,
+             self._drawing_type,
+             self._quality,
+             self._observer,
+             self._carington_rotation,
+             self._julian_date,
+             self._calibrated,
+             self._analyzed,
+             self._group_count,
+             self._spot_count,
+             self._wolf,
+             self._angle_P,
+             self._angle_B,
+             self._angle_L,
+             self._angle_scan,
+             self._path,
+             self._operator,
+             self._last_update_time) = param[0]
+            
+            """self._calibrated_center,
+            self._calibrated_north,
+            self._calibrated_radius,
+            self._calibrated_angle_scan,
+            self._prefix,
+            self._p_oriented,
+            self._height,
+            self._widht,
+            self._pt1_name,
+            self._pt1_fraction_width,
+            self._pt1_fraction_height,
+            self._pt2_name,
+            self._pt2_fraction_width,
+            self._pt2_fraction_height) = lst
+            """
         self._group_lst = []
-
+        
         self.changed = False
 
+    def set_calibration(self, *param):
+
+        self._calibrated_center = coordinates.Cartesian(0,0)
+        self._calibrated_north = coordinates.Cartesian(0,0)
+
+        print("check set calibration")
+        print(len(param[0]))
+        
+        if len(param[0])==9:
+            (self._id_calibration,
+             self._datetime_calibration,
+             self._drawing_type_calibration,
+             self._calibrated_north.x,
+             self._calibrated_north.y,
+             self._calibrated_center.x,
+             self._calibrated_center.y,
+             self._calibrated_radius,
+             self._calibrated_angle_scan) = param[0]
+            
+            """(self._calibrated_center,
+             self._calibrated_north,
+             self._calibrated_radius,
+             self._calibrated_angle_scan,
+             self._prefix,
+             self._p_oriented,
+             self._height,
+             self._widht,
+             self._pt1_name,
+             self._pt1_fraction_width,
+             self._pt1_fraction_height,
+             self._pt2_name,
+             self._pt2_fraction_width,
+             self._pt2_fraction_height) = param[0]
+            """
+            
+    def set_group(self, param):
+
+        group_tmp = Group(param)
+        #group_tmp.fill_from_database(self._datetime, group_number)
+        group_tmp.value_changed.connect(self.get_group_signal)
+        self._group_lst.append(group_tmp)
+        #print(group_number,
+        #self.group_lst[group_number].longitude,
+        #self.group_lst[group_number].latitude)
+        
     def radius(self, pt1, pt2):
         return math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
         
@@ -484,8 +543,9 @@ class Drawing(QtCore.QObject):
                 self.calibrated_north)
 
         elif self.pt1_name == 'South'  and self.pt2_name == 'North':
-            self.calibrated_center = coordinates.Cartesian((point1_x + point2_x)/2,
-                                                           (point1_y + point2_y)/2)
+            self.calibrated_center = coordinates.Cartesian(
+                (point1_x + point2_x)/2,
+                (point1_y + point2_y)/2)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
             self.calibrated_radius = self.calibrated_center.distance(
                 self.calibrated_north)   
@@ -494,8 +554,6 @@ class Drawing(QtCore.QObject):
             self.calibrated_north)
         self.calibrated = 1
        
-            
-        
     def get_group_signal(self):
         print("get group signal")
         self.value_changed.emit()
@@ -504,7 +562,12 @@ class Drawing(QtCore.QObject):
     def __repr__(self):
         return 'Drawing :  date({}), group_count({})'.format(
             self._datetime, self._group_count)
-            
+
+    @property    
+    def datetime(self):
+        #print("here we are reading the value of datetime ")
+        return self._datetime
+    
     @property    
     def drawing_type(self):
         #print("here we are reading the value of drawing_type ")
@@ -597,7 +660,8 @@ class Drawing(QtCore.QObject):
     @wolf.setter
     def wolf(self, value):
         """
-        Wolf is only changed via add/delete a group or change the spots number of a group
+        Wolf is only changed via add/delete a group or 
+        change the spots number of a group
         """
         print("here we CAN NOT change the value of wolf to ", value)
         #self._wolf = value
@@ -761,7 +825,8 @@ class Drawing(QtCore.QObject):
 
     @calibrated_angle_scan.setter
     def calibrated_angle_scan(self, value):
-        print("here we are changing the value of calibrated angle scan to ", value)
+        print("here we are changing the value of calibrated angle scan to ",
+              value)
         self._calibrated_angle_scan = value
         self.changed = True
         self.value_changed.emit()
@@ -856,11 +921,11 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
              
-    def fill_from_database(self, datetime):
-        """
+    """def fill_from_database(self, datetime):
+        
         A drawing can be identified uniquely with its datetime.
         Then all the attribute of the drawing can be filled from the database
-        """
+        
         self.datetime = datetime
         #print("fill from database", datetime)
 
@@ -886,7 +951,8 @@ class Drawing(QtCore.QObject):
              self._angle_scan, 
              self._path, 
              self._operator, 
-             self._last_update_time) = db.get_all_datetime("drawings", datetime)[0]
+             self._last_update_time) = db.get_all_datetime("drawings",
+                                                           datetime)[0]
 
             
         except IndexError:
@@ -903,7 +969,8 @@ class Drawing(QtCore.QObject):
              self._calibrated_center.x,
              self._calibrated_center.y,
              self._calibrated_radius,
-             self._calibrated_angle_scan) = db.get_all_datetime("calibrations", datetime)[0]
+             self._calibrated_angle_scan) = db.get_all_datetime("calibrations",
+                                                                datetime)[0]
 
         except IndexError:
             print("empty set for the calibration table")
@@ -939,7 +1006,7 @@ class Drawing(QtCore.QObject):
             #self.group_lst[group_number].longitude,
             #self.group_lst[group_number].latitude)
 
-
+    """
     def change_group_position(self, group_number, latitude, longitude, posX, posY):
         """
         Update the position of the group and all the quantities related to it.
@@ -1057,7 +1124,8 @@ class Drawing(QtCore.QObject):
         group_tmp.number = self.group_count - 1
         self._group_lst.append(group_tmp)
                                
-        self.change_group_position(self.group_count - 1, latitude, longitude, posX, posY)
+        self.change_group_position(self.group_count - 1, latitude, longitude,
+                                   posX, posY)
 
     def delete_group(self, group_index):
         """

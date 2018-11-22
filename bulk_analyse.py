@@ -3,7 +3,7 @@
 from PyQt4 import QtGui, QtCore
 from datetime import datetime, timedelta
 import database, drawing
-
+import time
 
 class ListPage(QtGui.QWidget):
     """
@@ -144,8 +144,9 @@ class MonthListPage(ListPage):
         self.datetime_min = datetime_min
         self.datetime_max = datetime_max
         
-        self.get_lst_from_database([x.strftime("%Y-%m-%d") for x in datetime_min],
-                                   [x.strftime("%Y-%m-%d") for x in datetime_max])
+        self.get_lst_from_database(
+            [x.strftime("%Y-%m-%d") for x in datetime_min],
+            [x.strftime("%Y-%m-%d") for x in datetime_max])
         date_list = [datetime_min[i].strftime("%d") + " - " +
                      datetime_max[i].strftime("%d") + "   " +
                      datetime_min[i].strftime("%b %Y")
@@ -338,8 +339,9 @@ class BulkAnalysePage(BulkViewPage):
         self.datetime_min, self.datetime_max = [], []
         selection = self.month_list_page.table.selectionModel()
         index_elSelectionne = selection.currentIndex()
-        element_selectionne = self.month_list_page.table.item(index_elSelectionne.row(),
-                                                             0).text()
+        element_selectionne = self.month_list_page.table.item(
+            index_elSelectionne.row(),
+            0).text()
         year_selected = str(element_selectionne[14:18])
         month_selected = str(element_selectionne[8:13])
         day_min = str(element_selectionne[0:3])
@@ -366,25 +368,63 @@ class BulkAnalysePage(BulkViewPage):
         in [self.datetime_drawing_min, self.datetime_drawing_max].
         return the list of drawing object.
         """
+        start_set_drawing = time.clock()
         db = database.database()
         
-        lst_path = db.get_field_time_interval("drawings", "path",
+        """lst_path = db.get_field_time_interval("drawings", "path",
                                 self.datetime_drawing_min,
                                 self.datetime_drawing_max)
+        
         lst_datetime = db.get_field_time_interval("drawings", "DateTime",
                                                   self.datetime_drawing_min,
                                                   self.datetime_drawing_max)
+        """
+
+        tuple_drawings = db.get_all_in_time_interval("drawings", 
+                                                    self.datetime_drawing_min,
+                                                    self.datetime_drawing_max)
+        tuple_calibrations = db.get_all_in_time_interval("calibrations", 
+                                                    self.datetime_drawing_min,
+                                                    self.datetime_drawing_max)
+        tuple_groups = db.get_all_in_time_interval("groups", 
+                                                   self.datetime_drawing_min,
+                                                   self.datetime_drawing_max)
         
-        
+        lst_drawing = [el for el in tuple_drawings]
+        lst_calibrations = [el for el in tuple_calibrations]
+        lst_groups = [el for el in tuple_groups]
         drawing_lst = []
+
+        print('type', type(lst_drawing))
+        print(lst_drawing[0])
         
-        for date in lst_datetime:
+        for el in lst_drawing:
+            drawing_tmp = drawing.Drawing(el)
+            print(type(drawing_tmp), drawing_tmp)
+            
+            for calib in lst_calibrations:
+                if drawing_tmp.datetime == calib[1]:
+                    drawing_tmp.set_calibration(calib)
+                    break
+
+            for group in lst_groups:
+                if drawing_tmp.datetime == group[1]:
+                    print("group: ", group)
+                    drawing_tmp.set_group(group)
+    
+            drawing_lst.append(drawing_tmp)
+     
+        """for date in lst_datetime:
             #print("***********", date)
             drawing_tmp = drawing.Drawing()
             drawing_tmp.fill_from_database(date)
             drawing_lst.append(drawing_tmp)
             #print(drawing_tmp.datetime, drawing_tmp.observer)
-
+        """
+        end_set_drawing  = time.clock()
+        print("time for set drawing: ",
+              end_set_drawing - start_set_drawing)
+    
         return drawing_lst
         
     def drawing_selection_per_year(self):

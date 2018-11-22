@@ -24,6 +24,20 @@ class database():
         field_lst = [x[0] for x in result]
         return field_lst
 
+    def get_all_in_time_interval(self, table_name, date_min, date_max):
+        self.cursor.execute('SELECT * FROM ' + table_name +
+                            ' WHERE DateTime > %s && ' +
+                            ' DateTime < %s ;',
+                            (str(date_min) ,
+                             str(date_max) ))
+
+        self.db.commit()
+        result = self.cursor.fetchall()
+        #field_lst = [x[0] for x in result]
+        #print("the result: ")
+        #print(result)
+        return result
+
     def get_values(self, field, table_name):
         self.cursor.execute('SELECT ' + field + ' FROM ' +
                             table_name)
@@ -72,7 +86,8 @@ class database():
 
     def get_all_datetime(self, table_name, date):
         """
-        it returns a list of the the entry that satisfy the datetime (should be only one)
+        it returns a list of the the entry that satisfy 
+        the datetime (should be only one)
         """
         self.cursor.execute('SELECT * FROM ' + table_name +
                             ' WHERE DateTime <=> %s ;',
@@ -160,8 +175,9 @@ class database():
         result = self.cursor.fetchall()
         return result[0][0]
 
-    def count_field_in_time_interval_area(self, table_name, field, value_min, value_max,
-                               field2, value2):
+    def count_field_in_time_interval_area(self, table_name, field, value_min,
+                                          value_max,
+                                          field2, value2):
         """
         Join the drawings and the groups table. 
         Select groups.surface=Null only for drawings.analyzed=1.

@@ -244,8 +244,9 @@ class QLabelDrawing(QtGui.QLabel):
                         painter.drawPath(path_0_180)
 
                     if len(x_lst_minus180_0)>0:
-                        path_minus180_0 = self.set_drawing_path(x_lst_minus180_0,
-                                                                y_lst_minus180_0)
+                        path_minus180_0 = self.set_drawing_path(
+                            x_lst_minus180_0,
+                            y_lst_minus180_0)
                         painter.drawPath(path_minus180_0)
                       
                     end_interpol = time.clock()
