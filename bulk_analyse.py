@@ -399,6 +399,7 @@ class BulkAnalysePage(BulkViewPage):
         #print(lst_drawing[0])
         
         for el in lst_drawing:
+            #print(lst_drawing.index(el), el, type(el), len(el))
             drawing_tmp = drawing.Drawing(el)
             #print(type(drawing_tmp), drawing_tmp)
             

@@ -38,13 +38,45 @@ class Group(QtCore.QObject):
     
     value_changed = QtCore.pyqtSignal()
     
-    def __init__(self, *param):
+    def __init__(self, param=None):
         super(Group, self).__init__()
 
         #print("*******************")
         #print(len(param), len(param[0]))
-        
-        if len(param[0])== 29:
+
+        if not param :
+            print("no value for the initialisation of the drawing")
+            self._id_ = 0
+            self._datetime = datetime(2000,01,01,00,00)
+            self._drawing_type = 0
+            self._number = 0
+            self._latitude = 0 
+            self._longitude = 0
+            self._Lcm = 0
+            self._CenterToLimb_angle = 0
+            self._L0 = 0
+            self._quadrant = 0
+            self._McIntosh = 'Xxx'
+            self._zurich  = 'X'
+            self._spots = 0
+            self._dipole1_lat = 0
+            self._dipole1_long = 0
+            self._dipole2_lat = 0  
+            self._dipole2_long = 0
+            self._dipole_defined = 0
+            self._surface = 0
+            self._raw_surface_px = 0
+            self._raw_surface_msd = 0
+            self._g_spot = 0
+            self._posX = 0
+            self._posY = 0
+            self._dipole1_posX = 0
+            self.dipoel1_posY = 0
+            self.dipole2_posX = 0
+            self.dipole2_posY = 0
+            self._largest_spot = 0
+
+        elif len(param)== 29:
             (self._id_,
              self._datetime,
              self._drawing_type,
@@ -73,7 +105,7 @@ class Group(QtCore.QObject):
              self.dipoel1_posY,
              self.dipole2_posX,
              self.dipole2_posY,
-             self._largest_spot) = param[0]
+             self._largest_spot) = param
             
         self.changed = False
 
@@ -439,16 +471,37 @@ class Drawing(QtCore.QObject):
     0, 0, None, 0, 0, 0, None, 0, 0, None, 0, 0]
     """
                    
-    def __init__(self, *param):
+    def __init__(self, param = None):
 
         super(Drawing, self).__init__()
 
-        """print("check param", type(param),
-              len(param), param)
-        print(param)
-        """
+        #print("check param", type(param),
+        #      len(param), param)
+        #print(param)
+
+        if not param :
+            print("no value for the initialisation of the drawing")
+            self._id_drawing = 0
+            self._datetime = datetime(2000,01,01,00,00)
+            self._drawing_type = None
+            self._quality = None
+            self._observer = None
+            self._carington_rotation = 0
+            self._julian_date = 0.0
+            self._calibrated = 0
+            self._analyzed = 0
+            self._group_count = 0
+            self._spot_count = 0
+            self._wolf = 0
+            self._angle_P = 0
+            self._angle_B = 0
+            self._angle_L = 0
+            self._angle_scan = 0
+            self._path = None
+            self._operator = None
+            self._last_update_time = None
         
-        if len(param[0])==19:
+        elif len(param)==19:
             (self._id_drawing,
              self._datetime,
              self._drawing_type,
@@ -467,7 +520,7 @@ class Drawing(QtCore.QObject):
              self._angle_scan,
              self._path,
              self._operator,
-             self._last_update_time) = param[0]
+             self._last_update_time) = param
             
             """self._calibrated_center,
             self._calibrated_north,
@@ -488,7 +541,7 @@ class Drawing(QtCore.QObject):
         
         self.changed = False
 
-    def set_calibration(self, *param):
+    def set_calibration(self, param):
 
         self._calibrated_center = coordinates.Cartesian(0,0)
         self._calibrated_north = coordinates.Cartesian(0,0)
@@ -496,7 +549,7 @@ class Drawing(QtCore.QObject):
         #print("check set calibration")
         #print(len(param[0]))
         
-        if len(param[0])==9:
+        if len(param)==9:
             (self._id_calibration,
              self._datetime_calibration,
              self._drawing_type_calibration,
@@ -505,7 +558,7 @@ class Drawing(QtCore.QObject):
              self._calibrated_center.x,
              self._calibrated_center.y,
              self._calibrated_radius,
-             self._calibrated_angle_scan) = param[0]
+             self._calibrated_angle_scan) = param
             
             """(self._calibrated_center,
              self._calibrated_north,

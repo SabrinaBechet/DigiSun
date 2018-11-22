@@ -460,10 +460,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.add_dipole_mode.value = False
             self.label_right.large_grid_overlay.value = False
             self.label_right.small_grid_overlay.value = False
-            
+
+            self.zoom_area =  5./self.label_right.scaling_factor
             self.label_right.zoom_in(
-                5./self.label_right.scaling_factor)
-            
+                self.zoom_area)
+
             if self.drawing_lst[self.current_count].group_count > 0:
                 pos_x = (self.drawing_lst[self.current_count]\
                          .group_lst[self.listWidget_groupBox.currentRow()].posX /
@@ -478,7 +479,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
             self.label_right.large_grid_overlay.value = True
             self.label_right.zoom_in(
-                1/self.label_right.scaling_factor)
+                1./self.zoom_area)
 
     def update_surface_qlabel(self, n, step=0):
         """

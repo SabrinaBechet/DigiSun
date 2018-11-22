@@ -53,6 +53,9 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
+
+        #print(result)
+        
         #field_lst = [x[0] for x in result]
         #print("the result: ")
         #print(result)

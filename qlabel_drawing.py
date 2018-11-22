@@ -338,7 +338,7 @@ class QLabelDrawing(QtGui.QLabel):
             pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.DotLine)    
             pen_selected = QtGui.QPen(QtCore.Qt.DotLine)
-            pen_selected.setWidth(self.pen_width)
+            pen_selected.setWidth(self.pen_width * 1.5)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
             if self.surface_mode.value:
                 pen_border.setColor(QtGui.QColor("transparent"))
@@ -347,7 +347,7 @@ class QLabelDrawing(QtGui.QLabel):
                 #big_radius = self.drawing_height / 50.
                 painter.setPen(pen_border)               
                 if self.group_visu_index==i:
-                    #painter.setPen(pen_selected)
+                    painter.setPen(pen_selected)
                     radius = self.drawing_height / 50.
                 # here we should directly take x, y from the database
                 #posX = self.current_drawing.group_lst[i].posX
@@ -376,8 +376,10 @@ class QLabelDrawing(QtGui.QLabel):
                 """
                 
                 if self.surface_mode.value:
+                    #painter.setPen(pen_border)
                     x_min = int(x - self.frame_size/2)
                     y_min = int(y - self.frame_size/2)
+                    #print("show the area!!", self.frame_size)
                     painter.drawRect(
                         x_min, y_min, self.frame_size, self.frame_size)
                 else:
@@ -387,7 +389,7 @@ class QLabelDrawing(QtGui.QLabel):
                     painter.setPen(pen_point)
                     painter.drawPoint(QtCore.QPointF(x,y))
                     
-                    painter.setPen(pen_border)
+                    painter.setPen(pen_selected)
                     painter.drawEllipse(
                         QtCore.QPointF(x, y), radius, radius)
                    #painter.drawEllipse(
