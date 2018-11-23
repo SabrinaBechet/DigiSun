@@ -471,7 +471,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                          .group_lst[self.listWidget_groupBox.currentRow()].posY /
                          self.label_right.drawing_pixMap.height())
                 self.scroll_position(pos_x, pos_y, surface_module_size_max)
-                
+
+            self.update_surface_qlabel(
+                self.listWidget_groupBox.currentRow())
+            
         elif self.label_right.surface_mode.value == False:
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
