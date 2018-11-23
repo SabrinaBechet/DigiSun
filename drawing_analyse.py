@@ -261,15 +261,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                        .pt2_fraction_height
             point_name_pt2 = self.drawing_lst[self.current_count].pt2_name
 
-            self.drawing_page\
-                .label_right\
+            self.label_right\
                 .center_clicked\
                 .connect(lambda : self.scroll_position(fraction_width_pt2,
                                                        fraction_height_pt2,
                                                        0,
                                                        point_name_pt2))
-            self.drawing_page\
-                .label_right\
+            self.label_right\
                 .north_clicked\
                 .connect(self.statusBar().clean)
             

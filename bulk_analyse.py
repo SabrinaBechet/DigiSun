@@ -390,6 +390,9 @@ class BulkAnalysePage(BulkViewPage):
                                                    self.datetime_drawing_min,
                                                    self.datetime_drawing_max)
         
+        
+                                                   
+        
         lst_drawing = [el for el in tuple_drawings]
         lst_calibrations = [el for el in tuple_calibrations]
         lst_groups = [el for el in tuple_groups]
@@ -401,13 +404,22 @@ class BulkAnalysePage(BulkViewPage):
         for el in lst_drawing:
             #print(lst_drawing.index(el), el, type(el), len(el))
             drawing_tmp = drawing.Drawing(el)
+            
             #print(type(drawing_tmp), drawing_tmp)
+            drawing_type = lst_drawing[lst_drawing.index(el)][2]
+            #print("the drawing type is ", drawing_type)
+            tuple_drawing_type = db.get_drawing_information("drawing_type",
+                                                            drawing_type)
+            #lst_drawing_type = [el for el in tuple_drawing_type]
+            #print("check", type(tuple_drawing_type), len(tuple_drawing_type[0]))
+            drawing_tmp.set_drawing_type(tuple_drawing_type[0])
+            
             
             for calib in lst_calibrations:
                 if drawing_tmp.datetime == calib[1]:
                     drawing_tmp.set_calibration(calib)
                     break
-
+                
             for group in lst_groups:
                 if drawing_tmp.datetime == group[1]:
                     #print("group: ", group)

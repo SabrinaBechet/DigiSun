@@ -541,6 +541,22 @@ class Drawing(QtCore.QObject):
         
         self.changed = False
 
+    def set_drawing_type(self, param):
+        
+        if len(param)==12:
+            (self._id_drawing_type,
+             self._name,
+             self._prefix,
+             self._p_oriented,
+             self._height,
+             self._widht,
+             self._pt1_name,
+             self._pt2_name,
+             self._pt1_fraction_width,
+             self._pt1_fraction_height,
+             self._pt2_fraction_width,
+             self._pt2_fraction_height) = param
+         
     def set_calibration(self, param):
 
         self._calibrated_center = coordinates.Cartesian(0,0)
