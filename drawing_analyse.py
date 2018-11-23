@@ -480,6 +480,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.large_grid_overlay.value = True
             self.label_right.zoom_in(
                 1./self.zoom_area)
+            self.label_right.setCursor(QtCore.Qt.ArrowCursor)
 
     def update_surface_qlabel(self, n, step=0):
         """
