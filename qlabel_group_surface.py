@@ -541,6 +541,7 @@ class QLabelGroupSurface(QtGui.QLabel):
 
         try:
             self.max_count = max(self.max_count, count)
+            print(self.max_count)
             if self.array[position_x, position_y] == self.new_value:
                 return
             
