@@ -71,10 +71,10 @@ class Group(QtCore.QObject):
             self._posX = 0
             self._posY = 0
             self._dipole1_posX = 0
-            self.dipoel1_posY = 0
-            self.dipole2_posX = 0
-            self.dipole2_posY = 0
-            self._largest_spot = 0
+            self._dipole_posY = 0
+            self._dipole2_posX = 0
+            self._dipole2_posY = 0
+            self._largest_spot = None
 
         elif len(param)== 29:
             (self._id_,

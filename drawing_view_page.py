@@ -57,7 +57,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_middle_layout.setSpacing(0)
         self.widget_left_middle_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_left_middle.setLayout(self.widget_left_middle_layout)
-        #self.widget_left_middle_layout.setMargin(10)
+        self.widget_left_middle_layout.setMargin(10)
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
