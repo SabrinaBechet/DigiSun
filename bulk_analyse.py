@@ -70,6 +70,8 @@ class ListPage(QtGui.QWidget):
         self.lst_calib = []
         self.lst_analysed = []
         self.lst_area_not_done = []
+
+        print("database access : {} times".format(len(datetime_min)))
         
         for i in range(len(datetime_min)):
             nb_drawing_surface_null = 0
@@ -302,8 +304,6 @@ class BulkAnalysePage(BulkViewPage):
         self.widget_left_up.setMaximumHeight(self.height()/2.) #200)
         self.widget_left_down.setMinimumWidth(self.height()/2.)
         
-        #self.drawing_analyse = drawing_analyse.DrawingAnalysePage(self.operator)
-        
         self.widget_left_layout_up.addWidget(self.date_selection_page)
         self.widget_left_layout_down.addWidget(self.year_list_page)
 
@@ -370,16 +370,7 @@ class BulkAnalysePage(BulkViewPage):
         """
         start_set_drawing = time.clock()
         db = database.database()
-        
-        """lst_path = db.get_field_time_interval("drawings", "path",
-                                self.datetime_drawing_min,
-                                self.datetime_drawing_max)
-        
-        lst_datetime = db.get_field_time_interval("drawings", "DateTime",
-                                                  self.datetime_drawing_min,
-                                                  self.datetime_drawing_max)
-        """
-
+    
         tuple_drawings = db.get_all_in_time_interval("drawings", 
                                                     self.datetime_drawing_min,
                                                     self.datetime_drawing_max)
@@ -390,28 +381,16 @@ class BulkAnalysePage(BulkViewPage):
                                                    self.datetime_drawing_min,
                                                    self.datetime_drawing_max)
         
-        
-                                                   
-        
         lst_drawing = [el for el in tuple_drawings]
         lst_calibrations = [el for el in tuple_calibrations]
         lst_groups = [el for el in tuple_groups]
         drawing_lst = []
-
-        #print('type', type(lst_drawing))
-        #print(lst_drawing[0])
-        
+   
         for el in lst_drawing:
-            #print(lst_drawing.index(el), el, type(el), len(el))
             drawing_tmp = drawing.Drawing(el)
-            
-            #print(type(drawing_tmp), drawing_tmp)
             drawing_type = lst_drawing[lst_drawing.index(el)][2]
-            #print("the drawing type is ", drawing_type)
             tuple_drawing_type = db.get_drawing_information("drawing_type",
                                                             drawing_type)
-            #lst_drawing_type = [el for el in tuple_drawing_type]
-            #print("check", type(tuple_drawing_type), len(tuple_drawing_type[0]))
             drawing_tmp.set_drawing_type(tuple_drawing_type[0])
             
             
@@ -427,13 +406,6 @@ class BulkAnalysePage(BulkViewPage):
     
             drawing_lst.append(drawing_tmp)
      
-        """for date in lst_datetime:
-            #print("***********", date)
-            drawing_tmp = drawing.Drawing()
-            drawing_tmp.fill_from_database(date)
-            drawing_lst.append(drawing_tmp)
-            #print(drawing_tmp.datetime, drawing_tmp.observer)
-        """
         end_set_drawing  = time.clock()
         print("time for set drawing: ",
               end_set_drawing - start_set_drawing)

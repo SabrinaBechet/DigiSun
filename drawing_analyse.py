@@ -5,7 +5,7 @@ from PyQt4 import QtGui, QtCore
 
 import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates, toolbar, statusbar, drawing_view_page, drawing_information
 
-from datetime import date, time, datetime, timedelta
+from datetime import datetime
 import math
 import configparser
 import numpy as np
@@ -1281,12 +1281,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         in the combo box, check if this value exists in the 
         database.
         """
+        db = database.database()
+        
         if parameter_name == 'quality':
             self.drawing_lst[self.current_count]\
                 .quality = str(combo_box.currentText())
         elif parameter_name == 'type':
             self.drawing_lst[self.current_count]\
                 .drawing_type = str(combo_box.currentText())
+
+            tuple_drawing_type = db.get_drawing_information("drawing_type",
+                                                            str(combo_box.currentText()))
+            self.drawing_lst[self.current_count].set_drawing_type(tuple_drawing_type[0])
+            
         else:
             print("your parameter name: {} does not" +
                   " exist!".format(parameter_name))

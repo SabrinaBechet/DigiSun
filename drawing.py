@@ -8,41 +8,14 @@ import math
 
 class Group(QtCore.QObject):
     """
-    It contains all the information of a group extracted from the drawing.
-    The attributes are:
-    - id = id in the mysql database
-    - datetime =  datetime of the drawing
-    - drawing_type = type of drawing
-    - number =  number of the sunspot among all the group of the drawing
-    - longitude of the barycenter of the group
-    - latitude of the barycenter of the group
-    - Lcm ??
-    - alpha_angle ??
-    - quandrant ??
-    - McIntosh = classification of the group
-    - Zurich = classification of the group
-    - Spots = number of spots
-    - Dipole1Lat
-    - Dipole1Long
-    - Dipole2Lat
-    - Dipole2Long
-    - DipoleDefined
-    - Surface
-    - RawSurface_px
-    - rawSurface_msd
-    - GSpot
-
     Note: It is important to change the value before emitting the signal
-    Otherwhise might play with old signal due to signal emitted!!
+    Otherwhise might play with old value due to signal emitted!!
     """
     
     value_changed = QtCore.pyqtSignal()
     
     def __init__(self, param=None):
         super(Group, self).__init__()
-
-        #print("*******************")
-        #print(len(param), len(param[0]))
 
         if not param :
             print("no value for the initialisation of the drawing")
@@ -464,12 +437,6 @@ class Drawing(QtCore.QObject):
     """
 
     value_changed = QtCore.pyqtSignal()
-    
-    """lst_default = (0, datetime(2000,01,01,00,00), None, None, None, 0, 0.0, 0, 0,
-    0, 0, 0, 0.0, 0.0, 0.0, 0, None, None, None)
-    coordinates.Cartesian(0,0), coordinates.Cartesian(0,0),
-    0, 0, None, 0, 0, 0, None, 0, 0, None, 0, 0]
-    """
                    
     def __init__(self, param = None):
 
@@ -478,8 +445,32 @@ class Drawing(QtCore.QObject):
         #print("check param", type(param),
         #      len(param), param)
         #print(param)
+        
+        try:
+            (self._id_drawing,
+             self._datetime,
+             self._drawing_type,
+             self._quality,
+             self._observer,
+             self._carington_rotation,
+             self._julian_date,
+             self._calibrated,
+             self._analyzed,
+             self._group_count,
+             self._spot_count,
+             self._wolf,
+             self._angle_P,
+             self._angle_B,
+             self._angle_L,
+             self._angle_scan,
+             self._path,
+             self._operator,
+             self._last_update_time) = param
 
-        if not param :
+        except ValueError:
+            print("problem to set the drawing parameters from the database")
+
+        except TypeError:
             print("no value for the initialisation of the drawing")
             self._id_drawing = 0
             self._datetime = datetime(2000,01,01,00,00)
@@ -500,50 +491,16 @@ class Drawing(QtCore.QObject):
             self._path = None
             self._operator = None
             self._last_update_time = None
-        
-        elif len(param)==19:
-            (self._id_drawing,
-             self._datetime,
-             self._drawing_type,
-             self._quality,
-             self._observer,
-             self._carington_rotation,
-             self._julian_date,
-             self._calibrated,
-             self._analyzed,
-             self._group_count,
-             self._spot_count,
-             self._wolf,
-             self._angle_P,
-             self._angle_B,
-             self._angle_L,
-             self._angle_scan,
-             self._path,
-             self._operator,
-             self._last_update_time) = param
             
-            """self._calibrated_center,
-            self._calibrated_north,
-            self._calibrated_radius,
-            self._calibrated_angle_scan,
-            self._prefix,
-            self._p_oriented,
-            self._height,
-            self._widht,
-            self._pt1_name,
-            self._pt1_fraction_width,
-            self._pt1_fraction_height,
-            self._pt2_name,
-            self._pt2_fraction_width,
-            self._pt2_fraction_height) = lst
-            """
         self._group_lst = []
         
         self.changed = False
 
     def set_drawing_type(self, param):
-        
-        if len(param)==12:
+        """
+        Set the drawing type parameters from a list of value from the database.
+        """
+        try:
             (self._id_drawing_type,
              self._name,
              self._prefix,
@@ -556,16 +513,18 @@ class Drawing(QtCore.QObject):
              self._pt1_fraction_height,
              self._pt2_fraction_width,
              self._pt2_fraction_height) = param
+
+        except ValueError:
+            print("problem to set the drawing_type from the database")
          
     def set_calibration(self, param):
-
+        """
+        Set the calibration parameters from a list of value from the database.
+        """
         self._calibrated_center = coordinates.Cartesian(0,0)
         self._calibrated_north = coordinates.Cartesian(0,0)
-
-        #print("check set calibration")
-        #print(len(param[0]))
         
-        if len(param)==9:
+        try:
             (self._id_calibration,
              self._datetime_calibration,
              self._drawing_type_calibration,
@@ -576,31 +535,17 @@ class Drawing(QtCore.QObject):
              self._calibrated_radius,
              self._calibrated_angle_scan) = param
             
-            """(self._calibrated_center,
-             self._calibrated_north,
-             self._calibrated_radius,
-             self._calibrated_angle_scan,
-             self._prefix,
-             self._p_oriented,
-             self._height,
-             self._widht,
-             self._pt1_name,
-             self._pt1_fraction_width,
-             self._pt1_fraction_height,
-             self._pt2_name,
-             self._pt2_fraction_width,
-             self._pt2_fraction_height) = param[0]
-            """
+        except ValueError:
+            print("problem to set the calibraiton from the database")
+
             
     def set_group(self, param):
-
+        """
+        Set a new group from a list of value from the database.
+        """
         group_tmp = Group(param)
-        #group_tmp.fill_from_database(self._datetime, group_number)
         group_tmp.value_changed.connect(self.get_group_signal)
         self._group_lst.append(group_tmp)
-        #print(group_number,
-        #self.group_lst[group_number].longitude,
-        #self.group_lst[group_number].latitude)
         
     def radius(self, pt1, pt2):
         return math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
