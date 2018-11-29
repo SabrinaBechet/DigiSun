@@ -3,7 +3,7 @@
 import os
 from PyQt4 import QtGui, QtCore
 
-import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates, toolbar, statusbar, drawing_view_page, drawing_information
+import database, drawing, group_box, qlabel_drawing, qlabel_group_surface, coordinates, toolbar, statusbar, drawing_view_page, drawing_information, group_frame
 
 from datetime import datetime
 import math
@@ -97,8 +97,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     - update_surface_qlabel
     - set_green_frame_around_surface
 
-    - set_focus_group_box  
-  
     """
     def __init__(self, operator=None):
         super(DrawingAnalysePage, self).__init__()
@@ -192,9 +190,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         digisun_toolbar.zoom_in_but.clicked.connect(
             lambda : self.label_right.zoom_in(1.1))
+        digisun_toolbar.zoom_in_but.clicked.connect(
+            lambda: self.scroll_group_position(
+                self.listWidget_groupBox.currentRow()))
+        
         digisun_toolbar.zoom_out_but.clicked.connect(
             lambda : self.label_right.zoom_in(1/1.1))
+        digisun_toolbar.zoom_out_but.clicked.connect(
+            lambda: self.scroll_group_position(
+                self.listWidget_groupBox.currentRow()))
+        
 
+        digisun_toolbar.quick_zoom_but.clicked.connect(self.set_quick_zoom)
         digisun_toolbar.large_grid_but.clicked.connect(self.set_large_grid)
         digisun_toolbar.small_grid_but.clicked.connect(self.set_small_grid)
         digisun_toolbar.group_visu_but.clicked.connect(self.set_group_visualisation)
@@ -529,7 +536,70 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 y_min = int(100 + posY - frame_size/2)
                 y_max = int(100 + posY + frame_size/2)
 
-                selection_array = bigger_matrix[y_min : y_max, x_min : x_max]
+
+                (long_min,
+                 long_max,
+                 lat_min,
+                 lat_max) = group_frame.group_frame(self.drawing_lst[self.current_count].group_lst[n].zurich,
+                                                    self.drawing_lst[self.current_count].group_lst[n].longitude,
+                                                    self.drawing_lst[self.current_count].group_lst[n].latitude,
+                                                    self.drawing_lst[self.current_count].group_lst[n].dipole1_long,
+                                                    self.drawing_lst[self.current_count].group_lst[n].dipole1_lat,
+                                                    self.drawing_lst[self.current_count].group_lst[n].dipole2_long,
+                                                    self.drawing_lst[self.current_count].group_lst[n].dipole2_lat)
+
+                (x_min2,
+                 y_min2,
+                 z_min2) = coordinates.cartesian_from_HGC_upper_left_origin(
+                     self.drawing_lst[self.current_count].calibrated_center.x,
+                     self.drawing_lst[self.current_count].calibrated_center.y,
+                     self.drawing_lst[self.current_count].calibrated_north.x,
+                     self.drawing_lst[self.current_count].calibrated_north.y,
+                     long_min * math.pi/180,
+                     lat_min * math.pi/180,
+                     self.drawing_lst[self.current_count].angle_P,
+                     self.drawing_lst[self.current_count].angle_B,
+                     self.drawing_lst[self.current_count].angle_L,
+                     self.label_right.drawing_height)
+
+                (x_max2,
+                 y_max2,
+                 z_max2) = coordinates.cartesian_from_HGC_upper_left_origin(
+                     self.drawing_lst[self.current_count].calibrated_center.x,
+                     self.drawing_lst[self.current_count].calibrated_center.y,
+                     self.drawing_lst[self.current_count].calibrated_north.x,
+                     self.drawing_lst[self.current_count].calibrated_north.y,
+                     long_max * math.pi/180,
+                     lat_max * math.pi/180,
+                     self.drawing_lst[self.current_count].angle_P,
+                     self.drawing_lst[self.current_count].angle_B,
+                     self.drawing_lst[self.current_count].angle_L,
+                     self.label_right.drawing_height)
+
+
+                if x_max2 < x_min2:
+                   x_min2, x_max2 = x_max2, x_min2
+                if y_max2 < y_min2:
+                   y_min2, y_max2 = y_max2, y_min2
+                
+
+                print("******* new frame****")
+                print("pos X: {}, posY: {}".format(posX, posY))
+                print("longitude: {}, latitude:{}".format(self.drawing_lst[self.current_count].group_lst[n].longitude,
+                                                          self.drawing_lst[self.current_count].group_lst[n].latitude))
+                print(x_min2, x_max2)
+                print(y_min2, y_max2)
+                print("old values:")
+                print(x_min - 100, x_max - 100)
+                print(y_min - 100, y_max - 100)
+                
+
+                selection_array = bigger_matrix[int(y_min2) + 100 : int(y_max2) + 100,
+                                                int(x_min2) + 100 : int(x_max2) + 100]
+                
+                """selection_array = bigger_matrix[y_min : y_max,
+                                                x_min : x_max]
+                """
                 self.group_surface_widget.set_group_info(
                     self.drawing_lst[self.current_count],
                     n,
@@ -579,6 +649,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def set_dipole_visualisation(self):
         self.label_right.dipole_visu.set_opposite_value()
         self.label_right.set_img()
+
+    def set_quick_zoom(self):
+        self.label_right.quick_zoom.set_opposite_value()
+
+        if self.label_right.quick_zoom.value:
+            self.label_right.zoom_in(5/self.label_right.scaling_factor)
+        else:
+            self.label_right.zoom_in(1./self.label_right.scaling_factor)
+
+        self.scroll_group_position(
+            self.listWidget_groupBox.currentRow())    
+
+        
         
     def set_large_grid(self):
         self.label_right.large_grid_overlay.set_opposite_value()
@@ -678,6 +761,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 lambda: self.modify_drawing_mcIntosh(
                     self.listWidget_groupBox.currentRow(),
                     False))
+
+            
             
             self.groupBoxLineList.append(groupBoxLine)
             
@@ -712,8 +797,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.scroll_group_position(
                 self.listWidget_groupBox.currentRow()))
-
         
+        """
+        self.listWidget_groupBox.itemActivated.connect(
+            lambda: self.scroll_group_position(
+                self.listWidget_groupBox.currentRow()))
+        """
+        """for i in range(group_count):
+            groupBoxLine.group_box_clicked.connect(
+                lambda: self.scroll_group_position(
+                    self.listWidget_groupBox.currentRow()))
+        """ 
     def check_dipole(self, element_number):
         """
         Only for the add_dipole_mode.
@@ -782,14 +876,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Scroll to the position of the group given by
         the element_number.
         """
-        if (self.listWidget_groupBox.count()>0):
-            
+        if (self.listWidget_groupBox.count()>0):     
             pos_x = (self.drawing_lst[self.current_count]\
                      .group_lst[element_number].posX /
                      self.label_right.drawing_pixMap.width())
             pos_y = (self.drawing_lst[self.current_count]\
                      .group_lst[element_number].posY /
                      self.label_right.drawing_pixMap.height())
+
+            print("scroll group to {}, {}".format(pos_x, pos_y))
             self.scroll_position(pos_x, pos_y)
 
             
@@ -1529,14 +1624,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.setCursor(QtCore.Qt.ArrowCursor)
             self.label_right.set_img()
             
-            self.set_group_widget()
-            
+            self.set_group_widget()     
             self.set_focus_group_box(0)
             
             self.set_group_toolbox()
             self.update_surface_qlabel(0)
-            #self.scroll_group_position(0)
+            self.scroll_group_position(0)
             self.statusBar().name.setText("")
             self.statusBar().comment.setText("")
-            self.label_right.show()
+            #self.label_right.show()
     

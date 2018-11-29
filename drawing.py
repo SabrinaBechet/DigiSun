@@ -551,8 +551,13 @@ class Drawing(QtCore.QObject):
         return math.sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
         
     def calibrate(self, point1_x, point1_y, point2_x, point2_y):
+        """
+        Calcualte the calibrated center and calibrated north from 
+        - the input points
+        - pt name (drawing type information)
+        """
         if self.pt1_name == 'Center'  and self.pt2_name == 'North':
-            self.calibrated_center = coordinates.Cartesian(point1_x, point1_y)
+            self.calibrated_center = coordinate.Cartesian(point1_x, point1_y)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
             self.calibrated_radius = self.calibrated_center.distance(
                 self.calibrated_north)

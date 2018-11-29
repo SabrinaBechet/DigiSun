@@ -17,7 +17,7 @@ def rgb2gray(rgb):
 class QLabelDrawing(QtGui.QLabel):
     """
     Class to show the drawing, 
-    display the grid, groups, dipoles, etc
+    display the grid, groups, dipoles,..
     and interact with it
     It contains:
     - text (in case no pixmap)
@@ -54,6 +54,7 @@ class QLabelDrawing(QtGui.QLabel):
         self.height_scale = 1000
         
         # overlay mode
+        self.quick_zoom = analyse_mode_bool.analyseModeBool(False)
         self.large_grid_overlay = analyse_mode_bool.analyseModeBool(True)
         self.small_grid_overlay = analyse_mode_bool.analyseModeBool(False)
         self.grid_draw_point = False
@@ -70,7 +71,6 @@ class QLabelDrawing(QtGui.QLabel):
         self.calibration_mode = analyse_mode_bool.analyseModeBool(False)
         self.center_done = False
         self.north_done = False
-        #self.approximate_center = [0., 0.]
         self.add_group_mode = analyse_mode_bool.analyseModeBool(False)
         self.add_dipole_mode = analyse_mode_bool.analyseModeBool(False)
         self.surface_mode = analyse_mode_bool.analyseModeBool(False)
@@ -327,6 +327,9 @@ class QLabelDrawing(QtGui.QLabel):
                             y_lst_minus90_0[i])
 
             painter.setPen(large_pen)
+            print("value of calibration points: ")
+            print(self.current_drawing.calibrated_center.x, self.current_drawing.calibrated_center.y)
+            print(self.current_drawing.calibrated_north.x, self.current_drawing.calibrated_north.y)
             painter.drawPoint(self.current_drawing.calibrated_center.x ,
                               self.current_drawing.calibrated_center.y )
             painter.drawPoint(self.current_drawing.calibrated_north.x ,

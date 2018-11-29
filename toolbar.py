@@ -26,8 +26,13 @@ class Toolbar(QtGui.QToolBar):
         self.zoom_out_but = QtGui.QToolButton(self)
         self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.zoom_out_but.setText("zoom out")
-        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
-   
+        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.svg'))
+
+        self.quick_zoom_but = QtGui.QToolButton(self)
+        self.quick_zoom_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.quick_zoom_but.setText("quick zoom")
+        self.quick_zoom_but.setIcon(QtGui.QIcon('icons/Smashicons/quick_zoom.png'))
+
         self.large_grid_but = QtGui.QToolButton(self)
         self.large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.large_grid_but.setText("large grid")
@@ -70,6 +75,7 @@ class Toolbar(QtGui.QToolBar):
         #self.addWidget(self.group_scroll_but)
         self.addWidget(self.zoom_in_but)
         self.addWidget(self.zoom_out_but)
+        self.addWidget(self.quick_zoom_but)
         self.addWidget(self.large_grid_but)
         self.addWidget(self.small_grid_but)
         self.addWidget(self.group_visu_but)
@@ -93,13 +99,13 @@ class Toolbar(QtGui.QToolBar):
             self.surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))
             self.addWidget(self.surface_but)
 
-        """label_right.group_scroll.value_changed.connect(
+        label_right.quick_zoom.value_changed.connect(
             lambda: self.set_button_color(
-                label_right.group_scroll.value,
-                self.group_scroll_but ))
-        if label_right.group_scroll.value :
-            self.group_scroll_but.setStyleSheet("background-color: lightblue")
-        """    
+                label_right.quick_zoom.value,
+                self.quick_zoom_but ))
+        if label_right.quick_zoom.value :
+            self.quick_zoom_but.setStyleSheet("background-color: lightblue")
+        
         label_right.large_grid_overlay.value_changed.connect(
             lambda: self.set_button_color(
                 label_right.large_grid_overlay.value,

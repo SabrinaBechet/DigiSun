@@ -38,6 +38,9 @@ class GroupBox(QtGui.QWidget):
     - delete_button: allow to suppress a group
     - button_up, button_down, button_right, button_left : buttons to udpate the positions
     """
+
+    group_box_clicked = QtCore.pyqtSignal()
+    
     def __init__(self):
         super(GroupBox, self).__init__()
         layout = QtGui.QVBoxLayout()
@@ -339,3 +342,9 @@ class GroupBox(QtGui.QWidget):
         else:
             self.surface_linedit.setStyleSheet("background-color: white; color: black")
     
+
+    """def mousePressEvent(self, QMouseEvent):
+
+        self.group_box_clicked.emit()
+    
+    """

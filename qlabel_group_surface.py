@@ -391,8 +391,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
 class QLabelGroupSurface(QtGui.QLabel):
 
     array_changed = QtCore.pyqtSignal()
-    
-    
+       
     def __init__(self):
         super(QLabelGroupSurface, self).__init__()
        

@@ -33,10 +33,10 @@ class DrawingViewPage(QtGui.QWidget):
             .setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.scroll_widget_left_up\
             .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.scroll_widget_left_up .setWidgetResizable(True)
+        self.scroll_widget_left_up.setWidgetResizable(True)
         self.widget_left_up = QtGui.QWidget()
-        #self.widget_left_up.setMinimumWidth(left_column_maximum_width)
-        #self.widget_left_up.setMaximumHeight(self.width()/2.)#500)
+        self.scroll_widget_left_up.setMinimumWidth(left_column_maximum_width)
+        self.scroll_widget_left_up.setMaximumHeight(self.height())#500)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.scroll_widget_left_up.setWidget(self.widget_left_up)
         
@@ -111,21 +111,26 @@ class DrawingViewPage(QtGui.QWidget):
  
         self.widget_right_layout.addWidget(self.scroll)
         """
+        """
         splitter_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_down)
         splitter_down.addWidget(self.widget_left_down)
         splitter_down.addWidget(self.widget_left_down_bis)
+        """
         
-        splitter_middle_down = QtGui.QSplitter(QtCore.Qt.Vertical, self)
-        self.layout().addWidget(splitter_middle_down)
+        #for up and down
+        vertical_splitter = QtGui.QSplitter(QtCore.Qt.Vertical, self)
+        self.layout().addWidget(vertical_splitter)
         #splitter_middle_down.addWidget(self.widget_left_up)
-        splitter_middle_down.addWidget(self.scroll_widget_left_up)
-        splitter_middle_down.addWidget(self.widget_left_middle)
-        splitter_middle_down.addWidget(splitter_down)
-              
-        splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
-        self.layout().addWidget(splitter_main)
-        splitter_main.addWidget(splitter_middle_down)
-        splitter_main.addWidget(self.widget_middle_up)
-        splitter_main.addWidget(self.widget_right)
+        vertical_splitter.addWidget(self.scroll_widget_left_up)
+        vertical_splitter.addWidget(self.widget_left_middle)
+        vertical_splitter.addWidget(self.widget_left_down)
+        vertical_splitter.addWidget(self.widget_left_down_bis)
+
+        #for left and right
+        horizontal_splitter = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
+        self.layout().addWidget(horizontal_splitter)
+        horizontal_splitter.addWidget(vertical_splitter)
+        horizontal_splitter.addWidget(self.widget_middle_up)
+        horizontal_splitter.addWidget(self.widget_right)
     
