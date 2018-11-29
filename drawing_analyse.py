@@ -514,11 +514,26 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 #self.label_right.drawing_pixMap.height())
             
             
-                frame_size = self.group_surface_widget.update_frame_surface(
+                """frame_size = self.group_surface_widget.update_frame_surface(
                     self.drawing_lst[self.current_count].calibrated_radius,
                     step)
                 
-                self.label_right.frame_size = frame_size
+                """
+                frame_size2 = group_frame.group_frame(
+                    self.drawing_lst[self.current_count].group_lst[n].zurich,
+                    self.drawing_lst[self.current_count].calibrated_radius,
+                    self.drawing_lst[self.current_count].group_lst[n].posX,
+                    self.drawing_lst[self.current_count].group_lst[n].posY,
+                    self.drawing_lst[self.current_count].calibrated_center.x,
+                    self.drawing_lst[self.current_count].calibrated_center.y)
+                    
+                
+                print("****checkkkk frame size")
+                #print("old : ", frame_size)
+                print("new : ", frame_size2)
+
+                
+                self.label_right.frame_size = frame_size2
                 if step!=0:
                     self.label_right.set_img()
 
@@ -531,80 +546,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 bigger_matrix[100 : 100 + img_pix.shape[0],
                               100 : 100 + img_pix.shape[1]] = img_pix
                 
-                x_min = int(100 + posX - frame_size/2)
-                x_max = int(100 + posX + frame_size/2)
-                y_min = int(100 + posY - frame_size/2)
-                y_max = int(100 + posY + frame_size/2)
+                x_min = int(100 + posX - frame_size2/2)
+                x_max = int(100 + posX + frame_size2/2)
+                y_min = int(100 + posY - frame_size2/2)
+                y_max = int(100 + posY + frame_size2/2)
 
 
-                (long_min,
-                 long_max,
-                 lat_min,
-                 lat_max) = group_frame.group_frame(self.drawing_lst[self.current_count].group_lst[n].zurich,
-                                                    self.drawing_lst[self.current_count].group_lst[n].longitude,
-                                                    self.drawing_lst[self.current_count].group_lst[n].latitude,
-                                                    self.drawing_lst[self.current_count].group_lst[n].dipole1_long,
-                                                    self.drawing_lst[self.current_count].group_lst[n].dipole1_lat,
-                                                    self.drawing_lst[self.current_count].group_lst[n].dipole2_long,
-                                                    self.drawing_lst[self.current_count].group_lst[n].dipole2_lat)
-
-                (x_min2,
-                 y_min2,
-                 z_min2) = coordinates.cartesian_from_HGC_upper_left_origin(
-                     self.drawing_lst[self.current_count].calibrated_center.x,
-                     self.drawing_lst[self.current_count].calibrated_center.y,
-                     self.drawing_lst[self.current_count].calibrated_north.x,
-                     self.drawing_lst[self.current_count].calibrated_north.y,
-                     long_min * math.pi/180,
-                     lat_min * math.pi/180,
-                     self.drawing_lst[self.current_count].angle_P,
-                     self.drawing_lst[self.current_count].angle_B,
-                     self.drawing_lst[self.current_count].angle_L,
-                     self.label_right.drawing_height)
-
-                (x_max2,
-                 y_max2,
-                 z_max2) = coordinates.cartesian_from_HGC_upper_left_origin(
-                     self.drawing_lst[self.current_count].calibrated_center.x,
-                     self.drawing_lst[self.current_count].calibrated_center.y,
-                     self.drawing_lst[self.current_count].calibrated_north.x,
-                     self.drawing_lst[self.current_count].calibrated_north.y,
-                     long_max * math.pi/180,
-                     lat_max * math.pi/180,
-                     self.drawing_lst[self.current_count].angle_P,
-                     self.drawing_lst[self.current_count].angle_B,
-                     self.drawing_lst[self.current_count].angle_L,
-                     self.label_right.drawing_height)
-
-
-                if x_max2 < x_min2:
-                   x_min2, x_max2 = x_max2, x_min2
-                if y_max2 < y_min2:
-                   y_min2, y_max2 = y_max2, y_min2
-                
-
-                print("******* new frame****")
-                print("pos X: {}, posY: {}".format(posX, posY))
-                print("longitude: {}, latitude:{}".format(self.drawing_lst[self.current_count].group_lst[n].longitude,
-                                                          self.drawing_lst[self.current_count].group_lst[n].latitude))
-                print(x_min2, x_max2)
-                print(y_min2, y_max2)
-                print("old values:")
-                print(x_min - 100, x_max - 100)
-                print(y_min - 100, y_max - 100)
-                
-
-                selection_array = bigger_matrix[int(y_min2) + 100 : int(y_max2) + 100,
-                                                int(x_min2) + 100 : int(x_max2) + 100]
-                
-                """selection_array = bigger_matrix[y_min : y_max,
+                selection_array = bigger_matrix[y_min : y_max,
                                                 x_min : x_max]
-                """
+
+                print("selection array: {}".format(selection_array.shape))
+                
                 self.group_surface_widget.set_group_info(
                     self.drawing_lst[self.current_count],
                     n,
-                    posX - frame_size/2,
-                    posY - frame_size/2)
+                    posX - frame_size2/2,
+                    posY - frame_size2/2)
 
                 self.group_surface_widget.set_array(selection_array)
                 
@@ -781,13 +738,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.set_group_toolbox(
                 self.listWidget_groupBox.currentRow()))
-        
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.update_group_visu(
-                self.listWidget_groupBox.currentRow()))
 
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.update_surface_qlabel(
+                self.listWidget_groupBox.currentRow()))
+        
+        self.listWidget_groupBox.itemSelectionChanged.connect(
+            lambda: self.update_group_visu(
                 self.listWidget_groupBox.currentRow()))
 
         self.listWidget_groupBox.itemSelectionChanged.connect(
@@ -867,10 +824,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.groupBoxLineList[i].zurich_combo.setEnabled(False)
                 self.groupBoxLineList[i].McIntosh_combo.setEnabled(False)
 
-        if (self.label_right.surface_mode.value and
+        """if (self.label_right.surface_mode.value and
             self.listWidget_groupBox.count()>0):
             self.scroll_group_position(element_number)
-       
+       """
     def scroll_group_position(self, element_number):
         """
         Scroll to the position of the group given by
@@ -1622,13 +1579,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             #self.label_right.surface_mode.value = False
             
             self.label_right.setCursor(QtCore.Qt.ArrowCursor)
+            
+            if self.label_right.surface_mode.value:
+                self.update_surface_qlabel(0)
             self.label_right.set_img()
             
-            self.set_group_widget()     
+            self.set_group_widget()
+            
             self.set_focus_group_box(0)
             
             self.set_group_toolbox()
-            self.update_surface_qlabel(0)
+            
             self.scroll_group_position(0)
             self.statusBar().name.setText("")
             self.statusBar().comment.setText("")

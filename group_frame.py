@@ -2,30 +2,28 @@
 import math
 
 
-def group_frame(zurich, hgc_lon, hgc_lat, leading_long, leading_lat, trailing_long, trailing_lat):
+def group_frame(zurich, radius, posx, posy, center_x, center_y):
     
-    if zurich in ['A', 'J', 'H']:
-        if zurich in ['A', 'J']:
-            step = 1.5
-        elif zurich in ['H']:
-            step = 3
-        
-        long_min = hgc_lon * 180/math.pi - step
-        long_max = hgc_lon * 180/math.pi + step
-        lat_min = hgc_lat * 180/math.pi - step
-        lat_max = hgc_lat * 180/math.pi + step
+    #print("check variable")
+    #print(type(center_to_limb), center_to_limb)
 
-            
-    elif zurich in ['B', 'C', 'D','E','F','G']:
+    distance_from_center =  math.sqrt((posx - center_x )**2 +
+                                      (posy - center_y )**2)
+    
+    if distance_from_center < radius:
+        center_to_limb = (math.asin(distance_from_center *
+                                          1./radius))
+                    
+    
+    if zurich in ['A', 'J']:
+        step = (radius/60.) *( math.cos(float(center_to_limb)))
+    elif zurich in ['H']:
+        step = (radius/30.) *( math.cos(float(center_to_limb)))
+    elif zurich in ['B','C', 'D']:
+        step = (radius/9.) *( math.cos(float(center_to_limb)))
+    elif zurich in ['E']:
+        step = (radius/6.) *( math.cos(float(center_to_limb)))
+    elif zurich in ['F','G']:
+        step = (radius/4.) *( math.cos(float(center_to_limb)))    
 
-        step_long = 3
-        step_lat = 1.5
-            
-        long_min = leading_long * 180/math.pi - step_long
-        long_max = trailing_long * 180/math.pi + step_long
-
-        lat_min = leading_lat * 180/math.pi - step_lat
-        lat_max = trailing_lat * 180/math.pi + step_lat
-        
-
-    return long_min, long_max, lat_min, lat_max
+    return int(step*2)

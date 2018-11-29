@@ -2,7 +2,8 @@
 # -*-coding:utf-8-*-
 from PyQt4 import QtGui, QtCore
 #from PIL import Image
-from PIL.ImageQt import ImageQt
+#from PIL.ImageQt import ImageQt
+from PIL import Image, ImageQt
 import numpy as np
 import math
 import coordinates
@@ -347,10 +348,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
             for i in range(len(pos_x)):
                 distance_from_center =  math.sqrt((pos_x[i] - self.center_x )**2 +
                                                   (pos_y[i] - self.center_y )**2)
-                #print(i, pos_x[i], self.center_x, pos_y[i], self.center_y,
-                #distance_from_center)
-                #print(i, pos_x[i] - self.center_x , pos_y[i] - self.center_y)
-                #print(i, self.radius, distance_from_center, pos_x[i], pos_y[i])
+                
                 if distance_from_center < self.radius:
                     center_to_limb_angle = (math.asin(distance_from_center *
                                                       1./self.radius))
@@ -398,8 +396,8 @@ class QLabelGroupSurface(QtGui.QLabel):
         self.original_pixmap = QtGui.QPixmap() # used for the reset
         self.first_pixamp_polygon = QtGui.QPixmap() # used for the polygon drawing
         
-        self.width_scale = 600
-        self.height_scale = 600
+        self.width_scale = 300
+        self.height_scale = 300
         self.scaling_factor = 1
         self.pointsList = []
            
@@ -430,12 +428,16 @@ class QLabelGroupSurface(QtGui.QLabel):
       
     def np2qpixmap(self, np_img):
         """convert np array into pixmap"""
+        im8 = Image.fromarray(np_img)
+        imQt = QtGui.QImage(ImageQt.ImageQt(im8))
+        """pxmap = QtGui.QPixmap.fromImage(imQt)
         frame = cv2.cvtColor(np_img,cv2.COLOR_GRAY2RGB)
         img = QtGui.QImage(frame,
                            frame.shape[1],
                            frame.shape[0],
                            QtGui.QImage.Format_RGB888)
-        return QtGui.QPixmap.fromImage(img)
+        """
+        return QtGui.QPixmap.fromImage(imQt)
 
     def draw_polygon(self, position=None):
         """
