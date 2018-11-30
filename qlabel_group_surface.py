@@ -63,6 +63,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         threshold_slider.valueChanged.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
         self.threshold_linedit = QtGui.QLineEdit(str(self.default_threshold))
+        self.threshold_linedit.setDisabled(True)
         
         threshold_layout = QtGui.QFormLayout()
         threshold_layout.addRow("Threshold selection:",
@@ -72,38 +73,46 @@ class GroupSurfaceWidget(QtGui.QWidget):
         
         zoom_in_but =QtGui.QToolButton()
         zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
+        zoom_in_but.setToolTip("zoom in")
         zoom_in_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(2.))
         
         zoom_out_but = QtGui.QToolButton()
         zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/search.svg'))
+        zoom_in_but.setToolTip("zoom out")
         zoom_out_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(1/2.))
         
         reset_but = QtGui.QToolButton()
-        reset_but.setText("reset")
+        #reset_but.setText("reset")
+        reset_but.setToolTip("reset")
         reset_but.setIcon(QtGui.QIcon('icons/Pixel_perfect/settings.svg'))
         reset_but.clicked.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
         
         undo_but = QtGui.QToolButton()
+        undo_but.setToolTip("undo")
+        undo_but.setDisabled(True)
         undo_but.setIcon(QtGui.QIcon('icons/Eleonor_Wang/undo.svg'))
         
         bigger_frame_but =QtGui.QToolButton()
         bigger_frame_but.setIcon(
             QtGui.QIcon('icons/Linh_Pham/mine_bigger_frame.png'))
+        bigger_frame_but.setToolTip("bigger frame")
         bigger_frame_but.clicked.connect(
             lambda: self.bigger_frame.emit())
   
         smaller_frame_but =QtGui.QToolButton()
         smaller_frame_but.setIcon(
             QtGui.QIcon('icons/Linh_Pham/mine_smaller_frame.png'))
+        smaller_frame_but.setToolTip("smaller frame")
         smaller_frame_but.clicked.connect(
             lambda: self.smaller_frame.emit())
         
         draw_polygon_but = QtGui.QToolButton()
         draw_polygon_but.setIcon(
             QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
+        draw_polygon_but.setToolTip("draw polygon")
         draw_polygon_but.clicked.connect(
             lambda : self.set_opposite_value(
                 self.qlabel_group_surface.polygon_mode))
@@ -113,12 +122,14 @@ class GroupSurfaceWidget(QtGui.QWidget):
         cut_polygon_but = QtGui.QToolButton()
         cut_polygon_but.setIcon(
             QtGui.QIcon('icons/Freepik/crop.svg'))
+        cut_polygon_but.setToolTip("cut polygon")
         cut_polygon_but.clicked.connect(
             lambda : self.cut_polygon(threshold_slider.value()))
         
         draw_1pixel_black_but = QtGui.QToolButton()
         draw_1pixel_black_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_black_square.svg'))
+        draw_1pixel_black_but.setToolTip("draw black pixel")
         draw_1pixel_black_but.clicked.connect(
             lambda : self.set_opposite_value(
                 self.qlabel_group_surface.black_pencil_mode))
@@ -127,6 +138,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         draw_1pixel_white_but = QtGui.QToolButton()
         draw_1pixel_white_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_white_square.svg'))
+        draw_1pixel_white_but.setToolTip("draw white pixel")
         draw_1pixel_white_but.clicked.connect(
             lambda : self.set_opposite_value(
                 self.qlabel_group_surface.white_pencil_mode))
@@ -135,6 +147,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         bucket_white_fill_but = QtGui.QToolButton()
         bucket_white_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/white-bucket.svg'))
+        bucket_white_fill_but.setToolTip("white bucket fill")
         bucket_white_fill_but.clicked.connect(
             lambda : self.set_opposite_value(
                 self.qlabel_group_surface.white_bucket_mode))
@@ -145,6 +158,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         bucket_black_fill_but = QtGui.QToolButton()
         bucket_black_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/black-bucket.svg'))
+        bucket_black_fill_but.setToolTip("black bucket fill")
         bucket_black_fill_but.clicked.connect(
             lambda : self.set_opposite_value(
                 self.qlabel_group_surface.black_bucket_mode))
@@ -153,17 +167,15 @@ class GroupSurfaceWidget(QtGui.QWidget):
                                                                255,
                                                                0))
         
-        
-        """cross_but = QtGui.QToolButton()
-        cross_but.setMinimumWidth(self.width()/6.)
-        cross_but.clicked.connect(lambda: self.draw_pencil(255))
-        
         pixel_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        pixel_slider.setRange(1,5)
+        pixel_slider.setRange(0, 4)
+        pixel_slider.setTickInterval(1)
+        #pixel_slider.setValue(0)
         pixel_slider.setTickPosition(QtGui.QSlider.TicksBelow)
-        pixel_slider.setValue(1)
-        """
         
+        pixel_slider.valueChanged.connect(
+            lambda: self.qlabel_group_surface.update_pixel_size(pixel_slider.value()))
+      
         self.qlabel_group_surface.polygon_mode.value_changed.connect(
             lambda: self.set_button_color(
                 self.qlabel_group_surface.polygon_mode.value,
@@ -213,10 +225,8 @@ class GroupSurfaceWidget(QtGui.QWidget):
         layout_general.addWidget(bucket_black_fill_but, 2, 1)
         layout_general.addWidget(draw_1pixel_white_but, 2, 2)
         layout_general.addWidget(draw_1pixel_black_but, 2, 3)
+        layout_general.addWidget(pixel_slider, 2, 4, 1, 4)
         
-        """layout_general.addWidget(cross_but, 7, 0)
-        layout_general.addWidget(pixel_slider, 7, 1)
-        """
         form_layout = QtGui.QFormLayout()
         self.pixel_number_linedit = QtGui.QLineEdit()
         self.projected_surface_linedit = QtGui.QLineEdit()
@@ -245,6 +255,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.qlabel_group_surface.array_changed.connect(
             lambda: self.set_img(self.qlabel_group_surface.array))
 
+        
     def set_opposite_value(self, mode):
         if mode.value:
             mode.value = False
@@ -342,7 +353,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
             pos_x = [x + self.start_x for x in index_x]
             pos_y = [x + self.start_y for x in index_y]
 
-            print(len(index_x), len(pos_x))
+            #print(len(index_x), len(pos_x))
             
             deprojected_area_sum = 0
             for i in range(len(pos_x)):
@@ -366,6 +377,8 @@ class GroupSurfaceWidget(QtGui.QWidget):
         else:
             return 0
 
+
+   
     def update_frame_surface(self, radius, step=0):
         """
         change the size of the frame around the surface selection.
@@ -408,6 +421,7 @@ class QLabelGroupSurface(QtGui.QLabel):
         self.black_bucket_mode = analyse_mode_bool.analyseModeBool(False)
 
         self.max_count = 0
+        self.pixel_size = 0
         
     def zoom_in(self, scaling_factor):
         self.width_scale *=  scaling_factor
@@ -511,10 +525,8 @@ class QLabelGroupSurface(QtGui.QLabel):
         
         self.polygon_mode.value = False
         if new_value ==0 :
-            self.white_pencil_mode.value = False
-            #self.black_pencil_mode.value = True    
+            self.white_pencil_mode.value = False   
         else:
-            #self.white_pencil_mode.value = True
             self.black_pencil_mode.value = False
         self.white_bucket_mode.value = False
         self.black_bucket_mode.value = False
@@ -558,7 +570,11 @@ class QLabelGroupSurface(QtGui.QLabel):
 
         except RuntimeError :
             print("Time too long, check that the border is closed!")
-                
+
+    def update_pixel_size(self, pixel_size):
+        print("set pixel size: ", pixel_size)
+        self.pixel_size = pixel_size
+            
     def mousePressEvent(self, QMouseEvent):
         position =  QMouseEvent.pos()
 
@@ -569,11 +585,16 @@ class QLabelGroupSurface(QtGui.QLabel):
             pos_x_scaled = int(math.floor(position.x() * self.array.shape[0] /
                                       self.width_scale ))
 
+            y_min = pos_y_scaled - self.pixel_size
+            y_max = pos_y_scaled + self.pixel_size + 1
+            x_min = pos_x_scaled - self.pixel_size
+            x_max = pos_x_scaled + self.pixel_size + 1
+            
         if self.polygon_mode.value:
             self.draw_polygon(position)
 
         elif self.white_pencil_mode.value or self.black_pencil_mode.value:
-            self.array[pos_y_scaled, pos_x_scaled] = self.new_value
+            self.array[y_min:y_max, x_min:x_max] = self.new_value
             self.array_changed.emit()
 
         elif self.white_bucket_mode.value or self.black_bucket_mode.value:
@@ -588,8 +609,12 @@ class QLabelGroupSurface(QtGui.QLabel):
                                           self.height_scale ))
             pos_x_scaled = int(math.floor(position.x() * self.array.shape[0] /
                                           self.width_scale ))
+            y_min = pos_y_scaled - self.pixel_size
+            y_max = pos_y_scaled + self.pixel_size + 1
+            x_min = pos_x_scaled - self.pixel_size
+            x_max = pos_x_scaled + self.pixel_size + 1
             
-            self.array[pos_y_scaled, pos_x_scaled] = self.new_value
+            self.array[y_min:y_max, x_min:x_max] = self.new_value
             self.array_changed.emit()
             
     def mouseReleaseEvent(self,QMouseEvent):
@@ -600,7 +625,11 @@ class QLabelGroupSurface(QtGui.QLabel):
                                           self.height_scale ))
             pos_x_scaled = int(math.floor(position.x() * self.array.shape[0] /
                                           self.width_scale ))
+            y_min = pos_y_scaled - self.pixel_size
+            y_max = pos_y_scaled + self.pixel_size + 1
+            x_min = pos_x_scaled - self.pixel_size
+            x_max = pos_x_scaled + self.pixel_size + 1
             
-            self.array[pos_y_scaled, pos_x_scaled]= self.new_value
+            self.array[y_min:y_max, x_min:x_max] = self.new_value
             self.array_changed.emit()
             

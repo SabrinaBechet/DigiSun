@@ -146,6 +146,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.zurich_dipolar = ["B","C","D","E","F","G", "X"]
 
+            self.step = 0
+            
         else:
             my_font = QtGui.QFont("Comic Sans MS", 20)
             no_drawing_msg = QtGui.QLabel()
@@ -467,8 +469,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.small_grid_overlay.value = False
 
             self.zoom_area =  5./self.label_right.scaling_factor
-            self.label_right.zoom_in(
-                self.zoom_area)
+            self.label_right.zoom_in(self.zoom_area)
 
             if self.drawing_lst[self.current_count].group_count > 0:
                 pos_x = (self.drawing_lst[self.current_count]\
@@ -481,6 +482,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.update_surface_qlabel(
                 self.listWidget_groupBox.currentRow())
+            
+            self.label_right.set_img()
             
         elif self.label_right.surface_mode.value == False:
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
@@ -496,6 +499,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         an image of the drawing to calculate the surface.
         """
         print("update surface ", n)
+
+        if step:
+            self.step += step
+        else:
+            self.step = 0
+                       
+        
         if (self.drawing_lst[self.current_count].calibrated and
             self.label_right.surface_mode and
             self.label_right.get_img_array() is not None):
@@ -526,8 +536,15 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     self.drawing_lst[self.current_count].group_lst[n].posY,
                     self.drawing_lst[self.current_count].calibrated_center.x,
                     self.drawing_lst[self.current_count].calibrated_center.y)
-                    
-                
+
+                if self.step:
+                    if (frame_size2 + self.step * self.drawing_lst[self.current_count].calibrated_radius/30) > 0:
+                        frame_size2 += self.step * self.drawing_lst[self.current_count].calibrated_radius/30
+                        
+                    else:
+                        self.step-=step
+                        frame_size2 += self.step * self.drawing_lst[self.current_count].calibrated_radius/30
+               
                 print("****checkkkk frame size")
                 #print("old : ", frame_size)
                 print("new : ", frame_size2)
@@ -729,8 +746,35 @@ class DrawingAnalysePage(QtGui.QMainWindow):
            
         self.drawing_page.widget_left_down_layout.addWidget(
             self.listWidget_groupBox)
+
         
-        # Signals related to the change of item in the group box
+        self.label_right.drawing_clicked.connect(
+            lambda: self.set_focus_group_box(
+                self.label_right.selected_element))
+        
+        self.label_right.drawing_clicked.connect(
+            lambda: self.set_group_toolbox(
+                self.label_right.selected_element))
+
+        self.label_right.drawing_clicked.connect(
+            lambda: self.update_surface_qlabel(
+                self.label_right.selected_element))
+
+        self.label_right.drawing_clicked.connect(
+            lambda: self.update_group_visu(
+                self.label_right.selected_element))
+
+        self.label_right.drawing_clicked.connect(
+            lambda: self.check_dipole(
+                self.label_right.selected_element))
+            
+        self.label_right.drawing_clicked.connect(
+            lambda: self.scroll_group_position(
+                self.label_right.selected_element))
+            
+    
+        # Signals related to the change of item in the gro
+      
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.set_focus_group_box(
                 self.listWidget_groupBox.currentRow()))
@@ -1358,10 +1402,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_middle_up_layout.setSpacing(10)
         self.group_surface_widget.bigger_frame.connect(
             lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow(),
-                                               -1))
+                                               +1))
         self.group_surface_widget.smaller_frame.connect(
             lambda: self.update_surface_qlabel(self.listWidget_groupBox.currentRow(),
-                                               1))
+                                               -1))
         
         self.group_surface_widget\
             .surface_saved.connect(self.update_surface)

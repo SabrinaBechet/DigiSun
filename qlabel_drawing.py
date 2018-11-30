@@ -35,7 +35,7 @@ class QLabelDrawing(QtGui.QLabel):
     then PyQt5 automatically 
     binds the instance to the signal in order to create a bound signal.
     """
-    #drawing_clicked = QtCore.pyqtSignal()
+    drawing_clicked = QtCore.pyqtSignal()
     center_clicked = QtCore.pyqtSignal()
     north_clicked = QtCore.pyqtSignal()
     group_added = QtCore.pyqtSignal()
@@ -343,15 +343,25 @@ class QLabelDrawing(QtGui.QLabel):
             pen_selected = QtGui.QPen(QtCore.Qt.DotLine)
             pen_selected.setWidth(self.pen_width * 1.5)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
+            large_pen = QtGui.QPen(QtCore.Qt.blue)
+            large_pen.setWidth(self.pen_width * 2)
+            large_pen.setStyle(QtCore.Qt.SolidLine)
             if self.surface_mode.value:
                 pen_border.setColor(QtGui.QColor("transparent"))
             for i in range(self.current_drawing.group_count):
-                radius = self.drawing_height / 2000.
+                #radius = self.drawing_height / 2000.
+                radius = self.drawing_height / 50.
                 #big_radius = self.drawing_height / 50.
-                painter.setPen(pen_border)               
+                painter.setPen(pen_border)
+                
                 if self.group_visu_index==i:
                     painter.setPen(pen_selected)
                     radius = self.drawing_height / 50.
+                    large_pen.setColor(QtGui.QColor("transparent"))
+                    pen_selected.setColor(QtGui.QColor(77, 185, 88))
+                else:
+                    large_pen.setColor(QtCore.Qt.blue)
+                    pen_selected.setColor(QtGui.QColor("transparent"))
                 # here we should directly take x, y from the database
                 #posX = self.current_drawing.group_lst[i].posX
                 #posY = self.current_drawing.group_lst[i].posY
@@ -389,7 +399,7 @@ class QLabelDrawing(QtGui.QLabel):
                     pen_point = QtGui.QPen(QtCore.Qt.blue)
                     pen_point.setStyle(QtCore.Qt.SolidLine)
                     pen_point.setWidth( 5 * 1000/ (self.height_scale) )
-                    painter.setPen(pen_point)
+                    painter.setPen(large_pen)
                     painter.drawPoint(QtCore.QPointF(x,y))
                     
                     painter.setPen(pen_selected)
@@ -718,6 +728,19 @@ class QLabelDrawing(QtGui.QLabel):
         
         #self.x_drawing = x_drawing
         #self.y_drawing = y_drawing
+
+        for el in self.current_drawing.group_lst:
+            print("check")
+            print(el.posX, el.posY)
+            print(x_drawing, y_drawing, self.current_drawing.calibrated_radius/30)
+            if ((x_drawing >= el.posX - self.current_drawing.calibrated_radius/30) and
+                (x_drawing <= el.posX + self.current_drawing.calibrated_radius/30) and
+                (y_drawing >= el.posY - self.current_drawing.calibrated_radius/30) and
+                (y_drawing <= el.posY + self.current_drawing.calibrated_radius/30)):
+
+                print("***************select group ", self.current_drawing.group_lst.index(el))
+                self.selected_element = self.current_drawing.group_lst.index(el)
+                self.drawing_clicked.emit()
         
         print("click coordinate: ", x_click, y_click)
         print("pixmap coord: ", x_pixmap, y_pixmap)
