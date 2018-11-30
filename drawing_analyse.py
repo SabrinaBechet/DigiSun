@@ -773,7 +773,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.label_right.selected_element))
             
     
-        # Signals related to the change of item in the gro
+        # Signals related to the change of item in the group box
       
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.set_focus_group_box(
