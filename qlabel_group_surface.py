@@ -328,13 +328,16 @@ class GroupSurfaceWidget(QtGui.QWidget):
         return np.count_nonzero(img)
 
     def fill_surface_info(self):
-        self.drawing.group_lst[self.index].surface = self.deprojected_area
-        self.drawing.group_lst[self.index].raw_surface_px = self.nb_pixel
-        self.drawing.group_lst[self.index].raw_surface_msd = self.projected_area
-        print("fill surface info")
+        self.drawing.group_lst[self.index].set_surface(self.nb_pixel,
+                                                       self.projected_area,
+                                                       self.deprojected_area)
+        #self.drawing.group_lst[self.index].surface = self.deprojected_area
+        #self.drawing.group_lst[self.index].raw_surface_px = self.nb_pixel
+        #self.drawing.group_lst[self.index].raw_surface_msd = self.projected_area
+        """print("fill surface info")
         print("deproj area ", self.deprojected_area, type(self.deprojected_area))
         print("pixel ", self.nb_pixel, type(self.nb_pixel))
-    
+        """
         self.surface_saved.emit()
 
         

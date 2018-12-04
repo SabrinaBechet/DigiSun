@@ -94,7 +94,7 @@ class Cartesian(Coordinates):
         Return the angle *in radian* between the x-axis and 
         vector formed with the point B
         """
-        return math.atan((self.y - pointB.y)/float(self.x - pointB.x)) 
+        return math.atan((self.y - pointB.y)/float(self.x - pointB.x))  
     
     def angle_from_y_axis(self, pointB):
         """

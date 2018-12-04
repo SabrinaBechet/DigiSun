@@ -17,48 +17,14 @@ class Group(QtCore.QObject):
     def __init__(self, param=None):
         super(Group, self).__init__()
 
-        if not param :
-            print("no value for the initialisation of the drawing")
-            self._id_ = 0
-            self._datetime = datetime(2000,01,01,00,00)
-            self._drawing_type = 0
-            self._number = 0
-            self._latitude = 0 
-            self._longitude = 0
-            self._Lcm = 0
-            self._CenterToLimb_angle = 0
-            self._L0 = 0
-            self._quadrant = 0
-            self._McIntosh = 'Xxx'
-            self._zurich  = 'X'
-            self._spots = 0
-            self._dipole1_lat = 0
-            self._dipole1_long = 0
-            self._dipole2_lat = 0  
-            self._dipole2_long = 0
-            self._dipole_defined = 0
-            self._surface = 0
-            self._raw_surface_px = 0
-            self._raw_surface_msd = 0
-            self._g_spot = 0
-            self._posX = 0
-            self._posY = 0
-            self._dipole1_posX = 0
-            self._dipole_posY = 0
-            self._dipole2_posX = 0
-            self._dipole2_posY = 0
-            self._largest_spot = None
-
-        elif len(param)== 29:
+        try:
             (self._id_,
              self._datetime,
-             self._drawing_type,
              self._number,
              self._latitude,
              self._longitude,
              self._Lcm,
              self._CenterToLimb_angle,
-             self._L0,
              self._quadrant,
              self._McIntosh,
              self._zurich,
@@ -67,7 +33,6 @@ class Group(QtCore.QObject):
              self._dipole1_long,
              self._dipole2_lat,
              self._dipole2_long,
-             self._dipole_defined,
              self._surface,
              self._raw_surface_px,
              self._raw_surface_msd,
@@ -75,21 +40,51 @@ class Group(QtCore.QObject):
              self._posX,
              self._posY,
              self._dipole1_posX,
-             self.dipoel1_posY,
-             self.dipole2_posX,
-             self.dipole2_posY,
+             self._dipoel1_posY,
+             self._dipole2_posX,
+             self._dipole2_posY,
              self._largest_spot) = param
+
+        except ValueError:
+            print("problem to set the groups parameters from the database")
+
+        except TypeError:
+            print("no value for the initialisation of the groups")
+            self._id_ = 0
+            self._datetime = datetime(2000,01,01,00,00)
+            self._number = 0
+            self._latitude = None
+            self._longitude = None
+            self._Lcm = None
+            self._CenterToLimb_angle = None
+            self._quadrant = None
+            self._McIntosh = 'Xxx'
+            self._zurich  = 'X'
+            self._spots = 0
+            self._dipole1_lat = None
+            self._dipole1_long = None
+            self._dipole2_lat = None
+            self._dipole2_long = None
+            self._surface = None
+            self._raw_surface_px = None
+            self._raw_surface_msd = None
+            self._g_spot = None
+            self._posX = None
+            self._posY = None
+            self._dipole1_posX = None
+            self._dipole_posY = None
+            self._dipole2_posX = None
+            self._dipole2_posY = None
+            self._largest_spot = None
             
         self.changed = False
 
-
     def __repr__(self):
         return "Group {}".format(self._number)
-        
+
     @property    
     def number(self):
-        return self._number
-    
+        return self._number   
     @number.setter
     def number(self, value):
         print("here we are changing the value of group number to ", value)
@@ -100,7 +95,6 @@ class Group(QtCore.QObject):
     @property    
     def longitude(self):
         return self._longitude
-    
     @longitude.setter
     def longitude(self, value):
         """
@@ -110,16 +104,9 @@ class Group(QtCore.QObject):
         print("here we  CAN NOT change the value of longitude to ", value,
               " or ", value*180/math.pi , " degree ")
 
-        #self.change_group_position(self._latitude, self._longitude)
-        
-        #self._longitude = value
-        #self.changed = True
-        #self.value_changed.emit()
-    
     @property    
     def latitude(self):
         return self._latitude
-    
     @latitude.setter
     def latitude(self, value):
         """
@@ -128,29 +115,20 @@ class Group(QtCore.QObject):
         """
         print("here we CAN NOT change the value of latitude to ", value,
               " or ", value*180/math.pi , " degree ")
-        #self._latitude = value
-        #self.changed = True
-        #self.value_changed.emit()
         
     @property    
     def posX(self):
         return self._posX
-    
     @posX.setter
     def posX(self, value):
         """
         the posX of the group can only be changed via 
         the "change_group_position" function
         """
-        print("here we CAN NOT change the value of pos X to ", value)
-        #self._posX= value
-        #self.changed = True
-        #self.value_changed.emit()
-
+   
     @property    
     def posY(self):
-        return self._posY
-    
+        return self._posY 
     @posY.setter
     def posY(self, value):
         """
@@ -158,14 +136,10 @@ class Group(QtCore.QObject):
         the "change_group_position" function
         """
         print("here we CAN NOT change the value of pos Y to ", value)
-        #self._posY = value
-        ##self.changed = True
-        self.value_changed.emit()
 
     @property    
     def Lcm(self):
         return self._Lcm
-    
     @Lcm.setter
     def Lcm(self, value):
         """
@@ -173,29 +147,21 @@ class Group(QtCore.QObject):
         the "change_group_position" function
         """
         print("here we CAN NOT change the value of Lcm to ", value)
-        #self._Lcm = value
-        #self.changed = True
-        #self.value_changed.emit()
 
     @property    
     def CenterToLimb_angle(self):
         return self._CenterToLimb_angle
-    
-    @Lcm.setter
+    @CenterToLimb_angle.setter
     def CenterToLimb_angle(self, value):
         """
         the Center to limb angle of the group can only be changed via 
         the "change_group_position" function
         """
         print("here we CAN NOT change the value of CenterToLimb angle to ", value)
-        #self._CenterToLimb_angle = value
-        #self.changed = True
-        #self.value_changed.emit()
-
+        
     @property    
     def quadrant(self):
         return self._quadrant
-    
     @quadrant.setter
     def quadrant(self, value):
         """
@@ -203,22 +169,18 @@ class Group(QtCore.QObject):
         the "change_group_position" function
         """
         print("here we CAN NOT change the value of quadrant to ", value)
-        #self._quadrant = value
-        #self.changed = True
-        #self.value_changed.emit()
        
     @property    
     def surface(self):
-        #print("here we are reading the value of surface of a group ")
         return self._surface
-    
     @surface.setter
     def surface(self, value):
-        print("here we are changing the value of surface to ", value)
-        self._surface = value
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of surface to ", value)
+        #self._surface = value
+        #self.changed = True
+        #self.value_changed.emit()
 
+        
     @property    
     def McIntosh(self):
         #print("here we are reading the value of mcIntosh of a group ")
@@ -249,7 +211,6 @@ class Group(QtCore.QObject):
         """ the number of spots in the group"""
         #print("here we are reading the value of spots of a group ")
         return self._spots
-    
     @spots.setter
     def spots(self, value):
         print("here we are changing the value of spots to ", value)
@@ -259,118 +220,94 @@ class Group(QtCore.QObject):
 
     @property    
     def dipole1_lat(self):
-        #print("here we are reading the value of spots of a group ")
         return self._dipole1_lat
-    
     @dipole1_lat.setter
     def dipole1_lat(self, value):
-        print("here we are changing the value of dipole1_lat to ", value)
-        self._dipole1_lat = value
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of dipole1_lat to ", value)
+        #self._dipole1_lat = value
+        #self.changed = True
+        #self.value_changed.emit()
         
-
     @property    
     def dipole1_long(self):
-        #print("here we are reading the value of spots of a group ")
         return self._dipole1_long
-    
     @dipole1_long.setter
     def dipole1_long(self, value):
-        print("here we are changing the value of dipole1_lat to ", value)
-        self._dipole1_long = value
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of dipole1_long to ", value)
+        #self._dipole1_long = value
+        #self.changed = True
+        #self.value_changed.emit()
         
-
     @property    
     def dipole2_lat(self):
-        #print("here we are reading the value of spots of a group ")
         return self._dipole2_lat
-    
     @dipole2_lat.setter
     def dipole2_lat(self, value):
-        print("here we are changing the value of dipole2_lat to ", value)
-        self._dipole2_lat = value
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of dipole2_lat to ", value)
+        #self._dipole2_lat = value
+        #self.changed = True
+        #self.value_changed.emit()
         
-
     @property    
     def dipole2_long(self):
-        #print("here we are reading the value of spots of a group ")
         return self._dipole2_long
-    
     @dipole2_long.setter
     def dipole2_long(self, value):
-        print("here we are changing the value of dipole2_lat to ", value)
-        self._dipole2_long = value
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of dipole2_long to ", value)
+        #self._dipole2_long = value
+        #self.changed = True
+        #self.value_changed.emit()
         
-    """@property    
+    @property    
     def dipole1_posX(self):
-        #print("here we are reading the value of spots of a group ")
         return self._dipole1_posX
-    
     @dipole1_posX.setter
     def dipole1_posX(self, value):
-        print("here we are changing the value of dipole1_posX to ", value)
-        self._dipole1_posX = value
-        self.changed = True
-        self.value_changed.emit()
+        print("here we CAN NOT change the value of dipole1_posX to ", value)
+        #self._dipole1_posX = value
+        #self.changed = True
+        #self.value_changed.emit()
    
     @property    
     def dipole1_posY(self):
-        #print("here we are reading the value of spots of a group ")
         return self._dipole1_posY
-    
     @dipole1_posY.setter
     def dipole1_posY(self, value):
-        print("here we are changing the value of dipole1_posY to ", value)
-        self._dipole1_posY = value
-        self.changed = True
-        self.value_changed.emit()
-
-    @property    
-    def dipole2_posX(self):
-        #print("here we are reading the value of spots of a group ")
-        return self._dipole2_posX
-    
-    @dipole2_posX.setter
-    def dipole2_posX(self, value):
-        print("here we are changing the value of dipole2_posX to ", value)
-        self._dipole2_posX = value
-        self.changed = True
-        self.value_changed.emit()
-
-    @property    
-    def dipole2_posY(self):
-        #print("here we are reading the value of spots of a group ")
-        return self._dipole2_posY
-    
-    @dipole2_posY.setter
-    def dipole2_posY(self, value):
-        print("here we are changing the value of dipole2_posY to ", value)
-        self._dipole2_posY = value
-        self.changed = True
-        self.value_changed.emit()
-    """    
-    @property    
-    def g_spot(self):
-        return self._g_spot
-    
-    @g_spot.setter
-    def g_spot(self, value):
-        print("here we CAN NOT change the value of g_spot to ", value)
-        #self._g_spot = value         
+        print("here we CAN NOT change the value of dipole1_posY to ", value)
+        #self._dipole1_posY = value
         #self.changed = True
         #self.value_changed.emit()
 
     @property    
+    def dipole2_posX(self):
+        return self._dipole2_posX
+    @dipole2_posX.setter
+    def dipole2_posX(self, value):
+        print("here we CAN NOT change the value of dipole2_posX to ", value)
+        #self._dipole2_posX = value
+        #self.changed = True
+        #self.value_changed.emit()
+
+    @property    
+    def dipole2_posY(self):
+        return self._dipole2_posY
+    @dipole2_posY.setter
+    def dipole2_posY(self, value):
+        print("here we CAN NOT change the value of dipole2_posY to ", value)
+        #self._dipole2_posY = value
+        #self.changed = True
+        #self.value_changed.emit()
+       
+    @property    
+    def g_spot(self):
+        return self._g_spot
+    @g_spot.setter
+    def g_spot(self, value):
+        print("here we CAN NOT change the value of g_spot to ", value)
+        
+    @property    
     def largest_spot(self):
         return self._largest_spot
-    
     @largest_spot.setter
     def largest_spot(self, value):
         """
@@ -380,53 +317,66 @@ class Group(QtCore.QObject):
         self._largest_spot = value         
         self.changed = True
         self.value_changed.emit()
-        
-        
-    """def fill_from_database(self, datetime, group_number):
-        
-        A drawing can be identified uniquely with its datetime.
-        Then all the attribute of the drawing can be filled from the database
-        self._datetime = datetime
-        
-        db = database.database()
 
-        (self._id_,
-         self._datetime,
-         self._drawing_type,
-         self._number,
-         self._latitude,
-         self._longitude,
-         self._Lcm,
-         self._CenterToLimb_angle,
-         self._L0,
-         self._quadrant,
-         self._McIntosh,
-         self._zurich,
-         self._spots,
-         self._dipole1_lat,
-         self._dipole1_long,
-         self._dipole2_lat,
-         self._dipole2_long,
-         self._dipole_defined,
-         self._surface,
-         self._raw_surface_px,
-         self._raw_surface_msd,
-         self._g_spot,
-         self._posX,
-         self._posY,
-         self._dipole1_posX,
-         self.dipoel1_posY,
-         self.dipole2_posX,
-         self.dipole2_posY,
-         self._largest_spot) = db.get_all_datetime_group_number("groups",
-                                                               datetime,
-                                                               group_number)[0]
+        
+    def set_dipole_position(self, dipole_points, dipole_angles):
+        """
+        Add the dipole to the database by clicking on the drawing
+        """
+        print("set the dipole position")
+        if len(dipole_points)==4:
+            self._dipole1_posX = dipole_points[0]
+            self._dipole1_posY = dipole_points[1]
+            self._dipole2_posX = dipole_points[2]
+            self._dipole2_posY = dipole_points[3]
+            self._dipole1_lat = dipole_angles[0]
+            self._dipole1_long = dipole_angles[1]
+            self._dipole2_lat = dipole_angles[2]
+            self._dipole2_long = dipole_angles[3]
+        
+            self.changed = True
+            self.value_changed.emit()
 
-        # to be changed if the database change..
-        #self._latitude = self._latitude * 180/math.pi
-        #self._longitude = self._longitude * 180/math.pi
+    def update_g_spot(self):
+        """
+        Update the g_spot in two situations:
+        - the McIntosh type change
+        - the largest spot change
+        """
+        group_compactness = self._McIntosh[2]
+        self._g_spot = 0
+        if self.largest_spot=='L' and group_compactness=='o':
+            self._g_spot = 1
+        elif self.largest_spot=='T' and group_compactness=='o':
+            self._g_spot = 2
+        elif self.largest_spot=='E' and group_compactness=='o':
+            self._g_spot = 3
+        elif self.largest_spot=='L' and group_compactness=='i':
+            self._g_spot = 4
+        elif self.largest_spot=='T' and group_compactness=='i':
+            self._g_spot = 5
+        elif self.largest_spot=='E' and group_compactness=='i':
+            self._g_spot = 6
+        elif self.largest_spot=='L' and group_compactness=='c':
+            self._g_spot = 7
+        elif self.largest_spot=='T' and group_compactness=='c':
+            self._g_spot = 8
+        elif self.largest_spot=='E' and group_compactness=='c':
+            self._g_spot = 9
+        #print("g spot has been updated to ", self.g_spot)   
+        self.changed = True
+        self.value_changed.emit()
 
-    """
+    def set_surface(self, pixel_nb, proj_area, deproj_area):
+
+        self._raw_surface_px = pixel_nb
+        self._surface = deproj_area
+        self._raw_surface_msd = proj_area
+        
+        self.changed = True
+        self.value_changed.emit()
+        
+       
 class Drawing(QtCore.QObject):
     """
     It represents all the information extracted from the drawing
@@ -440,12 +390,7 @@ class Drawing(QtCore.QObject):
                    
     def __init__(self, param = None):
 
-        super(Drawing, self).__init__()
-
-        #print("check param", type(param),
-        #      len(param), param)
-        #print(param)
-        
+        super(Drawing, self).__init__()  
         try:
             (self._id_drawing,
              self._datetime,
@@ -462,7 +407,6 @@ class Drawing(QtCore.QObject):
              self._angle_P,
              self._angle_B,
              self._angle_L,
-             self._angle_scan,
              self._path,
              self._operator,
              self._last_update_time) = param
@@ -487,7 +431,6 @@ class Drawing(QtCore.QObject):
             self._angle_P = 0
             self._angle_B = 0
             self._angle_L = 0
-            self._angle_scan = 0
             self._path = None
             self._operator = None
             self._last_update_time = None
@@ -557,7 +500,7 @@ class Drawing(QtCore.QObject):
         - pt name (drawing type information)
         """
         if self.pt1_name == 'Center'  and self.pt2_name == 'North':
-            self.calibrated_center = coordinate.Cartesian(point1_x, point1_y)
+            self.calibrated_center = coordinates.Cartesian(point1_x, point1_y)
             self.calibrated_north = coordinates.Cartesian(point2_x, point2_y)
             self.calibrated_radius = self.calibrated_center.distance(
                 self.calibrated_north)
@@ -576,8 +519,9 @@ class Drawing(QtCore.QObject):
        
     def get_group_signal(self):
         print("get group signal")
-        self.value_changed.emit()
         self.changed = True
+        self.value_changed.emit()
+        
 
     def __repr__(self):
         return 'Drawing :  date({}), group_count({})'.format(
@@ -925,13 +869,9 @@ class Drawing(QtCore.QObject):
     def pt2_name(self, value):
         print("here we are changing the value of point2 name to ", value)
         print("this is not authorized!!")
-        #self._pt2_fraction_height = value
-        #self.changed = True
-        #self.value_changed.emit() 
 
     @property
     def last_update_time(self):
-        ##rint("here we are reading the value of calibrated north")
         return self._last_update_time
 
     @last_update_time.setter
@@ -940,93 +880,7 @@ class Drawing(QtCore.QObject):
         self._last_update_time = value
         self.changed = True
         self.value_changed.emit()
-             
-    """def fill_from_database(self, datetime):
         
-        A drawing can be identified uniquely with its datetime.
-        Then all the attribute of the drawing can be filled from the database
-        
-        self.datetime = datetime
-        #print("fill from database", datetime)
-
-        
-        db = database.database()
-
-        try:
-            (self._id_drawing,
-             self._datetime,
-             self._drawing_type, 
-             self._quality, 
-             self._observer, 
-             self._carington_rotation,
-             self._julian_date, 
-             self._calibrated, 
-             self._analyzed, 
-             self._group_count, 
-             self._spot_count, 
-             self._wolf, 
-             self._angle_P, 
-             self._angle_B, 
-             self._angle_L, 
-             self._angle_scan, 
-             self._path, 
-             self._operator, 
-             self._last_update_time) = db.get_all_datetime("drawings",
-                                                           datetime)[0]
-
-            
-        except IndexError:
-            print("empty set for the drawing table..")
-            
-        print(self._datetime, self._calibrated, self._analyzed)
-
-        try:
-            (self._id_calibration,
-             self._datetime_calibration,
-             self._drawing_type_calibration,
-             self._calibrated_north.x,
-             self._calibrated_north.y,
-             self._calibrated_center.x,
-             self._calibrated_center.y,
-             self._calibrated_radius,
-             self._calibrated_angle_scan) = db.get_all_datetime("calibrations",
-                                                                datetime)[0]
-
-        except IndexError:
-            print("empty set for the calibration table")
-            self._calibrated = 0
-
-            
-        try:
-            (self._id_type_of_drawing,
-             self._name,
-             self._prefix,
-             self._p_oriented,
-             self._width,
-             self._height,
-             self._pt1_name,
-             self._pt2_name,
-             self._pt1_fraction_width,
-             self._pt1_fraction_height,
-             self._pt2_fraction_width,
-             self._pt2_fraction_height) = db.get_drawing_information(
-                 "drawing_type",
-                 self.drawing_type)[0]
-            
-        except IndexError:
-            print("empty set for the drawing_type table..")
-
-            
-        for group_number in range(self._group_count):
-            group_tmp = Group()
-            group_tmp.fill_from_database(self._datetime, group_number)
-            group_tmp.value_changed.connect(self.get_group_signal)
-            self._group_lst.append(group_tmp)
-            #print(group_number,
-            #self.group_lst[group_number].longitude,
-            #self.group_lst[group_number].latitude)
-
-    """
     def change_group_position(self, group_number, latitude, longitude, posX, posY):
         """
         Update the position of the group and all the quantities related to it.
@@ -1068,39 +922,6 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
 
-
-    def update_g_spot(self, group_number, McIntosh, largest_spot):
-
-        sunspot_population_density = McIntosh[2]
-        """print("try to update g spot")
-        print(McIntosh, largest_spot)
-        """
-        
-        self.group_lst[group_number]._g_spot = 0
-        
-        if largest_spot=='L' and sunspot_population_density=='o':
-            self.group_lst[group_number]._g_spot = 1
-        elif largest_spot=='T' and sunspot_population_density=='o':
-            self.group_lst[group_number]._g_spot = 2
-        elif largest_spot=='E' and sunspot_population_density=='o':
-            self.group_lst[group_number]._g_spot = 3
-        elif largest_spot=='L' and sunspot_population_density=='i':
-            self.group_lst[group_number]._g_spot = 4
-        elif largest_spot=='T' and sunspot_population_density=='i':
-            self.group_lst[group_number]._g_spot = 5
-        elif largest_spot=='E' and sunspot_population_density=='i':
-            self.group_lst[group_number]._g_spot = 6
-        elif largest_spot=='L' and sunspot_population_density=='c':
-            self.group_lst[group_number]._g_spot = 7
-        elif largest_spot=='T' and sunspot_population_density=='c':
-            self.group_lst[group_number]._g_spot = 8
-        elif largest_spot=='E' and sunspot_population_density=='c':
-            self.group_lst[group_number]._g_spot = 9
-
-        print("g spot has been updated to ", self.group_lst[group_number].g_spot)
-            
-        self.changed = True
-        self.value_changed.emit()
         
     def update_spot_number(self, group_number, sunspot_number):
         """
@@ -1109,9 +930,7 @@ class Drawing(QtCore.QObject):
         - drawings.spot_count
         - drawings.wolf
         """
-
-        print("update the sunspot_number!", sunspot_number)
-        
+        #print("update the sunspot_number!", sunspot_number)
         self._group_lst[group_number]._spots = sunspot_number
         total_sunspots = 0
         for group in self._group_lst:
@@ -1122,7 +941,6 @@ class Drawing(QtCore.QObject):
         self.value_changed.emit()
 
     def update_group_number(self, group_number):
-        print("*********************update the group number", group_number)
         self._group_count = group_number
         total_sunspots = 0
         for group in self._group_lst:
@@ -1158,17 +976,3 @@ class Drawing(QtCore.QObject):
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
             
-    def add_dipole(self, group_index, dipole_points, dipole_angles):
-        """
-        Add the dipole to the database by clicking on the drawing
-        """
-
-        if len(dipole_points)==4:
-            self._group_lst[group_index].dipole1_posX = dipole_points[0]
-            self._group_lst[group_index].dipole1_posY = dipole_points[1]
-            self._group_lst[group_index].dipole2_posX = dipole_points[2]
-            self._group_lst[group_index].dipole2_posY = dipole_points[3]
-            self._group_lst[group_index].dipole1_lat = dipole_angles[0]
-            self._group_lst[group_index].dipole1_long = dipole_angles[1]
-            self._group_lst[group_index].dipole2_lat = dipole_angles[2]
-            self._group_lst[group_index].dipole2_long = dipole_angles[3]

@@ -84,12 +84,21 @@ class database():
         return result
 
 
-    def write_field_datetime(self, table_name, field, value, date, group_number):
+    def write_field_datetime_group(self, table_name, field, value, date, group_number):
        
         self.cursor.execute('UPDATE '+ table_name +
                             ' set ' + field + '= %s '
                             'WHERE DateTime <=> %s and Number <=> %s;',
                             (str(value), str(date), str(group_number)))
+
+        self.db.commit()
+
+    def write_field_datetime(self, table_name, field, value, date):
+        
+        self.cursor.execute('UPDATE '+ table_name +
+                            ' set ' + field + '= %s '
+                            'WHERE DateTime <=> %s;',
+                            (str(value), str(date)))
 
         self.db.commit()
     

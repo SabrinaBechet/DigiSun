@@ -538,7 +538,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     self.drawing_lst[self.current_count].calibrated_center.y)
 
                 if self.step:
-                    if (frame_size2 + self.step * self.drawing_lst[self.current_count].calibrated_radius/30) > 0:
+                    if (frame_size2 + self.step *
+                        self.drawing_lst[self.current_count].calibrated_radius/30) > 0:
                         frame_size2 += self.step * self.drawing_lst[self.current_count].calibrated_radius/30
                         
                     else:
@@ -1031,13 +1032,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst[self.current_count]\
             .group_lst[group_index].largest_spot = largest_spot
         
-        self.drawing_lst[self.current_count].update_g_spot(
-            group_index,
-            self.drawing_lst[self.current_count]\
-            .group_lst[group_index].McIntosh,
-            self.drawing_lst[self.current_count]\
-            .group_lst[group_index]\
-            .largest_spot)
+        self.drawing_lst[self.current_count]\
+            .group_lst[group_index].update_g_spot()
             
         self.group_toolbox.update_largest_spot_buttons(
             largest_spot,
@@ -1268,11 +1264,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             (new_zurich_type.upper() not in self.zurich_dipolar and
             old_zurich_type.upper() in self.zurich_dipolar)):
             self.drawing_lst[self.current_count].group_lst[n].largest_spot = None
-            self.drawing_lst[self.current_count].update_g_spot(
-                n,
-                self.drawing_lst[self.current_count].group_lst[n].McIntosh,
-                self.drawing_lst[self.current_count].group_lst[n].largest_spot)
-
+            self.drawing_lst[self.current_count].group_lst[n].update_g_spot()
+                
         self.update_dipole_button()
         self.group_toolbox.update_largest_spot_buttons(
             self.drawing_lst[self.current_count].group_lst[n].largest_spot,
@@ -1302,9 +1295,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.group_toolbox.McIntosh_combo.setCurrentIndex(new_mcIntosh_index)
         
     def update_surface(self):
+        """
+        Display the surface value in the appropriate linedit
+        """
         surface = self.drawing_lst[self.current_count]\
                       .group_lst[self.listWidget_groupBox.currentRow()].surface
-        print("update surface ", type(surface), surface)
+        #print("update surface ", type(surface), surface)
         
         if isinstance(surface, float):
             self.group_toolbox.surface_linedit.setText(
@@ -1633,8 +1629,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.set_focus_group_box(0)
             
             self.set_group_toolbox()
-            
-            self.scroll_group_position(0)
+            if self.label_right.scaling_factor > 1.5:
+                self.scroll_group_position(0)
+                
             self.statusBar().name.setText("")
             self.statusBar().comment.setText("")
             #self.label_right.show()

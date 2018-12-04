@@ -105,7 +105,7 @@ class QLabelDrawing(QtGui.QLabel):
             
     def set_img(self):
     
-        #print("***set the img **")
+        print("***set the img **")
         try:
             img = Image.open(self.file_path) 
             self.drawing_width = img.size[0]
@@ -279,21 +279,19 @@ class QLabelDrawing(QtGui.QLabel):
                 else:
                     painter.setPen(pen_grid)
 
-                (x_lst_0_90,
-                 y_lst_0_90) = self.get_line_on_sphere(
-                     latitude,
-                     self.current_drawing.calibrated_radius,
-                     "latitude",
-                     0,
-                     90)
+                (x_lst_0_90, y_lst_0_90) = self.get_line_on_sphere(
+                    latitude,
+                    self.current_drawing.calibrated_radius,
+                    "latitude",
+                    0,
+                    90)
                 
-                (x_lst_minus90_0,
-                 y_lst_minus90_0) = self.get_line_on_sphere(
-                     latitude,
-                     self.current_drawing.calibrated_radius,
-                     "latitude",
-                     -90,
-                     0)
+                (x_lst_minus90_0, y_lst_minus90_0) = self.get_line_on_sphere(
+                    latitude,
+                    self.current_drawing.calibrated_radius,
+                    "latitude",
+                    -90,
+                    0)
                 
                 if self.grid_interpolate_point:
                     start_interpol = time.clock()
@@ -328,15 +326,19 @@ class QLabelDrawing(QtGui.QLabel):
 
             painter.setPen(large_pen)
             print("value of calibration points: ")
-            print(self.current_drawing.calibrated_center.x, self.current_drawing.calibrated_center.y)
-            print(self.current_drawing.calibrated_north.x, self.current_drawing.calibrated_north.y)
+            print(self.current_drawing.calibrated_center.x,
+                  self.current_drawing.calibrated_center.y)
+            print(self.current_drawing.calibrated_north.x,
+                  self.current_drawing.calibrated_north.y)
             painter.drawPoint(self.current_drawing.calibrated_center.x ,
                               self.current_drawing.calibrated_center.y )
             painter.drawPoint(self.current_drawing.calibrated_north.x ,
                               self.current_drawing.calibrated_north.y ) 
 
             
-        if (self.group_visu.value and self.current_drawing.calibrated) :
+        if ((self.group_visu.value or self.surface_mode.value) and
+            self.current_drawing.calibrated) :
+            
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.DotLine)    
@@ -346,12 +348,12 @@ class QLabelDrawing(QtGui.QLabel):
             large_pen = QtGui.QPen(QtCore.Qt.blue)
             large_pen.setWidth(self.pen_width * 2)
             large_pen.setStyle(QtCore.Qt.SolidLine)
-            if self.surface_mode.value:
-                pen_border.setColor(QtGui.QColor("transparent"))
+
+            #if self.surface_mode.value:
+            #    pen_border.setColor(QtGui.QColor("transparent"))
+                
             for i in range(self.current_drawing.group_count):
-                #radius = self.drawing_height / 2000.
                 radius = self.drawing_height / 50.
-                #big_radius = self.drawing_height / 50.
                 painter.setPen(pen_border)
                 
                 if self.group_visu_index==i:
@@ -362,13 +364,11 @@ class QLabelDrawing(QtGui.QLabel):
                 else:
                     large_pen.setColor(QtCore.Qt.blue)
                     pen_selected.setColor(QtGui.QColor("transparent"))
-                # here we should directly take x, y from the database
-                #posX = self.current_drawing.group_lst[i].posX
-                #posY = self.current_drawing.group_lst[i].posY
 
-                # print("check position")
-                # print(posX, posY)
-                
+                # here we could directly take x, y from the database
+                # posX = self.current_drawing.group_lst[i].posX
+                # posY = self.current_drawing.group_lst[i].posY
+                # but...
                 # we calculate the x, y and uses it as a visual check that
                 # the calcualtion is correct
                 x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
@@ -382,23 +382,17 @@ class QLabelDrawing(QtGui.QLabel):
                     self.current_drawing.angle_B,
                     self.current_drawing.angle_L,
                     self.drawing_height)
-
-                """print("*****************")
-                print("posX:", x, posX)
-                print("posY:", y, posY)
-                """
-                
+  
                 if self.surface_mode.value:
-                    #painter.setPen(pen_border)
+                    painter.setPen(pen_selected)
                     x_min = int(x - self.frame_size/2)
                     y_min = int(y - self.frame_size/2)
-                    #print("show the area!!", self.frame_size)
                     painter.drawRect(
                         x_min, y_min, self.frame_size, self.frame_size)
                 else:
                     pen_point = QtGui.QPen(QtCore.Qt.blue)
                     pen_point.setStyle(QtCore.Qt.SolidLine)
-                    pen_point.setWidth( 5 * 1000/ (self.height_scale) )
+                    pen_point.setWidth( 50000/ (self.height_scale) )
                     painter.setPen(large_pen)
                     painter.drawPoint(QtCore.QPointF(x,y))
                     
@@ -457,8 +451,8 @@ class QLabelDrawing(QtGui.QLabel):
                     painter.setPen(pen_point)
                     if self.group_visu_index==i:
                         painter.setPen(pen_point_selected)
-                    painter.drawPoints(QtCore.QPointF(dip1_x,dip1_y),
-                                       QtCore.QPointF(dip2_x,dip2_y))
+                    painter.drawPoints(QtCore.QPointF(dip1_x, dip1_y),
+                                       QtCore.QPointF(dip2_x, dip2_y))
                     painter.setPen(pen_line)
                     if self.group_visu_index==i:
                         painter.setPen(pen_line_selected)
@@ -497,7 +491,7 @@ class QLabelDrawing(QtGui.QLabel):
                 print(len(self.dipole_points))
                 self.dipole_points = []
                 self.dipole_angles = []
-             
+          
         painter.end()
         pixmap = self.drawing_pixMap.scaled(int(self.width_scale),
                                             int(self.height_scale),
@@ -726,19 +720,11 @@ class QLabelDrawing(QtGui.QLabel):
                              pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
         
-        #self.x_drawing = x_drawing
-        #self.y_drawing = y_drawing
-
         for el in self.current_drawing.group_lst:
-            print("check")
-            print(el.posX, el.posY)
-            print(x_drawing, y_drawing, self.current_drawing.calibrated_radius/30)
             if ((x_drawing >= el.posX - self.current_drawing.calibrated_radius/30) and
                 (x_drawing <= el.posX + self.current_drawing.calibrated_radius/30) and
                 (y_drawing >= el.posY - self.current_drawing.calibrated_radius/30) and
                 (y_drawing <= el.posY + self.current_drawing.calibrated_radius/30)):
-
-                print("***************select group ", self.current_drawing.group_lst.index(el))
                 self.selected_element = self.current_drawing.group_lst.index(el)
                 self.drawing_clicked.emit()
         
@@ -777,26 +763,15 @@ class QLabelDrawing(QtGui.QLabel):
             
             self.HGC_longitude = longitude
             self.HGC_latitude = latitude
-            #print("longitude: ", longitude)
-            #print("latitude: ", latitude)
             if self.HGC_longitude < 0:
                 self.HGC_longitude = 2 * math.pi + self.HGC_longitude
-                #print("positive longitude is ", self.HGC_longitude)
-            
-        if (self.calibration_mode.value and
-            self.center_done and
-            not self.north_done):
-            #print("Enter in the calibration of the north..",
-            #      self.calibration_mode.value,
-            #      self.center_done, self.north_done)
-            self.north_done = True
                 
+        if (self.calibration_mode.value and self.center_done and
+            not self.north_done):
+            
+            self.north_done = True    
             calib_pt2_x = x_drawing
             calib_pt2_y = y_drawing
-            """
-            self.current_drawing.calibrated_north_x = x_drawing
-            self.current_drawing.calibrated_north_y = y_drawing
-            """
             self.current_drawing.calibrate(self.calib_pt1_x,
                                            self.calib_pt1_y,
                                            calib_pt2_x,
@@ -807,51 +782,45 @@ class QLabelDrawing(QtGui.QLabel):
             self.group_visu.value = True
             self.set_img()
             self.calibration_mode.value = False
-            
             QtGui.QApplication.restoreOverrideCursor()
             self.north_clicked.emit()
             
-        elif (self.calibration_mode.value and
-              not self.center_done and
+        elif (self.calibration_mode.value and not self.center_done and
               not self.north_done):
-            #print("Enter in the calibration of the center/south..",
-            #      self.calibration_mode.value,
-            #      self.center_done, self.north_done)
-
-            self.current_drawing.calibrated = 0
             
+            self.current_drawing.calibrated = 0
             self.calib_pt1_x = x_drawing
             self.calib_pt1_y = y_drawing
-                         
             self.center_done = True
             self.center_clicked.emit()
 
-        if (self.current_drawing.calibrated and
-            self.helper_grid.value):
+        if (self.current_drawing.calibrated and self.helper_grid.value):
            self.helper_grid_center_x = x_drawing
            self.helper_grid_center_y = y_drawing
            self.helper_grid_position_clicked = True
            self.set_img()
 
-        if (self.add_group_mode.value and
-            self.current_drawing.calibrated) :
+        if (self.add_group_mode.value and self.current_drawing.calibrated) :
             self.current_drawing.add_group(self.HGC_latitude,
                                            self.HGC_longitude,
                                            x_drawing,
                                            y_drawing)
             self.group_added.emit()
 
-        if (self.current_drawing.calibrated and
-            self.add_dipole_mode.value):
+        if (self.add_dipole_mode.value and self.current_drawing.calibrated):
+
+            print("click on the drawing to add a dipole")
+            print(len(self.dipole_points), len(self.dipole_angles))
+            
             if (self.current_drawing.group_lst[self.group_visu_index].zurich.upper()
                 in ["B","C","D","E","F","G","X"]):
                 self.dipole_points.append(x_drawing)
                 self.dipole_points.append(y_drawing)
                 self.dipole_angles.append(self.HGC_latitude)
                 self.dipole_angles.append(self.HGC_longitude)
-                self.current_drawing.add_dipole(self.group_visu_index,
-                                                self.dipole_points,
-                                                self.dipole_angles)
+                self.current_drawing\
+                    .group_lst[self.group_visu_index]\
+                    .set_dipole_position(self.dipole_points,self.dipole_angles)
                 self.set_img()
                 self.dipole_added.emit()
                         
