@@ -19,8 +19,7 @@ class DrawingInformationWidget(QtGui.QWidget):
         self.drawing_operator.setStyleSheet(
             "background-color: lightgray; color:black")
 
-        self.drawing_last_update = QtGui.QDateEdit()
-        self.drawing_last_update.setDisplayFormat("dd/MM/yyyy")
+        self.drawing_last_update = QtGui.QLineEdit(self)
         self.drawing_last_update.setEnabled(True)
         self.drawing_last_update.setStyleSheet(
             "background-color: lightgray; color:black")
@@ -138,21 +137,15 @@ class DrawingInformationWidget(QtGui.QWidget):
 
         if (current_drawing.last_update_time and
             isinstance(current_drawing.last_update_time, datetime)):
-            self.drawing_last_update.setDate(
-                QtCore.QDate(current_drawing.last_update_time.year,
-                             current_drawing.last_update_time.month, 
-                             current_drawing.last_update_time.day))
-        else:
-            #self.drawing_last_update.clear()
-            self.drawing_last_update.setDate(
-                QtCore.QDate(00,
-                             00, 
-                             00))
+            self.drawing_last_update.setText(
+                str(current_drawing.last_update_time.strftime('%d')) + "/" +
+                str(current_drawing.last_update_time.strftime('%m')) + "/" +
+                str(current_drawing.last_update_time.strftime('%Y')) )
             
-        #elif (current_drawing.last_update_time and
-        #      isinstance(current_drawing.last_update_time, str)):
-        #self.drawing_last_update.setText(
-        # str(current_drawing.last_update_time))
+        elif (current_drawing.last_update_time and
+              isinstance(current_drawing.last_update_time, str)):
+            self.drawing_last_update.setText('00/00/0000')
+                #str(current_drawing.last_update_time))
                 
         self.drawing_observer.setText(current_drawing.observer)
 

@@ -2,7 +2,7 @@
 #coding: utf-8
 
 from datetime import date, time, datetime
-import coordinates
+import coordinates, database
 from PyQt4 import QtCore
 import math
 
@@ -387,6 +387,7 @@ class Drawing(QtCore.QObject):
     """
 
     value_changed = QtCore.pyqtSignal()
+    info_saved = QtCore.pyqtSignal()
                    
     def __init__(self, param = None):
 
@@ -975,4 +976,33 @@ class Drawing(QtCore.QObject):
         
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
+            
+    def save_info(self):
+
+        print("save the info of the group!")
+
+        
+        db = database.database()
+        try:
+            db.write_drawing_info(self._drawing_type,
+                                  self._quality,
+                                  self._observer,
+                                  self._carington_rotation,
+                                  self._julian_date,
+                                  self._calibrated,
+                                  self._analyzed,
+                                  self._group_count,
+                                  self._spot_count,
+                                  self._wolf,
+                                  self._angle_P,
+                                  self._angle_B,
+                                  self._angle_L,
+                                  self._path,
+                                  self._operator,
+                                  self._last_update_time,
+                                  self._datetime)
+            
+            self.info_saved.emit()
+        except TypeError:
+            print("there was a type error during the saving process...")
             

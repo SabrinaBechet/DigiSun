@@ -110,7 +110,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setCentralWidget(self.drawing_page)
         
         self.operator = operator
-        self.level_info = ['dipole', 'area'] # group always included
+        self.level_info = ['group', 'dipole', 'area'] # group always included
         
         if self.archdrawing_directory and os.path.isdir(self.archdrawing_directory):
             self.add_drawing_information()
@@ -1479,17 +1479,50 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         layout_goto.addWidget(self.goto_drawing_button)     
         return layout_goto
 
+    def warning_box_info_incomplete(self, level):
+        if level in self.level_info:
+
+            print("group count", self.drawing_lst[self.current_count].group_count)
+            p
+            missing_info_len = [len(self.check_information_complete(x, level))
+                                for x in range(0, self.drawing_lst[self.current_count].group_count)]
+
+            range_lst = list(range(0, len(missing_info_len)))
+
+            missing_info_group = set(x * y for x, y in zip(missing_info_len, range_lst))
+            missing_info_group = list(missing_info_group)
+           
+            print("missing info len", missing_info_len)
+            if sum(missing_info_len):
+                QtGui.QMessageBox.warning(self,
+                                          "save information",
+                                          level + " information incomplete for "
+                                          "these groups number: {}".format(missing_info_group))
+    
     def save_drawing(self):
         print("**save the drawing information in the database**")
 
+        self.warning_box_info_incomplete("dipole")
+        self.warning_box_info_incomplete("area")
+            
         self.drawing_lst[self.current_count].operator = str(self.operator).upper()
         self.drawing_lst[self.current_count].last_update_time = datetime.now()
 
+        
+        self.drawing_lst[self.current_count].info_saved.connect(
+            self.drawing_recorded)
+
+        self.drawing_lst[self.current_count].save_info()
         
         if (self.drawing_lst[self.current_count].calibrated==1 and
             self.drawing_lst[self.current_count].group_count==0):
             # pop up that ask if it is normal?
             pass
+
+    def drawing_recorded(self):
+        print("set the save button to lightgray")
+        self.but_save.setStyleSheet("background-color: lightgray")
+        self.drawing_lst[self.current_count].changed = False
         
     def update_counter(self, value):
         

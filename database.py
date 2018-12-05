@@ -84,6 +84,33 @@ class database():
         return result
 
 
+    def write_drawing_info(self, *var):
+        """
+        Write in the database all the info related 
+        to a drawing identified by its datetime
+        """
+        self.cursor.execute('UPDATE drawings set ' 
+                            'TypeOfDrawing = %s ,'  
+                            'Quality = %s ,'
+                            'Observer = %s ,'
+                            'CaringtonRotation = %s ,'
+                            'JulianDate = %s ,' 
+                            'Calibrated = %s ,'
+                            'Analyzed = %s ,'
+                            'GroupCount = %s ,' 
+                            'SpotCount = %s ,'
+                            'Wolf = %s ,'
+                            'AngleP = %s ,'
+                            'AngleB = %s ,'
+                            'AngleL = %s ,'
+                            'Path = %s ,'
+                            'Operator = %s ,'
+                            'LastUpdateTime = %s '
+                            'WHERE DateTime <=> %s ;', var)
+        
+        self.db.commit()
+        
+    
     def write_field_datetime_group(self, table_name, field, value, date, group_number):
        
         self.cursor.execute('UPDATE '+ table_name +

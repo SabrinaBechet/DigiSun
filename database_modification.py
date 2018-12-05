@@ -115,7 +115,7 @@ def convert_last_update_time_datetime():
     db = database.database()
     datetime_drawing = db.get_field_time_interval("drawings",
                                                   "Datetime",
-                                                  "1940-03-01 00:00",
+                                                  "2018-05-01 00:00",
                                                   "2018-05-31 23:00")
     for el_date in datetime_drawing:
         try:

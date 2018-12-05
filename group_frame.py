@@ -27,7 +27,7 @@ def group_frame(zurich, radius, posx, posy, center_x, center_y):
         step = (radius/9.) *( math.cos(float(center_to_limb)))
     elif zurich in ['E']:
         step = (radius/6.) *( math.cos(float(center_to_limb)))
-    elif zurich in ['F','G']:
+    elif zurich in ['F','G','X']:
         step = (radius/4.) *( math.cos(float(center_to_limb)))    
      
     return int(step*2)
