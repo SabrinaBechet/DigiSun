@@ -83,7 +83,49 @@ class database():
         print(result)
         return result
 
+    def delete_group_info(self, datetime, number):
+        
+        self.cursor.execute('DELETE FROM  groups where DateTime <=> %s and '
+                            'Number <=> %s; ',
+                            (str(datetime), str(number)))
+        self.db.commit()
 
+    
+    def write_group_info(self, *var):
+        """
+        Write in the database all the info related to a group.
+        REPLACE works exactly like INSERT, except that if an old row
+        in the table has the same value as a new row for a PRIMARY key or
+        a UNIQUE index, the old row is deleted before the new row is inserted.
+        """
+        self.cursor.execute('REPLACE INTO groups (DateTime, Number, Latitude, Longitude, '
+                            'Lcm, CenterToLimbAngle, Quadrant, McIntosh, Zurich, Spots, '
+                            'Dipole1Lat, Dipole1Long, Dipole2Lat, Dipole2Long, '
+                            'Surface, RawSurface_px, RawSurface_msd, GSpot, PosX, PosY, '
+                            'Dipole1PosX, Dipole1PosY, Dipole2PosX, Dipole2PosY, LargestSpot) '
+                            'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+                            '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ', var)
+        self.db.commit()
+
+    
+    def write_calibration_info(self, *var):
+        """
+        Write in the database all the info related 
+        to the calibration identified by its datetime
+        """
+        self.cursor.execute('UPDATE calibrations set ' 
+                            'NorthX = %s ,'  
+                            'NorthY = %s ,'
+                            'CenterX = %s ,'
+                            'CenterY = %s ,'
+                            'Radius = %s ,' 
+                            'AngleScan = %s '
+                            'WHERE DateTime <=> %s ;', var)
+        
+        self.db.commit()
+        
+
+    
     def write_drawing_info(self, *var):
         """
         Write in the database all the info related 

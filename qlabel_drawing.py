@@ -719,14 +719,15 @@ class QLabelDrawing(QtGui.QLabel):
         y_center_drawing = ((self.current_drawing.calibrated_center.y -
                              pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
-        
-        for el in self.current_drawing.group_lst:
-            if ((x_drawing >= el.posX - self.current_drawing.calibrated_radius/30) and
-                (x_drawing <= el.posX + self.current_drawing.calibrated_radius/30) and
-                (y_drawing >= el.posY - self.current_drawing.calibrated_radius/30) and
-                (y_drawing <= el.posY + self.current_drawing.calibrated_radius/30)):
-                self.selected_element = self.current_drawing.group_lst.index(el)
-                self.drawing_clicked.emit()
+
+        if (not self.add_group_mode.value):
+            for el in self.current_drawing.group_lst:
+                if ((x_drawing >= el.posX - self.current_drawing.calibrated_radius/30) and
+                    (x_drawing <= el.posX + self.current_drawing.calibrated_radius/30) and
+                    (y_drawing >= el.posY - self.current_drawing.calibrated_radius/30) and
+                    (y_drawing <= el.posY + self.current_drawing.calibrated_radius/30)):
+                    self.selected_element = self.current_drawing.group_lst.index(el)
+                    self.drawing_clicked.emit()
         
         print("click coordinate: ", x_click, y_click)
         print("pixmap coord: ", x_pixmap, y_pixmap)

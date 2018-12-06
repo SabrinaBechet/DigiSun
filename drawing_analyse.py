@@ -1483,7 +1483,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if level in self.level_info:
 
             print("group count", self.drawing_lst[self.current_count].group_count)
-            p
+            
             missing_info_len = [len(self.check_information_complete(x, level))
                                 for x in range(0, self.drawing_lst[self.current_count].group_count)]
 

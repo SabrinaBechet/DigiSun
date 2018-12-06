@@ -16,7 +16,6 @@ class Group(QtCore.QObject):
     
     def __init__(self, param=None):
         super(Group, self).__init__()
-
         try:
             (self._id_,
              self._datetime,
@@ -40,7 +39,7 @@ class Group(QtCore.QObject):
              self._posX,
              self._posY,
              self._dipole1_posX,
-             self._dipoel1_posY,
+             self._dipole1_posY,
              self._dipole2_posX,
              self._dipole2_posY,
              self._largest_spot) = param
@@ -72,7 +71,7 @@ class Group(QtCore.QObject):
             self._posX = None
             self._posY = None
             self._dipole1_posX = None
-            self._dipole_posY = None
+            self._dipole1_posY = None
             self._dipole2_posX = None
             self._dipole2_posY = None
             self._largest_spot = None
@@ -375,6 +374,43 @@ class Group(QtCore.QObject):
         
         self.changed = True
         self.value_changed.emit()
+
+
+    def save_group_info(self, group_count):
+        print("***** save the info of the group ", self._number, self._id_)
+        db = database.database()
+        
+        if self._number >= group_count:
+            print("*********************extra group deleted!!")
+            db.delete_group_info(self._datetime, self._number )
+        
+        else:
+            db.write_group_info(self._datetime,
+                                self._number,
+                                self._latitude,
+                                self._longitude,
+                                self._Lcm,
+                                self._CenterToLimb_angle,
+                                self._quadrant,
+                                self._McIntosh,
+                                self._zurich,
+                                self._spots,
+                                self._dipole1_lat,
+                                self._dipole1_long,
+                                self._dipole2_lat,
+                                self._dipole2_long,
+                                self._surface,
+                                self._raw_surface_px,
+                                self._raw_surface_msd,
+                                self._g_spot,
+                                self._posX,
+                                self._posY,
+                                self._dipole1_posX,
+                                self._dipole1_posY,
+                                self._dipole2_posX,
+                                self._dipole2_posY,
+                                self._largest_spot)
+            
         
        
 class Drawing(QtCore.QObject):
@@ -471,7 +507,6 @@ class Drawing(QtCore.QObject):
         try:
             (self._id_calibration,
              self._datetime_calibration,
-             self._drawing_type_calibration,
              self._calibrated_north.x,
              self._calibrated_north.y,
              self._calibrated_center.x,
@@ -894,22 +929,22 @@ class Drawing(QtCore.QObject):
         """
         print("update the position of the group!!!")
         
-        self._group_lst[group_number]._latitude = latitude
-        self._group_lst[group_number]._longitude = longitude
-        self._group_lst[group_number]._posX = posX
-        self._group_lst[group_number]._posY = posY
+        self._group_lst[group_number]._latitude = round(latitude, 4)
+        self._group_lst[group_number]._longitude = round(longitude, 4)
+        self._group_lst[group_number]._posX = round(posX, 4)
+        self._group_lst[group_number]._posY = round(posY, 4)
 
         print("latitude : {} ".format(self._group_lst[group_number]._latitude))
         print("longitude : {} ".format(self._group_lst[group_number]._longitude))
         print("posX : {} ".format(self._group_lst[group_number]._posX))
         print("posY : {} ".format(self._group_lst[group_number]._posY))
         
-        self._group_lst[group_number]._Lcm = self._angle_L - longitude * 180/math.pi
+        self._group_lst[group_number]._Lcm = round(self._angle_L - longitude * 180/math.pi, 4)
         distance_from_center = math.sqrt((posX - self.calibrated_center.x )**2 +
                                          (posY - self.calibrated_center.y )**2)
         
-        self._group_lst[group_number]._CenterToLimb_angle = (math.asin(distance_from_center *
-                                             1./self.calibrated_radius) * 180. /math.pi)
+        self._group_lst[group_number]._CenterToLimb_angle = round((math.asin(
+            distance_from_center * 1./self.calibrated_radius) * 180. /math.pi), 4)
 
         if posX > self.calibrated_center.x and posY > self.calibrated_center.y:
             self._group_lst[group_number]._quadrant = "NE"
@@ -960,6 +995,7 @@ class Drawing(QtCore.QObject):
 
         self.update_group_number(self.group_count + 1)
         group_tmp = Group()
+        group_tmp._datetime = self.datetime
         group_tmp.number = self.group_count - 1
         self._group_lst.append(group_tmp)
                                
@@ -983,26 +1019,43 @@ class Drawing(QtCore.QObject):
 
         
         db = database.database()
-        try:
-            db.write_drawing_info(self._drawing_type,
-                                  self._quality,
-                                  self._observer,
-                                  self._carington_rotation,
-                                  self._julian_date,
-                                  self._calibrated,
-                                  self._analyzed,
-                                  self._group_count,
-                                  self._spot_count,
-                                  self._wolf,
-                                  self._angle_P,
-                                  self._angle_B,
-                                  self._angle_L,
-                                  self._path,
-                                  self._operator,
-                                  self._last_update_time,
-                                  self._datetime)
+        #try:
+        db.write_drawing_info(self._drawing_type,
+                              self._quality,
+                              self._observer,
+                              self._carington_rotation,
+                              self._julian_date,
+                              self._calibrated,
+                              self._analyzed,
+                              self._group_count,
+                              self._spot_count,
+                              self._wolf,
+                              self._angle_P,
+                              self._angle_B,
+                              self._angle_L,
+                              self._path,
+                              self._operator,
+                              self._last_update_time,
+                              self._datetime)
+        
+        db.write_calibration_info(self._calibrated_north.x,
+                                  self._calibrated_north.y,
+                                  self._calibrated_center.x,
+                                  self._calibrated_center.y,
+                                  self._calibrated_radius,
+                                  self._calibrated_angle_scan,
+                                  self._datetime_calibration)
+        
+        
+        for el in self._group_lst:
             
-            self.info_saved.emit()
-        except TypeError:
-            print("there was a type error during the saving process...")
+            el.save_group_info(self._group_count)
+            
+            
+            
+        self.info_saved.emit()
+
+            
+        #except TypeError:
+        #    print("there was a type error during the saving process...")
             
