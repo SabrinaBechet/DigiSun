@@ -353,55 +353,57 @@ class QLabelDrawing(QtGui.QLabel):
             #    pen_border.setColor(QtGui.QColor("transparent"))
                 
             for i in range(self.current_drawing.group_count):
-                radius = self.drawing_height / 50.
-                painter.setPen(pen_border)
-                
-                if self.group_visu_index==i:
-                    painter.setPen(pen_selected)
+                if (self.current_drawing.group_lst[i].longitude and
+                    self.current_drawing.group_lst[i].latitude):
                     radius = self.drawing_height / 50.
-                    large_pen.setColor(QtGui.QColor("transparent"))
-                    pen_selected.setColor(QtGui.QColor(77, 185, 88))
-                else:
-                    large_pen.setColor(QtCore.Qt.blue)
-                    pen_selected.setColor(QtGui.QColor("transparent"))
-
-                # here we could directly take x, y from the database
-                # posX = self.current_drawing.group_lst[i].posX
-                # posY = self.current_drawing.group_lst[i].posY
-                # but...
-                # we calculate the x, y and uses it as a visual check that
-                # the calcualtion is correct
-                x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
-                    self.current_drawing.calibrated_center.x,
-                    self.current_drawing.calibrated_center.y,
-                    self.current_drawing.calibrated_north.x,
-                    self.current_drawing.calibrated_north.y,
-                    self.current_drawing.group_lst[i].longitude,
-                    self.current_drawing.group_lst[i].latitude,
-                    self.current_drawing.angle_P,
-                    self.current_drawing.angle_B,
-                    self.current_drawing.angle_L,
-                    self.drawing_height)
-  
-                if self.surface_mode.value:
-                    painter.setPen(pen_selected)
-                    x_min = int(x - self.frame_size/2)
-                    y_min = int(y - self.frame_size/2)
-                    painter.drawRect(
-                        x_min, y_min, self.frame_size, self.frame_size)
-                else:
-                    pen_point = QtGui.QPen(QtCore.Qt.blue)
-                    pen_point.setStyle(QtCore.Qt.SolidLine)
-                    pen_point.setWidth( 50000/ (self.height_scale) )
-                    painter.setPen(large_pen)
-                    painter.drawPoint(QtCore.QPointF(x,y))
+                    painter.setPen(pen_border)
                     
-                    painter.setPen(pen_selected)
-                    painter.drawEllipse(
-                        QtCore.QPointF(x, y), radius, radius)
-                   #painter.drawEllipse(
-                   #    QtCore.QPointF(x, y), big_radius, big_radius) 
-                
+                    if self.group_visu_index==i:
+                        painter.setPen(pen_selected)
+                        radius = self.drawing_height / 50.
+                        large_pen.setColor(QtGui.QColor("transparent"))
+                        pen_selected.setColor(QtGui.QColor(77, 185, 88))
+                    else:
+                        large_pen.setColor(QtCore.Qt.blue)
+                        pen_selected.setColor(QtGui.QColor("transparent"))
+
+                    # here we could directly take x, y from the database
+                    # posX = self.current_drawing.group_lst[i].posX
+                    # posY = self.current_drawing.group_lst[i].posY
+                    # but...
+                    # we calculate the x, y and uses it as a visual check that
+                    # the calcualtion is correct
+                    x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
+                        self.current_drawing.calibrated_center.x,
+                        self.current_drawing.calibrated_center.y,
+                        self.current_drawing.calibrated_north.x,
+                        self.current_drawing.calibrated_north.y,
+                        self.current_drawing.group_lst[i].longitude,
+                        self.current_drawing.group_lst[i].latitude,
+                        self.current_drawing.angle_P,
+                        self.current_drawing.angle_B,
+                        self.current_drawing.angle_L,
+                        self.drawing_height)
+  
+                    if self.surface_mode.value:
+                        painter.setPen(pen_selected)
+                        x_min = int(x - self.frame_size/2)
+                        y_min = int(y - self.frame_size/2)
+                        painter.drawRect(
+                            x_min, y_min, self.frame_size, self.frame_size)
+                    else:
+                        pen_point = QtGui.QPen(QtCore.Qt.blue)
+                        pen_point.setStyle(QtCore.Qt.SolidLine)
+                        pen_point.setWidth( 50000/ (self.height_scale) )
+                        painter.setPen(large_pen)
+                        painter.drawPoint(QtCore.QPointF(x,y))
+                    
+                        painter.setPen(pen_selected)
+                        painter.drawEllipse(
+                            QtCore.QPointF(x, y), radius, radius)
+                        #painter.drawEllipse(
+                        #    QtCore.QPointF(x, y), big_radius, big_radius) 
+                        
         if (self.dipole_visu.value and self.current_drawing.calibrated) :
             pen_point = QtGui.QPen(QtCore.Qt.blue)
             pen_point.setWidth(self.pen_width * 2 )
@@ -720,7 +722,7 @@ class QLabelDrawing(QtGui.QLabel):
                              pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
 
-        if (not self.add_group_mode.value):
+        if (not self.add_group_mode.value and not self.add_dipole_mode.value):
             for el in self.current_drawing.group_lst:
                 if ((x_drawing >= el.posX - self.current_drawing.calibrated_radius/30) and
                     (x_drawing <= el.posX + self.current_drawing.calibrated_radius/30) and

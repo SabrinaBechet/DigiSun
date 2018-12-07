@@ -1094,6 +1094,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if value is False:
                 missing_info.append(key)
 
+        print("missing info", missing_info)
+                
         return missing_info
 
     
@@ -1481,23 +1483,24 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def warning_box_info_incomplete(self, level):
         if level in self.level_info:
-
-            print("group count", self.drawing_lst[self.current_count].group_count)
             
             missing_info_len = [len(self.check_information_complete(x, level))
                                 for x in range(0, self.drawing_lst[self.current_count].group_count)]
 
             range_lst = list(range(0, len(missing_info_len)))
+            missing_info_group = [x for x in range_lst if missing_info_len[range_lst.index(x)]>0 ]
+            
+            missing_group = ["Group {}: {} ".format(x, self.check_information_complete(x, level))
+                             for x in missing_info_group]
+            missing_group.insert(0, " information incomplete for ")
 
-            missing_info_group = set(x * y for x, y in zip(missing_info_len, range_lst))
-            missing_info_group = list(missing_info_group)
-           
             print("missing info len", missing_info_len)
+            print("missing group", missing_group)
             if sum(missing_info_len):
                 QtGui.QMessageBox.warning(self,
                                           "save information",
-                                          level + " information incomplete for "
-                                          "these groups number: {}".format(missing_info_group))
+                                          level + 
+                                          "\n".join(missing_group))
     
     def save_drawing(self):
         print("**save the drawing information in the database**")

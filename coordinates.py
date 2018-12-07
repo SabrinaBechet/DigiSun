@@ -154,7 +154,7 @@ def cartesian_from_HGC_upper_left_origin(x_center, y_center, x_north,
                                                    angle_P,
                                                    angle_B0,
                                                    angle_L0)
-
+    
     x_centered_upper_left_origin = x_center + x_lower_left_origin
     y_centered_upper_left_origin = y_center - y_lower_left_origin 
     
