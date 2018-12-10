@@ -25,12 +25,11 @@ class mainWindow(QtGui.QMainWindow):
         self.center()
         screen_available_geometry = QtGui.QDesktopWidget()\
                                          .availableGeometry()
-        self.setMinimumWidth(screen_available_geometry.width())
-        self.setMinimumHeight(screen_available_geometry.height() - 50)
+        self.setMaximumWidth(screen_available_geometry.width())
+        self.setMaximumHeight(screen_available_geometry.height() - 50)
         print("screen available geometry",
               screen_available_geometry.width(),
               screen_available_geometry.height())
-        #self.resize(screenShape.width()/5., screenShape.height()/5.)
 
         self.operator = operator
         print("check opearator ", self.operator)
@@ -53,50 +52,34 @@ class mainWindow(QtGui.QMainWindow):
         self.set_menuBar()
         self.stack.setCurrentIndex(mode_index)
         
-        if mode_index==0:
+        """if mode_index==0:
             self.init_scanner()
-         
-        self.daily_scan\
-            .but_analyse\
-            .clicked\
-            .connect(lambda : self.stack.setCurrentIndex(3)) 
-        self.daily_scan\
-            .but_analyse\
-            .clicked\
-            .connect(self.daily_switch_to_drawing_analyse)
+        """ 
+        self.daily_scan.but_analyse.clicked.connect(
+            lambda : self.stack.setCurrentIndex(3)) 
+        self.daily_scan.but_analyse.clicked.connect(
+            self.daily_switch_to_drawing_analyse)
 
-        self.analyse_page\
-            .month_list_page\
-            .but_select\
-            .clicked\
-            .connect(self.analyse_page.drawing_selection_per_month)
-        self.analyse_page\
-            .month_list_page\
-            .but_select\
-            .clicked\
-            .connect(lambda : self.stack.setCurrentIndex(3)) 
-        self.analyse_page\
-            .month_list_page\
-            .but_select\
-            .clicked\
-            .connect(self.bulk_switch_to_drawing_analyse)
+        self.analyse_page.month_list_page.but_select.clicked.connect(
+            self.analyse_page.drawing_selection_per_month)
+        self.analyse_page.month_list_page.but_select.clicked.connect(
+            lambda : self.stack.setCurrentIndex(3)) 
+        self.analyse_page.month_list_page.but_select.clicked.connect(
+            self.bulk_switch_to_drawing_analyse)
         
-       
     def center(self):
         frameGm = self.frameGeometry()
         screen = QtGui\
-                 .QApplication\
-                 .desktop()\
-                 .screenNumber(QtGui.QApplication\
-                               .desktop()\
-                               .cursor()\
-                               .pos())
-        centerPoint = QtGui\
-                      .QApplication\
-                      .desktop()\
-                      .screenGeometry(screen)\
-                      .center()
-        frameGm.moveCenter(centerPoint)
+            .QApplication\
+            .desktop()\
+            .screenNumber(QtGui.QApplication\
+                          .desktop()\
+                          .cursor()\
+                          .pos())
+        desktop_rect = QtGui.QDesktopWidget().availableGeometry()
+        center = desktop_rect.center()
+        frameGm.moveCenter(QtCore.QPoint(center.x()  - self.width()*0.5,
+                                         center.y() - self.height()*0.5))
         self.move(frameGm.topLeft()) 
 
   
@@ -110,11 +93,11 @@ class mainWindow(QtGui.QMainWindow):
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()   
         
-    def init_scanner(self):
-        """"
+    """def init_scanner(self):
+        
         Load the library to talk to the scanner.
         For the moment, works only on windows with twain
-        """
+        
         if sys.platform == "win32":
             my_scanner = scanner.scanner()
             scanner_name = my_scanner.get_scanner()
@@ -122,7 +105,7 @@ class mainWindow(QtGui.QMainWindow):
                 self.daily_scan.set_button_scan_on(my_scanner)
         else:
             print("No scanner on linux..")
-                  
+    """              
     def set_menuBar(self):
 
         menuBar = QtGui.QMenuBar()
@@ -137,18 +120,13 @@ class mainWindow(QtGui.QMainWindow):
         action_goTo_scan = QtGui.QAction('bulk scan', self)
         action_exit = QtGui.QAction('exit', self)
 
-        action_goTo_login\
-            .triggered\
-            .connect(lambda: self.change_login())
-        action_goTo_scanalyse\
-            .triggered\
-            .connect(lambda: self.stack.setCurrentIndex(0))
-        action_goTo_analyse\
-            .triggered\
-            .connect(lambda: self.stack.setCurrentIndex(1))
-        action_goTo_scan\
-            .triggered\
-            .connect(lambda: self.stack.setCurrentIndex(2))
+        action_goTo_login.triggered.connect(lambda: self.change_login())
+        action_goTo_scanalyse.triggered.connect(
+            lambda: self.stack.setCurrentIndex(0))
+        action_goTo_analyse.triggered.connect(
+            lambda: self.stack.setCurrentIndex(1))
+        action_goTo_scan.triggered.connect(
+            lambda: self.stack.setCurrentIndex(2))
         
         action_exit.triggered.connect(app.quit)
         
@@ -175,11 +153,8 @@ if __name__=='__main__':
 
     if login.exec_() == QtGui.QDialog.Accepted:
         operator_name = login.get_operator()
-        #print("get op")
         mode_index = login.get_mode()
-        #print("get mode")
         fen = mainWindow(operator_name, mode_index)
-        #print("main windows")
         fen.show()
         sys.exit(app.exec_())
 

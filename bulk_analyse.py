@@ -76,34 +76,32 @@ class ListPage(QtGui.QWidget):
         for i in range(len(datetime_min)):
             nb_drawing_surface_null = 0
             nb_drawing_not_analysed = 0
-            self.lst_tot.append(
-                db.count_year("drawings",
-                              "DateTime",
-                              datetime_min[i],
-                              datetime_max[i]) )          
-            self.lst_calib.append(
-                db.count_field_in_time_interval("drawings",
-                                                "DateTime",
-                                                datetime_min[i],
-                                                datetime_max[i],
-                                                "Calibrated",
-                                                str(1)) )
-            self.lst_analysed.append(
-                db.count_field_in_time_interval("drawings",
-                                                "DateTime",
-                                                datetime_min[i],
-                                                datetime_max[i],
-                                                "Analyzed",
-                                                str(1)) )
 
-            nb_drawing_not_analysed = db.count_field_in_time_interval(
-                "drawings",
-                "DateTime",
-                datetime_min[i],
-                datetime_max[i],
-                "Analyzed",
-                str(0))
+            nb_drawing_tot = db.count_year("drawings",
+                                           "DateTime",
+                                           datetime_min[i],
+                                           datetime_max[i])
+
+            nb_drawing_calibrated = db.count_field_in_time_interval("drawings",
+                                                                    "DateTime",
+                                                                    datetime_min[i],
+                                                                    datetime_max[i],
+                                                                    "Calibrated",
+                                                                    str(1))
             
+            nb_drawing_analysed = db.count_field_in_time_interval("drawings",
+                                                                  "DateTime",
+                                                                  datetime_min[i],
+                                                                  datetime_max[i],
+                                                                  "Analyzed",
+                                                                  str(1))
+
+            self.lst_tot.append(nb_drawing_tot)
+            self.lst_calib.append(nb_drawing_calibrated)
+            self.lst_analysed.append(nb_drawing_analysed)
+
+            nb_drawing_not_analysed = nb_drawing_tot - nb_drawing_analysed
+
             nb_drawing_surface_null = db.count_field_in_time_interval_area(
                 "groups",
                 "DateTime",

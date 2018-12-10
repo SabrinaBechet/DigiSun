@@ -722,13 +722,16 @@ class QLabelDrawing(QtGui.QLabel):
                              pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
 
-        if (not self.add_group_mode.value and not self.add_dipole_mode.value):
+        if (not self.add_group_mode.value and
+            not self.add_dipole_mode.value and
+            not self.calibration_mode.value):
             for el in self.current_drawing.group_lst:
                 if ((x_drawing >= el.posX - self.current_drawing.calibrated_radius/30) and
                     (x_drawing <= el.posX + self.current_drawing.calibrated_radius/30) and
                     (y_drawing >= el.posY - self.current_drawing.calibrated_radius/30) and
                     (y_drawing <= el.posY + self.current_drawing.calibrated_radius/30)):
                     self.selected_element = self.current_drawing.group_lst.index(el)
+                    print("**** drawing clicked signal!!")
                     self.drawing_clicked.emit()
         
         print("click coordinate: ", x_click, y_click)

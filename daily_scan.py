@@ -1,11 +1,11 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-import os
+import os, sys
 from PyQt4 import QtGui, QtCore
 import database, drawing
 from datetime import datetime
 
-class ScanPage(QtGui.QWidget):
+"""class ScanPage(QtGui.QWidget):
     def __init__(self, operator=None):
         super(ScanPage, self).__init__()
 
@@ -15,23 +15,21 @@ class ScanPage(QtGui.QWidget):
         
         self.widget_left_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.setLayout(self.widget_left_layout)
-        
-class DailyScan(ScanPage):
+"""        
+class DailyScan(QtGui.QWidget):
     
     def __init__(self, operator=None):
         super(DailyScan, self).__init__()
- 
-        self.drawing_lst = []
+
+        self.setLayout(QtGui.QVBoxLayout())
         
-        self.operator_right_name = False
-        self.observer_right_name = False
-        self.time_right_format = False
-        self.scan_on = False
+        self.info_complete ={"operator": True,
+                             "observer": False,
+                             "date": True,
+                             "time": False}
         self.operator = operator
         
         self.column_maximum_width = 600
-        #self.but_scan = QtGui.QPushButton('Scan and save', self)
-        #self.widget_left_layout.addWidget(self.but_scan)
         self.add_formLayout_lineEdit()
         
         #to do: height plus grand pour le bouton du scan. Icon de scanner?
@@ -43,71 +41,60 @@ class DailyScan(ScanPage):
      
     def add_formLayout_lineEdit(self):
 
-        groupBox = QtGui.QGroupBox(self)
-        groupBox.setTitle("general information")
-        #groupBox.setStyleSheet("QGroupBox { border: 2px solid gray; border-radius: 3px;}")
+        """groupBox = QtGui.QGroupBox(self)
+        groupBox.setTitle("Drawing information")
+        groupBox.setStyleSheet("QGroupBox { border: 2px solid gray; border-radius: 3px;}")
+        """
+        title_left_down = QtGui.QLabel("Drawing information")
+        title_left_down.setAlignment(QtCore.Qt.AlignCenter)
+        title_left_down.setContentsMargins(0, 5, 0, 5)
+        
+        #self.layout().addWidget(title_left_down)
         
         self.form_layout1 = QtGui.QFormLayout()
         self.form_layout1.setSpacing(10)
-        self.form_layout1.addWidget(groupBox)
+        self.form_layout1.addWidget(title_left_down)#groupBox)
         
         self.drawing_operator = QtGui.QLineEdit(self)
-        #self.drawing_operator.setMaximumWidth(self.column_maximum_width)
         self.drawing_observer = QtGui.QLineEdit(self)
-        #self.drawing_observer.setMaximumWidth(self.column_maximum_width)
         self.drawing_date = QtGui.QDateEdit()
-        #self.drawing_date.setMaximumWidth(self.column_maximum_width)
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date.setDate(today)
         self.drawing_time = QtGui.QLineEdit("00:00",self)
-        #self.drawing_time.setMaximumWidth(self.column_maximum_width)
         self.drawing_time.setInputMask("99:99")
-        self.drawing_time.setStyleSheet("background-color: red")
-        
-        self.drawing_quality = QtGui.QSpinBox(self)
-        #self.drawing_quality.setMaximumWidth(self.column_maximum_width)
-        self.drawing_quality.setMinimum(1)
-        self.drawing_quality.setMaximum(5)
-        self.drawing_quality.setValue(3)
-        self.drawing_type = QtGui.QComboBox(self)
-        #self.drawing_type.setMaximumWidth(self.column_maximum_width)
-        self.drawing_type.addItem('USET')
-        self.drawing_type.addItem('USET77')
-        self.drawing_type.addItem('USET41')
 
+        
         self.form_layout1.addRow('Operator:', self.drawing_operator)
         self.form_layout1.addRow('Observer:', self.drawing_observer)
         self.form_layout1.addRow('Date:', self.drawing_date)
         self.form_layout1.addRow('Time:', self.drawing_time)
-        self.form_layout1.addRow('Quality:', self.drawing_quality)
-        self.form_layout1.addRow('Type:', self.drawing_type)
-        #self.form_layout.addWidget(self.but_scan)
-        #self.form_layout.addWidget(self.but_analyse)
         
         self.drawing_operator.textChanged.connect(
-            lambda:
-            self.check_valid_from_db('observers',
-                                     'name',
-                                     self.drawing_operator.text(),
-                                     self.drawing_operator,
-                                     self.operator_right_name))
+            lambda: self.check_valid_from_db('observers',
+                                             'name',
+                                             self.drawing_operator.text(),
+                                             self.drawing_operator,
+                                             self.operator_right_name,
+                                             'observer'))
         
         self.drawing_observer.textChanged.connect(
-            lambda:
-            self.check_valid_from_db('observers',
-                                     'name',
-                                     self.drawing_observer.text(),
-                                     self.drawing_observer,
-                                     self.observer_right_name))
+            lambda: self.check_valid_from_db('observers',
+                                             'name',
+                                             self.drawing_observer.text(),
+                                             self.drawing_observer,
+                                             self.observer_right_name,
+                                             'operator'))
+        
         self.drawing_time.textChanged.connect(self.check_valid_datetime)
 
 
         widget_form = QtGui.QWidget()
         widget_form.setMaximumWidth(self.column_maximum_width)
         widget_form.setLayout(self.form_layout1)
+
         
-        self.widget_left_layout.addWidget(widget_form)
+        self.layout().addWidget(widget_form)
 
     def add_formLayout_button(self):
         
@@ -116,13 +103,12 @@ class DailyScan(ScanPage):
         
         self.but_scan = QtGui.QPushButton('Scan and save', self)
         self.but_scan.setMaximumWidth(self.column_maximum_width + 75)
-        self.but_scan.setDisabled(True)
+        #self.but_scan.setDisabled(True)
         self.but_analyse = QtGui.QPushButton('analyse', self)
         self.but_analyse.setMaximumWidth(self.column_maximum_width + 75)
        
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
-        #self.but_analyse.clicked.connect(lambda: self.show_drawing())
-        
+                
         self.form_layout2.setWidget(6,
                                    QtGui.QFormLayout.SpanningRole,
                                    self.but_scan)
@@ -132,43 +118,49 @@ class DailyScan(ScanPage):
         
         #groupBox.setLayout(self.form_layout)
     
-        self.widget_left_layout.addLayout(self.form_layout2)
+        self.layout().addLayout(self.form_layout2)
         #self.widget_right_layout.addWidget(self.but_scan)
         #self.widget_right_layout.addWidget(self.but_analyse)
   
-    def check_but_scan_enabled(self):
+    """def check_but_scan_enabled(self):
+        print("check that the scan can be enabled")
+        print(self.operator_right_name, self.observer_right_name, self.time_right_format )
+        
         if (self.operator_right_name and
             self.observer_right_name and
-            self.time_right_format and
-            self.scan_on ):
+            self.time_right_format ):
+            
             self.but_scan.setEnabled(True)
         else:
             self.but_scan.setDisabled(True)
-
-    def check_valid_from_db(self, table_name, field, value, drawing_param, drawing_param_name):
-        
+    """
+    def check_valid_observer_from_db(self, table_name, field, value, info_name):
+        """
+        Check if the name of the observer and operator are valid in the database
+        """
         uset_db = database.database()
         if (uset_db.exist_in_db( table_name, field, value )):
-            drawing_param.setStyleSheet("background-color: green")
-            drawing_param_name = True
+            self.info_complete[info_name]=True
         else:
-            drawing_param.setStyleSheet("background-color: red")
-            drawing_param_name = False
-                    
+            drawing_param.setStyleSheet("background-color: rgb(255, 165, 84)")
+            self.info_complete[info_name]=False
+
+            
     def check_valid_datetime(self):
+        """
+        Check if the time format is validx
+        """
         time = self.drawing_time.text()
         hour = int(time[0:2])
         minute = int(time[3:5])
         print(time, hour, minute)
         
         if hour in range(5,20) and minute in range(0,60):
-            self.drawing_time.setStyleSheet("background-color: green")
-            self.time_right_format = True
+            self.info_complete['time']=True
         else:
-            self.drawing_time.setStyleSheet("background-color: red")
-            self.time_right_format = False
+            self.info_complete['time']=False
 
-        self.check_but_scan_enabled()
+        #self.check_but_scan_enabled()
         
         
     def set_drawing_information(self):
@@ -183,11 +175,11 @@ class DailyScan(ScanPage):
 
         time = self.drawing_time.text()
         date = self.drawing_date.text()
-        my_drawing.datetime = datetime.datetime(int(date[6:10]),
-                                                int(date[3:5]),
-                                                int(date[0:2]),
-                                                int(time[0:2]),
-                                                int(time[3:5]))
+        my_drawing.datetime = datetime(int(date[6:10]),
+                                       int(date[3:5]),
+                                       int(date[0:2]),
+                                       int(time[0:2]),
+                                       int(time[3:5]))
         my_drawing.quality = str(self.drawing_quality.text())
         my_drawing.observer = str(self.drawing_observer.text()).upper()
         my_drawing.operator = str(self.drawing_operator.text()).upper()
@@ -215,9 +207,9 @@ class DailyScan(ScanPage):
         self.drawing_operator.setText(self.operator)
         self.drawing_observer.setText(self.operator)
     
-    def set_button_scan_on(self, my_scanner):
+    """def set_button_scan_on(self, my_scanner):
         self.scan_on = True
-        
+    """    
     def scan_drawing(self):
         """
         Method called when one click on the scan and save button.
@@ -264,4 +256,7 @@ class DailyScan(ScanPage):
 
             self.show_drawing(drawing_scanned)
         else:
-            print("No scanner on linux..")
+            #print("No scanner on linux..")
+            QtGui.QMessageBox.warning(self,
+                                      "scanner information",
+                                      "Impossible to scan on Linux for the moment...")

@@ -116,6 +116,44 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.add_drawing_information()
             self.add_current_session()
             self.label_right = qlabel_drawing.QLabelDrawing()
+
+            self.label_right.drawing_clicked.connect(
+                lambda: self.set_focus_group_box(
+                    self.label_right.selected_element))
+
+            self.label_right.drawing_clicked.connect(
+                lambda: self.set_group_toolbox(
+                self.label_right.selected_element))
+            
+            self.label_right.drawing_clicked.connect(
+                lambda: self.update_surface_qlabel(
+                    self.label_right.selected_element))
+            
+            self.label_right.drawing_clicked.connect(
+                lambda: self.update_group_visu(
+                    self.label_right.selected_element))
+            
+            self.label_right.drawing_clicked.connect(
+                lambda: self.check_dipole(
+                    self.label_right.selected_element))
+
+            self.label_right.drawing_clicked.connect(
+                lambda: self.scroll_group_position(
+                self.label_right.selected_element))
+
+            self.label_right\
+                .center_clicked\
+                .connect(lambda : self.scroll_position(fraction_width_pt2,
+                                                       fraction_height_pt2,
+                                                       0,
+                                                       point_name_pt2))
+            
+            
+            self.label_right.north_clicked.connect(
+                lambda: self.label_right.setCursor(QtCore.Qt.ArrowCursor))
+            self.label_right.north_clicked.connect(
+                lambda:  self.drawing_info.calibrated.setText(
+                    str(self.drawing_lst[self.current_count].calibrated)))
             
             scroll = QtGui.QScrollArea()
             scroll.setWidget(self.label_right)
@@ -134,14 +172,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
             self.set_toolbar()
             self.set_status_bar()
-
-            self.label_right\
-                .group_added\
-                .connect(self.add_group_box)
             
-            self.label_right\
-                .dipole_added\
-                .connect(self.update_dipole_button)
+            self.label_right.north_clicked.connect(self.statusBar().clean)
+            self.label_right.group_added.connect(self.add_group_box)
+            self.label_right.dipole_added.connect(self.update_dipole_button)
             
             self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.zurich_dipolar = ["B","C","D","E","F","G", "X"]
@@ -270,15 +304,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                        .pt2_fraction_height
             point_name_pt2 = self.drawing_lst[self.current_count].pt2_name
 
-            self.label_right\
-                .center_clicked\
-                .connect(lambda : self.scroll_position(fraction_width_pt2,
-                                                       fraction_height_pt2,
-                                                       0,
-                                                       point_name_pt2))
-            self.label_right\
-                .north_clicked\
-                .connect(self.statusBar().clean)
             
         else:
             QtGui.QApplication.restoreOverrideCursor()
@@ -737,8 +762,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     self.listWidget_groupBox.currentRow(),
                     False))
 
-            
-            
             self.groupBoxLineList.append(groupBoxLine)
             
             item = QtGui.QListWidgetItem(self.listWidget_groupBox)
@@ -748,34 +771,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_down_layout.addWidget(
             self.listWidget_groupBox)
 
-        
-        self.label_right.drawing_clicked.connect(
-            lambda: self.set_focus_group_box(
-                self.label_right.selected_element))
-        
-        self.label_right.drawing_clicked.connect(
-            lambda: self.set_group_toolbox(
-                self.label_right.selected_element))
-
-        self.label_right.drawing_clicked.connect(
-            lambda: self.update_surface_qlabel(
-                self.label_right.selected_element))
-
-        self.label_right.drawing_clicked.connect(
-            lambda: self.update_group_visu(
-                self.label_right.selected_element))
-
-        self.label_right.drawing_clicked.connect(
-            lambda: self.check_dipole(
-                self.label_right.selected_element))
-            
-        self.label_right.drawing_clicked.connect(
-            lambda: self.scroll_group_position(
-                self.label_right.selected_element))
-            
-    
         # Signals related to the change of item in the group box
-      
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.set_focus_group_box(
                 self.listWidget_groupBox.currentRow()))
@@ -809,7 +805,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             groupBoxLine.group_box_clicked.connect(
                 lambda: self.scroll_group_position(
                     self.listWidget_groupBox.currentRow()))
-        """ 
+        """
+
+
+    def myprint(self, text):
+        print(text)
+        
     def check_dipole(self, element_number):
         """
         Only for the add_dipole_mode.
@@ -855,7 +856,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             # itemchanged -> update group tool box
             self.listWidget_groupBox.item(element_number).setSelected(True) 
             self.listWidget_groupBox.blockSignals(False)
-            #self.update_surface_qlabel(element_number)
             
         self.listWidget_groupBox.setCurrentRow(element_number)
         # to change only the line on which the focus is
@@ -1326,7 +1326,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
     def add_drawing_information(self):
         """
-        Add the linedit related to the drawing information
+        Add all the linedits related to the drawing information
         """
 
         title_left_up = QtGui.QLabel("Drawing information")
@@ -1511,19 +1511,30 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst[self.current_count].operator = str(self.operator).upper()
         self.drawing_lst[self.current_count].last_update_time = datetime.now()
 
-        
-        self.drawing_lst[self.current_count].info_saved.connect(
-            self.drawing_recorded)
-
-        self.drawing_lst[self.current_count].save_info()
-        
         if (self.drawing_lst[self.current_count].calibrated==1 and
             self.drawing_lst[self.current_count].group_count==0):
-            # pop up that ask if it is normal?
-            pass
+            reponse = QtGui.QMessageBox.question(self,
+                                      "save information",
+                                      "There is no groups recorded for this drawing. "
+                                       "Do you confirm that the analyse is finished?",
+                                       QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+            if reponse == QtGui.QMessageBox.Yes:
+                self.drawing_lst[self.current_count].analyzed = 1
+            else:
+                self.drawing_lst[self.current_count].analyzed = 0
+                 
+        if (self.drawing_lst[self.current_count].calibrated==1 and
+            self.drawing_lst[self.current_count].group_count>0):
+            self.drawing_lst[self.current_count].analyzed = 1
 
+        self.drawing_lst[self.current_count].save_info()
+        self.drawing_info.set_drawing_linedit(self.drawing_lst[self.current_count])
+        
     def drawing_recorded(self):
-        print("set the save button to lightgray")
+        """
+        Set the save button to lightgray and 
+        the changed value to False
+        """
         self.but_save.setStyleSheet("background-color: lightgray")
         self.drawing_lst[self.current_count].changed = False
         
@@ -1571,7 +1582,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         if os.path.isdir(self.archdrawing_directory):
             self.drawing_lst = drawing_lst
+
             for el in self.drawing_lst:
+                el.info_saved.connect(self.drawing_recorded)
                 el.value_changed.connect(self.drawing_value_changed)
             
             self.len_drawing_lst = len(drawing_lst)
