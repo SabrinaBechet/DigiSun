@@ -107,7 +107,9 @@ class QLabelDrawing(QtGui.QLabel):
     
         print("***set the img **")
         try:
-            img = Image.open(self.file_path) 
+            img = Image.open(self.file_path)
+            print("Image Info:", img.info)
+            print(img.size)
             self.drawing_width = img.size[0]
             self.drawing_height = img.size[1]
             qim = ImageQt(img) #convert PIL image to a PIL.ImageQt object

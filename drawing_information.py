@@ -111,14 +111,9 @@ class DrawingInformationWidget(QtGui.QWidget):
         form_layout.addRow('Analysed:', self.analyzed)
         form_layout.addRow('Area done:', self.area_done)
 
-        #widget_form = QtGui.QWidget()
-        
-        #widget_form = QtGui.QWidget()
         self.setLayout(form_layout)
 
-        #self.addWidget(title_left_up)
-        #self.addWidget(widget_form)
-
+       
     def set_combo_box_drawing(self, field, table_name, linedit):
         """
         Define automatically the combo box list with all the element 

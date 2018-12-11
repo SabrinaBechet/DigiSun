@@ -4,7 +4,7 @@ if sys.platform == "win32":
 from PIL import Image
 from StringIO import StringIO
 import os
-import GUI_prototype
+#import GUI_prototype
 from PIL import Image
 
 class scanner():
@@ -74,7 +74,7 @@ class scanner():
                                    twain.TWTY_UINT16,
                                    twain.TWUN_CENTIMETERS)
         
-        width = float(28.0)
+        width = float(28.2)
         height = float(36.0)
         left = float(left)
         top = float(top)
