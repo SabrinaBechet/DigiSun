@@ -12,26 +12,24 @@ class scanner():
     This class is strongly inspired by webagent-scanner on gitHub
     """
     def __init__(self):
-        self.dpi = 300     
-        #dir_name = os.path.join('/home/sabrinabct/Projets/DigiSun_2018','archdrawing')
-        pass
+        self.set_parameters()
         
-    def settings_from_database(self, table_name):
+    def set_parameters(self, from_db=False):
         """
         The technical settings of the scanner should be set via 
         the database.
         """
-        settings_db = GUI_prototype.database()
-        #self.dpi = settings_db.get_variable_settings('scandpi')
-        self.dpi = 300
-        #self.directory = settings_db.get_variable_settings('drawingpath')
-        self.directory = os.path.join('C:\\Users','USET - SILSO',
+        if not from_db:
+            self.dpi = 300
+            self.directory = os.path.join('C:\\Users','USET - SILSO',
                                       'DigiSun_2018','archdrawing')
+        else:
+            settings_db = database.database()
+            #self.dpi = settings_db.get_variable_settings('scandpi')
+            #self.directory = settings_db.get_variable_settings('drawingpath')
+            
 
-    def get_directory(self):
-        return self.directory
-        
-    def get_scanner(self):
+    def get_scanner_name(self):
         """Get available the scanners""" 
         self.sourceManager = twain.SourceManager(0)
         scanners = self.sourceManager.GetSourceList()
@@ -40,13 +38,13 @@ class scanner():
         else:
             return None
 
-    def set_scanner(self, scanner_name, table_name):
+    def set_scanner(self, scanner_name):
         """
         connect to the scanner using the scanner_name
         arguments:
         scanner_name = name return by get_scanner()
         """
-        self.settings_from_database(table_name)
+        #self.settings_from_database(table_name)
         try: 
             self.scanner = self.sourceManager.OpenSource(scanner_name)
             self.scanner.SetCapability(twain.ICAP_XRESOLUTION,
@@ -80,29 +78,28 @@ class scanner():
         top = float(top)
 
         self.scanner.SetImageLayout((left, top, width, height),1,1,1)
-
+        
     def scan(self, filename):
         """
         scan and return PIL object if sucess else return False
         """
+        print("enter in the scan method..")
+        
         self.scanner.RequestAcquire(0,1)
         info = self.scanner.GetImageInfo()
+        output_name_tmp = os.path.join(self.directory, 'test')#filename)
         output_name = os.path.join(self.directory, filename)
-        #if os.path.isfile(output_name):
-        #    w = QtGui.QWidget
-        #    QtGui.QMessageBox.warning(w,
-        #                              'Warning',
-        #                              'A file with the same name already exist')
-        try:
-            self.handle = self.scanner.XferImageNatively()[0]
-            img = twain.DIBToBMFile(self.handle,output_name)
-            twain.GlobalHandleFree(self.handle)
-            img_scanned = Image.open(output_name)
-
-            return img_scanned
-        except:
-            #print('there is a problem, but which one?')
-            return False
+        
+        #try:
+        self.handle = self.scanner.XferImageNatively()[0]
+        img = twain.DIBToBMFile(self.handle,output_name_tmp)
+        twain.GlobalHandleFree(self.handle)
+        img_scanned = Image.open(output_name_tmp)
+        img_scanned.save(output_name,'JPEG', dpi=(300,300))
+        return img_scanned
+        #except:
+        #    print('there is a problem, but which one?')
+        #    return False
 
     def close_scanner(self):
         if self.scanner:
