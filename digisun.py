@@ -17,8 +17,12 @@ class BulkScanPage(QtGui.QWidget):
         self.setLayout(self.layout)
           
 class mainWindow(QtGui.QMainWindow):
-    " Represent the Qt interface."
-
+    """ Represent the Qt interface. It consists of stacked pages:
+    index 0 : daily scan
+    index 1 : analyse page
+    index 2 : bulk scan
+    index 3 : drawing analyse
+    """
     def __init__(self, operator=None, mode_index=0):
         super(mainWindow, self).__init__()
         self.setWindowTitle("DigiSun 2018")

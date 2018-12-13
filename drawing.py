@@ -6,6 +6,7 @@ import coordinates, database
 from PyQt4 import QtCore
 import math
 
+import SunEphemeris, ObserverTime
 class Group(QtCore.QObject):
     """
     Note: It is important to change the value before emitting the signal
@@ -455,8 +456,8 @@ class Drawing(QtCore.QObject):
             print("no value for the initialisation of the drawing")
             self._id_drawing = 0
             self._datetime = datetime(2000,01,01,00,00)
-            self._drawing_type = None
-            self._quality = None
+            self._drawing_type = ''
+            self._quality = ''
             self._observer = None
             self._carington_rotation = 0
             self._julian_date = 0.0
@@ -468,7 +469,7 @@ class Drawing(QtCore.QObject):
             self._angle_P = 0
             self._angle_B = 0
             self._angle_L = 0
-            self._path = None
+            self._path = ''
             self._operator = None
             self._last_update_time = None
             
@@ -476,6 +477,29 @@ class Drawing(QtCore.QObject):
         
         self.changed = False
 
+
+    def fill_from_daily_scan(self, drawing_datetime, operator, observer):
+
+        self._datetime = drawing_datetime
+        self._observer = observer
+        self._operator = operator
+        self._last_update_time = datetime.now()
+
+        #calcualte quantities related to datetime...
+    
+        sun = SunEphemeris.SunEphemeris(drawing_datetime)
+        self._julian_date = sun.julian_day
+
+        #9//11/1853 at 12:00 -> first rotation (this is why +1)
+        self._carington_rotation = math.floor((1. / 27.2753) * (sun.julian_day - 2398167.0) + 1.0)
+
+        print("carington rotation: ", self._carington_rotation)
+        
+        self._angle_P = round(sun.angle_P(), 6)
+        self._angle_B = round(sun.angle_B0(), 6)
+        self._angle_L = round(sun.angle_L0(), 6) 
+        
+       
     def set_drawing_type(self, param):
         """
         Set the drawing type parameters from a list of value from the database.
@@ -616,6 +640,11 @@ class Drawing(QtCore.QObject):
         self._carington_rotation = value
         self.changed = True
         self.value_changed.emit()
+
+    @property    
+    def julian_date(self):
+        #print("here we are reading the value of observer ")
+        return self._julian_date
                
     @property    
     def calibrated(self):
@@ -639,6 +668,10 @@ class Drawing(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
 
+    @property    
+    def spot_count(self):
+        return self._spot_count
+        
     @property    
     def group_count(self):
         return self._group_count
@@ -705,7 +738,12 @@ class Drawing(QtCore.QObject):
         self._angle_L = value
         self.changed = True
         self.value_changed.emit()
-        
+
+
+    @property
+    def path(self):
+        #print("here we are reading the value of angle L")
+        return self._path
         
     @property    
     def operator(self):

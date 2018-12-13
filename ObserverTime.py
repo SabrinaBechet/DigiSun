@@ -12,7 +12,7 @@ class ObserverTime():
         """
         input time in datetime format
         """
-        if type(input_time)==datetime:
+        if isinstance(input_time, datetime):
             self.time = input_time
             self.year = input_time.year
             self.month = input_time.month

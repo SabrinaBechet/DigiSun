@@ -216,6 +216,7 @@ class database():
         #print(date_min, date_max, result)
         return result
     
+
     def replace_drawing(self, drawing):
         """
         REPLACE works exactly like INSERT, except that if an old row
@@ -225,20 +226,55 @@ class database():
         self.cursor.execute('REPLACE INTO drawings (Datetime, TypeOfDrawing,'
                             'Quality, Observer, CaringtonRotation, JulianDate,'
                             'Calibrated, Analyzed, GroupCount, SpotCount,'
-                            'Wolf, AngleP, AngleB, AngleL, AngleScan, Path,'
+                            'Wolf, AngleP, AngleB, AngleL, Path,'
                             'Operator, LastUpdateTime) values (%s, %s, %s, %s,'
                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,'
-                            '%s, %s) ',
+                            '%s) ',
                             (drawing.datetime, drawing.drawing_type,
                              drawing.quality, drawing.observer,
                              drawing.carington_rotation, drawing.julian_date,
                              drawing.calibrated, drawing.analyzed,
                              drawing.group_count, drawing.spot_count,
-                             drawing.wolf, drawing.angle_B, drawing.angle_L,
-                             drawing.angle_P, drawing.angle_scan, drawing.path,
-                             drawing.operator, drawing.last_update_time))
+                             drawing.wolf, drawing.angle_P,
+                             drawing.angle_B, drawing.angle_P,
+                             drawing.path, drawing.operator,
+                             drawing.last_update_time))
+        self.db.commit()
+
+    def replace_drawing(self, drawing):
+        """
+        REPLACE works exactly like INSERT, except that if an old row
+        in the table has the same value as a new row for a PRIMARY key or
+        a UNIQUE index, the old row is deleted before the new row is inserted.
+        """
+        self.cursor.execute('REPLACE INTO drawings (Datetime, TypeOfDrawing,'
+                            'Quality, Observer, CaringtonRotation, JulianDate,'
+                            'Calibrated, Analyzed, GroupCount, SpotCount,'
+                            'Wolf, AngleP, AngleB, AngleL, Path,'
+                            'Operator, LastUpdateTime) values (%s, %s, %s, %s,'
+                            '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,'
+                            '%s) ',
+                            (drawing.datetime, drawing.drawing_type,
+                             drawing.quality, drawing.observer,
+                             drawing.carington_rotation, drawing.julian_date,
+                             drawing.calibrated, drawing.analyzed,
+                             drawing.group_count, drawing.spot_count,
+                             drawing.wolf, drawing.angle_P,
+                             drawing.angle_B, drawing.angle_L,
+                             drawing.path, drawing.operator,
+                             drawing.last_update_time))
+        self.db.commit()
+
+
+    """def replace_drawing(self, drawing):
+        
+        self.cursor.execute('REPLACE INTO drawings (Datetime, Observer,'
+                            'Operator) values (%s, %s, %s)',
+                            (drawing.datetime, drawing.observer,
+                             drawing.operator))
         self.db.commit()
         
+    """    
     def get_variable_settings(self, variable):
         self.cursor.execute('SELECT usetvalue FROM technical_settings'
                             'WHERE usetkey=%s',

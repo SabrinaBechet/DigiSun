@@ -5,6 +5,7 @@ from PyQt4 import QtGui, QtCore
 import database, drawing
 from datetime import datetime
 import scanner
+import datetime
    
 class DailyScan(QtGui.QWidget):
     
@@ -38,7 +39,7 @@ class DailyScan(QtGui.QWidget):
                 self.drawing_directory.setText(my_scanner.directory)
                 self.but_scan.setEnabled(True)
         else:
-            self.scan_name_linedit.setText("No working on Linux")
+            self.scan_name_linedit.setText("Not working on Linux")
             self.scan_name_linedit.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
             
@@ -50,7 +51,6 @@ class DailyScan(QtGui.QWidget):
         
         form_layout = QtGui.QFormLayout()
         form_layout.setAlignment(QtCore.Qt.AlignVCenter and QtCore.Qt.AlignHCenter)
-        #form_layout.setContentsMargins(self.width()/2., self.height()/2., 0,0)
         form_layout.setSpacing(10)
         self.setLayout(form_layout)
 
@@ -78,34 +78,42 @@ class DailyScan(QtGui.QWidget):
         my_font = QtGui.QFont("Comic Sans MS", 10)
         title.setFont(my_font)
         
-        self.drawing_operator = QtGui.QLineEdit(self)
-        self.drawing_operator.setMaximumWidth(column_maximum_width)
-        self.drawing_operator.setText(self.operator)
-        self.drawing_observer = QtGui.QLineEdit(self)
-        self.drawing_observer.setMaximumWidth(column_maximum_width)
-        self.drawing_observer.setText(self.operator)
-        self.drawing_date = QtGui.QDateEdit()
-        self.drawing_date.setMaximumWidth(column_maximum_width)
-        self.drawing_date.setDisplayFormat("dd/MM/yyyy")
+        self.drawing_operator_linedit = QtGui.QLineEdit(self)
+        self.drawing_operator_linedit.setMaximumWidth(column_maximum_width)
+        self.drawing_operator_linedit.setText(self.operator)
+        self.drawing_observer_linedit = QtGui.QLineEdit(self)
+        self.drawing_observer_linedit.setMaximumWidth(column_maximum_width)
+        self.drawing_observer_linedit.setText(self.operator)
+        self.drawing_date_linedit = QtGui.QDateEdit()
+        self.drawing_date_linedit.setMaximumWidth(column_maximum_width)
+        self.drawing_date_linedit.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
-        self.drawing_date.setDate(today)
-        self.drawing_time = QtGui.QTimeEdit(self)
-        self.drawing_time.setMaximumWidth(column_maximum_width)
-        #self.drawing_time.setInputMask("99:99")
+        self.drawing_date_linedit.setDate(today)
+        self.drawing_time_linedit = QtGui.QTimeEdit(self)
+        self.drawing_time_linedit.setMaximumWidth(column_maximum_width)
 
-        self.drawing_operator.textChanged.connect(
+        self.drawing_time = datetime.datetime(self.drawing_date_linedit.date().year(),
+                                              self.drawing_date_linedit.date().month(),
+                                              self.drawing_date_linedit.date().day(),
+                                              self.drawing_time_linedit.time().hour(),
+                                              self.drawing_time_linedit.time().minute())
+      
+
+        self.drawing_operator_linedit.textChanged.connect(
             lambda: self.check_valid_from_db('observers',
                                              'name',
-                                             self.drawing_operator.text(),
+                                             self.drawing_operator_linedit.text(),
                                              'operator'))
         
-        self.drawing_observer.textChanged.connect(
+        self.drawing_observer_linedit.textChanged.connect(
             lambda: self.check_valid_from_db('observers',
                                              'name',
-                                             self.drawing_observer.text(),
+                                             self.drawing_observer_linedit.text(),
                                              'observer'))
         
-        self.drawing_time.timeChanged.connect(self.check_valid_datetime)
+        self.drawing_time_linedit.timeChanged.connect(self.check_valid_datetime)
+        self.drawing_time_linedit.timeChanged.connect(self.update_datetime)
+        self.drawing_date_linedit.dateChanged.connect(self.update_datetime)
 
         self.but_scan = QtGui.QPushButton('Scan and save', self)
         self.but_scan.setMaximumWidth(column_maximum_width + 75)
@@ -119,10 +127,10 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow('dpi:', self.scan_dpi)
         form_layout.addRow('drawings directory:', self.drawing_directory)
         form_layout.addRow(title)
-        form_layout.addRow('Operator:', self.drawing_operator)
-        form_layout.addRow('Observer:', self.drawing_observer)
-        form_layout.addRow('Date:', self.drawing_date)
-        form_layout.addRow('Time:', self.drawing_time)
+        form_layout.addRow('Operator:', self.drawing_operator_linedit)
+        form_layout.addRow('Observer:', self.drawing_observer_linedit)
+        form_layout.addRow('Date:', self.drawing_date_linedit)
+        form_layout.addRow('Time:', self.drawing_time_linedit)
         form_layout.addRow(self.but_scan)
         form_layout.addRow(self.but_analyse)
         
@@ -130,97 +138,75 @@ class DailyScan(QtGui.QWidget):
         """
         Check if the name of the observer and operator are valid in the database
         """
-        print("detect a change in the operator or observator name"
-              "hence, check that this name is valid")
+        #print("detect a change in the operator or observator name"
+        #      "hence, check that this name is valid")
         
         uset_db = database.database()
         if (uset_db.exist_in_db( table_name, field, value )):
             self.info_complete[info_name]=True
             if info_name=='observer':
-                self.drawing_observer.setStyleSheet(
+                self.drawing_observer_linedit.setStyleSheet(
                     "background-color: transparent")
             elif info_name=='operator':
-                 self.drawing_operator.setStyleSheet(
+                 self.drawing_operator_linedit.setStyleSheet(
                     "background-color: transparent")
         else:
             self.info_complete[info_name]=False
             if info_name=='observer':
-                self.drawing_observer.setStyleSheet(
+                self.drawing_observer_linedit.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
             elif info_name=='operator':
-                 self.drawing_operator.setStyleSheet(
+                 self.drawing_operator_linedit.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
 
+                
+    def update_datetime(self):
+        """
+        Update the value of datetime when one modify date or time line edit.
+        """
+        self.drawing_time = datetime.datetime(self.drawing_date_linedit.date().year(),
+                                              self.drawing_date_linedit.date().month(),
+                                              self.drawing_date_linedit.date().day(),
+                                              self.drawing_time_linedit.time().hour(),
+                                              self.drawing_time_linedit.time().minute())
             
     def check_valid_datetime(self):
-
-        #print(self.drawing_time.text())
-        time = self.drawing_time.text()
-        hour = int(time[0:2])
-        minute = int(time[3:5])
-        print(time, hour, minute)
-        
+        """
+        Check if the date time is in a reasonable range (hour between 5 and 20)
+        and update the drawing time
+        """
+        hour = self.drawing_time_linedit.time().hour()
+        minute = self.drawing_time_linedit.time().minute()    
         if hour in range(5,20) and minute in range(0,60):
             self.info_complete['time']=True
-            self.drawing_time.setStyleSheet(
+            self.drawing_time_linedit.setStyleSheet(
                     "background-color: transparent")
         else:
             self.info_complete['time']=False
-            self.drawing_time.setStyleSheet(
-                    "background-color: rgb(255,165,84)")
-        #self.check_but_scan_enabled()
-            
-        
+            self.drawing_time_linedit.setStyleSheet(
+                    "background-color: rgb(255,165,84)")        
+   
     def set_drawing_information(self):
-        """
-        Fill the drawing information based on 
-        what has been filled on the screen.
-        """
-        print("daily scan get set drawing information")
-
-        drawing_lst = []
-        my_drawing = drawing.Drawing()
-        my_drawing.drawing_type = str(self.drawing_type.currentText())
-
-        time = self.drawing_time.text()
-        date = self.drawing_date.text()
-        my_drawing.datetime = datetime(int(date[6:10]),
-                                       int(date[3:5]),
-                                       int(date[0:2]),
-                                       int(time[0:2]),
-                                       int(time[3:5]))
-        my_drawing.quality = str(self.drawing_quality.text())
-        my_drawing.observer = str(self.drawing_observer.text()).upper()
-        my_drawing.operator = str(self.drawing_operator.text()).upper()
-        datetime_now = datetime.datetime.now()
-        my_drawing.last_update_time = datetime(datetime_now.year,
-                                                 datetime_now.month,
-                                                 datetime_now.day,
-                                                 datetime_now.hour,
-                                                 datetime_now.minute,
-                                                 datetime_now.second)
-        
-        my_drawing.path = ("usd" + date[6:10] +
-                           date[3:5] + date[0:2] +
-                           time[0:2] + time[3:5] + ".jpg")
-        
-        
-        drawing_lst.append(my_drawing)
-        return drawing_lst
-
-    def add_to_database(self):
         """
         Method that add an entry to the database
         corresponding to the new drawing scanned
         """
-        pass
+
+        #print("set the drawing information..", self.drawing_time)
+        new_drawing = drawing.Drawing()
+        new_drawing.fill_from_daily_scan(drawing_datetime = self.drawing_time,
+                                         observer = str(self.drawing_observer_linedit.text()),
+                                         operator = str(self.drawing_operator_linedit.text()))
+
+        db = database.database()
+        db.replace_drawing(new_drawing) 
+        return [new_drawing]
+        
 
     def get_filename(self):
-        date = str(self.drawing_date.text())
-        time = str(self.drawing_time.text())
-        return ("usd" + date[6:10] +
-                date[3:5] + date[0:2] +
-                time[0:2] + time[3:5] + '.jpg')
+
+        print("check filename: ", "usd" + self.drawing_time.strftime('%Y%m%d%H%M') + '.jpg')        
+        return ("usd" + self.drawing_time.strftime('%Y%m%d%H%M') + '.jpg')
    
     def scan_drawing(self):
         """
@@ -228,14 +214,11 @@ class DailyScan(QtGui.QWidget):
         The scanner object is created here (and hence deleted) to be sure that 
         it does not stay in the memory.
         """
-
-        print("enter in the scan drawing method of daily scan ",
-              self.drawing_time.text())
-        print(self.info_complete.values())
+        
         if False in self.info_complete.values():
             QtGui.QMessageBox.warning(self,
                                       'information incomplete',
-                                    'One of the information is not correct')
+                                      'One of the information is not correct')
             return
         
         my_scanner = scanner.scanner()

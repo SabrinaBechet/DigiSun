@@ -1579,26 +1579,33 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Get the list of drawings from bulk analysis page.
         Set the counter to 0.
         """
-        
-        if os.path.isdir(self.archdrawing_directory):
-            self.drawing_lst = drawing_lst
 
-            for el in self.drawing_lst:
-                el.info_saved.connect(self.drawing_recorded)
-                el.value_changed.connect(self.drawing_value_changed)
-            
-            self.len_drawing_lst = len(drawing_lst)
+        #TO DO: check if list is empty
         
-            self.current_count = 0
-            if len(drawing_lst)>1:
-                self.but_next.setEnabled(True)
-                self.but_previous.setEnabled(True)
-            else:
-                self.but_next.setDisabled(True)
-                self.but_previous.setDisabled(True)
+        #if os.path.isdir(self.archdrawing_directory):
+
+        print("set drawing list")
+        print(len(drawing_lst), drawing_lst[0].datetime)
+
+        
+        self.drawing_lst = drawing_lst
+        
+        for el in self.drawing_lst:
+            el.info_saved.connect(self.drawing_recorded)
+            el.value_changed.connect(self.drawing_value_changed)
             
-            self.set_drawing_lineEdit()
-            self.update_session_lineEdit()
+        self.len_drawing_lst = len(drawing_lst)
+        
+        self.current_count = 0
+        if len(drawing_lst)>1:
+            self.but_next.setEnabled(True)
+            self.but_previous.setEnabled(True)
+        else:
+            self.but_next.setDisabled(True)
+            self.but_previous.setDisabled(True)
+            
+        self.set_drawing_lineEdit()
+        self.update_session_lineEdit()
         
     def update_session_lineEdit(self):
 
