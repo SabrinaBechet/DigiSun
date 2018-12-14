@@ -488,13 +488,8 @@ class Drawing(QtCore.QObject):
         #calcualte quantities related to datetime...
     
         sun = SunEphemeris.SunEphemeris(drawing_datetime)
-        self._julian_date = sun.julian_day
-
-        #9//11/1853 at 12:00 -> first rotation (this is why +1)
-        self._carington_rotation = math.floor((1. / 27.2753) * (sun.julian_day - 2398167.0) + 1.0)
-
-        print("carington rotation: ", self._carington_rotation)
-        
+        self._julian_date = sun.julian_day   
+        self._carington_rotation = sun.carrington_rotation
         self._angle_P = round(sun.angle_P(), 6)
         self._angle_B = round(sun.angle_B0(), 6)
         self._angle_L = round(sun.angle_L0(), 6) 

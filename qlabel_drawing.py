@@ -363,7 +363,7 @@ class QLabelDrawing(QtGui.QLabel):
                     if self.group_visu_index==i:
                         painter.setPen(pen_selected)
                         radius = self.drawing_height / 50.
-                        large_pen.setColor(QtGui.QColor("transparent"))
+                        #large_pen.setColor(QtGui.QColor("transparent"))
                         pen_selected.setColor(QtGui.QColor(77, 185, 88))
                     else:
                         large_pen.setColor(QtCore.Qt.blue)

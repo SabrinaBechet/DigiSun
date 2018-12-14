@@ -103,7 +103,7 @@ class DrawingInformationWidget(QtGui.QWidget):
         form_layout.addRow('P angle:', self.angleP)
         form_layout.addRow('B angle:', self.angleB)
         form_layout.addRow('L angle:', self.angleL)
-        form_layout.addRow('Carington rotation :', self.rotation_number)
+        form_layout.addRow('Carrington rotation :', self.rotation_number)
         
         form_layout.addRow('Last Operator:', self.drawing_operator)
         form_layout.addRow('Last Update:', self.drawing_last_update)

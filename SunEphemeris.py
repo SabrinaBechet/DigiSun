@@ -11,15 +11,35 @@ class SunEphemeris():
     """    
     def __init__(self, obs_time):
 
-        if type(obs_time)==datetime: 
+        if isinstance(obs_time, datetime):
             self.obs_time = ObserverTime.ObserverTime(obs_time)
             self.julian_day = self.obs_time.julian_day()
             self.T_j2000 = self.obs_time.julian_century_j2000()
             self.T_j1900 = self.obs_time.julian_century_j1900()
-            
+            #self.carrington_rotation = self.obs_time.carrington_rotation()
             self.inclinaison_solar_equator = 7.25
+            
         else:
             print("wrong time format! it should be in datetime format")
+
+    def carrington_rotation(self):
+        """
+        A rotation starts when the heliographic prime meridian (L0)
+        crosses the subterrestrial point of the solar disc.
+        The first Carrington rotation started on 1853 Nov 9
+        (JD 2398167.329), later points can be calculated using the 
+        synodic period rsyn = 27.2753 days. 
+        (ref: Heliospheric Coordinate systems, Franz & Harper 2002)
+        """
+
+        julian_date_close_zero_meridian = self.julian_day - (360 - self.angle_L0())/13.19
+
+        #angle_close_zero_meridian = 
+        
+        print("julian date close zero meridian: ", julian_date_close_zero_meridian)
+
+        
+        
             
     def mean_anomaly(self):
         """The algo is from Jean Meeus - Astronomical Algorithms, 1991, pg 151.

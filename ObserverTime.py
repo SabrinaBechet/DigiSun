@@ -48,6 +48,11 @@ class ObserverTime():
         
         return julian_day
 
+
+    def carrington_rotation(self):
+        """ start on the 9(.8992)/11/1853  -> first rotation (this is why +1)"""
+        return int((1. / 27.2753) * (self.julian_day() - 2398167.3992)) + 1
+
     def julian_ephemeris_day(self):
         """ It differs from the julian day by the small quantity delta_t. """
         return self.julian_day() + self.delta_t()/ 86400.
