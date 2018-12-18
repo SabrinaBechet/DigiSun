@@ -77,6 +77,8 @@ class DailyScan(QtGui.QWidget):
         title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
         title.setFont(my_font)
+
+        uset_db = database.database()
         
         self.drawing_operator_linedit = QtGui.QLineEdit(self)
         self.drawing_operator_linedit.setMaximumWidth(column_maximum_width)
@@ -84,6 +86,13 @@ class DailyScan(QtGui.QWidget):
         self.drawing_observer_linedit = QtGui.QLineEdit(self)
         self.drawing_observer_linedit.setMaximumWidth(column_maximum_width)
         self.drawing_observer_linedit.setText(self.operator)
+        self.drawing_type = QtGui.QComboBox(self)#QtGui.QLineEdit(self)
+        self.drawing_type.setMaximumWidth(column_maximum_width)
+        uset_db.set_combo_box_drawing('name', 'drawing_type', self.drawing_type)
+        self.drawing_quality = QtGui.QComboBox(self)#QtGui.QLineEdit(self)
+        self.drawing_quality.setMaximumWidth(column_maximum_width)
+        uset_db.set_combo_box_drawing('name', 'quality', self.drawing_quality)
+         
         self.drawing_date_linedit = QtGui.QDateEdit()
         self.drawing_date_linedit.setMaximumWidth(column_maximum_width)
         self.drawing_date_linedit.setDisplayFormat("dd/MM/yyyy")
@@ -131,9 +140,13 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow('Observer:', self.drawing_observer_linedit)
         form_layout.addRow('Date:', self.drawing_date_linedit)
         form_layout.addRow('Time:', self.drawing_time_linedit)
+        form_layout.addRow('Type:', self.drawing_type)
+        form_layout.addRow('Quality:', self.drawing_quality)
         form_layout.addRow(self.but_scan)
         form_layout.addRow(self.but_analyse)
-        
+
+
+    
     def check_valid_from_db(self, table_name, field, value, info_name):
         """
         Check if the name of the observer and operator are valid in the database
@@ -196,10 +209,29 @@ class DailyScan(QtGui.QWidget):
         new_drawing = drawing.Drawing()
         new_drawing.fill_from_daily_scan(drawing_datetime = self.drawing_time,
                                          observer = str(self.drawing_observer_linedit.text()),
-                                         operator = str(self.drawing_operator_linedit.text()))
+                                         operator = str(self.drawing_operator_linedit.text()),
+                                         drawing_type = str(self.drawing_type.currentText()),
+                                         drawing_quality = str(self.drawing_quality.currentText()))
+
+        print("check last update time ", new_drawing.datetime, new_drawing.drawing_type,
+              new_drawing.quality, new_drawing.observer,
+              new_drawing.carington_rotation, new_drawing.julian_date,
+              new_drawing.calibrated, new_drawing.analyzed,
+              new_drawing.group_count, new_drawing.spot_count,
+              new_drawing.wolf, new_drawing.angle_P,
+              new_drawing.angle_B, new_drawing.angle_L,
+              new_drawing.path, new_drawing.operator,
+              new_drawing.last_update_time)
+        
 
         db = database.database()
-        db.replace_drawing(new_drawing) 
+        db.replace_drawing(new_drawing)
+
+        tuple_drawing_type = db.get_drawing_information("drawing_type",
+                                                        str(self.drawing_type.currentText()))
+        new_drawing.set_drawing_type(tuple_drawing_type[0])
+        print("check the type: ", new_drawing.pt1_fraction_width)
+        
         return [new_drawing]
         
 

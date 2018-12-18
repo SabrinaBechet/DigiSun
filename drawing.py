@@ -5,6 +5,7 @@ from datetime import date, time, datetime
 import coordinates, database
 from PyQt4 import QtCore
 import math
+import carrington_rotation
 
 import SunEphemeris, ObserverTime
 class Group(QtCore.QObject):
@@ -472,24 +473,37 @@ class Drawing(QtCore.QObject):
             self._path = ''
             self._operator = None
             self._last_update_time = None
+
+            #self._calibrated_center = coordinates.Cartesian(None, None)
+            #self._calibrated_north = coordinates.Cartesian(None, None)
+            """self._calibrated_north.x = None
+            self._calibrated_north.y = None
+            self._calibrated_center.x = None
+            self._calibrated_center.y = None
+            """
+            #self._calibrated_radius = None
+            #self._calibrated_angle_scan = None
+            #self._datetime_calibration = self._datetime
             
         self._group_lst = []
         
         self.changed = False
 
 
-    def fill_from_daily_scan(self, drawing_datetime, operator, observer):
+    def fill_from_daily_scan(self, drawing_datetime, operator, observer, drawing_type, drawing_quality):
 
         self._datetime = drawing_datetime
         self._observer = observer
         self._operator = operator
+        self._drawing_type = drawing_type
+        self._quality = drawing_quality
         self._last_update_time = datetime.now()
 
         #calcualte quantities related to datetime...
     
         sun = SunEphemeris.SunEphemeris(drawing_datetime)
         self._julian_date = sun.julian_day   
-        self._carington_rotation = sun.carrington_rotation
+        self._carington_rotation = carrington_rotation.carrington_rotation(drawing_datetime)
         self._angle_P = round(sun.angle_P(), 6)
         self._angle_B = round(sun.angle_B0(), 6)
         self._angle_L = round(sun.angle_L0(), 6) 
@@ -514,7 +528,7 @@ class Drawing(QtCore.QObject):
              self._pt2_fraction_height) = param
 
         except ValueError:
-            print("problem to set the drawing_type from the database")
+            print("!!!!!!!!!!!!!!problem to set the drawing_type from the database!!!!!!!!!!")
          
     def set_calibration(self, param):
         """
@@ -1048,7 +1062,7 @@ class Drawing(QtCore.QObject):
             
     def save_info(self):
 
-        print("save the info of the group!")
+        print("save the info of the drawing!")
 
         
         db = database.database()
@@ -1070,15 +1084,18 @@ class Drawing(QtCore.QObject):
                               self._operator,
                               self._last_update_time,
                               self._datetime)
-        
-        db.write_calibration_info(self._calibrated_north.x,
-                                  self._calibrated_north.y,
-                                  self._calibrated_center.x,
-                                  self._calibrated_center.y,
-                                  self._calibrated_radius,
-                                  self._calibrated_angle_scan,
-                                  self._datetime_calibration)
-        
+
+        try:#if self._calibrated_north.x:
+            db.write_calibration_info(self._calibrated_north.x,
+                                      self._calibrated_north.y,
+                                      self._calibrated_center.x,
+                                      self._calibrated_center.y,
+                                      self._calibrated_radius,
+                                      self._calibrated_angle_scan,
+                                      self._datetime_calibration)
+
+        except AttributeError:
+            print("No calibration yet..")
         
         for el in self._group_lst:
             

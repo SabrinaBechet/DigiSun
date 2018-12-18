@@ -44,6 +44,18 @@ class database():
         field_lst = [x[0] for x in result]
         return field_lst
 
+
+    def set_combo_box_drawing(self, field, table_name, linedit):
+        """
+        Define automatically the combo box list with all the element 
+        named in the database
+        """
+        #uset_db = database.database()
+        values = self.get_values(field, table_name)
+        for el in values:
+            linedit.addItem(el[0])
+
+    
     def get_all_in_time_interval(self, table_name, date_min, date_max):
         self.cursor.execute('SELECT * FROM ' + table_name +
                             ' WHERE DateTime > %s && ' +
@@ -113,15 +125,9 @@ class database():
         Write in the database all the info related 
         to the calibration identified by its datetime
         """
-        self.cursor.execute('UPDATE calibrations set ' 
-                            'NorthX = %s ,'  
-                            'NorthY = %s ,'
-                            'CenterX = %s ,'
-                            'CenterY = %s ,'
-                            'Radius = %s ,' 
-                            'AngleScan = %s '
-                            'WHERE DateTime <=> %s ;', var)
-        
+        self.cursor.execute('REPLACE INTO calibrations (NorthX, NorthY, '
+                            'CenterX, CenterY, Radius, AngleScan, DateTime) values '
+                            '(%s, %s, %s, %s, %s, %s, %s) ', var)
         self.db.commit()
         
 
@@ -131,24 +137,11 @@ class database():
         Write in the database all the info related 
         to a drawing identified by its datetime
         """
-        self.cursor.execute('UPDATE drawings set ' 
-                            'TypeOfDrawing = %s ,'  
-                            'Quality = %s ,'
-                            'Observer = %s ,'
-                            'CaringtonRotation = %s ,'
-                            'JulianDate = %s ,' 
-                            'Calibrated = %s ,'
-                            'Analyzed = %s ,'
-                            'GroupCount = %s ,' 
-                            'SpotCount = %s ,'
-                            'Wolf = %s ,'
-                            'AngleP = %s ,'
-                            'AngleB = %s ,'
-                            'AngleL = %s ,'
-                            'Path = %s ,'
-                            'Operator = %s ,'
-                            'LastUpdateTime = %s '
-                            'WHERE DateTime <=> %s ;', var)
+        self.cursor.execute('REPLACE into drawings (TypeOfDrawing, Quality, Observer, CaringtonRotation,'
+                            'JulianDate, Calibrated, Analyzed, GroupCount, SpotCount, Wolf, AngleP, '
+                            'AngleB, AngleL, Path, Operator, LastUpdateTime, DateTime) values '
+                            '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
+                            '%s, %s, %s, %s, %s, %s, %s)', var)
         
         self.db.commit()
         

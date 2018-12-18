@@ -715,15 +715,17 @@ class QLabelDrawing(QtGui.QLabel):
                           self.pixmap().width())
         y_drawing = round((y_click - pixmap_y_min) * self.drawing_height /
                           self.pixmap().height())
-        
+
+        """
         x_center_drawing = ((self.current_drawing.calibrated_center.x -
                              pixmap_x_min) * self.drawing_width /
                             self.pixmap().width())
-        
+    
         y_center_drawing = ((self.current_drawing.calibrated_center.y -
                              pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
-
+        """
+        
         if (not self.add_group_mode.value and
             not self.add_dipole_mode.value and
             not self.calibration_mode.value):
@@ -741,9 +743,9 @@ class QLabelDrawing(QtGui.QLabel):
         print("drawing coord:", x_drawing, y_drawing)
         print("drawing coord lower left origin:",
               x_drawing, self.drawing_height - y_drawing)
-        print("drawing coord of the center:",
-              self.current_drawing.calibrated_center.x,
-              self.current_drawing.calibrated_center.y)
+        #print("drawing coord of the center:",
+        #      self.current_drawing.calibrated_center.x,
+        #      self.current_drawing.calibrated_center.y)
         
         if (self.add_group_mode.value or
             self.add_dipole_mode.value or

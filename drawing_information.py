@@ -13,6 +13,8 @@ class DrawingInformationWidget(QtGui.QWidget):
         super(DrawingInformationWidget, self).__init__()
         form_layout = QtGui.QFormLayout()
         form_layout.setSpacing(10)
+
+        uset_db = database.database()
         
         self.drawing_operator = QtGui.QLineEdit(self)
         self.drawing_operator.setEnabled(True)
@@ -43,13 +45,13 @@ class DrawingInformationWidget(QtGui.QWidget):
             "background-color: lightgray; color:black")
         
         self.drawing_quality = QtGui.QComboBox(self) 
-        self.set_combo_box_drawing('name', 'quality', self.drawing_quality)
+        uset_db.set_combo_box_drawing('name', 'quality', self.drawing_quality)
         self.drawing_quality.setEnabled(True)
         self.drawing_quality.setStyleSheet(
             "background-color: white; color:black")
         
         self.drawing_type = QtGui.QComboBox(self)
-        self.set_combo_box_drawing('name', 'drawing_type', self.drawing_type)
+        uset_db.set_combo_box_drawing('name', 'drawing_type', self.drawing_type)
         self.drawing_type.setEnabled(True)
         self.drawing_type.setStyleSheet(
             "background-color: white; color:black")
@@ -114,16 +116,16 @@ class DrawingInformationWidget(QtGui.QWidget):
         self.setLayout(form_layout)
 
        
-    def set_combo_box_drawing(self, field, table_name, linedit):
-        """
+    """def set_combo_box_drawing(self, field, table_name, linedit):
+        
         Define automatically the combo box list with all the element 
         named in the database
-        """
+        
         uset_db = database.database()
         values = uset_db.get_values(field, table_name)
         for el in values:
             linedit.addItem(el[0])
-
+    """
     def set_drawing_linedit(self, current_drawing):
         """
         Fill the linEdits with the information of the drawing.
