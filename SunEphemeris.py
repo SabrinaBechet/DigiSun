@@ -167,7 +167,7 @@ class SunEphemeris():
         return a * math.cos(b + c * self.obs_time.julian_millenia_j2000())
 
     def read_VSOP87(self):
-        filename='/home/sabrinabct/Projets/DigiSun_2018/VSOP87D.ear'
+        filename='VSOP87D.ear'
         file = open(filename,'r')
         lines = file.readlines()
         
