@@ -11,6 +11,10 @@ class DailyScan(QtGui.QWidget):
     
     def __init__(self, operator=None):
         super(DailyScan, self).__init__()
+
+        self.daily_scan_layout = QtGui.QVBoxLayout()
+        self.daily_scan_layout.setAlignment(QtCore.Qt.AlignCenter)
+        self.setLayout(self.daily_scan_layout)
         
         self.operator = operator
         self.add_formLayout_lineEdit()
@@ -20,7 +24,7 @@ class DailyScan(QtGui.QWidget):
                              "time": False}
 
         self.check_scanner()
-        
+
         #to do: height plus grand pour le bouton du scan. Icon de scanner?
         #self.but_scan = QtGui.QPushButton('Scan and save', self)
         #self.widget_left_layout.addWidget(self.but_scan)
@@ -50,29 +54,23 @@ class DailyScan(QtGui.QWidget):
         column_maximum_width = 600
         
         form_layout = QtGui.QFormLayout()
-        form_layout.setAlignment(QtCore.Qt.AlignVCenter and QtCore.Qt.AlignHCenter)
+        form_layout.setAlignment(self, QtCore.Qt.AlignCenter)
         form_layout.setSpacing(10)
-        self.setLayout(form_layout)
-
+        
         scan_settings_title = QtGui.QLabel("Scanner settings")
-        scan_settings_title.setMaximumWidth(column_maximum_width)
         scan_settings_title.setAlignment(QtCore.Qt.AlignCenter)
         scan_settings_title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
         scan_settings_title.setFont(my_font)
 
         self.scan_name_linedit = QtGui.QLineEdit(self)
-        self.scan_name_linedit.setMaximumWidth(column_maximum_width)
         self.scan_name_linedit.setDisabled(True)
         self.scan_dpi = QtGui.QLineEdit(self)
-        self.scan_dpi.setMaximumWidth(column_maximum_width)
         self.scan_dpi.setDisabled(True)
         self.drawing_directory = QtGui.QLineEdit(self)
-        self.drawing_directory.setMaximumWidth(column_maximum_width)
         self.drawing_directory.setDisabled(True)
         
         title = QtGui.QLabel("Drawing information")
-        title.setMaximumWidth(column_maximum_width)
         title.setAlignment(QtCore.Qt.AlignCenter)
         title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
@@ -81,25 +79,20 @@ class DailyScan(QtGui.QWidget):
         uset_db = database.database()
         
         self.drawing_operator_linedit = QtGui.QLineEdit(self)
-        self.drawing_operator_linedit.setMaximumWidth(column_maximum_width)
-        self.drawing_operator_linedit.setText(self.operator)
+        self.drawing_operator_linedit.setText(str(self.operator).upper())
         self.drawing_observer_linedit = QtGui.QLineEdit(self)
-        self.drawing_observer_linedit.setMaximumWidth(column_maximum_width)
-        self.drawing_observer_linedit.setText(self.operator)
-        self.drawing_type = QtGui.QComboBox(self)#QtGui.QLineEdit(self)
-        self.drawing_type.setMaximumWidth(column_maximum_width)
+        self.drawing_observer_linedit.setText(str(self.operator).upper())
+        self.drawing_type = QtGui.QComboBox(self)
         uset_db.set_combo_box_drawing('name', 'drawing_type', self.drawing_type)
-        self.drawing_quality = QtGui.QComboBox(self)#QtGui.QLineEdit(self)
-        self.drawing_quality.setMaximumWidth(column_maximum_width)
+        self.drawing_quality = QtGui.QComboBox(self)
         uset_db.set_combo_box_drawing('name', 'quality', self.drawing_quality)
          
         self.drawing_date_linedit = QtGui.QDateEdit()
-        self.drawing_date_linedit.setMaximumWidth(column_maximum_width)
         self.drawing_date_linedit.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date_linedit.setDate(today)
         self.drawing_time_linedit = QtGui.QTimeEdit(self)
-        self.drawing_time_linedit.setMaximumWidth(column_maximum_width)
+        self.drawing_time_linedit.setDisplayFormat("hh:mm")
 
         self.drawing_time = datetime.datetime(self.drawing_date_linedit.date().year(),
                                               self.drawing_date_linedit.date().month(),
@@ -125,14 +118,12 @@ class DailyScan(QtGui.QWidget):
         self.drawing_date_linedit.dateChanged.connect(self.update_datetime)
 
         self.but_scan = QtGui.QPushButton('Scan and save', self)
-        self.but_scan.setMaximumWidth(column_maximum_width + 75)
         self.but_scan.setDisabled(True)
         self.but_analyse = QtGui.QPushButton('analyse', self)
-        self.but_analyse.setMaximumWidth(column_maximum_width + 75)
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
 
         form_layout.addRow(scan_settings_title)
-        form_layout.addRow('Scan found:', self.scan_name_linedit)
+        form_layout.addRow('Scanner found:', self.scan_name_linedit)
         form_layout.addRow('dpi:', self.scan_dpi)
         form_layout.addRow('drawings directory:', self.drawing_directory)
         form_layout.addRow(title)
@@ -145,7 +136,12 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow(self.but_scan)
         form_layout.addRow(self.but_analyse)
 
-
+        widget_form = QtGui.QWidget()
+        widget_form.setMaximumWidth(column_maximum_width)
+        form_layout.setAlignment(QtCore.Qt.AlignCenter)
+        widget_form.setLayout(form_layout)
+        
+        self.daily_scan_layout.addWidget(widget_form)
     
     def check_valid_from_db(self, table_name, field, value, info_name):
         """
@@ -208,8 +204,8 @@ class DailyScan(QtGui.QWidget):
         #print("set the drawing information..", self.drawing_time)
         new_drawing = drawing.Drawing()
         new_drawing.fill_from_daily_scan(drawing_datetime = self.drawing_time,
-                                         observer = str(self.drawing_observer_linedit.text()),
-                                         operator = str(self.drawing_operator_linedit.text()),
+                                         observer = str(self.drawing_observer_linedit.text()).upper(),
+                                         operator = str(self.drawing_operator_linedit.text()).upper(),
                                          drawing_type = str(self.drawing_type.currentText()),
                                          drawing_quality = str(self.drawing_quality.currentText()))
 

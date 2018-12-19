@@ -324,16 +324,15 @@ class Group(QtCore.QObject):
         """
         Add the dipole to the database by clicking on the drawing
         """
-        print("set the dipole position")
         if len(dipole_points)==4:
             self._dipole1_posX = dipole_points[0]
             self._dipole1_posY = dipole_points[1]
             self._dipole2_posX = dipole_points[2]
             self._dipole2_posY = dipole_points[3]
-            self._dipole1_lat = dipole_angles[0]
-            self._dipole1_long = dipole_angles[1]
-            self._dipole2_lat = dipole_angles[2]
-            self._dipole2_long = dipole_angles[3]
+            self._dipole1_lat = round(dipole_angles[0], 6)
+            self._dipole1_long = round(dipole_angles[1], 6)
+            self._dipole2_lat = round(dipole_angles[2], 6)
+            self._dipole2_long = round(dipole_angles[3], 6)
         
             self.changed = True
             self.value_changed.emit()
@@ -371,8 +370,8 @@ class Group(QtCore.QObject):
     def set_surface(self, pixel_nb, proj_area, deproj_area):
 
         self._raw_surface_px = pixel_nb
-        self._surface = deproj_area
-        self._raw_surface_msd = proj_area
+        self._surface = round(deproj_area, 2)
+        self._raw_surface_msd = round(proj_area, 2)
         
         self.changed = True
         self.value_changed.emit()
@@ -976,10 +975,10 @@ class Drawing(QtCore.QObject):
         """
         print("update the position of the group!!!")
         
-        self._group_lst[group_number]._latitude = round(latitude, 4)
-        self._group_lst[group_number]._longitude = round(longitude, 4)
-        self._group_lst[group_number]._posX = round(posX, 4)
-        self._group_lst[group_number]._posY = round(posY, 4)
+        self._group_lst[group_number]._latitude = round(latitude, 6)
+        self._group_lst[group_number]._longitude = round(longitude, 6)
+        self._group_lst[group_number]._posX = posX
+        self._group_lst[group_number]._posY = posY
 
         print("latitude : {} ".format(self._group_lst[group_number]._latitude))
         print("longitude : {} ".format(self._group_lst[group_number]._longitude))
