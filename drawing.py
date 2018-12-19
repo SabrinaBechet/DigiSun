@@ -1069,7 +1069,7 @@ class Drawing(QtCore.QObject):
         #try:
         db.write_drawing_info(self._drawing_type,
                               self._quality,
-                              self._observer,
+                              self._observer.upper(),
                               self._carington_rotation,
                               self._julian_date,
                               self._calibrated,
@@ -1081,21 +1081,23 @@ class Drawing(QtCore.QObject):
                               self._angle_B,
                               self._angle_L,
                               self._path,
-                              self._operator,
+                              self._operator.upper(),
                               self._last_update_time,
                               self._datetime)
 
-        try:#if self._calibrated_north.x:
-            db.write_calibration_info(self._calibrated_north.x,
-                                      self._calibrated_north.y,
-                                      self._calibrated_center.x,
-                                      self._calibrated_center.y,
-                                      self._calibrated_radius,
-                                      self._calibrated_angle_scan,
-                                      self._datetime_calibration)
-
-        except AttributeError:
-            print("No calibration yet..")
+        
+        self._datetime_calibration = self._datetime
+        #try:#if self._calibrated_north.x:
+        db.write_calibration_info(self._calibrated_north.x,
+                                  self._calibrated_north.y,
+                                  self._calibrated_center.x,
+                                  self._calibrated_center.y,
+                                  self._calibrated_radius,
+                                  self._calibrated_angle_scan,
+                                  self._datetime_calibration)
+        
+        #except AttributeError:
+        #print("No calibration yet..")
         
         for el in self._group_lst:
             

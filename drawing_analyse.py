@@ -1505,6 +1505,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def save_drawing(self):
         print("**save the drawing information in the database**")
 
+        print(self.drawing_lst[self.current_count].calibrated_north.x)
+        
         self.warning_box_info_incomplete("dipole")
         self.warning_box_info_incomplete("area")
             
