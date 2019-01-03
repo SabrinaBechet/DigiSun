@@ -182,7 +182,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.step = 0
             
-        else:
+        """else:
             my_font = QtGui.QFont("Comic Sans MS", 20)
             no_drawing_msg = QtGui.QLabel()
             no_drawing_msg.setText('No drawings corresponding to this entry')
@@ -190,7 +190,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             no_drawing_msg.setAlignment(QtCore.Qt.AlignCenter)
             #no_drawing_msg.setContentsMargins(0, 0, 0, 0)
             self.drawing_page.widget_right_layout.addWidget(no_drawing_msg)
- 
+        """
+        
     def set_configuration(self):
         """
         TO DO:
@@ -1581,34 +1582,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Get the list of drawings from bulk analysis page.
         Set the counter to 0.
         """
-
-        #TO DO: check if list is empty
-        
-        #if os.path.isdir(self.archdrawing_directory):
-
-        print("set drawing list")
-        print(len(drawing_lst), drawing_lst[0].datetime)
-
-        
         self.drawing_lst = drawing_lst
-        
+
         for el in self.drawing_lst:
             el.info_saved.connect(self.drawing_recorded)
             el.value_changed.connect(self.drawing_value_changed)
-            
+
         self.len_drawing_lst = len(drawing_lst)
-        
+
         self.current_count = 0
         if len(drawing_lst)>1:
             self.but_next.setEnabled(True)
             self.but_previous.setEnabled(True)
+            self.set_drawing_lineEdit()
+            self.update_session_lineEdit()
         else:
             self.but_next.setDisabled(True)
             self.but_previous.setDisabled(True)
-            
-        self.set_drawing_lineEdit()
-        self.update_session_lineEdit()
-        
+                   
+
     def update_session_lineEdit(self):
 
         self.goto_drawing_linedit.setText(str(self.current_count + 1))
@@ -1633,29 +1625,33 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         in the configuration file (digisun.ini).
         Here is fixed the structure of the filename and 
         the structure of the directory.
-        """  
-        filename = (
-            self.prefix +
-            str(self.drawing_lst[self.current_count].datetime.year) +
-            str(self.drawing_lst[self.current_count].datetime.strftime('%m')) +
-            str(self.drawing_lst[self.current_count].datetime.strftime('%d')) +
-            str(self.drawing_lst[self.current_count].datetime.strftime('%H')) +
-            str(self.drawing_lst[self.current_count].datetime.strftime('%M')) +
-            "." +
-            self.extension)
+        """
 
-        directory = os.path.join(
-            self.archdrawing_directory,
-            str(self.drawing_lst[self.current_count].datetime.year),
-            self.drawing_lst[self.current_count].datetime.strftime('%m'))
-        
-        self.label_right.file_path = os.path.join(directory,
-                                                  filename)
-        
+        if self.drawing_lst:
+            filename = (
+                self.prefix +
+                str(self.drawing_lst[self.current_count].datetime.year) +
+                str(self.drawing_lst[self.current_count].datetime.strftime('%m')) +
+                str(self.drawing_lst[self.current_count].datetime.strftime('%d')) +
+                str(self.drawing_lst[self.current_count].datetime.strftime('%H')) +
+                str(self.drawing_lst[self.current_count].datetime.strftime('%M')) +
+                "." +
+                self.extension)
+
+            directory = os.path.join(
+                self.archdrawing_directory,
+                str(self.drawing_lst[self.current_count].datetime.year),
+                self.drawing_lst[self.current_count].datetime.strftime('%m'))
+
+            self.label_right.file_path = os.path.join(directory,
+                                                      filename)
+      
             
     def set_drawing(self):
         """
         - Get the right path of the image
+        - check if 1) the drawing list is non null (entry in the db) and
+        2) if the path exist (the corresponding drawing has an image in the drawing directory)
         - update the current_drawing of the qlabel image
         - set the group widget
         - set the group toolbox
@@ -1663,19 +1659,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Note: this method should be called only when the current drawing change! 
         otherwhise use self.label_right.set_img() to refresh the img
         """
+        print("*** set drawings")
+        self.set_path_to_qlabel()
         
-        if os.path.isdir(self.archdrawing_directory):
-            self.set_path_to_qlabel()
-            
+        if self.drawing_lst and os.path.isfile(self.label_right.file_path):
             self.label_right.current_drawing = self.drawing_lst[self.current_count]
             self.label_right.group_visu_index = 0
-            
             self.label_right.calibration_mode.value = False
             self.label_right.helper_grid.value = False
             self.label_right.add_group_mode.value = False
             self.label_right.add_dipole_mode.value = False
-            #self.label_right.surface_mode.value = False
-            
             self.label_right.setCursor(QtCore.Qt.ArrowCursor)
             
             if self.label_right.surface_mode.value:
@@ -1692,5 +1685,24 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 
             self.statusBar().name.setText("")
             self.statusBar().comment.setText("")
-            #self.label_right.show()
+            
     
+        else:
+            self.label_right.set_msg_no_entry()
+            self.drawing_info.set_empty()
+            self.goto_drawing_linedit.setText("0")
+            self.goto_drawing_label2.setText("out of 0")
+            for i in reversed(range(self.drawing_page.widget_left_down_layout.count())):
+                self.drawing_page.widget_left_down_layout\
+                                 .itemAt(i)\
+                                 .widget()\
+                                 .setParent(None)
+
+            for i in reversed(range(self.drawing_page.widget_left_down_bis_layout.count())):
+                self.drawing_page\
+                    .widget_left_down_bis_layout\
+                    .itemAt(i)\
+                    .widget()\
+                    .setParent(None)    
+            
+          

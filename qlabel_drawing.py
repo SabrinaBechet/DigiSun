@@ -44,12 +44,9 @@ class QLabelDrawing(QtGui.QLabel):
     def __init__(self):
 
         super(QLabelDrawing, self).__init__()
-        my_font = QtGui.QFont("Comic Sans MS", 20)
-        self.setText('No drawings corresponding to this entry')
-        self.setFont(my_font)
+
         self.setAlignment(QtCore.Qt.AlignCenter)
-        self.setContentsMargins(0, 0, 0, 0)
-        #self.setMinimumWidth(300)
+        
         self.width_scale = 1000
         self.height_scale = 1000
         
@@ -82,7 +79,14 @@ class QLabelDrawing(QtGui.QLabel):
         self.dipole_angles = []
         
         self.frame_size = 0
-       
+
+    def set_msg_no_entry(self):
+        my_font = QtGui.QFont("Comic Sans MS", 20)
+        self.setText('No drawings corresponding to this entry')
+        self.setFont(my_font)
+        
+        self.setContentsMargins(0, 0, 0, 0)
+      
     def get_img_array(self):
         """
         open an image specified with file_path and 

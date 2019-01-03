@@ -126,6 +126,23 @@ class DrawingInformationWidget(QtGui.QWidget):
         for el in values:
             linedit.addItem(el[0])
     """
+
+    def set_empty(self):
+        
+        self.drawing_operator.setText(" ")
+        self.drawing_last_update.setText('00/00/0000')
+        self.drawing_observer.setText(" ")
+        self.drawing_date.setDate(
+            QtCore.QDate(2000, 1, 1))
+        self.drawing_time.setText("00:00")
+        self.wolf_number.setText(" ")
+        self.angleP.setText(" ")
+        self.angleB.setText(" ")
+        self.angleL.setText(" ")
+        self.rotation_number.setText(" ")
+        self.calibrated.setText(" ")
+        self.analyzed.setText(" ")
+    
     def set_drawing_linedit(self, current_drawing):
         """
         Fill the linEdits with the information of the drawing.
@@ -142,7 +159,6 @@ class DrawingInformationWidget(QtGui.QWidget):
         elif (current_drawing.last_update_time and
               isinstance(current_drawing.last_update_time, str)):
             self.drawing_last_update.setText('00/00/0000')
-                #str(current_drawing.last_update_time))
                 
         self.drawing_observer.setText(current_drawing.observer)
 

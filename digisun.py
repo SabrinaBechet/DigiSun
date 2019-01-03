@@ -86,6 +86,8 @@ class mainWindow(QtGui.QMainWindow):
 
     def bulk_switch_to_drawing_analyse(self, lst_drawing):
         lst_drawing = self.analyse_page.set_drawing_information()
+        print("list drawing:")
+        print(lst_drawing, type(lst_drawing))
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()   
                       
