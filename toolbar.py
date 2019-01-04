@@ -30,8 +30,8 @@ class Toolbar(QtGui.QToolBar):
 
         self.quick_zoom_but = QtGui.QToolButton(self)
         self.quick_zoom_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.quick_zoom_but.setText("quick zoom")
-        self.quick_zoom_but.setIcon(QtGui.QIcon('icons/Smashicons/quick_zoom.png'))
+        self.quick_zoom_but.setText("zoom toggle")
+        self.quick_zoom_but.setIcon(QtGui.QIcon('icons/mine/zoom_5.png'))
 
         self.large_grid_but = QtGui.QToolButton(self)
         self.large_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -51,7 +51,7 @@ class Toolbar(QtGui.QToolBar):
         self.dipole_visu_but = QtGui.QToolButton(self)
         self.dipole_visu_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
         self.dipole_visu_but.setText("dipole view")
-        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
+        self.dipole_visu_but.setIcon(QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
 
         self.helper_grid_but = QtGui.QToolButton(self)
         self.helper_grid_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
@@ -89,14 +89,14 @@ class Toolbar(QtGui.QToolBar):
             self.add_dipole_but = QtGui.QToolButton(self)
             self.add_dipole_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.add_dipole_but.setText("add dipole")
-            self.add_dipole_but.setIcon(QtGui.QIcon('icons/Smashicons/share.svg'))
+            self.add_dipole_but.setIcon(QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
             self.addWidget(self.add_dipole_but)
 
         if 'area' in level_info:
             self.surface_but = QtGui.QToolButton(self)
             self.surface_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.surface_but.setText("surface")
-            self.surface_but.setIcon(QtGui.QIcon('icons/layout.svg'))
+            self.surface_but.setIcon(QtGui.QIcon('icons/Freepik/layout.svg'))
             self.addWidget(self.surface_but)
 
         label_right.quick_zoom.value_changed.connect(

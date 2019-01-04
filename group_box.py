@@ -61,7 +61,7 @@ class GroupBox(QtGui.QWidget):
     def set_area_button(self, grid_position):
         """ button orange if surface not complete, transparent otherwhise"""
         self.area_button = QLabelClickable()
-        area_pix = QtGui.QPixmap("icons/Iconnice/pie_chart_24.png")
+        area_pix = QtGui.QPixmap("icons/Freepik/layout_24.png")
         self.area_button.setPixmap(area_pix)
 	self.area_button.setMaximumSize(24,24)
         self.area_button.setStyleSheet(
@@ -78,7 +78,7 @@ class GroupBox(QtGui.QWidget):
         - if dipolar and LTS not filled
         """
         self.dipole_button = QLabelClickable()
-        dipole_pix = QtGui.QPixmap("icons/dipole_24.png")
+        dipole_pix = QtGui.QPixmap('icons/mine/my_dipole_icon2_24.png')
         self.dipole_button.setPixmap(dipole_pix)
 	self.dipole_button.setMaximumSize(24,24)
         self.dipole_button.setStyleSheet(
