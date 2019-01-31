@@ -1200,11 +1200,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             
         else:
             new_sunspot_number = self.groupBoxLineList[n].spot_number_linedit.text()
+
+        try:
+            self.drawing_lst[self.current_count].update_spot_number(
+                self.listWidget_groupBox.currentRow(),
+                int(new_sunspot_number))
             
-        self.drawing_lst[self.current_count].update_spot_number(
-            self.listWidget_groupBox.currentRow(),
-            int(new_sunspot_number))
-        
+        except ValueError:
+            QtGui.QMessageBox.warning(self,
+                                      "sunspot number value",
+                                      "One of the sunspot number is not a number!")
+            
         if self.drawing_lst[self.current_count].group_lst[n].spots == 0:
             self.groupBoxLineList[n].spot_number_linedit.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")

@@ -4,6 +4,11 @@ from PyQt4 import QtGui, QtCore
 import sys
 import login, daily_scan , bulk_analyse, drawing_analyse
 
+__author__ = "Sabrina Bechet"
+__email__ = "sabrina.bechet@oma.be"
+__date__ = "February 2019"
+__version__ = "0.1.0"
+
 class BulkScanPage(QtGui.QWidget):
 
     def __init__(self, operator=None):
@@ -24,7 +29,7 @@ class mainWindow(QtGui.QMainWindow):
     """
     def __init__(self, operator=None, mode_index=0):
         super(mainWindow, self).__init__()
-        self.setWindowTitle("DigiSun 2018")
+        self.setWindowTitle("DigiSun")
         self.center()
         screen_available_geometry = QtGui.QDesktopWidget()\
                                          .availableGeometry()
