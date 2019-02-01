@@ -464,7 +464,7 @@ class Drawing(QtCore.QObject):
         self.changed = False
 
     def fill_from_daily_scan(self, drawing_datetime, operator, observer,
-                             drawing_type, drawing_quality):
+                             drawing_type, drawing_quality, drawing_name):
 
         self._datetime = drawing_datetime
         self._observer = observer
@@ -472,6 +472,7 @@ class Drawing(QtCore.QObject):
         self._drawing_type = drawing_type
         self._quality = drawing_quality
         self._last_update_time = datetime.now()
+        self._path = drawing_name
 
         # calcualte quantities related to datetime...
         sun = sun_ephemeris.SunEphemeris(drawing_datetime)

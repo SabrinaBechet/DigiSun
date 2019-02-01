@@ -218,8 +218,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.prefix = self.config['drawings']['prefix']
                 self.archdrawing_directory = self.config['drawings']['path']
                 self.extension = self.config['drawings']['extension']
-
-                print("check prefix ", self.prefix, type(self.prefix))
+                #print("check prefix ", self.prefix, type(self.prefix))
 
         except IOError:
             print('IOError - config file not found !!')

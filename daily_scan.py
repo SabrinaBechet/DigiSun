@@ -10,6 +10,7 @@ import database
 import drawing
 import scanner
 from PyQt4 import QtGui, QtCore
+import configparser
 
 
 class DailyScan(QtGui.QWidget):
@@ -21,6 +22,10 @@ class DailyScan(QtGui.QWidget):
         self.daily_scan_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.setLayout(self.daily_scan_layout)
 
+        self.config = configparser.ConfigParser()
+        self.config_file = "digisun.ini"
+        self.set_configuration()
+        
         self.operator = operator
         self.add_formLayout_lineEdit()
         self.info_complete = {"operator": True,
@@ -34,6 +39,24 @@ class DailyScan(QtGui.QWidget):
         # self.but_scan = QtGui.QPushButton('Scan and save', self)
         # self.widget_left_layout.addWidget(self.but_scan)
 
+    def set_configuration(self):
+        """
+        TO DO:
+        the prefix should be read from the database
+        (prefix from the drawing_type table)
+        and from the initialization file
+        """
+        try:
+            with open(self.config_file) as config_file:
+                self.config.read_file(config_file)
+                self.prefix = self.config['drawings']['prefix']
+                self.archdrawing_directory = self.config['drawings']['path']
+                self.extension = self.config['drawings']['extension']
+                #print("check prefix ", self.prefix, type(self.prefix))
+
+        except IOError:
+            print('IOError - config file not found !!')
+        
     def check_scanner(self):
         """
         Check if there is a scanner connected and
@@ -211,12 +234,23 @@ class DailyScan(QtGui.QWidget):
         corresponding to the new drawing scanned
         """
         new_drawing = drawing.Drawing()
+        filename = (
+                self.prefix +
+                str(self.drawing_time.year) +
+                self.drawing_time.strftime('%m') +
+                self.drawing_time.strftime('%d') +
+                self.drawing_time.strftime('%H') +
+                self.drawing_time.strftime('%M') +
+                "." +
+                self.extension)
+
         new_drawing.fill_from_daily_scan(
             drawing_datetime=self.drawing_time,
             observer=str(self.drawing_observer_linedit.text()).upper(),
             operator=str(self.drawing_operator_linedit.text()).upper(),
             drawing_type=str(self.drawing_type.currentText()),
-            drawing_quality=str(self.drawing_quality.currentText()))
+            drawing_quality=str(self.drawing_quality.currentText()),
+            drawing_name=filename)
 
         db = database.database()
         db.replace_drawing(new_drawing)
