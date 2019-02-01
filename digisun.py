@@ -9,7 +9,6 @@ The three choices are:
 - bulk analyse
 - bulk scan (not developped yet)
 """
-
 import sys
 import login
 import daily_scan
@@ -87,13 +86,6 @@ class mainWindow(QtGui.QMainWindow):
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui\
-            .QApplication\
-            .desktop()\
-            .screenNumber(QtGui.QApplication
-                          .desktop()
-                          .cursor()
-                          .pos())
         desktop_rect = QtGui.QDesktopWidget().availableGeometry()
         center = desktop_rect.center()
         frameGm.moveCenter(QtCore.QPoint(center.x() - self.width()*0.5,
@@ -139,6 +131,7 @@ class mainWindow(QtGui.QMainWindow):
 
         menuBar.show()
 
+        
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     login = login.DialogLogin()

@@ -3,7 +3,6 @@
 """
 The page for the daily scan interface
 """
-
 import os
 import sys
 import datetime
@@ -260,5 +259,3 @@ class DailyScan(QtGui.QWidget):
                 pass
             elif response == QtGui.QMessageBox.No:
                 return
-
-        drawing_scanned = my_scanner.scan(self.get_filename())

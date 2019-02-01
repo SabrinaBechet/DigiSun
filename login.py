@@ -1,14 +1,11 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-
 """
 The DialogLogin class represents the dialiog box to enter the user login.
 It checks if the login exist in the database
 """
-
-import sys
 import database
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 
 
 class DialogLogin(QtGui.QDialog):

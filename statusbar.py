@@ -2,6 +2,7 @@
 # -*-coding:utf-8-*-
 from PyQt4 import QtCore, QtGui
 
+
 class StatusBar(QtGui.QStatusBar):
     """
     Use a Label instead of the Qt status bar to have more precise control
@@ -12,7 +13,7 @@ class StatusBar(QtGui.QStatusBar):
 
         self.name = QtGui.QLabel()
         self.name.setStyleSheet(
-            "QLabel { background-color : red; color : blue; }");
+            "QLabel { background-color : red; color : blue; }")
         self.name.setAlignment(QtCore.Qt.AlignHCenter)
         self.name.setMinimumSize(self.name.sizeHint())
         self.comment = QtGui.QLabel()
@@ -22,6 +23,5 @@ class StatusBar(QtGui.QStatusBar):
         self.addWidget(self.comment)
 
     def clean(self):
-        #print("cleaning function..")
         self.name.setText("")
         self.comment.setText("")
