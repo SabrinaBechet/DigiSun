@@ -986,16 +986,18 @@ class Drawing(QtCore.QObject):
         self.update_group_number(self.group_count - 1)
         self._group_lst.pop(group_index)
 
+        # keep in memory to delete    
+        # self.index_to_delete.append(group_index)
+
+        db = database.database()
+        print(self._datetime, group_index)
+        db.delete_group_info(self._datetime, group_index)
+
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
 
-        # keep in memory to delete    
-        self.index_to_delete.append(group_index)
-
-        """db = database.database()
-        print(self._datetime, group_index)
-        db.delete_group(self._datetime, group_index)
-        """
+        self.save_info()
+        
         
     def save_info(self):
         # print("save the info of the drawing!")
@@ -1028,10 +1030,10 @@ class Drawing(QtCore.QObject):
                                   self._calibrated_angle_scan,
                                   self._datetime_calibration)
 
-        for el in self.index_to_delete:
+        """for el in self.index_to_delete:
             db.delete_group_info(self._datetime, el)
             print("*********************extra group deleted!!", el)
-                    
+        """            
         for el in self._group_lst:
             print("save group info ", el)
             el.save_group_info(self._group_count)

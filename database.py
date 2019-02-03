@@ -111,21 +111,12 @@ class database():
         # print('check db return')
         # print(result)
         return result
-
-    def delete_group(self, date, group_index):
-        self.cursor.execute('delete FROM groups' +
-                            ' WHERE DateTime = %s && ' +
-                            ' Number = %s ;',
-                            (str(date),
-                             str(group_index)))
-
-        self.db.commit()
-
     
     def delete_group_info(self, datetime, number):
+        
 
         self.cursor.execute('DELETE FROM  groups where DateTime <=> %s and '
-                            'Number <=> %s; ',
+                            'Number >= %s; ',
                             (str(datetime), str(number)))
         self.db.commit()
 
@@ -136,6 +127,7 @@ class database():
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
         """
+        print("**** write group info")
         self.cursor.execute('REPLACE INTO groups (DateTime, Number, Latitude, '
                             'Longitude, Lcm, CenterToLimbAngle, Quadrant, '
                             'McIntosh, Zurich, Spots, '
