@@ -367,37 +367,32 @@ class Group(QtCore.QObject):
     def save_group_info(self, group_count):
         print("***** save the info of the group ", self._number, self._id_)
         db = database.database()
-
-        if self._number >= group_count:
-            print("*********************extra group deleted!!")
-            db.delete_group_info(self._datetime, self._number)
-
-        else:
-            db.write_group_info(self._datetime,
-                                self._number,
-                                self._latitude,
-                                self._longitude,
-                                self._Lcm,
-                                self._CenterToLimb_angle,
-                                self._quadrant,
-                                self._McIntosh,
-                                self._zurich,
-                                self._spots,
-                                self._dipole1_lat,
-                                self._dipole1_long,
-                                self._dipole2_lat,
-                                self._dipole2_long,
-                                self._surface,
-                                self._raw_surface_px,
-                                self._raw_surface_msd,
-                                self._g_spot,
-                                self._posX,
-                                self._posY,
-                                self._dipole1_posX,
-                                self._dipole1_posY,
-                                self._dipole2_posX,
-                                self._dipole2_posY,
-                                self._largest_spot)
+        
+        db.write_group_info(self._datetime,
+                            self._number,
+                            self._latitude,
+                            self._longitude,
+                            self._Lcm,
+                            self._CenterToLimb_angle,
+                            self._quadrant,
+                            self._McIntosh,
+                            self._zurich,
+                            self._spots,
+                            self._dipole1_lat,
+                            self._dipole1_long,
+                            self._dipole2_lat,
+                            self._dipole2_long,
+                            self._surface,
+                            self._raw_surface_px,
+                            self._raw_surface_msd,
+                            self._g_spot,
+                            self._posX,
+                            self._posY,
+                            self._dipole1_posX,
+                            self._dipole1_posY,
+                            self._dipole2_posX,
+                            self._dipole2_posY,
+                            self._largest_spot)
 
 
 class Drawing(QtCore.QObject):
@@ -460,7 +455,7 @@ class Drawing(QtCore.QObject):
             self._last_update_time = None
 
         self._group_lst = []
-
+        self.index_to_delete = []
         self.changed = False
 
     def fill_from_daily_scan(self, drawing_datetime, operator, observer,
@@ -944,10 +939,9 @@ class Drawing(QtCore.QObject):
 
     def update_spot_number(self, group_number, sunspot_number):
         """
-        Change the sunspot number -> update:
-        - groups.spots
-        - drawings.spot_count
-        - drawings.wolf
+        Put the number of spots of the group[group_number] equal to
+        sunspot number.
+        Then recalculates the total sunspot number and the wolf number.
         """
         # print("update the sunspot_number!", sunspot_number)
         self._group_lst[group_number]._spots = sunspot_number
@@ -964,7 +958,6 @@ class Drawing(QtCore.QObject):
         total_sunspots = 0
         for group in self._group_lst:
             total_sunspots += group._spots
-
             self._wolf = self._group_count * 10 + self._spot_count
         self.changed = True
         self.value_changed.emit()
@@ -996,6 +989,14 @@ class Drawing(QtCore.QObject):
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
 
+        # keep in memory to delete    
+        self.index_to_delete.append(group_index)
+
+        """db = database.database()
+        print(self._datetime, group_index)
+        db.delete_group(self._datetime, group_index)
+        """
+        
     def save_info(self):
         # print("save the info of the drawing!")
 
@@ -1027,7 +1028,12 @@ class Drawing(QtCore.QObject):
                                   self._calibrated_angle_scan,
                                   self._datetime_calibration)
 
+        for el in self.index_to_delete:
+            db.delete_group_info(self._datetime, el)
+            print("*********************extra group deleted!!", el)
+                    
         for el in self._group_lst:
+            print("save group info ", el)
             el.save_group_info(self._group_count)
 
         self.info_saved.emit()

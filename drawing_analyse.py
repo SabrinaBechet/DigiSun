@@ -1005,7 +1005,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_focus_group_box(0)
         self.set_group_toolbox()
         self.label_right.set_img()
-
+        
         self.drawing_info.wolf_number.setText(
             str(self.drawing_lst[self.current_count].wolf))
 

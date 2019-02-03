@@ -331,9 +331,6 @@ class BulkAnalysePage(BulkViewPage):
         day_min = str(element_selectionne[0:3])
         day_max = str(element_selectionne[5:8])
 
-        # print(year_selected + ' ' + month_selected + ' ' + day_min)
-        # print(year_selected + ' ' + month_selected + ' ' + day_max)
-
         self.datetime_drawing_min = datetime.strptime(year_selected + ' ' +
                                                       month_selected + ' ' +
                                                       day_min + "00:00",

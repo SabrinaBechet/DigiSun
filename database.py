@@ -57,7 +57,7 @@ class database():
         values = self.get_values(field, table_name)
         for el in values:
             linedit.addItem(el[0])
-
+            
     def get_all_in_time_interval(self, table_name, date_min, date_max):
         self.cursor.execute('SELECT * FROM ' + table_name +
                             ' WHERE DateTime > %s && ' +
@@ -74,6 +74,24 @@ class database():
         # print(result)
         return result
 
+    def get_all_LastUpdateTime_time_interval(self, table_name, date_min, date_max):
+        self.cursor.execute('SELECT * FROM ' + table_name +
+                            ' WHERE LastUpdateTime > %s && ' +
+                            ' DateTime < %s ;',
+                            (str(date_min),
+                             str(date_max)))
+
+        self.db.commit()
+        result = self.cursor.fetchall()
+
+        # print(result)
+        # field_lst = [x[0] for x in result]
+        # print("the result: ")
+        # print(result)
+        return result
+
+
+    
     def get_values(self, field, table_name):
         self.cursor.execute('SELECT ' + field + ' FROM ' +
                             table_name)
@@ -94,6 +112,16 @@ class database():
         # print(result)
         return result
 
+    def delete_group(self, date, group_index):
+        self.cursor.execute('delete FROM groups' +
+                            ' WHERE DateTime = %s && ' +
+                            ' Number = %s ;',
+                            (str(date),
+                             str(group_index)))
+
+        self.db.commit()
+
+    
     def delete_group_info(self, datetime, number):
 
         self.cursor.execute('DELETE FROM  groups where DateTime <=> %s and '
