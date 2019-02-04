@@ -10,11 +10,11 @@ def group_frame(zurich, radius, posx, posy, center_x, center_y):
     if distance_from_center < radius:
         center_to_limb = (math.asin(distance_from_center *
                                     1./radius))
-
+    """
     print("distance from center: {} ".format(distance_from_center))
     print("center to limb angle: {}".format(center_to_limb * 180/math.pi))
     print("cos correction: {}".format(math.cos(float(center_to_limb))))
-
+    """
     if zurich in ['A', 'J']:
         step = (radius/30.) * (math.cos(float(center_to_limb)))
     elif zurich in ['H']:

@@ -108,11 +108,8 @@ class QLabelDrawing(QtGui.QLabel):
             return
 
     def set_img(self):
-        # print("***set the img **")
         try:
             img = Image.open(self.file_path)
-            print("Image Info:", img.info)
-            print(img.size)
             self.drawing_width = img.size[0]
             self.drawing_height = img.size[1]
             qim = ImageQt(img)  # convert PIL image to a PIL.ImageQt object
@@ -331,11 +328,6 @@ class QLabelDrawing(QtGui.QLabel):
                             y_lst_minus90_0[i])
 
             painter.setPen(large_pen)
-            print("value of calibration points: ")
-            print(self.current_drawing.calibrated_center.x,
-                  self.current_drawing.calibrated_center.y)
-            print(self.current_drawing.calibrated_north.x,
-                  self.current_drawing.calibrated_north.y)
             painter.drawPoint(self.current_drawing.calibrated_center.x,
                               self.current_drawing.calibrated_center.y)
             painter.drawPoint(self.current_drawing.calibrated_north.x,
@@ -729,14 +721,14 @@ class QLabelDrawing(QtGui.QLabel):
                      self.current_drawing.calibrated_radius/30)):
                     self.selected_element = self.current_drawing\
                                                 .group_lst.index(el)
-                    print("**** drawing clicked signal!!")
+                    # print("**** drawing clicked signal!!")
                     self.drawing_clicked.emit()
 
-        print("click coordinate: ", x_click, y_click)
-        print("pixmap coord: ", x_pixmap, y_pixmap)
-        print("drawing coord:", x_drawing, y_drawing)
-        print("drawing coord lower left origin:",
-              x_drawing, self.drawing_height - y_drawing)
+        # print("click coordinate: ", x_click, y_click)
+        # print("pixmap coord: ", x_pixmap, y_pixmap)
+        # print("drawing coord:", x_drawing, y_drawing)
+        # print("drawing coord lower left origin:",
+        #      x_drawing, self.drawing_height - y_drawing)
         # print("drawing coord of the center:",
         #      self.current_drawing.calibrated_center.x,
         #      self.current_drawing.calibrated_center.y)
@@ -815,8 +807,8 @@ class QLabelDrawing(QtGui.QLabel):
 
         if (self.add_dipole_mode.value and self.current_drawing.calibrated):
 
-            # print("click on the drawing to add a dipole")
-            # print(len(self.dipole_points), len(self.dipole_angles))
+            print("click on the drawing to add a dipole")
+            print(len(self.dipole_points), len(self.dipole_angles))
 
             if (self.current_drawing.group_lst[self.group_visu_index]
                     .zurich.upper() in ["B", "C", "D", "E", "F", "G", "X"]):

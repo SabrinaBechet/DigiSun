@@ -194,6 +194,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
 
             self.step = 0
+            
 
         """else:
             my_font = QtGui.QFont("Comic Sans MS", 20)
@@ -210,7 +211,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         TO DO:
         the prefix should be read from the database
         (prefix from the drawing_type table)
-        and from the initialization file
+        nd from the initialization file
         """
         try:
             with open(self.config_file) as config_file:
@@ -487,14 +488,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         - zoom the original drawing x5
         - scroll at the group position
         """
-        QtGui.QApplication.restoreOverrideCursor()
+        #QtGui.QApplication.restoreOverrideCursor()
+        self.label_right.setCursor(QtCore.Qt.ArrowCursor)
         self.label_right.surface_mode.set_opposite_value()
-
+        self.statusBar().clean()
         surface_module_size_min = 380
         surface_module_size_max = 580
 
         if self.label_right.surface_mode.value:
-            # self.scroll_group.value = True
             self.drawing_page\
                 .widget_middle_up\
                 .setMinimumWidth(surface_module_size_min)
@@ -1094,7 +1095,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if value is False:
                 missing_info.append(key)
 
-        # print("missing info", missing_info)
         return missing_info
 
     def update_area_button(self):
@@ -1114,7 +1114,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         is complete when:
         - position is filled
         - LTS is filled
-        if one of the two condition is not met -> dipole button in red
+        if one of the two condition is not met -> dipole button in orange
         else -> dipole button in green
         """
         group_index = self.listWidget_groupBox.currentRow()
@@ -1345,7 +1345,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Add all the linedits related to the drawing information
         """
-
         title_left_up = QtGui.QLabel("Drawing information")
         title_left_up.setAlignment(QtCore.Qt.AlignCenter)
         title_left_up.setContentsMargins(0, 5, 0, 5)
@@ -1570,6 +1569,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Set the save button to lightgray and
         the changed value to False
         """
+        print("*********** drawing recorded!!")
         self.but_save.setStyleSheet("background-color: lightgray")
         self.drawing_lst[self.current_count].changed = False
 
@@ -1602,7 +1602,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Set the save button in orange as soon as a new value is introduced
         """
-        # print("*********** the value has changed!!")
+        print("*********** the value has changed!!")
         for el in self.drawing_lst:
             print(el, el.changed)
             if el.changed:
@@ -1614,6 +1614,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Get the list of drawings from bulk analysis page.
         Set the counter to 0.
         """
+        print("set the drawing lst -> changed value!!")
         self.drawing_lst = drawing_lst
 
         for el in self.drawing_lst:
@@ -1623,7 +1624,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.len_drawing_lst = len(drawing_lst)
 
         self.current_count = 0
-        if len(drawing_lst) > 1:
+        if len(drawing_lst) >= 1:
             self.but_next.setEnabled(True)
             self.but_previous.setEnabled(True)
             self.set_drawing_lineEdit()
@@ -1695,7 +1696,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_path_to_qlabel()
 
         if self.drawing_lst and os.path.isfile(self.label_right.file_path):
-            self.drawing_info.set_empty()
             self.label_right\
                 .current_drawing = self.drawing_lst[self.current_count]
             self.label_right.group_visu_index = 0

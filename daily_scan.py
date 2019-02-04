@@ -234,7 +234,7 @@ class DailyScan(QtGui.QWidget):
         corresponding to the new drawing scanned
         """
         db = database.database()
-        answer = QtGui.QMessageBox.No
+        answer = QtGui.QMessageBox.Yes
         lst_groups = []
         
         if db.exist_in_db('drawings', 'DateTime', self.drawing_time):
@@ -259,10 +259,9 @@ class DailyScan(QtGui.QWidget):
                 .question(self,
                           "new drawing",
                           "An entry corresponding to this drawing was found in the database. "
-                          "Do you want to keep data ?",
+                          "Do you want to delete previous data ?",
                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-            
-            
+             
             new_drawing = drawing.Drawing(tuple_drawings[0])
             new_drawing.set_drawing_type(tuple_drawing_type[0])
             if self.drawing_time == tuple_calibrations[0][1]:
@@ -270,16 +269,16 @@ class DailyScan(QtGui.QWidget):
             for group in lst_groups:
                 new_drawing.set_group(group)
 
-            if answer == QtGui.QMessageBox.Yes:
+            if answer == QtGui.QMessageBox.No:
                 db.replace_drawing(new_drawing)
 
-            if answer == QtGui.QMessageBox.No:
+            if answer == QtGui.QMessageBox.Yes:
                 # delete the existing groups
                 for index in reversed(range(0, len(lst_groups))):
                     new_drawing.delete_group(index)
                     
                 
-        if answer == QtGui.QMessageBox.No:
+        if answer == QtGui.QMessageBox.Yes:
             new_drawing = drawing.Drawing()
             filename = (
                 self.prefix +

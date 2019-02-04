@@ -1,9 +1,12 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-from PyQt4 import QtGui, QtCore
-
 import database
 from datetime import datetime
+from PyQt4 import QtGui, QtCore
+
+__author__ = "Sabrina Bechet"
+__email__ = "sabrina.bechet@oma.be"
+__date__ = "February 2019"
 
 
 class DrawingInformationWidget(QtGui.QWidget):
@@ -90,11 +93,6 @@ class DrawingInformationWidget(QtGui.QWidget):
         self.analyzed.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.area_done = QtGui.QLineEdit(self)
-        self.area_done.setEnabled(False)
-        self.area_done.setStyleSheet(
-            "background-color: lightgrey; color:black")
-
         form_layout.addRow('Date:', self.drawing_date)
         form_layout.addRow('Time:', self.drawing_time)
         form_layout.addRow('Observer:', self.drawing_observer)
@@ -109,13 +107,11 @@ class DrawingInformationWidget(QtGui.QWidget):
         form_layout.addRow('Last Operator:', self.drawing_operator)
         form_layout.addRow('Last Update:', self.drawing_last_update)
         form_layout.addRow('Calibrated:', self.calibrated)
-        form_layout.addRow('Analysed:', self.analyzed)
-        form_layout.addRow('Area done:', self.area_done)
+        form_layout.addRow('Group ready:', self.analyzed)
 
         self.setLayout(form_layout)
 
     def set_empty(self):
-
         self.drawing_operator.setText(" ")
         self.drawing_last_update.setText('00/00/0000')
         self.drawing_observer.setText(" ")

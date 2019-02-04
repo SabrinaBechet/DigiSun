@@ -384,7 +384,6 @@ class BulkAnalysePage(BulkViewPage):
 
             for group in lst_groups:
                 if drawing_tmp.datetime == group[1]:
-                    # print("group: ", group)
                     drawing_tmp.set_group(group)
 
             drawing_lst.append(drawing_tmp)

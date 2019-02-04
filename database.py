@@ -108,8 +108,6 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
-        # print('check db return')
-        # print(result)
         return result
     
     def delete_group_info(self, datetime, number):
@@ -127,7 +125,6 @@ class database():
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
         """
-        print("**** write group info")
         self.cursor.execute('REPLACE INTO groups (DateTime, Number, Latitude, '
                             'Longitude, Lcm, CenterToLimbAngle, Quadrant, '
                             'McIntosh, Zurich, Spots, '

@@ -3,6 +3,7 @@
 
 from PyQt4 import QtGui, QtCore
 
+__author__ = "Mael Panouillot, Sabrina Bechet"
 
 def inputVoid(self):
     pass
@@ -18,7 +19,6 @@ class QLabelClickable(QtGui.QLabel):
         super(QtGui.QLabel, self).__init__()
 
     def mouseReleaseEvent(self, QMouseEvent):
-        print("one click on the label!!")
         self.clicked.emit()
 
 
@@ -252,10 +252,6 @@ class GroupBox(QtGui.QWidget):
         - if group dipolar and lts not filled -> orange and enabled
         - if group dipolar and lts filled -> L, T or E in green and enabled
         """
-        print("enter in the update largest spot button",
-              largest_spot,
-              zurich_type)
-
         if (zurich_type.upper() not in self.zurich_dipolar):
             self.largest_spot_leading.setStyleSheet(
                 "background-color: lightblue")
