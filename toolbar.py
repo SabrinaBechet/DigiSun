@@ -74,6 +74,7 @@ class Toolbar(QtGui.QToolBar):
             QtCore.Qt.ToolButtonTextUnderIcon)
         self.add_group_but.setText("add group")
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
+        self.add_group_but.setShortcut(QtGui.QKeySequence("g"))
 
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
@@ -98,6 +99,7 @@ class Toolbar(QtGui.QToolBar):
             self.add_dipole_but.setText("add dipole")
             self.add_dipole_but.setIcon(
                 QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
+            self.add_dipole_but.setShortcut(QtGui.QKeySequence("d"))
             self.addWidget(self.add_dipole_but)
 
         if 'area' in level_info:
@@ -106,6 +108,7 @@ class Toolbar(QtGui.QToolBar):
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.surface_but.setText("surface")
             self.surface_but.setIcon(QtGui.QIcon('icons/Freepik/layout.svg'))
+            self.surface_but.setShortcut(QtGui.QKeySequence("s"))
             self.addWidget(self.surface_but)
 
         label_right.quick_zoom.value_changed.connect(

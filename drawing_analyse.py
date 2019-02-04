@@ -984,11 +984,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.group_toolbox.button_right.clicked.connect(
                 lambda: self.update_HGC_position('longitude', -position_step))
 
-            self.group_toolbox.largest_spot_leading.clicked.connect(
+            self.group_toolbox.largest_spot_leading_but.clicked.connect(
                 lambda: self.update_largest_spot('L'))
-            self.group_toolbox.largest_spot_egal.clicked.connect(
+            self.group_toolbox.largest_spot_egal_but.clicked.connect(
                 lambda: self.update_largest_spot('E'))
-            self.group_toolbox.largest_spot_trailing.clicked.connect(
+            self.group_toolbox.largest_spot_trailing_but.clicked.connect(
                 lambda: self.update_largest_spot('T'))
 
         else:
@@ -1466,6 +1466,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         layout_goto = self.jump_to_drawing_linedit()
 
         self.but_save = QtGui.QPushButton('save', self)
+        self.but_save.setShortcut(QtGui.QKeySequence("Ctrl+s"))
+        self.but_save.setToolTip('shortcut: \'Ctrl+s\'')                  
         self.but_save.clicked.connect(self.save_drawing)
 
         form_layout.addRow("Current operator: ", current_operator_linedit)

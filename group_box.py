@@ -253,76 +253,85 @@ class GroupBox(QtGui.QWidget):
         - if group dipolar and lts filled -> L, T or E in green and enabled
         """
         if (zurich_type.upper() not in self.zurich_dipolar):
-            self.largest_spot_leading.setStyleSheet(
+            self.largest_spot_leading_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_trailing.setStyleSheet(
+            self.largest_spot_trailing_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_egal.setStyleSheet(
+            self.largest_spot_egal_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_leading.setDisabled(True)
-            self.largest_spot_trailing.setDisabled(True)
-            self.largest_spot_egal.setDisabled(True)
+            self.largest_spot_leading_but.setDisabled(True)
+            self.largest_spot_trailing_but.setDisabled(True)
+            self.largest_spot_egal_but.setDisabled(True)
         elif (zurich_type.upper() in self.zurich_dipolar and
               largest_spot is None):
-            self.largest_spot_leading.setStyleSheet(
+            self.largest_spot_leading_but.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
-            self.largest_spot_trailing.setStyleSheet(
+            self.largest_spot_trailing_but.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
-            self.largest_spot_egal.setStyleSheet(
+            self.largest_spot_egal_but.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
-            self.largest_spot_leading.setDisabled(False)
-            self.largest_spot_trailing.setDisabled(False)
-            self.largest_spot_egal.setDisabled(False)
+            self.largest_spot_leading_but.setDisabled(False)
+            self.largest_spot_trailing_but.setDisabled(False)
+            self.largest_spot_egal_but.setDisabled(False)
         elif largest_spot is 'L':
-            self.largest_spot_leading.setStyleSheet(
+            self.largest_spot_leading_but.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
-            self.largest_spot_trailing.setStyleSheet(
+            self.largest_spot_trailing_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_egal.setStyleSheet(
+            self.largest_spot_egal_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_leading.setDisabled(False)
-            self.largest_spot_trailing.setDisabled(False)
-            self.largest_spot_egal.setDisabled(False)
+            self.largest_spot_leading_but.setDisabled(False)
+            self.largest_spot_trailing_but.setDisabled(False)
+            self.largest_spot_egal_but.setDisabled(False)
         elif largest_spot is 'T':
-            self.largest_spot_trailing.setStyleSheet(
+            self.largest_spot_trailing_but.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
-            self.largest_spot_leading.setStyleSheet(
+            self.largest_spot_leading_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_egal.setStyleSheet(
+            self.largest_spot_egal_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_leading.setDisabled(False)
-            self.largest_spot_trailing.setDisabled(False)
-            self.largest_spot_egal.setDisabled(False)
+            self.largest_spot_leading_but.setDisabled(False)
+            self.largest_spot_trailing_but.setDisabled(False)
+            self.largest_spot_egal_but.setDisabled(False)
         elif largest_spot is 'E':
-            self.largest_spot_egal.setStyleSheet(
+            self.largest_spot_egal_but.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
-            self.largest_spot_leading.setStyleSheet(
+            self.largest_spot_leading_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_trailing.setStyleSheet(
+            self.largest_spot_trailing_but.setStyleSheet(
                 "background-color: lightblue")
-            self.largest_spot_leading.setDisabled(False)
-            self.largest_spot_trailing.setDisabled(False)
-            self.largest_spot_egal.setDisabled(False)
+            self.largest_spot_leading_but.setDisabled(False)
+            self.largest_spot_trailing_but.setDisabled(False)
+            self.largest_spot_egal_but.setDisabled(False)
 
     def set_largest_spot(self, largest_spot, zurich_type, grid_position):
         """
         Create the widget and update the value of it.
         """
         self.largest_spot_label = QtGui.QLabel("Lead/Trail")
-        self.largest_spot_leading = QtGui.QPushButton("L")
-        self.largest_spot_egal = QtGui.QPushButton("=")
-        self.largest_spot_trailing = QtGui.QPushButton("T")
+
+        self.largest_spot_leading_but = QtGui.QPushButton("L")
+        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("l"))
+        self.largest_spot_leading_but.setToolTip('shortcut: \'l\'')
+
+        self.largest_spot_egal_but = QtGui.QPushButton("=")
+        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("="))
+        self.largest_spot_egal_but.setToolTip('shortcut: \'=\'')
+        
+        self.largest_spot_trailing_but = QtGui.QPushButton("T")
+        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("t"))
+        self.largest_spot_trailing_but.setToolTip('shortcut: \'t\'')
 
         self.grid_layout.addWidget(self.largest_spot_label,
                                    grid_position[0],
                                    grid_position[1])
-        self.grid_layout.addWidget(self.largest_spot_leading,
+        self.grid_layout.addWidget(self.largest_spot_leading_but,
                                    grid_position[0],
                                    grid_position[1] + 1)
-        self.grid_layout.addWidget(self.largest_spot_egal,
+        self.grid_layout.addWidget(self.largest_spot_egal_but,
                                    grid_position[0],
                                    grid_position[1] + 2)
-        self.grid_layout.addWidget(self.largest_spot_trailing,
+        self.grid_layout.addWidget(self.largest_spot_trailing_but,
                                    grid_position[0],
                                    grid_position[1] + 3)
 
