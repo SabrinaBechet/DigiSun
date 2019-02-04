@@ -997,17 +997,29 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Delete a group by clicking on the red cross in the group_toolbox.
         """
-        index = self.current_count
-        group_index = self.listWidget_groupBox.currentRow()
 
-        self.drawing_lst[index].delete_group(group_index)
-        self.set_group_widget()
-        self.set_focus_group_box(0)
-        self.set_group_toolbox()
-        self.label_right.set_img()
-        
-        self.drawing_info.wolf_number.setText(
-            str(self.drawing_lst[self.current_count].wolf))
+        reponse = QtGui\
+            .QMessageBox\
+            .question(self,
+                      "delete group",
+                      "This will delete the group permanently from the database. "
+                      "Do you confirm your action?",
+                      QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+
+        if reponse == QtGui.QMessageBox.Yes:
+            index = self.current_count
+            group_index = self.listWidget_groupBox.currentRow()
+            
+            self.drawing_lst[index].delete_group(group_index)
+            self.set_group_widget()
+            self.set_focus_group_box(0)
+            self.set_group_toolbox()
+            self.label_right.set_img()
+            
+            self.drawing_info.wolf_number.setText(
+                str(self.drawing_lst[self.current_count].wolf))
+        else:
+            pass
 
     def update_largest_spot(self, largest_spot):
         """

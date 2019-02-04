@@ -996,6 +996,7 @@ class Drawing(QtCore.QObject):
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
 
+        self._last_update_time = datetime.now()
         self.save_info()
         
         
