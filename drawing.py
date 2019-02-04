@@ -455,7 +455,6 @@ class Drawing(QtCore.QObject):
             self._last_update_time = None
 
         self._group_lst = []
-        self.index_to_delete = []
         self.changed = False
 
     def fill_from_daily_scan(self, drawing_datetime, operator, observer,
@@ -982,15 +981,12 @@ class Drawing(QtCore.QObject):
         """
         Delete a group among the list of groups
         """
+        
         self.update_spot_number(group_index, 0)
         self.update_group_number(self.group_count - 1)
         self._group_lst.pop(group_index)
 
-        # keep in memory to delete    
-        # self.index_to_delete.append(group_index)
-
         db = database.database()
-        print(self._datetime, group_index)
         db.delete_group_info(self._datetime, group_index)
 
         for i in range(group_index, len(self._group_lst)):

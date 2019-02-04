@@ -60,8 +60,8 @@ class database():
             
     def get_all_in_time_interval(self, table_name, date_min, date_max):
         self.cursor.execute('SELECT * FROM ' + table_name +
-                            ' WHERE DateTime > %s && ' +
-                            ' DateTime < %s ;',
+                            ' WHERE DateTime >= %s && ' +
+                            ' DateTime <= %s ;',
                             (str(date_min),
                              str(date_max)))
 

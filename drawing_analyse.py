@@ -1695,6 +1695,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.set_path_to_qlabel()
 
         if self.drawing_lst and os.path.isfile(self.label_right.file_path):
+            self.drawing_info.set_empty()
             self.label_right\
                 .current_drawing = self.drawing_lst[self.current_count]
             self.label_right.group_visu_index = 0

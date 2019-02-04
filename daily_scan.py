@@ -154,7 +154,7 @@ class DailyScan(QtGui.QWidget):
 
         self.but_scan = QtGui.QPushButton('Scan and save', self)
         self.but_scan.setDisabled(True)
-        self.but_analyse = QtGui.QPushButton('analyse', self)
+        self.but_analyse = QtGui.QPushButton('Drawing analyse', self)
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
 
         form_layout.addRow(scan_settings_title)
@@ -233,8 +233,55 @@ class DailyScan(QtGui.QWidget):
         Method that add an entry to the database
         corresponding to the new drawing scanned
         """
-        new_drawing = drawing.Drawing()
-        filename = (
+        db = database.database()
+        answer = QtGui.QMessageBox.No
+        lst_groups = []
+        
+        if db.exist_in_db('drawings', 'DateTime', self.drawing_time):
+            tuple_drawings = db\
+                .get_all_in_time_interval("drawings",
+                                          self.drawing_time,
+                                          self.drawing_time)
+            tuple_calibrations = db\
+                .get_all_in_time_interval("calibrations",
+                                          self.drawing_time,
+                                          self.drawing_time)
+            tuple_groups = db\
+                    .get_all_in_time_interval("groups",
+                                              self.drawing_time,
+                                              self.drawing_time)
+            lst_groups = [el for el in tuple_groups]
+            drawing_type = tuple_drawings[0][2]
+            tuple_drawing_type = db.get_drawing_information("drawing_type",
+                                                                drawing_type)
+            answer = QtGui\
+                .QMessageBox\
+                .question(self,
+                          "new drawing",
+                          "An entry corresponding to this drawing was found in the database. "
+                          "Do you want to keep data ?",
+                          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+            
+            
+            new_drawing = drawing.Drawing(tuple_drawings[0])
+            new_drawing.set_drawing_type(tuple_drawing_type[0])
+            if self.drawing_time == tuple_calibrations[0][1]:
+                new_drawing.set_calibration(tuple_calibrations[0])
+            for group in lst_groups:
+                new_drawing.set_group(group)
+
+            if answer == QtGui.QMessageBox.Yes:
+                db.replace_drawing(new_drawing)
+
+            if answer == QtGui.QMessageBox.No:
+                # delete the existing groups
+                for index in reversed(range(0, len(lst_groups))):
+                    new_drawing.delete_group(index)
+                    
+                
+        if answer == QtGui.QMessageBox.No:
+            new_drawing = drawing.Drawing()
+            filename = (
                 self.prefix +
                 str(self.drawing_time.year) +
                 self.drawing_time.strftime('%m') +
@@ -243,24 +290,24 @@ class DailyScan(QtGui.QWidget):
                 self.drawing_time.strftime('%M') +
                 "." +
                 self.extension)
-
-        new_drawing.fill_from_daily_scan(
-            drawing_datetime=self.drawing_time,
-            observer=str(self.drawing_observer_linedit.text()).upper(),
-            operator=str(self.drawing_operator_linedit.text()).upper(),
-            drawing_type=str(self.drawing_type.currentText()),
-            drawing_quality=str(self.drawing_quality.currentText()),
-            drawing_name=filename)
-
-        db = database.database()
-        db.replace_drawing(new_drawing)
-
-        tuple_drawing_type = db.get_drawing_information(
-            "drawing_type",
-            str(self.drawing_type.currentText()))
-        new_drawing.set_drawing_type(tuple_drawing_type[0])
+            
+            new_drawing.fill_from_daily_scan(
+                drawing_datetime=self.drawing_time,
+                observer=str(self.drawing_observer_linedit.text()).upper(),
+                operator=str(self.drawing_operator_linedit.text()).upper(),
+                drawing_type=str(self.drawing_type.currentText()),
+                drawing_quality=str(self.drawing_quality.currentText()),
+                drawing_name=filename)
+            
+            #db.replace_drawing(new_drawing)
+            
+            tuple_drawing_type = db.get_drawing_information(
+                "drawing_type",
+                str(self.drawing_type.currentText()))
+            new_drawing.set_drawing_type(tuple_drawing_type[0])
+            
         return [new_drawing]
-
+            
     def get_filename(self):
         return ("usd" + self.drawing_time.strftime('%Y%m%d%H%M') + '.jpg')
 
