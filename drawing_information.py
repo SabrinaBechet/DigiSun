@@ -9,6 +9,10 @@ __email__ = "sabrina.bechet@oma.be"
 __date__ = "February 2019"
 
 
+def inputVoid(self):
+    pass
+
+
 class DrawingInformationWidget(QtGui.QWidget):
 
     def __init__(self):
@@ -45,12 +49,16 @@ class DrawingInformationWidget(QtGui.QWidget):
             "background-color: lightgray; color:black")
 
         self.drawing_quality = QtGui.QComboBox(self)
+        # Cancel the usual Mouse Wheel Event by giving to it a void function
+        self.drawing_quality.wheelEvent = inputVoid
         uset_db.set_combo_box_drawing('name', 'quality', self.drawing_quality)
         self.drawing_quality.setEnabled(True)
         self.drawing_quality.setStyleSheet(
             "background-color: white; color:black")
 
         self.drawing_type = QtGui.QComboBox(self)
+         # Cancel the usual Mouse Wheel Event by giving to it a void function
+        self.drawing_type.wheelEvent = inputVoid
         uset_db.set_combo_box_drawing('name',
                                       'drawing_type',
                                       self.drawing_type)

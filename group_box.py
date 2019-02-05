@@ -3,7 +3,7 @@
 
 from PyQt4 import QtGui, QtCore
 
-__author__ = "Mael Panouillot, Sabrina Bechet"
+__author__ = ["Mael Panouillot", "Sabrina Bechet"]
 
 def inputVoid(self):
     pass
@@ -154,6 +154,7 @@ class GroupBox(QtGui.QWidget):
 
     def set_spot_count(self, spot_count, grid_position):
         self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
+        self.spot_number_linedit.setDisabled(True)
         self.spot_number_linedit.setMaximumWidth(self.widget_maximum_width)
         self.spot_number_linedit.setStyleSheet(
             "background-color: white; color: black")
@@ -166,6 +167,7 @@ class GroupBox(QtGui.QWidget):
         self.zurich_combo.setStyleSheet("background-color: white; color:black")
         # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.zurich_combo.wheelEvent = inputVoid
+
         zurich_type_lst = ['X', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J']
         for el in zurich_type_lst:
             self.zurich_combo.addItem(el)
@@ -186,7 +188,7 @@ class GroupBox(QtGui.QWidget):
 
         # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.McIntosh_combo.wheelEvent = inputVoid
-
+        
         zurich_McIntosh = {}
         zurich_McIntosh['X'] = ['Xxx']
         zurich_McIntosh['A'] = ['Axx']
@@ -311,16 +313,16 @@ class GroupBox(QtGui.QWidget):
         self.largest_spot_label = QtGui.QLabel("Lead/Trail")
 
         self.largest_spot_leading_but = QtGui.QPushButton("L")
-        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("l"))
-        self.largest_spot_leading_but.setToolTip('shortcut: \'l\'')
+        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("w"))
+        self.largest_spot_leading_but.setToolTip('shortcut: \'w\'')
 
         self.largest_spot_egal_but = QtGui.QPushButton("=")
-        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("="))
-        self.largest_spot_egal_but.setToolTip('shortcut: \'=\'')
+        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("x"))
+        self.largest_spot_egal_but.setToolTip('shortcut: \'x\'')
         
         self.largest_spot_trailing_but = QtGui.QPushButton("T")
-        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("t"))
-        self.largest_spot_trailing_but.setToolTip('shortcut: \'t\'')
+        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("e"))
+        self.largest_spot_trailing_but.setToolTip('shortcut: \'z\'')
 
         self.grid_layout.addWidget(self.largest_spot_label,
                                    grid_position[0],

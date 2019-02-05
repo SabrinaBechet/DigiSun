@@ -28,25 +28,22 @@ class DialogLogin(QtGui.QDialog):
         self.operator_name = QtGui.QLineEdit(self)
         self.operator_name.setMinimumWidth(width_widget)
         self.operator_name.setMaximumWidth(width_widget)
+        
         operator_selection = QtGui.QLabel('Operator name: ', self)
         operator_selection.setMinimumWidth(width_widget)
         operator_selection.setMaximumWidth(width_widget)
-
+        
         application_selection = QtGui.QLabel('Applications: ', self)
-        daily_scan_but = QtGui.QPushButton("daily scan")
-        bulk_analyse_but = QtGui.QPushButton("bulk analyse")
-
-        # not developped yet
-        # bulk_scan_but = QtGui.QPushButton("bulk scan")
-
+        
+        daily_scan_but = QtGui.QPushButton("Daily scan")
+        bulk_analyse_but = QtGui.QPushButton("bulk Analyse")
+        
         application_selection.setMinimumWidth(width_widget)
         application_selection.setMaximumWidth(width_widget)
         daily_scan_but.setMinimumWidth(width_widget)
         daily_scan_but.setMaximumWidth(width_widget)
         bulk_analyse_but.setMinimumWidth(width_widget)
         bulk_analyse_but.setMaximumWidth(width_widget)
-        # bulk_scan_but.setMinimumWidth(width_widget)
-        # bulk_scan_but.setMaximumWidth(width_widget)
 
         self.layout.addWidget(sun_logo, 0, 1)
         self.layout.addWidget(welcome_msg, 1, 1)
@@ -55,18 +52,14 @@ class DialogLogin(QtGui.QDialog):
         self.layout.addWidget(application_selection, 3, 0)
         self.layout.addWidget(daily_scan_but, 3, 1)
         self.layout.addWidget(bulk_analyse_but, 3, 2)
-        # self.layout.addWidget(bulk_scan_but, 4, 1)
 
         daily_scan_but.setAutoDefault(True)
         bulk_analyse_but.setAutoDefault(True)
-        # bulk_scan_but.setAutoDefault(True)
 
         daily_scan_but.clicked.connect(self.handleLogin)
         daily_scan_but.clicked.connect(lambda: self.set_mode(0))
         bulk_analyse_but.clicked.connect(self.handleLogin)
         bulk_analyse_but.clicked.connect(lambda: self.set_mode(1))
-        # bulk_scan_but.clicked.connect(self.handleLogin)
-        # bulk_scan_but.clicked.connect(lambda: self.set_mode(2))
 
         self.center()
 

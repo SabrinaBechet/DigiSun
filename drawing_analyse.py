@@ -194,6 +194,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
 
             self.step = 0
+            self.group_box_shortcut = QtGui.QShortcut(QtGui.QKeySequence("q"), self)
             
 
         """else:
@@ -704,6 +705,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         group_count = self.drawing_lst[self.current_count].group_count
 
         self.listWidget_groupBox = QtGui.QListWidget(self)
+        #self.listWidget_groupBox.setTabKeyNavigation(True)
         self.listWidget_groupBox.setStyleSheet(
             "QListView::item:selected {background : rgb(77, 185, 88);}")
 
@@ -811,6 +813,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.listWidget_groupBox.itemSelectionChanged.connect(
             lambda: self.scroll_group_position(
                 self.listWidget_groupBox.currentRow()))
+        
+        self.group_box_shortcut.activated.connect(
+            lambda: self.set_focus_group_box(
+                self.listWidget_groupBox.currentRow()))
+        
+        #self.listWidget_groupBox.currentRow()))
 
     def check_dipole(self, element_number):
         """
@@ -854,6 +862,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.listWidget_groupBox.blockSignals(False)
 
         self.listWidget_groupBox.setCurrentRow(element_number)
+        self.listWidget_groupBox.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.listWidget_groupBox.setFocus()
         # to change only the line on which the focus is
         for i in range(0, self.listWidget_groupBox.count()):
             if i == element_number:
@@ -1449,9 +1459,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.but_previous = QtGui.QPushButton('previous', self)
         self.but_previous.setShortcut(QtGui.QKeySequence("Left"))
+        self.but_previous.setToolTip("\'Left\'")
         self.but_next = QtGui.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
-
+        self.but_next.setToolTip("\'Right\'")
+        
         self.but_next.clicked.connect(
             lambda: self.update_counter(self.current_count+1))
         self.but_next.clicked.connect(self.set_drawing)

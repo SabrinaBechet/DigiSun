@@ -138,7 +138,8 @@ class MonthListPage(ListPage):
         - the table widget
         """
         super(MonthListPage, self).__init__()
-        self.but_select = QtGui.QPushButton("select", self)
+        self.but_select = QtGui.QPushButton("select month", self)
+        self.but_select.setShortcut(QtGui.QKeySequence("w"))
         month_list_layout = QtGui.QVBoxLayout()
         month_list_layout.addWidget(self.table)
         month_list_layout.addWidget(self.but_select)
@@ -177,7 +178,8 @@ class YearListPage(ListPage):
         super(YearListPage, self).__init__()
         self.lst_year = []
         self.set_year()
-        self.but_select = QtGui.QPushButton("select", self)
+        self.but_select = QtGui.QPushButton("select year", self)
+        self.but_select.setShortcut(QtGui.QKeySequence("x"))
         self.layout = QtGui.QVBoxLayout()
         self.layout.addWidget(self.table)
         self.layout.addWidget(self.but_select)
