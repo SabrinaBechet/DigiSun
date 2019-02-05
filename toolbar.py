@@ -26,12 +26,12 @@ class Toolbar(QtGui.QToolBar):
         self.zoom_out_but.setShortcut(QtGui.QKeySequence("-"))
 
         self.quick_zoom_but = QtGui.QToolButton(self)
-        self.quick_zoom_but.setToolTip("\'Alt+z\'")
+        self.quick_zoom_but.setToolTip("\'5\'")
         self.quick_zoom_but.setToolButtonStyle(
             QtCore.Qt.ToolButtonTextUnderIcon)
-        self.quick_zoom_but.setText("&zoom toggle")
+        self.quick_zoom_but.setText("zoom-to-fit")
         self.quick_zoom_but.setIcon(QtGui.QIcon('icons/mine/zoom_5.png'))
-        self.quick_zoom_but.setShortcut(QtGui.QKeySequence("Alt+z"))
+        self.quick_zoom_but.setShortcut(QtGui.QKeySequence("5"))
 
         self.large_grid_but = QtGui.QToolButton(self)
         self.large_grid_but.setToolTip("\'Alt+a\'")
@@ -88,12 +88,12 @@ class Toolbar(QtGui.QToolBar):
         self.calibration_but.setShortcut(QtGui.QKeySequence("c"))
 
         self.add_group_but = QtGui.QToolButton(self)
-        self.add_group_but.setToolTip("\'a\'")
+        self.add_group_but.setToolTip("\'r\'")
         self.add_group_but.setToolButtonStyle(
             QtCore.Qt.ToolButtonTextUnderIcon)
-        self.add_group_but.setText("&add group")
+        self.add_group_but.setText("add g&roup")
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
-        self.add_group_but.setShortcut(QtGui.QKeySequence("a"))
+        self.add_group_but.setShortcut(QtGui.QKeySequence("r"))
 
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)

@@ -188,7 +188,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.label_right.north_clicked.connect(self.statusBar().clean)
             self.label_right.group_added.connect(self.add_group_box)
-            self.label_right.dipole_added.connect(self.update_dipole_button)
+            self.label_right.dipole_added.connect(
+                lambda: self.update_dipole_button(self.listWidget_groupBox.currentRow()))
 
             self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
@@ -749,7 +750,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 groupBoxLine.spot_number_linedit.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
 
-            group_zurich = self.drawing_lst[self.current_count]\
+
+            """group_zurich = self.drawing_lst[self.current_count]\
                                .group_lst[i].zurich.upper()
             group_g_spot = self.drawing_lst[self.current_count]\
                                .group_lst[i].g_spot
@@ -760,6 +762,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     (group_g_spot == 0 or group_dip1_lat is None)):
                 groupBoxLine.dipole_button.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
+            """
+            #self.update_dipole_button()
 
             group_surface = self.drawing_lst[self.current_count]\
                                 .group_lst[i].surface
@@ -785,6 +789,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             item = QtGui.QListWidgetItem(self.listWidget_groupBox)
             item.setSizeHint(groupBoxLine.sizeHint())
             self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
+
+            self.update_dipole_button(i)
 
         self.drawing_page.widget_left_down_layout.addWidget(
             self.listWidget_groupBox)
@@ -818,8 +824,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             lambda: self.set_focus_group_box(
                 self.listWidget_groupBox.currentRow()))
         
-        #self.listWidget_groupBox.currentRow()))
-
     def check_dipole(self, element_number):
         """
         Only for the add_dipole_mode.
@@ -1051,7 +1055,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[self.current_count]
             .group_lst[group_index].zurich)
 
-        self.update_dipole_button()
+        self.update_dipole_button(self.listWidget_groupBox.currentRow())
 
     def check_information_complete(self, index, level):
         """
@@ -1108,6 +1112,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         return missing_info
 
     def update_area_button(self):
+        
         group_index = self.listWidget_groupBox.currentRow()
         missing_info = self.check_information_complete(group_index,
                                                        'area')
@@ -1118,7 +1123,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.groupBoxLineList[group_index].area_button.setStyleSheet(
                     "background-color: transparent")
 
-    def update_dipole_button(self):
+    def update_dipole_button(self, group_index):
         """
         The information concerning the dipole (zurich in zurich dipolar)
         is complete when:
@@ -1127,7 +1132,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if one of the two condition is not met -> dipole button in orange
         else -> dipole button in green
         """
-        group_index = self.listWidget_groupBox.currentRow()
+        #group_index = self.listWidget_groupBox.currentRow()
         missing_info = self.check_information_complete(group_index,
                                                        'dipole')
         if missing_info:
@@ -1234,7 +1239,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.drawing_info.wolf_number.setText(
             str(self.drawing_lst[self.current_count].wolf))
-        self.update_dipole_button()
+        self.update_dipole_button(self.listWidget_groupBox.currentRow())
 
     def modify_drawing_zurich(self, n, is_toolbox):
         """
@@ -1291,7 +1296,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                                                 .largest_spot = None
             self.drawing_lst[self.current_count].group_lst[n].update_g_spot()
 
-        self.update_dipole_button()
+        self.update_dipole_button(self.listWidget_groupBox.currentRow())
         self.group_toolbox.update_largest_spot_buttons(
             self.drawing_lst[self.current_count].group_lst[n].largest_spot,
             new_zurich_type)
@@ -1537,8 +1542,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             missing_group.insert(0, " information incomplete for ")
 
-            print("missing info len", missing_info_len)
-            print("missing group", missing_group)
             if sum(missing_info_len):
                 QtGui.QMessageBox.warning(self,
                                           "save information",
@@ -1583,7 +1586,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Set the save button to lightgray and
         the changed value to False
         """
-        print("*********** drawing recorded!!")
         self.but_save.setStyleSheet("background-color: lightgray")
         self.drawing_lst[self.current_count].changed = False
 
@@ -1616,9 +1618,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         Set the save button in orange as soon as a new value is introduced
         """
-        print("*********** the value has changed!!")
         for el in self.drawing_lst:
-            print(el, el.changed)
+            # print(el, el.changed)
             if el.changed:
                 self.but_save\
                     .setStyleSheet("background-color: rgb(255, 165, 84)")
@@ -1628,7 +1629,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Get the list of drawings from bulk analysis page.
         Set the counter to 0.
         """
-        print("set the drawing lst -> changed value!!")
         self.drawing_lst = drawing_lst
 
         for el in self.drawing_lst:

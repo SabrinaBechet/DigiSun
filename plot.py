@@ -31,7 +31,8 @@ def get_fields_per_date_uset(date):
     cur.execute('select * from drawings where DateTime <=> %s;', (date,))
     db.commit()
     result = cur.fetchall()
-            
+
+    # print(date, result)
     return result[0]
 
 
@@ -64,11 +65,6 @@ if __name__=='__main__':
     angleB_diff = []
     angleL_diff = []
 
-    """date_lst = [datetime.datetime(2014,1,1,12,00),
-                datetime.datetime(2014,1,5,9,15),
-                datetime.datetime(2014,1,7,9,36),
-                datetime.datetime(2014,1,8,12,00),]
-    """
     for date in date_lst:
         all_uset_dev = get_fields_per_date_uset_dev(date)
         all_uset = get_fields_per_date_uset(date)

@@ -28,13 +28,9 @@ class ListPage(QtGui.QWidget):
                                               "analysed", "area"])
         for i in range(len(list_drawings)):
             date_drawing = QtGui.QTableWidgetItem(str(list_drawings[i]))
-            # date_drawing.setFlags(QtCore.Qt.ItemIsSelectable and
-            #                      QtCore.Qt.ItemIsEnabled)
-
+        
             tot_number_drawing = QtGui.QTableWidgetItem(str(self.lst_tot[i]))
-            # tot_number_drawing.setFlags(QtCore.Qt.ItemIsSelectable and
-            #                            QtCore.Qt.ItemIsEnabled)
-
+            
             self.table.setItem(i, 0, date_drawing)
             self.table.setItem(i, 1, tot_number_drawing)
 

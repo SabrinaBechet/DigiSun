@@ -313,16 +313,16 @@ class GroupBox(QtGui.QWidget):
         self.largest_spot_label = QtGui.QLabel("Lead/Trail")
 
         self.largest_spot_leading_but = QtGui.QPushButton("L")
-        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("w"))
-        self.largest_spot_leading_but.setToolTip('shortcut: \'w\'')
+        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("1"))
+        self.largest_spot_leading_but.setToolTip('shortcut: \'1\'')
 
         self.largest_spot_egal_but = QtGui.QPushButton("=")
-        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("x"))
-        self.largest_spot_egal_but.setToolTip('shortcut: \'x\'')
+        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("2"))
+        self.largest_spot_egal_but.setToolTip('shortcut: \'2\'')
         
         self.largest_spot_trailing_but = QtGui.QPushButton("T")
-        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("e"))
-        self.largest_spot_trailing_but.setToolTip('shortcut: \'z\'')
+        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("3"))
+        self.largest_spot_trailing_but.setToolTip('shortcut: \'3\'')
 
         self.grid_layout.addWidget(self.largest_spot_label,
                                    grid_position[0],
