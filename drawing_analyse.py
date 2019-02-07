@@ -110,7 +110,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     """
     def __init__(self, operator=None):
         super(DrawingAnalysePage, self).__init__()
-
+        
+        self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
         self.config = configparser.ConfigParser()
         self.config_file = "digisun.ini"
         self.set_configuration()
@@ -129,6 +130,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.add_current_session()
             self.label_right = qlabel_drawing.QLabelDrawing()
 
+            self.label_right.right_click.connect(self.set_right_click_zoom)
+    
             self.label_right.drawing_clicked.connect(
                 lambda: self.set_focus_group_box(
                     self.label_right.selected_element))
@@ -661,6 +664,20 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.label_right.dipole_visu.set_opposite_value()
         self.label_right.set_img()
 
+    def set_right_click_zoom(self):
+        self.label_right.quick_zoom.set_opposite_value()
+
+        if self.label_right.quick_zoom.value:
+            self.label_right.zoom_in(5/self.label_right.scaling_factor)
+        else:
+            self.label_right.zoom_in(1./self.label_right.scaling_factor)
+
+        self.scroll_position(self.label_right.right_click_x/
+                             self.label_right.drawing_pixMap.width(),
+                             self.label_right.right_click_y/
+                             self.label_right.drawing_pixMap.height())
+             
+        
     def set_quick_zoom(self):
         self.label_right.quick_zoom.set_opposite_value()
 
@@ -876,7 +893,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.groupBoxLineList[i].spot_number_linedit.setEnabled(False)
                 self.groupBoxLineList[i].zurich_combo.setEnabled(False)
                 self.groupBoxLineList[i].McIntosh_combo.setEnabled(False)
-
+                
     def scroll_group_position(self, element_number):
         """
         Scroll to the position of the group given by

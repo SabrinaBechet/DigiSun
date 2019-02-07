@@ -40,7 +40,8 @@ class QLabelDrawing(QtGui.QLabel):
     north_clicked = QtCore.pyqtSignal()
     group_added = QtCore.pyqtSignal()
     dipole_added = QtCore.pyqtSignal()
-
+    right_click = QtCore.pyqtSignal()
+    
     def __init__(self):
 
         super(QLabelDrawing, self).__init__()
@@ -696,9 +697,8 @@ class QLabelDrawing(QtGui.QLabel):
                           self.pixmap().width())
         y_drawing = round((y_click - pixmap_y_min) * self.drawing_height /
                           self.pixmap().height())
-
-        """
-        x_center_drawing = ((self.current_drawing.calibrated_center.x -
+        
+        """"x_center_drawing = ((self.current_drawing.calibrated_center.x -
                              pixmap_x_min) * self.drawing_width /
                             self.pixmap().width())
 
@@ -706,7 +706,12 @@ class QLabelDrawing(QtGui.QLabel):
                              pixmap_y_min) * self.drawing_height /
                             self.pixmap().height())
         """
+        self.right_click_x = x_drawing
+        self.right_click_y = y_drawing
 
+        if(QMouseEvent.button() == QtCore.Qt.RightButton):
+            self.right_click.emit()
+        
         if (not self.add_group_mode.value and
                 not self.add_dipole_mode.value and
                 not self.calibration_mode.value):
