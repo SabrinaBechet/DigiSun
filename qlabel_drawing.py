@@ -711,8 +711,9 @@ class QLabelDrawing(QtGui.QLabel):
 
         if(QMouseEvent.button() == QtCore.Qt.RightButton):
             self.right_click.emit()
-        
-        if (not self.add_group_mode.value and
+            
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+            not self.add_group_mode.value and
                 not self.add_dipole_mode.value and
                 not self.calibration_mode.value):
             for el in self.current_drawing.group_lst:
@@ -738,7 +739,8 @@ class QLabelDrawing(QtGui.QLabel):
         #      self.current_drawing.calibrated_center.x,
         #      self.current_drawing.calibrated_center.y)
 
-        if (self.add_group_mode.value or
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+                self.add_group_mode.value or
                 self.add_dipole_mode.value or
                 self.helper_grid.value):
             center_x_lower_left_origin = self.current_drawing\
@@ -770,7 +772,8 @@ class QLabelDrawing(QtGui.QLabel):
             if self.HGC_longitude < 0:
                 self.HGC_longitude = 2 * math.pi + self.HGC_longitude
 
-        if (self.calibration_mode.value and self.center_done and
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+                self.calibration_mode.value and self.center_done and
                 not self.north_done):
             self.north_done = True
             calib_pt2_x = x_drawing
@@ -788,7 +791,8 @@ class QLabelDrawing(QtGui.QLabel):
             QtGui.QApplication.restoreOverrideCursor()
             self.north_clicked.emit()
 
-        elif (self.calibration_mode.value and not self.center_done and
+        elif (QMouseEvent.button() == QtCore.Qt.LeftButton and
+              self.calibration_mode.value and not self.center_done and
               not self.north_done):
 
             self.current_drawing.calibrated = 0
@@ -797,20 +801,24 @@ class QLabelDrawing(QtGui.QLabel):
             self.center_done = True
             self.center_clicked.emit()
 
-        if (self.current_drawing.calibrated and self.helper_grid.value):
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+            self.current_drawing.calibrated and self.helper_grid.value):
             self.helper_grid_center_x = x_drawing
             self.helper_grid_center_y = y_drawing
             self.helper_grid_position_clicked = True
             self.set_img()
 
-        if (self.add_group_mode.value and self.current_drawing.calibrated):
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+            self.add_group_mode.value and self.current_drawing.calibrated):
             self.current_drawing.add_group(self.HGC_latitude,
                                            self.HGC_longitude,
                                            x_drawing,
                                            y_drawing)
             self.group_added.emit()
 
-        if (self.add_dipole_mode.value and self.current_drawing.calibrated):
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+                self.add_dipole_mode.value and
+                self.current_drawing.calibrated):
 
             print("click on the drawing to add a dipole")
             print(len(self.dipole_points), len(self.dipole_angles))
