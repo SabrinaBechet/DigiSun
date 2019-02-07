@@ -641,20 +641,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.statusBar().comment.setText(
                 "Click on the " + point_name + " position")
 
-        self.vertical_scroll_bar.setMinimum(0)
-        self.horizontal_scroll_bar.setMinimum(0)
-        self.vertical_scroll_bar.setMaximum(
-            self.label_right.pixmap().height() -
-            self.vertical_scroll_bar.pageStep())
-        self.horizontal_scroll_bar.setMaximum(
-            self.label_right.pixmap().width() -
-            self.horizontal_scroll_bar.pageStep() +
-            extra_width)
-
-        self.horizontal_scroll_bar.setValue(
-            self.horizontal_scroll_bar.maximum() * pos_x)
-        self.vertical_scroll_bar.setValue(
-            self.vertical_scroll_bar.maximum() * pos_y)
+        if self.label_right:
+            self.vertical_scroll_bar.setMinimum(0)
+            self.horizontal_scroll_bar.setMinimum(0)
+            self.vertical_scroll_bar.setMaximum(
+                self.label_right.pixmap().height() -
+                self.vertical_scroll_bar.pageStep())
+            self.horizontal_scroll_bar.setMaximum(
+                self.label_right.pixmap().width() -
+                self.horizontal_scroll_bar.pageStep() +
+                extra_width)
+        
+            self.horizontal_scroll_bar.setValue(
+                self.horizontal_scroll_bar.maximum() * pos_x)
+            self.vertical_scroll_bar.setValue(
+                self.vertical_scroll_bar.maximum() * pos_y)
 
     def set_group_visualisation(self):
         self.label_right.group_visu.set_opposite_value()
