@@ -1,6 +1,8 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-
+"""
+The database class contains all the function to interact with the database.
+"""
 import pymysql
 import configparser
 
@@ -67,11 +69,6 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
-
-        # print(result)
-        # field_lst = [x[0] for x in result]
-        # print("the result: ")
-        # print(result)
         return result
 
     def get_all_LastUpdateTime_time_interval(self, table_name, date_min, date_max):
@@ -83,11 +80,6 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
-
-        # print(result)
-        # field_lst = [x[0] for x in result]
-        # print("the result: ")
-        # print(result)
         return result
 
 
@@ -225,9 +217,6 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
-        # print(result)
-        # field_lst = [x[0] for x in result]
-        # print(date_min, date_max, result)
         return result
 
     def replace_drawing(self, drawing):
@@ -249,7 +238,7 @@ class database():
                              drawing.calibrated, drawing.analyzed,
                              drawing.group_count, drawing.spot_count,
                              drawing.wolf, drawing.angle_P,
-                             drawing.angle_B, drawing.angle_P,
+                             drawing.angle_B, drawing.angle_L,
                              drawing.path, drawing.operator,
                              drawing.last_update_time))
         self.db.commit()
@@ -331,7 +320,6 @@ class database():
         self.cursor.execute('SELECT ' + field + ' FROM ' + table_name)
         self.db.commit()
         result = self.cursor.fetchall()
-
         return result
 
     def exist_in_db(self, table_name, field, value):

@@ -3,7 +3,6 @@
 
 from PyQt4 import QtGui, QtCore
 
-__author__ = ["Mael Panouillot", "Sabrina Bechet"]
 
 def inputVoid(self):
     pass

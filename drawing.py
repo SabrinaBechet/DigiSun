@@ -401,8 +401,7 @@ class Group(QtCore.QObject):
 class Drawing(QtCore.QObject):
     """
     It represents all the information extracted from the drawing
-    and stored in the database.
-    All the attribute are 'private'
+    and stored in the database.  All the attribute are 'private'
     (in the python convention with the underscore
     before the name).
     """
@@ -484,6 +483,8 @@ class Drawing(QtCore.QObject):
         self._angle_B = round(sun.angle_B0(), 6)
         self._angle_L = round(sun.angle_L0(), 6)
 
+        print("angle L: ", self._angle_L)
+        
     def set_drawing_type(self, param):
         """
         Set the drawing type parameters from a list of value from the database.
@@ -695,7 +696,7 @@ class Drawing(QtCore.QObject):
 
     @angle_L.setter
     def angle_L(self, value):
-        # print("here we are changing the value of angle_L to ", value)
+        print("here we are changing the value of angle_L to ", value)
         self._angle_L = value
         self.changed = True
         self.value_changed.emit()
@@ -993,7 +994,7 @@ class Drawing(QtCore.QObject):
         
     def save_info(self):
         # print("save the info of the drawing!")
-
+        
         db = database.database()
         db.write_drawing_info(self._drawing_type,
                               self._quality,

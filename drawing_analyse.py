@@ -10,7 +10,6 @@ Keep the analyse itself somwhere else!
 import os
 from datetime import datetime
 import math
-
 import database
 import group_box
 import qlabel_drawing
@@ -21,7 +20,6 @@ import statusbar
 import drawing_view_page
 import drawing_information
 import group_frame
-
 import configparser
 import numpy as np
 from PyQt4 import QtGui, QtCore

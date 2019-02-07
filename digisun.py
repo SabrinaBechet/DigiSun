@@ -19,7 +19,7 @@ from PyQt4 import QtGui, QtCore
 __author__ = "Sabrina Bechet"
 __email__ = "sabrina.bechet@oma.be"
 __date__ = "February 2019"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 class BulkScanPage(QtGui.QWidget):

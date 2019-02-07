@@ -356,5 +356,5 @@ class SunEphemeris():
 
         eta = math.atan2(tan_num, tan_deno) * 180/math.pi
         res = (eta - self.theta()) % 360
-
+ 
         return res
