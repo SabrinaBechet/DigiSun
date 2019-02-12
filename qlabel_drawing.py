@@ -477,8 +477,6 @@ class QLabelDrawing(QtGui.QLabel):
                 painter.drawPoint(
                     QtCore.QPointF(self.dipole_points[2],
                                    self.dipole_points[3]))
-                painter.drawLine(self.dipole_points[0], self.dipole_points[1],
-                                 self.dipole_points[2], self.dipole_points[3])
                 self.dipole_points = []
                 self.dipole_angles = []
             else:
