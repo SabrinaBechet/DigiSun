@@ -1,5 +1,6 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
+import sys
 from PyQt4 import QtGui, QtCore
 
 
@@ -11,87 +12,128 @@ class Toolbar(QtGui.QToolBar):
         super(Toolbar, self).__init__()
 
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
+        
         self.zoom_in_but = QtGui.QToolButton(self)
-        self.zoom_in_but.setToolTip("\'+\'")
-        self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.zoom_in_but.setText("zoom in")
+        if sys.platform=='darwin':                                                                                                        
+            self.zoom_in_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.zoom_in_but.setToolTip("zoom in: \'+\'")
+        else:
+            self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+            self.zoom_in_but.setText("zoom in")
+            self.zoom_in_but.setToolTip("\'+\'")
         self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
         self.zoom_in_but.setShortcut(QtGui.QKeySequence("+"))
-
+        
         self.zoom_out_but = QtGui.QToolButton(self)
-        self.zoom_out_but.setToolTip("\'-\'")
-        self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-        self.zoom_out_but.setText("zoom out")
+        if sys.platform=='darwin':
+            self.zoom_out_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.zoom_out_but.setToolTip("zoom out: \'-\'")            
+        else:
+            self.zoom_out_but.setToolTip("\'-\'")
+            self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+            self.zoom_out_but.setText("zoom out")
         self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.svg'))
         self.zoom_out_but.setShortcut(QtGui.QKeySequence("-"))
 
         self.quick_zoom_but = QtGui.QToolButton(self)
-        self.quick_zoom_but.setToolTip("\'5\'")
-        self.quick_zoom_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.quick_zoom_but.setText("zoom-to-fit")
+        if sys.platform=='darwin':
+            self.quick_zoom_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.quick_zoom_but.setToolTip("zoom-to-fit: \'5\'")
+        else:
+            self.quick_zoom_but.setToolTip("\'5\'")
+            self.quick_zoom_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.quick_zoom_but.setText("zoom-to-fit")
         self.quick_zoom_but.setIcon(QtGui.QIcon('icons/mine/zoom_5.png'))
         self.quick_zoom_but.setShortcut(QtGui.QKeySequence("5"))
 
         self.large_grid_but = QtGui.QToolButton(self)
-        self.large_grid_but.setToolTip("\'Alt+a\'")
-        self.large_grid_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.large_grid_but.setText("l&arge grid")
+        if sys.platform=='darwin':
+            self.large_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.large_grid_but.setToolTip("large grid: \'Alt+a\'")
+        else:
+            self.large_grid_but.setToolTip("\'Alt+a\'")
+            self.large_grid_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.large_grid_but.setText("l&arge grid")
         self.large_grid_but.setIcon(
             QtGui.QIcon('icons/Smashicons/internet.svg'))
         self.large_grid_but.setShortcut(QtGui.QKeySequence("Alt+a"))
 
         self.small_grid_but = QtGui.QToolButton(self)
-        self.small_grid_but.setToolTip("\'Alt+s\'")
-        self.small_grid_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.small_grid_but.setText("&small grid")
+        if sys.platform=='darwin':
+            self.small_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.small_grid_but.setToolTip("small grid: \'Alt+s\'")
+        else:
+            self.small_grid_but.setToolTip("\'Alt+s\'")
+            self.small_grid_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.small_grid_but.setText("&small grid")
         self.small_grid_but.setIcon(
             QtGui.QIcon('icons/Smashicons/internet.svg'))
         self.small_grid_but.setShortcut(QtGui.QKeySequence("Alt+s"))
 
         self.group_visu_but = QtGui.QToolButton(self)
-        self.group_visu_but.setToolTip("\'Alt+r\'")
-        self.group_visu_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.group_visu_but.setText("g&roup view")
+        if sys.platform=='darwin':
+            self.group_visu_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.group_visu_but.setToolTip("group visu: \'Alt+r\'")
+        else:
+            self.group_visu_but.setToolTip("\'Alt+r\'")
+            self.group_visu_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.group_visu_but.setText("g&roup view")
         self.group_visu_but.setIcon(
             QtGui.QIcon('icons/Smashicons/share_1.svg'))
         self.group_visu_but.setShortcut(QtGui.QKeySequence("Alt+r"))
 
         self.dipole_visu_but = QtGui.QToolButton(self)
-        self.dipole_visu_but.setToolTip("\'Alt+d\'")
-        self.dipole_visu_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.dipole_visu_but.setText("&dipole view")
+        if sys.platform=='darwin':
+            self.dipole_visu_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.dipole_visu_but.setToolTip("dipole visu: \'Alt+d\'")
+        else:
+            self.dipole_visu_but.setToolTip("\'Alt+d\'")
+            self.dipole_visu_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.dipole_visu_but.setText("&dipole view")
         self.dipole_visu_but.setIcon(
             QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
         self.dipole_visu_but.setShortcut(QtGui.QKeySequence("Alt+d"))
 
         self.helper_grid_but = QtGui.QToolButton(self)
-        self.helper_grid_but.setToolTip("\'e\'")
-        self.helper_grid_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.helper_grid_but.setText("h&elper grid")
+        if sys.platform=='darwin':
+            self.helper_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.helper_grid_but.setToolTip("helper grid: \'e\'")
+        else:
+            self.helper_grid_but.setToolTip("\'e\'")
+            self.helper_grid_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.helper_grid_but.setText("h&elper grid")
         self.helper_grid_but.setIcon(
             QtGui.QIcon('icons/Smashicons/internet.svg'))
         self.helper_grid_but.setShortcut(QtGui.QKeySequence("e"))
         
         self.calibration_but = QtGui.QToolButton(self)
-        self.calibration_but.setToolTip("\'c\'")
-        self.calibration_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.calibration_but.setText("&calibrate")
+        if sys.platform=='darwin':
+            self.calibration_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.calibration_but.setToolTip("calibration: ≈ß\'c\'")
+        else:
+            self.calibration_but.setToolTip("\'c\'")
+            self.calibration_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.calibration_but.setText("&calibrate")
         self.calibration_but.setIcon(
             QtGui.QIcon('icons/Smashicons/target.svg'))
         self.calibration_but.setShortcut(QtGui.QKeySequence("c"))
 
         self.add_group_but = QtGui.QToolButton(self)
-        self.add_group_but.setToolTip("\'r\'")
-        self.add_group_but.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextUnderIcon)
-        self.add_group_but.setText("add g&roup")
+        if sys.platform=='darwin':
+            self.add_group_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.add_group_but.setToolTip("add group: \'r\'")
+        else:
+            self.add_group_but.setToolTip("\'r\'")
+            self.add_group_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.add_group_but.setText("add g&roup")
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
         self.add_group_but.setShortcut(QtGui.QKeySequence("r"))
 
@@ -113,10 +155,14 @@ class Toolbar(QtGui.QToolBar):
 
         if 'dipole' in level_info:
             self.add_dipole_but = QtGui.QToolButton(self)
-            self.add_dipole_but.setToolTip("\'d\'")
-            self.add_dipole_but.setToolButtonStyle(
-                QtCore.Qt.ToolButtonTextUnderIcon)
-            self.add_dipole_but.setText("add &dipole")
+            if sys.platform=='darwin':
+                self.add_dipole_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+                self.add_dipole_but.setToolTip("add dipole:\'d\'")
+            else:
+                self.add_dipole_but.setToolTip("\'d\'")
+                self.add_dipole_but.setToolButtonStyle(
+                    QtCore.Qt.ToolButtonTextUnderIcon)
+                self.add_dipole_but.setText("add &dipole")
             self.add_dipole_but.setIcon(
                 QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
             self.add_dipole_but.setShortcut(QtGui.QKeySequence("d"))
@@ -124,10 +170,14 @@ class Toolbar(QtGui.QToolBar):
 
         if 'area' in level_info:
             self.surface_but = QtGui.QToolButton(self)
-            self.surface_but.setToolTip("\'s\'")
-            self.surface_but.setToolButtonStyle(
-                QtCore.Qt.ToolButtonTextUnderIcon)
-            self.surface_but.setText("&surface")
+            if sys.platform=='darwin':
+                self.surface_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+                self.surface_but.setToolTip("surface: \'s\'")
+            else:
+                self.surface_but.setToolTip("\'s\'")
+                self.surface_but.setToolButtonStyle(
+                    QtCore.Qt.ToolButtonTextUnderIcon)
+                self.surface_but.setText("&surface")
             self.surface_but.setIcon(QtGui.QIcon('icons/Freepik/layout.svg'))
             self.surface_but.setShortcut(QtGui.QKeySequence("s"))
             self.addWidget(self.surface_but)

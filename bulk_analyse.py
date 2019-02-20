@@ -2,6 +2,7 @@
 # -*-coding:utf-8-*-
 
 import time
+import sys
 from datetime import datetime, timedelta
 import database
 import drawing
@@ -17,7 +18,10 @@ class ListPage(QtGui.QWidget):
         super(ListPage, self).__init__()
         self.table = QtGui.QTableWidget()
         self.table.setColumnCount(5)
-
+        
+        if sys.platform=='darwin':
+            self.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            
     def draw_table(self, list_drawings):
         """
         Method that draws the table with the list of drawings and
@@ -25,7 +29,7 @@ class ListPage(QtGui.QWidget):
         """
         self.table.horizontalHeader().setDefaultSectionSize(150)
         self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
-                                              "analysed", "area"])
+                                             "analysed", "area"])
         for i in range(len(list_drawings)):
             date_drawing = QtGui.QTableWidgetItem(str(list_drawings[i]))
         
@@ -136,6 +140,8 @@ class MonthListPage(ListPage):
         super(MonthListPage, self).__init__()
         self.but_select = QtGui.QPushButton("select month", self)
         self.but_select.setShortcut(QtGui.QKeySequence("w"))
+        if sys.platform=='darwin':
+            self.but_select.setAttribute(QtCore.Qt.WA_MacNormalSize)
         month_list_layout = QtGui.QVBoxLayout()
         month_list_layout.addWidget(self.table)
         month_list_layout.addWidget(self.but_select)
