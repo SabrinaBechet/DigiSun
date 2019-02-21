@@ -477,14 +477,12 @@ class Drawing(QtCore.QObject):
         # calcualte quantities related to datetime...
         sun = sun_ephemeris.SunEphemeris(drawing_datetime)
         self._julian_date = sun.julian_day
-        self._carington_rotation = carrington_rotation.carrington_rotation(
-            drawing_datetime)
+        self._carington_rotation = int(carrington_rotation.carrington_rotation(
+            drawing_datetime))
         self._angle_P = round(sun.angle_P(), 6)
         self._angle_B = round(sun.angle_B0(), 6)
         self._angle_L = round(sun.angle_L0(), 6)
 
-        print("angle L: ", self._angle_L)
-        
     def set_drawing_type(self, param):
         """
         Set the drawing type parameters from a list of value from the database.

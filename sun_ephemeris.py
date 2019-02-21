@@ -358,3 +358,6 @@ class SunEphemeris():
         res = (eta - self.theta()) % 360
  
         return res
+
+
+    
