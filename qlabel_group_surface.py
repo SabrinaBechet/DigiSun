@@ -5,7 +5,6 @@ import sys
 import math
 import numpy as np
 import analyse_mode_bool
-import cv2
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from PyQt4 import QtGui, QtCore
@@ -321,11 +320,9 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.qlabel_group_surface.pointsList = []
 
     def threshold(self, value):
-        thresh_value, selection_array_thresh = cv2.threshold(
-            self.selection_array,
-            value,
-            256,
-            cv2.THRESH_BINARY_INV)
+        selection_array_thresh =  np.copy(self.selection_array)
+        selection_array_thresh[np.where(selection_array_thresh>value)] = 0
+        selection_array_thresh[np.where(selection_array_thresh>0)] = 255
 
         return selection_array_thresh
 
