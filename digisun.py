@@ -105,6 +105,7 @@ class mainWindow(QtGui.QMainWindow):
 
     def set_menuBar(self):
         menuBar = QtGui.QMenuBar()
+        menuBar.setNativeMenuBar(False)
         self.setMenuBar(menuBar)
 
         menu_mode = menuBar.addMenu('Mode')
