@@ -21,6 +21,8 @@ __email__ = "sabrina.bechet@oma.be"
 __date__ = "February 2019"
 __version__ = "0.2.2"
 
+sys.stderr = open('err.txt', 'w')
+sys.stdout = open("file.txt", "w")
 
 class BulkScanPage(QtGui.QWidget):
     """
