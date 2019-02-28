@@ -4,7 +4,9 @@
 The DialogLogin class represents the dialiog box to enter the user login.
 It checks if the login exist in the database
 """
+import os
 import database
+import configuration
 from PyQt4 import QtGui
 
 
@@ -16,8 +18,8 @@ class DialogLogin(QtGui.QDialog):
 
         self.layout = QtGui.QGridLayout()
         self.setLayout(self.layout)
-        welcome_msg = QtGui.QLabel('Welcome in DigiSun!', self)
-        width_widget = 120
+        welcome_msg = QtGui.QLabel('Welcome to DigiSun!', self)
+        width_widget = 150
         sun_logo = QtGui.QLabel()
 
         sun_logo.setPixmap(QtGui.QPixmap("DigiSun_logo2.png"))
@@ -25,10 +27,37 @@ class DialogLogin(QtGui.QDialog):
         sun_logo.setMaximumWidth(width_widget)
         sun_logo.setMaximumHeight(width_widget)
 
+        #config_title = QtGui.QLabel("Configuration settings", self)
+        config = configuration.Config()
+        config.set_archdrawing()
+        config.set_database()
+        config_archdrawing = QtGui.QLabel("Drawings directory: ")
+        self.config_archdrawing_name = QtGui.QLineEdit(self)
+        self.config_archdrawing_name.setDisabled(True)
+        self.config_archdrawing_name.setText(config.archdrawing_directory)
+        self.config_archdrawing_name.setStyleSheet(
+                "background-color: rgb(77, 185, 88); color:black")
+        
+        if os.path.isdir(config.archdrawing_directory):
+            self.config_archdrawing_name.setStyleSheet(
+                "background-color: rgb(77, 185, 88); color:black")
+        
+        config_database = QtGui.QLabel("Database name: ")
+        self.config_database_name = QtGui.QLineEdit(self)
+        self.config_database_name.setDisabled(True)
+        self.config_database_name.setText(config.host)
+        self.config_database_name.setStyleSheet(
+                "background-color: rgb(255, 165, 84); color:black")
+        
+        if (config.check_database_connection()):
+            self.config_database_name.setStyleSheet(
+                "background-color: rgb(77, 185, 88); color:black")
+        
+        
         self.operator_name = QtGui.QLineEdit(self)
         self.operator_name.setMinimumWidth(width_widget)
         self.operator_name.setMaximumWidth(width_widget)
-        
+
         operator_selection = QtGui.QLabel('Operator name: ', self)
         operator_selection.setMinimumWidth(width_widget)
         operator_selection.setMaximumWidth(width_widget)
@@ -47,11 +76,16 @@ class DialogLogin(QtGui.QDialog):
 
         self.layout.addWidget(sun_logo, 0, 1)
         self.layout.addWidget(welcome_msg, 1, 1)
-        self.layout.addWidget(operator_selection, 2, 0)
-        self.layout.addWidget(self.operator_name, 2, 1)
-        self.layout.addWidget(application_selection, 3, 0)
-        self.layout.addWidget(daily_scan_but, 3, 1)
-        self.layout.addWidget(bulk_analyse_but, 3, 2)
+        #self.layout.addWidget(config_title, 2, 0)
+        self.layout.addWidget(config_archdrawing, 2, 0)
+        self.layout.addWidget(self.config_archdrawing_name, 2, 1)
+        self.layout.addWidget(config_database, 3, 0)
+        self.layout.addWidget(self.config_database_name, 3, 1)
+        self.layout.addWidget(operator_selection, 4, 0)
+        self.layout.addWidget(self.operator_name, 4, 1)
+        self.layout.addWidget(application_selection, 5, 0)
+        self.layout.addWidget(daily_scan_but, 5, 1)
+        self.layout.addWidget(bulk_analyse_but, 5, 2)
 
         daily_scan_but.setAutoDefault(True)
         bulk_analyse_but.setAutoDefault(True)

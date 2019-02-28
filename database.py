@@ -4,7 +4,7 @@
 The database class contains all the function to interact with the database.
 """
 import pymysql
-from backports import configparser
+import configuration
 
 
 class database():
@@ -13,9 +13,10 @@ class database():
     """
     def __init__(self):
 
-        self.config = configparser.ConfigParser()
+        self.config = configuration.Config()
+        
         (config_host, config_user,
-         config_passwd, config_db) = self.configuration()
+         config_passwd, config_db) = self.config.set_database()
         if config_host:
             self.db = pymysql.connect(host=config_host,
                                       user=config_user,
@@ -23,21 +24,7 @@ class database():
                                       db=config_db)
             self.cursor = self.db.cursor()
 
-    def configuration(self):
-
-        config_file_name = "digisun.ini"
-        try:
-            with open(config_file_name) as config_file:
-                self.config.read_file(config_file)
-                host = self.config['database']['host']
-                user = self.config['database']['user']
-                passwd = self.config['database']['passwd']
-                db = self.config['database']['name']
-
-                return host, user, passwd, db
-        except IOError:
-            print('IOError - config file not found !!')
-
+            
     def get_field_time_interval(self, table_name, field, date_min, date_max):
         self.cursor.execute('SELECT ( ' + field +
                             ') FROM ' + table_name +

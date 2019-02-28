@@ -20,7 +20,7 @@ import statusbar
 import drawing_view_page
 import drawing_information
 import group_frame
-from backports import configparser
+import configuration
 import numpy as np
 from PyQt4 import QtGui, QtCore
 
@@ -35,7 +35,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     Attributes:
     - config
-    - config_file : name of configuration file
     - drawing_page : structure of the GUI
     - vertical_scroll_bar
     - horizontal_scroll_bar
@@ -44,7 +43,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
 
     Methods:
-    - set_configuration
     - setCentralWidget
     - add_drawing_information
     - add_current_session
@@ -112,9 +110,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         super(DrawingAnalysePage, self).__init__()
         
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
-        self.config = configparser.ConfigParser()
-        self.config_file = "digisun.ini"
-        self.set_configuration()
+        
+        self.config = configuration.Config()
+        self.config.set_archdrawing()
 
         self.drawing_page = drawing_view_page.DrawingViewPage()
 
@@ -123,8 +121,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.operator = operator
         self.level_info = ['group', 'dipole', 'area']  # group always included
 
-        if (self.archdrawing_directory and os.path.isdir(
-                self.archdrawing_directory)):
+        if (self.config.archdrawing_directory and os.path.isdir(
+                self.config.archdrawing_directory)):
 
             self.add_drawing_information()
             self.add_current_session()
@@ -208,24 +206,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             #no_drawing_msg.setContentsMargins(0, 0, 0, 0)
             self.drawing_page.widget_right_layout.addWidget(no_drawing_msg)
         """
-
-    def set_configuration(self):
-        """
-        TO DO:
-        the prefix should be read from the database
-        (prefix from the drawing_type table)
-        nd from the initialization file
-        """
-        try:
-            with open(self.config_file) as config_file:
-                self.config.read_file(config_file)
-                self.prefix = self.config['drawings']['prefix']
-                self.archdrawing_directory = self.config['drawings']['path']
-                self.extension = self.config['drawings']['extension']
-                #print("check prefix ", self.prefix, type(self.prefix))
-
-        except IOError:
-            print('IOError - config file not found !!')
 
     def set_status_bar(self):
         digisun_status_bar = statusbar.StatusBar()
@@ -1692,17 +1672,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         if self.drawing_lst:
             filename = (
-                self.prefix +
+                self.config.prefix +
                 str(self.drawing_lst[self.current_count].datetime.year) +
                 self.drawing_lst[self.current_count].datetime.strftime('%m') +
                 self.drawing_lst[self.current_count].datetime.strftime('%d') +
                 self.drawing_lst[self.current_count].datetime.strftime('%H') +
                 self.drawing_lst[self.current_count].datetime.strftime('%M') +
                 "." +
-                self.extension)
+                self.config.extension)
 
             directory = os.path.join(
-                self.archdrawing_directory,
+                self.config.archdrawing_directory,
                 str(self.drawing_lst[self.current_count].datetime.year),
                 self.drawing_lst[self.current_count].datetime.strftime('%m'))
 
