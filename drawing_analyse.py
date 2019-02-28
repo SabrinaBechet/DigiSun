@@ -20,7 +20,7 @@ import statusbar
 import drawing_view_page
 import drawing_information
 import group_frame
-import configparser
+from backports import configparser
 import numpy as np
 from PyQt4 import QtGui, QtCore
 

@@ -10,7 +10,7 @@ import database
 import drawing
 import scanner
 from PyQt4 import QtGui, QtCore
-import configparser
+from backports import configparser
 
 
 class DailyScan(QtGui.QWidget):

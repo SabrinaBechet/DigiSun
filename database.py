@@ -4,7 +4,7 @@
 The database class contains all the function to interact with the database.
 """
 import pymysql
-import configparser
+from backports import configparser
 
 
 class database():
