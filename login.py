@@ -36,7 +36,7 @@ class DialogLogin(QtGui.QDialog):
         self.config_archdrawing_name.setDisabled(True)
         self.config_archdrawing_name.setText(config.archdrawing_directory)
         self.config_archdrawing_name.setStyleSheet(
-                "background-color: rgb(77, 185, 88); color:black")
+            "background-color: rgb(255, 165, 84); color:black")
         
         if os.path.isdir(config.archdrawing_directory):
             self.config_archdrawing_name.setStyleSheet(
@@ -47,7 +47,7 @@ class DialogLogin(QtGui.QDialog):
         self.config_database_name.setDisabled(True)
         self.config_database_name.setText(config.host)
         self.config_database_name.setStyleSheet(
-                "background-color: rgb(255, 165, 84); color:black")
+            "background-color: rgb(255, 165, 84); color:black")
         
         if (config.check_database_connection()):
             self.config_database_name.setStyleSheet(
