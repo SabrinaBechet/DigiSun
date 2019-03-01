@@ -71,21 +71,21 @@ class GroupSurfaceWidget(QtGui.QWidget):
 
         zoom_in_but = QtGui.QToolButton()
         zoom_in_but.setToolTip("zoom in \'Ctrl++\'")
-        zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
+        zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.png'))
         zoom_in_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(2.))
         zoom_in_but.setShortcut(QtGui.QKeySequence("Ctrl++"))
 
         zoom_out_but = QtGui.QToolButton()
         zoom_out_but.setToolTip("zoom out \'Ctrl+-\'")
-        zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.svg'))
+        zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.png'))
         zoom_out_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(1/2.))
         zoom_out_but.setShortcut(QtGui.QKeySequence("Ctrl+-"))
 
         reset_but = QtGui.QToolButton()
         reset_but.setToolTip("reset \'Ctrl+z\'")
-        reset_but.setIcon(QtGui.QIcon('icons/Pixel_perfect/settings.svg'))
+        reset_but.setIcon(QtGui.QIcon('icons/Pixel_perfect/settings.png'))
         reset_but.clicked.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
         reset_but.setShortcut(QtGui.QKeySequence("Ctrl+z"))
@@ -109,7 +109,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         draw_polygon_but = QtGui.QToolButton()
         draw_polygon_but.setToolTip("draw polygon \'Ctrl+d\'")
         draw_polygon_but.setIcon(
-            QtGui.QIcon('icons/Darrio_Ferrando/polygon.svg'))
+            QtGui.QIcon('icons/Darrio_Ferrando/polygon.png'))
         draw_polygon_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.polygon_mode))
@@ -120,7 +120,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         cut_polygon_but = QtGui.QToolButton()
         cut_polygon_but.setToolTip("cut polygon \'Ctrl+c\'")
         cut_polygon_but.setIcon(
-            QtGui.QIcon('icons/Freepik/crop.svg'))
+            QtGui.QIcon('icons/Freepik/crop.png'))
         cut_polygon_but.clicked.connect(
             lambda: self.cut_polygon(threshold_slider.value()))
         cut_polygon_but.setShortcut(QtGui.QKeySequence("Ctrl+c"))
@@ -128,7 +128,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         draw_1pixel_black_but = QtGui.QToolButton()
         draw_1pixel_black_but.setToolTip("draw black pixel \'Ctrl+x\'")
         draw_1pixel_black_but.setIcon(
-            QtGui.QIcon('icons/Freepik/1pix_black_square.svg'))
+            QtGui.QIcon('icons/Freepik/1pix_black_square.png'))
         draw_1pixel_black_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.black_pencil_mode))
@@ -138,7 +138,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         draw_1pixel_white_but = QtGui.QToolButton()
         draw_1pixel_white_but.setToolTip("draw white pixel \'Ctrl+w\'")
         draw_1pixel_white_but.setIcon(
-            QtGui.QIcon('icons/Freepik/1pix_white_square.svg'))
+            QtGui.QIcon('icons/Freepik/1pix_white_square.png'))
         draw_1pixel_white_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.white_pencil_mode))
@@ -148,7 +148,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         bucket_white_fill_but = QtGui.QToolButton()
         bucket_white_fill_but.setToolTip("white bucket fill \'Alt+w\'")
         bucket_white_fill_but.setIcon(
-            QtGui.QIcon('icons/Freepik/white-bucket.svg'))
+            QtGui.QIcon('icons/Freepik/white-bucket.png'))
         bucket_white_fill_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.white_bucket_mode))
@@ -162,7 +162,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         bucket_black_fill_but = QtGui.QToolButton()
         bucket_black_fill_but.setToolTip("black bucket fill \'alt+x\'" )
         bucket_black_fill_but.setIcon(
-            QtGui.QIcon('icons/Freepik/black-bucket.svg'))
+            QtGui.QIcon('icons/Freepik/black-bucket.png'))
         bucket_black_fill_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.black_bucket_mode))

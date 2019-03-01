@@ -21,7 +21,7 @@ class Toolbar(QtGui.QToolBar):
             self.zoom_in_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.zoom_in_but.setText("zoom in")
             self.zoom_in_but.setToolTip("\'+\'")
-        self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.svg'))
+        self.zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.png'))
         self.zoom_in_but.setShortcut(QtGui.QKeySequence("+"))
         
         self.zoom_out_but = QtGui.QToolButton(self)
@@ -32,7 +32,7 @@ class Toolbar(QtGui.QToolBar):
             self.zoom_out_but.setToolTip("\'-\'")
             self.zoom_out_but.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.zoom_out_but.setText("zoom out")
-        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.svg'))
+        self.zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.png'))
         self.zoom_out_but.setShortcut(QtGui.QKeySequence("-"))
 
         self.quick_zoom_but = QtGui.QToolButton(self)
@@ -57,7 +57,7 @@ class Toolbar(QtGui.QToolBar):
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.large_grid_but.setText("l&arge grid")
         self.large_grid_but.setIcon(
-            QtGui.QIcon('icons/Smashicons/internet.svg'))
+            QtGui.QIcon('icons/Smashicons/internet.png'))
         self.large_grid_but.setShortcut(QtGui.QKeySequence("Alt+a"))
 
         self.small_grid_but = QtGui.QToolButton(self)
@@ -70,7 +70,7 @@ class Toolbar(QtGui.QToolBar):
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.small_grid_but.setText("&small grid")
         self.small_grid_but.setIcon(
-            QtGui.QIcon('icons/Smashicons/internet.svg'))
+            QtGui.QIcon('icons/Smashicons/internet.png'))
         self.small_grid_but.setShortcut(QtGui.QKeySequence("Alt+s"))
 
         self.group_visu_but = QtGui.QToolButton(self)
@@ -83,7 +83,7 @@ class Toolbar(QtGui.QToolBar):
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.group_visu_but.setText("g&roup view")
         self.group_visu_but.setIcon(
-            QtGui.QIcon('icons/Smashicons/share_1.svg'))
+            QtGui.QIcon('icons/Smashicons/share_1.png'))
         self.group_visu_but.setShortcut(QtGui.QKeySequence("Alt+r"))
 
         self.dipole_visu_but = QtGui.QToolButton(self)
@@ -109,7 +109,7 @@ class Toolbar(QtGui.QToolBar):
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.helper_grid_but.setText("h&elper grid")
         self.helper_grid_but.setIcon(
-            QtGui.QIcon('icons/Smashicons/internet.svg'))
+            QtGui.QIcon('icons/Smashicons/internet.png'))
         self.helper_grid_but.setShortcut(QtGui.QKeySequence("e"))
         
         self.calibration_but = QtGui.QToolButton(self)
@@ -122,7 +122,7 @@ class Toolbar(QtGui.QToolBar):
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.calibration_but.setText("&calibrate")
         self.calibration_but.setIcon(
-            QtGui.QIcon('icons/Smashicons/target.svg'))
+            QtGui.QIcon('icons/Smashicons/target.png'))
         self.calibration_but.setShortcut(QtGui.QKeySequence("c"))
 
         self.add_group_but = QtGui.QToolButton(self)
@@ -134,7 +134,7 @@ class Toolbar(QtGui.QToolBar):
             self.add_group_but.setToolButtonStyle(
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.add_group_but.setText("add g&roup")
-        self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.svg'))
+        self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.png'))
         self.add_group_but.setShortcut(QtGui.QKeySequence("r"))
 
         vertical_line_widget = QtGui.QWidget()
@@ -178,7 +178,7 @@ class Toolbar(QtGui.QToolBar):
                 self.surface_but.setToolButtonStyle(
                     QtCore.Qt.ToolButtonTextUnderIcon)
                 self.surface_but.setText("&surface")
-            self.surface_but.setIcon(QtGui.QIcon('icons/Freepik/layout.svg'))
+            self.surface_but.setIcon(QtGui.QIcon('icons/Freepik/layout.png'))
             self.surface_but.setShortcut(QtGui.QKeySequence("s"))
             self.addWidget(self.surface_but)
 
