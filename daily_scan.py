@@ -23,6 +23,7 @@ class DailyScan(QtGui.QWidget):
 
         self.config = configuration.Config()
         self.config.set_archdrawing()
+        self.config.set_scanner()
         
         self.operator = operator
         self.add_formLayout_lineEdit()
@@ -49,11 +50,11 @@ class DailyScan(QtGui.QWidget):
             scanner_name = my_scanner.get_scanner_name()
             if scanner_name:
                 self.scan_name_linedit.setText(scanner_name[0])
-                self.scan_dpi.setText(str(my_scanner.dpi))
-                self.drawing_directory.setText(my_scanner.directory)
+                self.scan_dpi.setText(str(self.config.dpi))
+                self.drawing_directory.setText(self.config.archdrawing_directory)
                 self.but_scan.setEnabled(True)
         else:
-            self.scan_name_linedit.setText("Not working on Linux")
+            self.scan_name_linedit.setText("Not working on Unix system")
             self.scan_name_linedit.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
 
@@ -270,6 +271,7 @@ class DailyScan(QtGui.QWidget):
                 self.drawing_time.strftime('%H') +
                 self.drawing_time.strftime('%M') +
                 "." +
+                self.config.suffix + 
                 self.config.extension)
             
             new_drawing.fill_from_daily_scan(
@@ -290,7 +292,10 @@ class DailyScan(QtGui.QWidget):
         return [new_drawing]
             
     def get_filename(self):
-        return ("usd" + self.drawing_time.strftime('%Y%m%d%H%M') + '.jpg')
+        return (self.config.prefix +
+                self.drawing_time.strftime('%Y%m%d%H%M') +
+                self.config.suffix + 
+                self.config.extention)
 
     def scan_drawing(self):
         """
@@ -309,8 +314,10 @@ class DailyScan(QtGui.QWidget):
         my_scanner.set_scanner(scanner_name[0])
         my_scanner.set_scan_area()
 
-        if os.path.isfile(os.path.join(my_scanner.directory,
-                                       self.get_filename())):
+        output_name = os.path.join(self.drawing_directory,
+                                   self.get_filename())
+        
+        if os.path.isfile(output_name):    
             response = QtGui.QMessageBox.question(
                 self,
                 'same drawing found'
@@ -321,3 +328,5 @@ class DailyScan(QtGui.QWidget):
                 pass
             elif response == QtGui.QMessageBox.No:
                 return
+
+        my_scanner.scan(output_name)

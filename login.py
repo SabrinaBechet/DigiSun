@@ -1,8 +1,10 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-The DialogLogin class represents the dialiog box to enter the user login.
-It checks if the login exist in the database
+The DialogLogin class represents the dialog box to enter to DigiSun.
+It displays the archdrawings directory and the database name and
+checks if they exist (in green) or not (in red).
+It also checks that the login exist in the database.
 """
 import os
 import database
@@ -27,7 +29,7 @@ class DialogLogin(QtGui.QDialog):
         sun_logo.setMaximumWidth(width_widget)
         sun_logo.setMaximumHeight(width_widget)
 
-        #config_title = QtGui.QLabel("Configuration settings", self)
+        # config_title = QtGui.QLabel("Configuration settings", self)
         config = configuration.Config()
         config.set_archdrawing()
         config.set_database()
