@@ -294,8 +294,9 @@ class DailyScan(QtGui.QWidget):
     def get_filename(self):
         return (self.config.prefix +
                 self.drawing_time.strftime('%Y%m%d%H%M') +
-                self.config.suffix + 
-                self.config.extention)
+                self.config.suffix +
+                '.' +
+                self.config.extension)
 
     def scan_drawing(self):
         """
@@ -314,8 +315,14 @@ class DailyScan(QtGui.QWidget):
         my_scanner.set_scanner(scanner_name[0])
         my_scanner.set_scan_area()
 
-        output_name = os.path.join(self.drawing_directory,
-                                   self.get_filename())
+        filename = self.get_filename()
+        
+        output_name = os.path.join(self.config.archdrawing_directory,
+                                   self.drawing_time.strftime('%Y'),
+                                   self.drawing_time.strftime('%m'),
+                                   filename)
+        
+        print('output name: ', output_name)
         
         if os.path.isfile(output_name):    
             response = QtGui.QMessageBox.question(

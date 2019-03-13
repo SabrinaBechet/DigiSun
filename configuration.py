@@ -39,11 +39,11 @@ class Config():
         try:
             with open(self.config_file) as config_file:
                 self.config.read_file(config_file)
-                self.dpi = self.config['scanner']['dpi']
-                self.width = self.config['scanner']['width']
-                self.height = self.config['scanner']['height']
-                self.top = self.config['scanner']['top']
-                self.left = self.config['scanner']['left']
+                self.dpi = int(self.config['scanner']['dpi'])
+                self.width = float(self.config['scanner']['width'])
+                self.height = float(self.config['scanner']['height'])
+                self.top = float(self.config['scanner']['top'])
+                self.left = float(self.config['scanner']['left'])
                 self.scan_format = self.config['scanner']['format']
 
         except IOError:
