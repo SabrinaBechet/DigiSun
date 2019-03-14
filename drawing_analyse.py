@@ -1364,7 +1364,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_info = drawing_information.DrawingInformationWidget()
 
         self.drawing_info.drawing_observer.textEdited.connect(
-            lambda: self.update_linedit_drawing('observers',
+            lambda: self.update_linedit_drawing('observer',
                                                 self.drawing_info.
                                                 drawing_observer))
 
@@ -1389,7 +1389,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         uset_db = database.database()
 
         if uset_db.exist_in_db(field, 'name', linedit.text()):
-            if field == 'observers':
+            if field == 'observer':
                 self.drawing_lst[self.current_count]\
                     .observer = str(linedit.text())
             linedit.setStyleSheet("background-color: white")

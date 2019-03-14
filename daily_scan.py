@@ -118,14 +118,14 @@ class DailyScan(QtGui.QWidget):
 
         self.drawing_operator_linedit.textChanged.connect(
             lambda: self.check_valid_from_db(
-                'observers',
+                'observer',
                 'name',
                 self.drawing_operator_linedit.text(),
                 'operator'))
 
         self.drawing_observer_linedit.textChanged.connect(
             lambda: self.check_valid_from_db(
-                'observers',
+                'observer',
                 'name',
                 self.drawing_observer_linedit.text(),
                 'observer'))
