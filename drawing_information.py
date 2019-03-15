@@ -177,7 +177,7 @@ class DrawingInformationWidget(QtGui.QWidget):
         self.angleP.setText('{0:.2f}'.format(current_drawing.angle_P))
         self.angleB.setText('{0:.2f}'.format(current_drawing.angle_B))
         self.angleL.setText('{0:.2f}'.format(current_drawing.angle_L))
-        self.rotation_number.setText(str(current_drawing.carington_rotation))
+        self.rotation_number.setText(str(current_drawing.carrington_rotation))
         self.calibrated.setText(str(current_drawing.calibrated))
         self.analyzed.setText(str(current_drawing.analyzed))
         self.wolf_number.setText(str(current_drawing.wolf))

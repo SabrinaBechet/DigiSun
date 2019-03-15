@@ -1,6 +1,13 @@
 # !/usr/bin/env python
 # coding: utf-8
 
+"""
+The Drawing object represent a given drawing.
+The Group object represent a group with all its physical/positinal features.
+Both information are stored in the database in the table drawings/groups respectively.
+"""
+
+
 from datetime import datetime
 import math
 import coordinates
@@ -418,7 +425,7 @@ class Drawing(QtCore.QObject):
              self._drawing_type,
              self._quality,
              self._observer,
-             self._carington_rotation,
+             self._carrington_rotation,
              self._julian_date,
              self._calibrated,
              self._analyzed,
@@ -442,7 +449,7 @@ class Drawing(QtCore.QObject):
             self._drawing_type = ''
             self._quality = ''
             self._observer = None
-            self._carington_rotation = 0
+            self._carrington_rotation = 0
             self._julian_date = 0.0
             self._calibrated = 0
             self._analyzed = 0
@@ -477,7 +484,7 @@ class Drawing(QtCore.QObject):
         # calcualte quantities related to datetime...
         sun = sun_ephemeris.SunEphemeris(drawing_datetime)
         self._julian_date = sun.julian_day
-        self._carington_rotation = int(carrington_rotation.carrington_rotation(
+        self._carrington_rotation = int(carrington_rotation.carrington_rotation(
             drawing_datetime))
         self._angle_P = round(sun.angle_P(), 6)
         self._angle_B = round(sun.angle_B0(), 6)
@@ -602,14 +609,14 @@ class Drawing(QtCore.QObject):
         self.value_changed.emit()
 
     @property
-    def carington_rotation(self):
-        return self._carington_rotation
+    def carrington_rotation(self):
+        return self._carrington_rotation
 
-    @carington_rotation.setter
-    def carington_rotation(self, value):
-        # print("here we are changing the value of carington rotation to ",
+    @carrington_rotation.setter
+    def carrington_rotation(self, value):
+        # print("here we are changing the value of carrington rotation to ",
         #      value)
-        self._carington_rotation = value
+        self._carrington_rotation = value
         self.changed = True
         self.value_changed.emit()
 
@@ -997,7 +1004,7 @@ class Drawing(QtCore.QObject):
         db.write_drawing_info(self._drawing_type,
                               self._quality,
                               self._observer.upper(),
-                              self._carington_rotation,
+                              self._carrington_rotation,
                               self._julian_date,
                               self._calibrated,
                               self._analyzed,

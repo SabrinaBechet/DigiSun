@@ -135,7 +135,7 @@ class database():
         to a drawing identified by its datetime
         """
         self.cursor.execute('REPLACE into drawings (TypeOfDrawing, Quality, '
-                            'Observer, CaringtonRotation,'
+                            'Observer, CarringtonRotation,'
                             'JulianDate, Calibrated, Analyzed, GroupCount, '
                             'SpotCount, Wolf, AngleP, '
                             'AngleB, AngleL, Path, Operator, LastUpdateTime, '
@@ -213,7 +213,7 @@ class database():
         a UNIQUE index, the old row is deleted before the new row is inserted.
         """
         self.cursor.execute('REPLACE INTO drawings (Datetime, TypeOfDrawing,'
-                            'Quality, Observer, CaringtonRotation, JulianDate,'
+                            'Quality, Observer, CarringtonRotation, JulianDate,'
                             'Calibrated, Analyzed, GroupCount, SpotCount,'
                             'Wolf, AngleP, AngleB, AngleL, Path,'
                             'Operator, LastUpdateTime) values (%s, %s, %s, %s,'
@@ -221,7 +221,7 @@ class database():
                             '%s) ',
                             (drawing.datetime, drawing.drawing_type,
                              drawing.quality, drawing.observer,
-                             drawing.carington_rotation, drawing.julian_date,
+                             drawing.carrington_rotation, drawing.julian_date,
                              drawing.calibrated, drawing.analyzed,
                              drawing.group_count, drawing.spot_count,
                              drawing.wolf, drawing.angle_P,

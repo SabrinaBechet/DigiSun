@@ -104,7 +104,7 @@ class DialogLogin(QtGui.QDialog):
 
     def handleLogin(self):
         uset_db = database.database()
-        if (uset_db.exist_in_db('observers',
+        if (uset_db.exist_in_db('observer',
                                 'name',
                                 self.operator_name.text())):
             self.accept()

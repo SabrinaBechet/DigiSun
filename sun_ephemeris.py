@@ -4,7 +4,7 @@
 from datetime import datetime
 import math
 import observer_time
-
+import configuration
 
 class SunEphemeris():
     """ this object represent the coordinate and different parameter
@@ -178,8 +178,12 @@ class SunEphemeris():
         return a * math.cos(b + c * self.obs_time.julian_millenia_j2000())
 
     def read_VSOP87(self):
-        filename = 'VSOP87D.ear'
-        file = open(filename, 'r')
+        self.config = configuration.Config("/home/sabrinabct/Projets/DigiSun/digisun.ini")
+        ephem_file = self.config.set_ephemeris()
+        #filename = 'VSOP87D.ear'
+        #file_path = os.path.join('.', filename)
+        #print(ephem_file)
+        file = open(ephem_file, 'r')
         lines = file.readlines()
 
         coeff_a = []

@@ -2,21 +2,23 @@
 # -*-coding:utf-8-*-
 
 """
-This class handles the configuration of Digisun. It needs:
-- database path, user and passwd
-- archdrawing directory
-It reads these values in a file called 'digisun.ini'.
+This class handles the configuration of Digisun.
 """
 
+import os
 from backports import configparser
 import pymysql
 
 class Config():
 
-    def __init__(self):
+    def __init__(self, filename="digisun.ini"):
+        """
+        By default, the default file is digisun.ini but
+        it can be different if specified.
+        """
         
         self.config = configparser.ConfigParser()
-        self.config_file = "digisun.ini"
+        self.config_file = filename
         #self.set_configuration()
 
     def set_archdrawing(self):
@@ -31,10 +33,48 @@ class Config():
                 self.archdrawing_directory = self.config['drawings']['path']
                 self.suffix = self.config['drawings']['suffix']
                 self.extension = self.config['drawings']['extension']
+                self.filename_structure = self.config['drawings']['filename_structure']
+                self.directory_structure = self.config['drawings']['directory_structure']
                 
         except IOError:
             print('IOError - config file not found !!')
 
+    def set_file_path(self, my_datetime):
+        """
+        Return a standard file path based on a given configuration
+        """
+        
+        self.set_archdrawing()
+        
+        if self.filename_structure=='YYYYmmddHHMM':
+            filename_strftime = '%Y%m%d%H%M'
+        elif self.filename_structure=='YYYYmmdd':
+            filename_strftime = '%Y%m%d'
+        else:
+            print("ERROR : filename structure unknown!!")
+            
+        self.filename = (
+            self.prefix +
+            my_datetime.strftime(filename_strftime) +
+            "." +
+            self.suffix +
+            self.extension)
+        
+        if self.directory_structure=='YYYY/mm':
+            dir_strftime = '%Y/%m'
+        elif self.directory_structure=='YYYY':
+            dir_strftime = '%Y'
+        else:
+            print("ERROR : directory structure unknown!!")
+            
+
+        self.directory = os.path.join(
+            self.archdrawing_directory,
+            my_datetime.strftime(dir_strftime))
+        
+        self.file_path = os.path.join(self.directory, self.filename)
+              
+        
     def set_scanner(self):
         try:
             with open(self.config_file) as config_file:
@@ -65,6 +105,18 @@ class Config():
         except IOError:
             print('IOError - config file not found !!')
 
+    def set_ephemeris(self):
+        """
+        Configure the parameters related to the ephemeris.
+        """
+        try:
+            with open(self.config_file) as config_file:
+                self.config.read_file(config_file)
+                self.ephem_file = self.config['ephemeris']['VSOP87']
+              
+                return self.ephem_file
+        except IOError:
+            print('IOError - config file not found !!')
             
     def check_database_connection(self):
 

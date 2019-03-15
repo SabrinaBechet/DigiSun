@@ -1671,15 +1671,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         the structure of the directory.
         """
         if self.drawing_lst:
-            filename = (
-                self.config.prefix +
-                str(self.drawing_lst[self.current_count].datetime.year) +
-                self.drawing_lst[self.current_count].datetime.strftime('%m') +
-                self.drawing_lst[self.current_count].datetime.strftime('%d') +
-                self.drawing_lst[self.current_count].datetime.strftime('%H') +
-                self.drawing_lst[self.current_count].datetime.strftime('%M') +
-                "." +
-                self.config.extension)
+
+            """filename = self.config.get_filename(self.drawing_lst[self.current_count].datetime)
 
             directory = os.path.join(
                 self.config.archdrawing_directory,
@@ -1688,6 +1681,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.label_right.file_path = os.path.join(directory,
                                                       filename)
+            """
+            self.config.set_file_path(self.drawing_lst[self.current_count].datetime)
+            self.label_right.file_path = self.config.file_path
+
+            print("the path is", self.label_right.file_path)
 
     def set_drawing(self):
         """
