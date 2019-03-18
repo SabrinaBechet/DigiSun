@@ -264,7 +264,7 @@ class DailyScan(QtGui.QWidget):
         if answer == QtGui.QMessageBox.Yes:
             new_drawing = drawing.Drawing()
 
-            self.config.set_filename(self.drawing_time)
+            self.config.set_file_path(self.drawing_time)
             filename = self.config.filename
             
             new_drawing.fill_from_daily_scan(
@@ -317,12 +317,12 @@ class DailyScan(QtGui.QWidget):
                                    filename)
         """
         self.config.set_file_path(self.drawing_time)
-        file_path = self.config.file_path()
+        drawing_path = self.config.file_path
         
                 
-        print('file path: ',file_path)
+        print('file path: ',drawing_path)
         
-        if os.path.isfile(file_path):    
+        if os.path.isfile(drawing_path):    
             response = QtGui.QMessageBox.question(
                 self,
                 'same drawing found'
@@ -334,4 +334,4 @@ class DailyScan(QtGui.QWidget):
             elif response == QtGui.QMessageBox.No:
                 return
 
-        my_scanner.scan(file_path)
+        my_scanner.scan(drawing_path)
