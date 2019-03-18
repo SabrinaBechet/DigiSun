@@ -7,6 +7,12 @@ def group_frame(zurich, radius, posx, posy, center_x, center_y):
     distance_from_center = math.sqrt((posx - center_x)**2 +
                                      (posy - center_y)**2)
 
+    print("check group frame: ", zurich, distance_from_center, radius, posx, posy, center_x, center_y)
+
+    if posx==0.0 and posy==0.0:
+        print('hey the positions are nul!')
+        return int(radius/6.)
+    
     if distance_from_center < radius:
         center_to_limb = (math.asin(distance_from_center *
                                     1./radius))
