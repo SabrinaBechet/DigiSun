@@ -1162,12 +1162,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if coordinate == 'longitude':
             longitude += value
             longitude = longitude % (2 * math.pi)
-            # if longitude > 2 * math.pi :
-            #    longitude -= 2 * math.pi
 
         if coordinate == 'latitude':
             latitude += value
 
+        if self.drawing_lst[index].p_oriented:
+            angle_P_drawing = 0.0
+        elif not self.drawing_lst[index].p_oriented:
+            angle_P_drawing = self.drawing_lst[index].angle_P
+            
+            
         posX, posY, posZ = coordinates.cartesian_from_HGC_upper_left_origin(
             self.drawing_lst[index].calibrated_center.x,
             self.drawing_lst[index].calibrated_center.y,
@@ -1175,7 +1179,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[index].calibrated_north.y,
             longitude,
             latitude,
-            self.drawing_lst[index].angle_P,
+            angle_P_drawing,
             self.drawing_lst[index].angle_B,
             self.drawing_lst[index].angle_L,
             drawing_height)

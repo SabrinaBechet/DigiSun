@@ -486,9 +486,9 @@ class Drawing(QtCore.QObject):
         self._julian_date = sun.julian_day
         self._carrington_rotation = int(carrington_rotation.carrington_rotation(
             drawing_datetime))
-        self._angle_P = round(sun.angle_P(), 6)
-        self._angle_B = round(sun.angle_B0(), 6)
-        self._angle_L = round(sun.angle_L0(), 6)
+        self.angle_P = round(sun.angle_P(), 6)
+        self.angle_B = round(sun.angle_B0(), 6)
+        self.angle_L = round(sun.angle_L0(), 6)
 
     def set_drawing_type(self, param):
         """
@@ -679,7 +679,7 @@ class Drawing(QtCore.QObject):
 
     @angle_P.setter
     def angle_P(self, value):
-        # print("here we are changing the value of angle_P to ", value)
+        print("here we are changing the value of angle_P to ", value)
         self._angle_P = value
         self.changed = True
         self.value_changed.emit()
@@ -880,6 +880,15 @@ class Drawing(QtCore.QObject):
     @pt2_name.setter
     def pt2_name(self, value):
         print("here we are changing the value of point2 name to ", value)
+        print("this is not authorized!!")
+
+    @property
+    def p_oriented(self):
+        return self._p_oriented
+
+    @p_oriented.setter
+    def p_oriented(self, value):
+        print("here we are changing the value of p_oriented name to ", value)
         print("this is not authorized!!")
 
     @property

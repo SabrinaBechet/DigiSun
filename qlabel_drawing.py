@@ -129,6 +129,15 @@ class QLabelDrawing(QtGui.QLabel):
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
 
+        print("*****************", self.current_drawing.p_oriented)
+        if self.current_drawing.p_oriented:
+            angle_P_drawing = 0.0
+            print("the drawing is p oriented!!")
+        elif not self.current_drawing.p_oriented:
+            angle_P_drawing = self.current_drawing.angle_P
+            print("the drawing is not p oriented!!")
+
+        
         if (self.helper_grid_position_clicked and
                 self.current_drawing.calibrated):
             pen_helper_grid = QtGui.QPen(QtCore.Qt.gray)
@@ -373,7 +382,7 @@ class QLabelDrawing(QtGui.QLabel):
                         self.current_drawing.calibrated_north.y,
                         self.current_drawing.group_lst[i].longitude,
                         self.current_drawing.group_lst[i].latitude,
-                        self.current_drawing.angle_P,
+                        angle_P_drawing,
                         self.current_drawing.angle_B,
                         self.current_drawing.angle_L,
                         self.drawing_height)
@@ -422,7 +431,7 @@ class QLabelDrawing(QtGui.QLabel):
                              self.current_drawing.calibrated_north.y,
                              self.current_drawing.group_lst[i].dipole1_long,
                              self.current_drawing.group_lst[i].dipole1_lat,
-                             self.current_drawing.angle_P,
+                             angle_P_drawing, #self.current_drawing.angle_P,
                              self.current_drawing.angle_B,
                              self.current_drawing.angle_L,
                              self.drawing_height)
@@ -431,14 +440,14 @@ class QLabelDrawing(QtGui.QLabel):
                     (dip2_x,
                      dip2_y,
                      dip2_z) = coordinates\
-                        .cartesian_from_HGC_upper_left_origin(
+                         .cartesian_from_HGC_upper_left_origin(
                              self.current_drawing.calibrated_center.x,
                              self.current_drawing.calibrated_center.y,
                              self.current_drawing.calibrated_north.x,
                              self.current_drawing.calibrated_north.y,
                              self.current_drawing.group_lst[i].dipole2_long,
                              self.current_drawing.group_lst[i].dipole2_lat,
-                             self.current_drawing.angle_P,
+                             angle_P_drawing, #self.current_drawing.angle_P,
                              self.current_drawing.angle_B,
                              self.current_drawing.angle_L,
                              self.drawing_height)
@@ -648,7 +657,12 @@ class QLabelDrawing(QtGui.QLabel):
 
         # angle given in radian
         angle_calibration = center.angle_from_y_axis(north)
-
+        
+        if self.current_drawing.p_oriented:
+            angle_P_drawing = 0.0
+        elif not self.current_drawing.p_oriented:
+            angle_P_drawing = self.current_drawing.angle_P
+            
         for spherical_coord in spherical_coord_lst:
             x, y, z = spherical_coord.convert_to_cartesian()
             cart_coord = coordinates.Cartesian(x, y, z)
@@ -658,7 +672,7 @@ class QLabelDrawing(QtGui.QLabel):
             cart_coord.rotate_around_x(
                 -self.current_drawing.angle_B * math.pi/180.)
             cart_coord.rotate_around_z(
-                self.current_drawing.angle_P * math.pi/180. -
+                angle_P_drawing * math.pi/180. -
                 angle_calibration)
 
             if cart_coord.z > 0:
@@ -707,6 +721,12 @@ class QLabelDrawing(QtGui.QLabel):
         self.right_click_x = x_drawing
         self.right_click_y = y_drawing
 
+        if self.current_drawing.p_oriented:
+            angle_P_drawing = 0.0
+        elif not self.current_drawing.p_oriented:
+            angle_P_drawing = self.current_drawing.angle_P
+
+        
         if(QMouseEvent.button() == QtCore.Qt.RightButton):
             self.right_click.emit()
             
@@ -761,7 +781,7 @@ class QLabelDrawing(QtGui.QLabel):
                  north_y_lower_left_origin,
                  drawing_x_lower_left_origin,
                  drawing_y_lower_left_origin,
-                 self.current_drawing.angle_P,
+                 angle_P_drawing, #self.current_drawing.angle_P,
                  self.current_drawing.angle_B,
                  self.current_drawing.angle_L)
 
