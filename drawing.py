@@ -913,7 +913,7 @@ class Drawing(QtCore.QObject):
         - the center to limb angle
         - the quadrant
         """
-        print("update the position of the group!!!")
+        # print("update the position of the group!!!")
 
         self._group_lst[group_number]._latitude = round(latitude, 6)
         self._group_lst[group_number]._longitude = round(longitude, 6)

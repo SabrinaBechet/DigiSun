@@ -187,6 +187,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.label_right.north_clicked.connect(self.statusBar().clean)
             self.label_right.group_added.connect(self.add_group_box)
+            self.label_right.group_pos_changed.connect(self.change_group_pos)
             self.label_right.dipole_added.connect(
                 lambda: self.update_dipole_button(self.listWidget_groupBox.currentRow()))
 
@@ -243,6 +244,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         digisun_toolbar.helper_grid_but.clicked.connect(self.set_helper_grid)
         digisun_toolbar.calibration_but.clicked.connect(self.start_calibration)
         digisun_toolbar.add_group_but.clicked.connect(self.set_add_group_mode)
+        digisun_toolbar.change_group_pos_but.clicked.connect(
+            self.set_change_group_position_mode)
 
         if 'dipole' in self.level_info:
             digisun_toolbar.add_dipole_but.clicked\
@@ -279,6 +282,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.label_right.helper_grid.value = False
             self.label_right.add_group_mode.value = False
+            self.label_right.change_group_position_mode.value = False
             self.label_right.add_dipole_mode.value = False
             self.label_right.surface_mode.value = False
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
@@ -338,6 +342,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if self.label_right.calibration_mode.value:
                 self.start_calibration()
             self.label_right.add_group_mode.value = False
+            self.label_right.change_group_position_mode.value = False
             self.label_right.add_dipole_mode.value = False
             self.label_right.surface_mode.value = False
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
@@ -380,6 +385,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if self.label_right.calibration_mode.value:
                 self.start_calibration()
             self.label_right.helper_grid.value = False
+            self.label_right.change_group_position_mode.value = False
             self.label_right.add_dipole_mode.value = False
             self.label_right.surface_mode.value = False
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
@@ -390,6 +396,50 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             # QtGui.QApplication.restoreOverrideCursor()
             self.label_right.setCursor(QtCore.Qt.ArrowCursor)
             self.statusBar().clean()
+
+
+    def set_change_group_position_mode(self):
+        """
+        Change the position of the group highlighted.
+        """
+        QtGui.QApplication.restoreOverrideCursor()
+        self.label_right.change_group_position_mode.set_opposite_value()
+
+        if self.label_right.change_group_position_mode.value:
+            self.statusBar().name.setText("Change group position mode")
+
+            if not self.label_right.group_visu.value:
+                self.label_right.group_visu.value = True
+                self.label_right.set_img()
+
+            if self.drawing_lst[self.current_count].calibrated == 0:
+                self.statusBar().comment.setText(" Warning :" +
+                                                 " The calibration must" +
+                                                 " be  done before change the " +
+                                                 " groups position!")
+            else:
+                self.statusBar().comment.setText("Click on a the group" +
+                                                 " position to change it")
+                cursor_img = ("cursor/Pixel_perfect/target_24.png")
+                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
+                # QtGui.QApplication.setOverrideCursor(cursor_add_group)
+                self.label_right.setCursor(cursor_add_group)
+
+            if self.label_right.calibration_mode.value:
+                self.start_calibration()
+            self.label_right.helper_grid.value = False
+            self.label_right.add_group_mode.value = False
+            self.label_right.add_dipole_mode.value = False
+            self.label_right.surface_mode.value = False
+            self.drawing_page.widget_middle_up.setMinimumWidth(0)
+            self.drawing_page.widget_middle_up.setMaximumWidth(10)
+
+        else:
+            # print("restore the old cursor")
+            # QtGui.QApplication.restoreOverrideCursor()
+            self.label_right.setCursor(QtCore.Qt.ArrowCursor)
+            self.statusBar().clean()
+
 
     def add_group_box(self):
         """
@@ -410,6 +460,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_info.wolf_number.setText(
             str(self.drawing_lst[self.current_count].wolf))
 
+    def change_group_pos(self):
+        """
+        Fonction triggered when on click on the drawing while
+        the change_group_pos is on.
+        - update the group toolbox (value of longitude and latitude)
+        - update the visu of the group
+        """
+        group_index = self.listWidget_groupBox.currentRow()
+        self.set_group_toolbox(group_index)
+        self.update_group_visu(group_index)
+            
     def set_add_dipole_mode(self):
         """
         - reset the cursor to its original shape
@@ -455,6 +516,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.start_calibration()
             self.label_right.helper_grid.value = False
             self.label_right.add_group_mode.value = False
+            self.label_right.change_group_position_mode.value = False
             self.label_right.surface_mode.value = False
             self.drawing_page.widget_middle_up.setMinimumWidth(0)
             self.drawing_page.widget_middle_up.setMaximumWidth(10)
@@ -1714,6 +1776,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.calibration_mode.value = False
             self.label_right.helper_grid.value = False
             self.label_right.add_group_mode.value = False
+            self.label_right.change_group_position_mode.value = False
             self.label_right.add_dipole_mode.value = False
             self.label_right.setCursor(QtCore.Qt.ArrowCursor)
 

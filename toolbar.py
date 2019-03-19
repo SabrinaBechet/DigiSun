@@ -115,7 +115,7 @@ class Toolbar(QtGui.QToolBar):
         self.calibration_but = QtGui.QToolButton(self)
         if sys.platform=='darwin':
             self.calibration_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-            self.calibration_but.setToolTip("calibration: ≈ß\'c\'")
+            self.calibration_but.setToolTip("calibration: \'c\'")
         else:
             self.calibration_but.setToolTip("\'c\'")
             self.calibration_but.setToolButtonStyle(
@@ -137,6 +137,18 @@ class Toolbar(QtGui.QToolBar):
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.png'))
         self.add_group_but.setShortcut(QtGui.QKeySequence("r"))
 
+        self.change_group_pos_but = QtGui.QToolButton(self)
+        if sys.platform=='darwin':
+            self.change_group_pos_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+            self.change_group_pos_but.setToolTip("group pos: \'r\'")
+        else:
+            self.change_group_pos_but.setToolTip("\'r\'")
+            self.change_group_pos_but.setToolButtonStyle(
+                QtCore.Qt.ToolButtonTextUnderIcon)
+            self.change_group_pos_but.setText("group pos")
+        self.change_group_pos_but.setIcon(QtGui.QIcon('icons/Smashicons/map-location.png'))
+        self.change_group_pos_but.setShortcut(QtGui.QKeySequence("r"))
+
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
         vertical_line_widget.setStyleSheet("background-color: black")
@@ -152,6 +164,7 @@ class Toolbar(QtGui.QToolBar):
         self.addWidget(self.helper_grid_but)
         self.addWidget(self.calibration_but)
         self.addWidget(self.add_group_but)
+        self.addWidget(self.change_group_pos_but)
 
         if 'dipole' in level_info:
             self.add_dipole_but = QtGui.QToolButton(self)
@@ -237,6 +250,13 @@ class Toolbar(QtGui.QToolBar):
                 self.add_group_but))
         if label_right.add_group_mode.value:
             self.add_group_but.setStyleSheet("background-color: lightblue")
+
+        label_right.change_group_position_mode.value_changed.connect(
+            lambda: self.set_button_color(
+                label_right.change_group_position_mode.value,
+                self.change_group_pos_but))
+        if label_right.change_group_position_mode.value:
+            self.change_group_pos_but.setStyleSheet("background-color: lightblue")
 
         label_right.add_dipole_mode.value_changed.connect(
             lambda: self.set_button_color(

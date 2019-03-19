@@ -39,6 +39,7 @@ class QLabelDrawing(QtGui.QLabel):
     center_clicked = QtCore.pyqtSignal()
     north_clicked = QtCore.pyqtSignal()
     group_added = QtCore.pyqtSignal()
+    group_pos_changed = QtCore.pyqtSignal()
     dipole_added = QtCore.pyqtSignal()
     right_click = QtCore.pyqtSignal()
     
@@ -70,6 +71,7 @@ class QLabelDrawing(QtGui.QLabel):
         self.center_done = False
         self.north_done = False
         self.add_group_mode = analyse_mode_bool.analyseModeBool(False)
+        self.change_group_position_mode = analyse_mode_bool.analyseModeBool(False)
         self.add_dipole_mode = analyse_mode_bool.analyseModeBool(False)
         self.surface_mode = analyse_mode_bool.analyseModeBool(False)
 
@@ -129,14 +131,11 @@ class QLabelDrawing(QtGui.QLabel):
         painter = QtGui.QPainter()
         painter.begin(self.drawing_pixMap)
 
-        print("*****************", self.current_drawing.p_oriented)
         if self.current_drawing.p_oriented:
             angle_P_drawing = 0.0
-            print("the drawing is p oriented!!")
         elif not self.current_drawing.p_oriented:
             angle_P_drawing = self.current_drawing.angle_P
-            print("the drawing is not p oriented!!")
-
+            
         
         if (self.helper_grid_position_clicked and
                 self.current_drawing.calibrated):
@@ -760,7 +759,8 @@ class QLabelDrawing(QtGui.QLabel):
         if (QMouseEvent.button() == QtCore.Qt.LeftButton and
                 self.add_group_mode.value or
                 self.add_dipole_mode.value or
-                self.helper_grid.value):
+                self.helper_grid.value or
+                self.change_group_position_mode.value):
             center_x_lower_left_origin = self.current_drawing\
                                              .calibrated_center.x
             center_y_lower_left_origin = (self.drawing_height -
@@ -812,7 +812,6 @@ class QLabelDrawing(QtGui.QLabel):
         elif (QMouseEvent.button() == QtCore.Qt.LeftButton and
               self.calibration_mode.value and not self.center_done and
               not self.north_done):
-
             self.current_drawing.calibrated = 0
             self.calib_pt1_x = x_drawing
             self.calib_pt1_y = y_drawing
@@ -835,11 +834,20 @@ class QLabelDrawing(QtGui.QLabel):
             self.group_added.emit()
 
         if (QMouseEvent.button() == QtCore.Qt.LeftButton and
+            self.change_group_position_mode.value and self.current_drawing.calibrated):
+            self.current_drawing.change_group_position(self.group_visu_index,
+                                                       self.HGC_latitude,
+                                                       self.HGC_longitude,
+                                                       x_drawing,
+                                                       y_drawing)
+            self.group_pos_changed.emit()
+
+        if (QMouseEvent.button() == QtCore.Qt.LeftButton and
                 self.add_dipole_mode.value and
                 self.current_drawing.calibrated):
 
-            print("click on the drawing to add a dipole")
-            print(len(self.dipole_points), len(self.dipole_angles))
+            # print("click on the drawing to add a dipole")
+            # print(len(self.dipole_points), len(self.dipole_angles))
 
             if (self.current_drawing.group_lst[self.group_visu_index]
                     .zurich.upper() in ["B", "C", "D", "E", "F", "G", "X"]):
