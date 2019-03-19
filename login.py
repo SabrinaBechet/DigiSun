@@ -1,11 +1,25 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-The DialogLogin class represents the dialog box to enter to DigiSun.
-It displays the archdrawings directory and the database name and
-checks if they exist (in green) or not (in red).
-It also checks that the login exist in the database.
+DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+Copyright (C) 2019 Royal Observatory of Belgium (ROB)
+
+This file is part of DigiSun.
+
+DigiSun is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DigiSun is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import os
 import database
 import configuration
@@ -13,7 +27,12 @@ from PyQt4 import QtGui
 
 
 class DialogLogin(QtGui.QDialog):
-
+    """
+    The DialogLogin class represents the dialog box to enter to DigiSun.
+    It displays the archdrawings directory and the database name and
+    checks if they exist (in green) or not (in red).
+    It also checks that the login exist in the database.
+    """
     def __init__(self):
         super(DialogLogin, self).__init__()
         self.setWindowTitle("DigiSun")
@@ -21,7 +40,7 @@ class DialogLogin(QtGui.QDialog):
         self.layout = QtGui.QGridLayout()
         self.setLayout(self.layout)
         welcome_msg = QtGui.QLabel('Welcome to DigiSun!', self)
-        width_widget = 150
+        width_widget = 180
         sun_logo = QtGui.QLabel()
 
         sun_logo.setPixmap(QtGui.QPixmap("DigiSun_logo2.png"))

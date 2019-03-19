@@ -1,8 +1,23 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
-
 """
-This class handles the configuration of Digisun.
+DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)
+
+This file is part of DigiSun.
+
+DigiSun is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DigiSun is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import os
@@ -105,10 +120,7 @@ class Config():
         except IOError:
             print('IOError - config file not found !!')
 
-    def set_ephemeris(self):
-        """
-        Configure the parameters related to the ephemeris.
-        """
+    """ def set_ephemeris(self):
         try:
             with open(self.config_file) as config_file:
                 self.config.read_file(config_file)
@@ -117,7 +129,8 @@ class Config():
                 return self.ephem_file
         except IOError:
             print('IOError - config file not found !!')
-            
+   """
+   
     def check_database_connection(self):
 
         try:

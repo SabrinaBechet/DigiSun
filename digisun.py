@@ -1,14 +1,25 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-The mainWindow classe launches the DigiSun software.
-The main interface proposes three choices and
-allow to switch to the right page.
-The three choices are:
-- daily scan
-- bulk analyse
-- bulk scan (not developped yet)
+DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)
+
+This file is part of DigiSun.
+
+DigiSun is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DigiSun is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import sys
 import login
 import daily_scan
@@ -102,6 +113,9 @@ class mainWindow(QtGui.QMainWindow):
 
     def bulk_switch_to_drawing_analyse(self, lst_drawing):
         lst_drawing = self.analyse_page.set_drawing_information()
+
+        print("lst drawing:", lst_drawing)
+        
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()
 

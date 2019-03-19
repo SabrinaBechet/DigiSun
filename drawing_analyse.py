@@ -1,12 +1,25 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-The classes defined here contains only information related
-to the GUI of the drawing analyse.
-Keep the analyse itself somwhere else!
-- DrawingViewPage : the template of the DrawingViewPage
-- DrawingAnalysePage: the page itself with all the widgets
+DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)
+
+This file is part of DigiSun.
+
+DigiSun is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DigiSun is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 import os
 from datetime import datetime
 import math
@@ -27,6 +40,11 @@ from PyQt4 import QtGui, QtCore
 
 class DrawingAnalysePage(QtGui.QMainWindow):
     """
+    The classes defined here contains only information related
+    to the GUI of the drawing analyse.
+    Keep the analyse itself somwhere else!
+    - DrawingViewPage : the template of the DrawingViewPage
+    - DrawingAnalysePage: the page itself with all the widgets
     Page that shows the drawing and where the analyse is done.
     Depending on the info_analysed list,it will shows:
     - only the info related to groups
