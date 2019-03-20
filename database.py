@@ -264,7 +264,7 @@ class database():
 
         The mysql command is
         select count(DateTime) from drawings where DateTime>'2017-03-01'
-        && DateTime<'2017-03-31'  && Calibrated=0;
+        && DateTime<'2017-03-31' ;
         Here:
         table_name = drawings
         field = DateTime
@@ -272,13 +272,13 @@ class database():
         value_min = '2017-03-01'
         value_max = '2017-03-31'
         """
-        self.cursor.execute('SELECT COUNT( DISTINCT ' + field +
+        self.cursor.execute('SELECT COUNT( ' + field +
                             ') FROM ' + table_name +
                             ' WHERE ' +
                             field + '> %s && ' +
                             field + '< %s && ' +
                             field2 + '<=> %s ;',
-                            (str(value_min) + " 00:00",
+                            (str(value_min) + " 01:00",
                              str(value_max) + " 23:59", value2))
 
         self.db.commit()
