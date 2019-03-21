@@ -41,133 +41,50 @@ class ListPage(QtGui.QWidget):
         if sys.platform=='darwin':
             self.setAttribute(QtCore.Qt.WA_MacNormalSize)
             
-    def draw_table(self, list_drawings):
+    def draw_table(self, dico):
         """
         Method that draws the table with the list of drawings and
         the fraction of calibrated/analysed/area done.
         """
-        self.table.horizontalHeader().setDefaultSectionSize(150)
+        #self.table.horizontalHeader().setDefaultSectionSize(150)
         self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
-                                             "analysed", "area"])
+                                              "analysed", "area"])
 
-        for i in range(len(list_drawings)):
+        count = 0
+        for dico_keys, dico_values in dico.items():
 
-            if self.lst_tot[i] > 0:
-                date_drawing = QtGui.QTableWidgetItem(str(list_drawings[i]))
+            date_drawing = QtGui.QTableWidgetItem(str(dico_values[1]))
         
-                tot_number_drawing = QtGui.QTableWidgetItem(str(self.lst_tot[i]))
-                
-                self.table.setItem(i, 0, date_drawing)
-                self.table.setItem(i, 1, tot_number_drawing)
-                
-                progressBar_calib = QtGui.QProgressBar()
-                progressBar_analysed = QtGui.QProgressBar()
-                progressBar_area = QtGui.QProgressBar()
+            tot_number_drawing = QtGui.QTableWidgetItem(str(dico_values[0]))
             
-                #if self.lst_tot[i] > 0:
-                frac_calibrated = self.lst_calib[i] #* 100. / self.lst_tot[i]
-                progressBar_calib.setValue(frac_calibrated)
-                frac_analysed = self.lst_analysed[i] # * 100. / self.lst_tot[i]
-                progressBar_analysed.setValue(frac_analysed)
-                frac_area = 100 - self.lst_area_not_done[i] # * 100. /
-                #self.lst_tot[i])
-                progressBar_area.setValue(frac_area)
-                
-                """else:
-                progressBar_calib.setValue(0)
-                progressBar_analysed.setValue(0)
-                """
-                self.table.setCellWidget(i, 2, progressBar_calib)
-                self.table.setCellWidget(i, 3, progressBar_analysed)
-                self.table.setCellWidget(i, 4, progressBar_area)
+            self.table.setItem(count, 0, date_drawing)
+            self.table.setItem(count, 1, tot_number_drawing)
+            
+            progressBar_calib = QtGui.QProgressBar()
+            progressBar_analysed = QtGui.QProgressBar()
+            progressBar_area = QtGui.QProgressBar()
+ 
+            frac_calibrated = dico_values[2] * 100 / dico_values[0]
+            progressBar_calib.setValue(frac_calibrated)
+            frac_analysed = dico_values[3] * 100 / dico_values[0]
+            progressBar_analysed.setValue(frac_analysed)
+            frac_area = 100 
+            progressBar_area.setValue(frac_area)
+            
+           
+            self.table.setCellWidget(count, 2, progressBar_calib)
+            self.table.setCellWidget(count, 3, progressBar_analysed)
+            self.table.setCellWidget(count, 4, progressBar_area)
 
+            count+=1
+            
         self.table.resizeColumnsToContents()
-
-    def get_lst_from_database(self, datetime_min, datetime_max):
-        """
-        For a given list of years (or months), a list of datetime_min and max,
-        Connect to the database and extract:
-        - the total number of drawings for the selected year/month
-        - the number of calibrated drawings for the selected year/month
-        - the number of analyzed drawings for the selected year/month
-        - the number of area done for the selected year/month
-        """
-        db = database.database()
-        self.lst_tot = []
-        self.lst_calib = []
-        self.lst_analysed = []
-        self.lst_area_not_done = []
-
-        # print("database access : {} times".format(len(datetime_min)))
-
-        for i in range(len(datetime_min)):
-            nb_drawing_surface_null = 0
-            nb_drawing_not_analysed = 0
-
-            nb_drawing_tot = db.count_year("drawings",
-                                           "DateTime",
-                                           datetime_min[i],
-                                           datetime_max[i])
-
-            nb_drawing_calibrated = db\
-                .count_field_in_time_interval("drawings",
-                                              "DateTime",
-                                              datetime_min[i],
-                                              datetime_max[i],
-                                              "Calibrated",
-                                              str(1))
-
-            nb_drawing_analysed = db\
-                .count_field_in_time_interval("drawings",
-                                              "DateTime",
-                                              datetime_min[i],
-                                              datetime_max[i],
-                                              "Analyzed",
-                                              str(1))
-
-            self.lst_tot.append(nb_drawing_tot)
-            if nb_drawing_tot>0:
-                self.lst_calib.append(nb_drawing_calibrated * 100./nb_drawing_tot)
-                self.lst_analysed.append(nb_drawing_analysed * 100./nb_drawing_tot)
-            else:
-                self.lst_calib.append(0)
-                self.lst_analysed.append(0)
-
-            # nb_drawing_not_analysed = nb_drawing_tot - nb_drawing_analysed
-
-            nb_group = db\
-                .count_year("groups",
-                            "DateTime",
-                            datetime_min[i],
-                            datetime_max[i])
-                            
-            
-            nb_drawing_surface_null = db\
-                .count_field_in_time_interval("groups",
-                                              "DateTime",
-                                              datetime_min[i],
-                                              datetime_max[i],
-                                              "Surface",
-                                              None)
-            print("check surface", i,
-                  datetime_min[i],
-                  datetime_max[i],
-                  
-                  nb_group,
-                  nb_drawing_surface_null)
-
-            if nb_group>0:
-                tst2 = nb_drawing_surface_null * 100. /nb_group
-                self.lst_area_not_done.append(tst2)#nb_drawing_not_analysed * 100./nb_group) 
-            else:
-                self.lst_area_not_done.append(0)
-
-        print(self.lst_area_not_done)
-
-                                          
+                 
 class DayListPage(ListPage):
     """
-    Page that shows the list of days for a given month
+    Page that shows the list of days for a given month.
+    It is used essentially to delete drawings.
+
     It inherits from ListPage the following attributes:
     - self.table
 
@@ -183,33 +100,16 @@ class DayListPage(ListPage):
         - the table widget
         """
         super(DayListPage, self).__init__()
-        #self.but_select = QtGui.QPushButton("select month", self)
-        #self.but_select.setShortcut(QtGui.QKeySequence("w"))
-        #if sys.platform=='darwin':
-        #    self.but_select.setAttribute(QtCore.Qt.WA_MacNormalSize)
-
+        self.but_back = QtGui.QPushButton("remove day list view", self)
+        self.but_back.setMaximumWidth(200)
         self.but_delete = QtGui.QPushButton("delete drawing", self)
-        
+        self.but_delete.setMaximumWidth(200)
         
         day_list_layout = QtGui.QVBoxLayout()
         day_list_layout.addWidget(self.table)
         day_list_layout.addWidget(self.but_delete)
+        day_list_layout.addWidget(self.but_back)
         self.setLayout(day_list_layout)
-
-    def set_date(self, datetime_min, datetime_max):
-        """ set the dates to show in the table (rows)"""
-        self.datetime_min = datetime_min
-        self.datetime_max = datetime_max
-
-        self.get_lst_from_database(
-            [x.strftime("%Y-%m-%d") for x in datetime_min],
-            [x.strftime("%Y-%m-%d") for x in datetime_max])
-        date_list = [datetime_min[i].strftime("%d %b %Y")
-                     for i in range(len(datetime_min))]
-
-        self.table.setRowCount(len(datetime_min))
-        self.draw_table(date_list)
-
 
 class MonthListPage(ListPage):
     """
@@ -233,8 +133,6 @@ class MonthListPage(ListPage):
         self.but_select = QtGui.QPushButton("show drawings", self)
         self.but_all_day_drawings = QtGui.QPushButton("list all days", self)
         
-        self.but_select.setShortcut(QtGui.QKeySequence("w"))
-
         if sys.platform=='darwin':
             self.but_select.setAttribute(QtCore.Qt.WA_MacNormalSize)
 
@@ -244,23 +142,7 @@ class MonthListPage(ListPage):
         month_list_layout.addWidget(self.but_all_day_drawings)
         self.setLayout(month_list_layout)
 
-    def set_date(self, datetime_min, datetime_max):
-        """ set the dates to show in the table (rows)"""
-        self.datetime_min = datetime_min
-        self.datetime_max = datetime_max
-
-        self.get_lst_from_database(
-            [x.strftime("%Y-%m-%d") for x in datetime_min],
-            [x.strftime("%Y-%m-%d") for x in datetime_max])
-        date_list = [datetime_min[i].strftime("%d") + " - " +
-                     datetime_max[i].strftime("%d") + "   " +
-                     datetime_min[i].strftime("%b %Y")
-                     for i in range(len(datetime_min))]
-
-        self.table.setRowCount(len(datetime_min))
-        self.draw_table(date_list)
-
-
+        
 class YearListPage(ListPage):
     """
     Page that shows the list of years present in the database.
@@ -275,37 +157,45 @@ class YearListPage(ListPage):
         - the table widget
         """
         super(YearListPage, self).__init__()
-        self.lst_year = []
-        self.set_year()
+        
+        self.get_dico()
+        self.table.setRowCount(len(self.dict_year))
+        self.draw_table(self.dict_year)
+
         self.but_select = QtGui.QPushButton("select year", self)
-        self.but_select.setShortcut(QtGui.QKeySequence("x"))
         self.layout = QtGui.QVBoxLayout()
         self.layout.addWidget(self.table)
         self.layout.addWidget(self.but_select)
         self.setLayout(self.layout)
 
-    def set_year(self):
-        """ Show the list of years in the table (rows)"""
-        self.get_lst_year()
-        datetime_min, datetime_max = [], []
-        for el in self.lst_year:
-            datetime_min.append(str(el) + "-01-01")
-            datetime_max.append(str(el) + "-12-31")
-        self.get_lst_from_database(datetime_min,
-                                   datetime_max)
-        self.table.setRowCount(len(self.lst_year))
-        self.draw_table(self.lst_year)
-
-    def get_lst_year(self):
-        """ Get the list of years from the database"""
+    def get_dico(self):
+        
+        datetime_drawing_min = datetime(1900,1,1)
+        datetime_drawing_max = datetime.now()
         db = database.database()
-        list_years_from_db = db.get_year_interval("drawings", "DateTime")
-        set_year = set()
-        for el in list_years_from_db:
-            set_year.add(el[0].year)
-        # to do: ordonner la liste
-        self.lst_year = list(set_year)
+        tuple_drawings = db\
+            .get_all_in_time_interval("drawings",
+                                      datetime_drawing_min,
+                                      datetime_drawing_max)
+        year_lst = set(el[1].year for el in tuple_drawings)
+        self.dict_year = {}
 
+        for year_index in year_lst:
+            total = [el for el in tuple_drawings if el[1].year==year_index]
+            total_count = len(total)
+            
+            calib = [el for el in tuple_drawings if el[1].year==year_index and
+                     el[7]==1]
+            calib_count = len(calib)
+
+            analyzed = [el for el in tuple_drawings if el[1].year==year_index and
+                     el[8]==1]
+            analyzed_count = len(analyzed)
+
+            year_to_print = str(year_index)
+
+            self.dict_year[year_index] = ( total_count, year_to_print, calib_count, analyzed_count)
+ 
 
 class DateSelectionPage(QtGui.QWidget):
 
@@ -349,33 +239,40 @@ class BulkViewPage(QtGui.QWidget):
         self.widget_right.setStyleSheet("background-color:lightgray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
         self.widget_right.setLayout(self.widget_right_layout)
-        self.widget_right.setMaximumWidth(self.max_width)
+        self.widget_right.setMinimumWidth(0)
+        self.widget_right.setMaximumWidth(10)
         
         self.widget_center = QtGui.QWidget()
         self.widget_center.setStyleSheet("background-color:lightgray;")
         self.widget_center_layout = QtGui.QVBoxLayout()
         self.widget_center.setLayout(self.widget_center_layout)
-        self.widget_center.setMaximumWidth(self.max_width)
+        #self.widget_center.setMaximumWidth(self.max_width)
 
         self.widget_left_up = QtGui.QWidget()
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.widget_left_layout_up = QtGui.QVBoxLayout()
         self.widget_left_up.setLayout(self.widget_left_layout_up)
-        my_font = QtGui.QFont("Comic Sans MS", 15)
+        #my_font = QtGui.QFont("Comic Sans MS", 15)
         self.label_left_up = QtGui.QLabel('Drawing selection per date')
-        self.label_left_up.setFont(my_font)
-        self.label_left_up.setContentsMargins(0, 0, 0, 0)
+        #self.label_left_up.setFont(my_font)
+        #self.label_left_up.setContentsMargins(0, 5, 0, 5)
         self.widget_left_up.layout().addWidget(self.label_left_up)
-
+        
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setStyleSheet("background-color:white;")
         self.widget_left_layout_down = QtGui.QVBoxLayout()
         self.widget_left_down.setLayout(self.widget_left_layout_down)
-        self.label_left_down = QtGui.QLabel('Drawing selection per year')
-        self.label_left_down.setFont(my_font)
-        self.label_left_down.setContentsMargins(0, 0, 0, 0)
-        self.widget_left_down.layout().addWidget(self.label_left_down)
-
+        title_left = QtGui.QLabel("Drawing selection per year")
+        #title_left.setAlignment(QtCore.Qt.AlignCenter)
+        title_left.setContentsMargins(0, 5, 0, 5)
+        self.widget_left_layout_down.addWidget(title_left)
+        
+        #self.label_left_down = QtGui.QLabel('Drawing selection per year')
+        #self.label_left_down.setFont(my_font)
+        #self.label_left_down.setContentsMargins(0, 0, 0, 0)
+        #self.widget_left_down.layout().addWidget(self.label_left_down)
+        
+        
         splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_left)
         splitter_left.addWidget(self.widget_left_up)
@@ -403,37 +300,53 @@ class BulkAnalysePage(BulkViewPage):
 
         self.widget_left_layout_up.addWidget(self.date_selection_page)
         self.widget_left_layout_down.addWidget(self.year_list_page)
+        
+        #self.datetime_min_lst, self.datetime_max_lst = [], []
 
-        self.datetime_min, self.datetime_max = [], []
-
-        self.year_list_page\
+        """self.year_list_page\
             .but_select\
             .clicked\
             .connect(self.drawing_selection_per_year)
+        """
         self.year_list_page\
             .but_select\
             .clicked\
-            .connect(self.clic_year_selection)
+            .connect(self.show_months_selection)
 
-        self.month_list_page\
+        """self.month_list_page\
             .but_all_day_drawings\
             .clicked\
             .connect(self.drawing_selection_per_month)
-        
+        """
         self.month_list_page\
             .but_all_day_drawings\
             .clicked\
-            .connect(self.clic_month_selection)
+            .connect(self.show_days_selection)
+
+        self.day_list_page\
+            .but_delete\
+            .clicked\
+            .connect(self.delete_drawing)
+
+        self.day_list_page\
+            .but_back\
+            .clicked\
+            .connect(self.reduce_day_widget)
         
         self.date_selection_page\
             .but_select\
             .clicked\
             .connect(self.drawing_selection_per_date)
-        self.date_selection_page\
+        """self.date_selection_page\
             .but_select\
             .clicked\
             .connect(self.clic_year_selection)
+        """
 
+    def reduce_day_widget(self):
+        self.widget_right.setMinimumWidth(0)
+        self.widget_right.setMaximumWidth(10)
+        
     def last_day_of_month(self, year, month):
         # algo found on stackexchange, works pretty well.
         any_day = datetime(year, month, 1)
@@ -442,43 +355,7 @@ class BulkAnalysePage(BulkViewPage):
 
         return int(last_day_current_month.day)
 
-    def drawing_selection_per_month(self):
-        self.datetime_min, self.datetime_max = [], []
-        selection = self.month_list_page.table.selectionModel()
-        index_elSelectionne = selection.currentIndex()
-        element_selectionne = self.month_list_page.table.item(
-            index_elSelectionne.row(),
-            0).text()
-        year_selected = str(element_selectionne[14:18])
-        month_selected = str(element_selectionne[8:13])
-        day_min = str(element_selectionne[0:3])
-        day_max = str(element_selectionne[5:8])
-
-        print("check date ", int(element_selectionne[0:3]), int(day_max))
-
-        self.datetime_drawing_min = datetime.strptime(year_selected + ' ' +
-                                                      month_selected + ' ' +
-                                                      day_min + "00:00",
-                                                      '%Y %b %d %H:%M')
-
-        self.datetime_drawing_max = datetime.strptime(year_selected + ' ' +
-                                                      month_selected + ' ' +
-                                                      day_max + "23:59",
-                                                      '%Y %b %d %H:%M')
-        
-        for el in range(int(day_min), int(day_max) + 1):
- 
-            self.datetime_min.append(datetime.strptime(year_selected + ' ' +
-                                                       month_selected + ' ' +
-                                                       str(el),
-                                                      '%Y %b %d'))
-            self.datetime_max.append(datetime.strptime(year_selected + ' ' +
-                                                       month_selected + ' ' +
-                                                       str(el),
-                                                      '%Y %b %d'))
-                                          
-
-        # print( self.datetime_drawing_min, self.datetime_drawing_max)
+   
 
     def set_drawing_information(self):
         """
@@ -489,19 +366,23 @@ class BulkAnalysePage(BulkViewPage):
         start_set_drawing = time.clock()
         db = database.database()
 
+        print("check day interval",
+              self.datetime_drawing_min_day,
+              self.datetime_drawing_max_day)
+        
         try:
             tuple_drawings = db\
                 .get_all_in_time_interval("drawings",
-                                          self.datetime_drawing_min,
-                                          self.datetime_drawing_max)
+                                          self.datetime_drawing_min_day,
+                                          self.datetime_drawing_max_day)
             tuple_calibrations = db\
                 .get_all_in_time_interval("calibrations",
-                                          self.datetime_drawing_min,
-                                          self.datetime_drawing_max)
+                                          self.datetime_drawing_min_day,
+                                          self.datetime_drawing_max_day)
             tuple_groups = db\
                 .get_all_in_time_interval("groups",
-                                          self.datetime_drawing_min,
-                                          self.datetime_drawing_max)
+                                          self.datetime_drawing_min_day,
+                                          self.datetime_drawing_max_day)
         except AttributeError:
             QtGui.QMessageBox\
                  .warning(self,
@@ -538,29 +419,136 @@ class BulkAnalysePage(BulkViewPage):
         drawing_lst.sort(key=lambda x : x.datetime)
         return drawing_lst
 
-    def drawing_selection_per_year(self):
-        self.datetime_min, self.datetime_max = [], []
+     
+    def get_month_interval(self):
+        """
+        Return the datemin and datemax for a selected year
+        """
         selection = self.year_list_page.table.selectionModel()
         index_elSelectionne = selection.currentIndex()
-        element_selectionne = self.year_list_page\
-                                  .table\
-                                  .item(index_elSelectionne.row(),
-                                        0).text()
-        selected_year = str(element_selectionne)[0:4]
-        self.lst_month = list(range(1, 13))
+        try:
+            element_selectionne = self.year_list_page\
+                                      .table\
+                                      .item(index_elSelectionne.row(),
+                                            0).text()
+            self.selected_year = str(element_selectionne)[0:4]
 
-        for el in self.lst_month:
-            self.datetime_min.append(
-                datetime(int(selected_year),
-                         el,
-                         1))
-            self.datetime_max.append(
-                datetime(int(selected_year),
-                         el,
-                         self.last_day_of_month(int(selected_year),
-                                                el)))
+            self.datetime_drawing_min_month = datetime(int(self.selected_year),
+                                                       1, 1, 0, 0)
+            self.datetime_drawing_max_month = datetime(int(self.selected_year),
+                                                       12, 31, 23, 59)
+            return True
+        except AttributeError:
+            QtGui.QMessageBox\
+                 .warning(self,
+                          "Year selection",
+                          "Please select a year.")
+            return False
+
+    def get_day_interval(self):
+        """
+        Return the datemin and datemax for a selected month
+        """
+        selection = self.month_list_page.table.selectionModel()
+        index_elSelectionne = selection.currentIndex()
+        try:
+            element_selectionne = self.month_list_page\
+                                      .table\
+                                      .item(index_elSelectionne.row(),
+                                            0).text()
+            self.selected_month = str(datetime.strptime(str(element_selectionne),'%b %Y').month)
             
+            day_min = str(1) 
+            day_max = str(self.last_day_of_month(int(self.selected_year),
+                                                 int(self.selected_month)))
             
+            self.datetime_drawing_min_day = datetime(int(self.selected_year),
+                                                     int(self.selected_month),
+                                                     int(day_min), 0, 0)
+            self.datetime_drawing_max_day = datetime(int(self.selected_year),
+                                                     int(self.selected_month),
+                                                     int(day_max), 23, 59)
+            return True
+        
+        except AttributeError:
+            QtGui.QMessageBox\
+                 .warning(self,
+                          "Month selection",
+                          "Please select a month.")
+            return False    
+
+    def get_month_dico(self):
+        """
+        Return a dictionary with the list of months and 
+        nb of calibrated/analyzed drawings
+        """
+    
+        db = database.database()
+        tuple_drawings = db\
+            .get_all_in_time_interval("drawings",
+                                      self.datetime_drawing_min_month,
+                                      self.datetime_drawing_max_month)
+        month_lst = set(el[1].month for el in tuple_drawings)
+        self.dict_month = {}
+
+        for month_index in month_lst:
+            total = [el for el in tuple_drawings if el[1].month==month_index]
+            total_count = len(total)
+            
+            calib = [el for el in tuple_drawings if el[1].month==month_index and
+                     el[7]==1]
+            calib_count = len(calib)
+
+            analyzed = [el for el in tuple_drawings if el[1].month==month_index and
+                     el[8]==1]
+            analyzed_count = len(analyzed)
+
+            month_to_print =  (datetime.strftime(datetime(2000, month_index, 1), '%b') +
+                               ' ' +
+                               self.selected_year)
+
+        
+            #print(month_index, month_to_print, calib_count)
+
+            self.dict_month[month_index] = (total_count, month_to_print, calib_count, analyzed_count)
+
+
+    def get_day_dico(self):
+      
+        db = database.database()
+        tuple_drawings = db\
+            .get_all_in_time_interval("drawings",
+                                      self.datetime_drawing_min_day,
+                                      self.datetime_drawing_max_day)
+        day_lst = [el[1].day for el in tuple_drawings]
+
+        print("day list", day_lst)
+        
+        self.dict_day = {}
+
+        for day_index in day_lst:
+            total = [el for el in tuple_drawings if el[1].day==day_index]
+            total_count = len(total)
+            
+            calib = [el for el in tuple_drawings if el[1].day==day_index and
+                     el[7]==1]
+            calib_count = len(calib)
+
+            analyzed = [el for el in tuple_drawings if el[1].day==day_index and
+                     el[8]==1]
+            analyzed_count = len(analyzed)
+
+            day_to_print = (str(day_index) +
+                            ' ' +
+                            datetime.strftime(datetime(2000,
+                                                       int(self.selected_month),
+                                                       1),
+                                              '%b') )
+
+            self.dict_day[day_index] = (total_count, day_to_print, calib_count, analyzed_count)
+
+        print(self.dict_day)
+        
     def drawing_selection_per_date(self):
         self.datetime_min, self.datetime_max = [], []
         date_min = self.date_selection_page.start_date.date().toPyDate()
@@ -611,25 +599,39 @@ class BulkAnalysePage(BulkViewPage):
                                          self.datetime_max[-1].month,
                                          date_max.day)
 
-    def clic_year_selection(self):
+    def show_months_selection(self):
 
-        #print("enter in the clic year selection", self.datetime_min, self.datetime_max)
-        
-        self.month_list_page.set_date(self.datetime_min, self.datetime_max)
-        self.month_list_page.setMinimumWidth(self.width()/2.)
-        self.month_list_page.setMinimumHeight(self.height()/2.)
-        self.widget_center_layout.addWidget(self.month_list_page,
-                                           0,
-                                           QtCore.Qt.AlignCenter)
+        year_selected = self.get_month_interval()
+        if year_selected:
+            self.get_month_dico()
+            self.month_list_page.table.setRowCount(len(self.dict_month))
+            self.month_list_page.draw_table(self.dict_month)
+            self.month_list_page.setMinimumWidth(self.width()/2.)
+            self.month_list_page.setMinimumHeight(self.height()/2.)
+            self.widget_center_layout.addWidget(self.month_list_page,
+                                                0,
+                                                QtCore.Qt.AlignCenter)
 
-    def clic_month_selection(self):
-        #print("enter in the clic month selection",
-        #      self.datetime_min,
-        #      self.datetime_max)
-        
-        self.day_list_page.set_date(self.datetime_min, self.datetime_max)
-        self.day_list_page.setMinimumWidth(self.width()/2.)
-        self.day_list_page.setMinimumHeight(self.height()/2.)
-        self.widget_right_layout.addWidget(self.day_list_page,
-                                           0,
-                                           QtCore.Qt.AlignCenter)
+    def show_days_selection(self):
+
+        month_selected = self.get_day_interval()
+        if month_selected :
+            self.widget_right.setMinimumWidth(280)
+            self.widget_right.setMaximumWidth(580)
+            self.get_day_dico()
+            self.day_list_page.table.setRowCount(len(self.dict_day))
+            self.day_list_page.draw_table(self.dict_day)
+            
+            self.day_list_page.setMinimumWidth(self.width()/2.)
+            self.day_list_page.setMinimumHeight(self.height()/2.)
+            self.widget_right_layout.addWidget(self.day_list_page,
+                                               0,
+                                               QtCore.Qt.AlignCenter)
+
+    def delete_drawing(self):
+        selection = self.day_list_page.table.selectionModel()
+        index_elSelectionne = selection.currentIndex()
+        element_selectionne = self.day_list_page\
+                                  .table\
+                                  .item(index_elSelectionne.row(),
+                                        0).text()

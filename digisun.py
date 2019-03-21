@@ -91,12 +91,18 @@ class mainWindow(QtGui.QMainWindow):
             self.daily_switch_to_drawing_analyse)
 
         self.analyse_page.month_list_page.but_select.clicked.connect(
-            self.analyse_page.drawing_selection_per_month)
+            self.select_month_analyse_view)
+        """ self.analyse_page.month_list_page.but_select.clicked.connect(
+        lambda: self.stack.setCurrentIndex(3))
         self.analyse_page.month_list_page.but_select.clicked.connect(
-            lambda: self.stack.setCurrentIndex(3))
-        self.analyse_page.month_list_page.but_select.clicked.connect(
-            self.bulk_switch_to_drawing_analyse)
-
+        self.bulk_switch_to_drawing_analyse)
+        """
+    def select_month_analyse_view(self):
+        month_selected = self.analyse_page.get_day_interval()
+        if month_selected:
+            self.stack.setCurrentIndex(3)
+            self.bulk_switch_to_drawing_analyse()
+            
     def center(self):
         frameGm = self.frameGeometry()
         desktop_rect = QtGui.QDesktopWidget().availableGeometry()
@@ -105,13 +111,13 @@ class mainWindow(QtGui.QMainWindow):
                                          center.y() - self.height()*0.5))
         self.move(frameGm.topLeft())
 
-    def daily_switch_to_drawing_analyse(self, lst_drawing):
+    def daily_switch_to_drawing_analyse(self):
         lst_drawing = self.daily_scan.set_drawing_information()
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()
         self.drawing_analyse.start_calibration()
 
-    def bulk_switch_to_drawing_analyse(self, lst_drawing):
+    def bulk_switch_to_drawing_analyse(self):
         lst_drawing = self.analyse_page.set_drawing_information()
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()
@@ -122,26 +128,33 @@ class mainWindow(QtGui.QMainWindow):
         self.setMenuBar(menuBar)
 
         menu_mode = menuBar.addMenu('Mode')
-        menu_about = menuBar.addMenu('About')
+        menu_help = menuBar.addMenu('Help')
 
-        action_goTo_scanalyse = QtGui.QAction('daily scan', self)
-        action_goTo_analyse = QtGui.QAction('bulk analyse', self)
-        action_goTo_scan = QtGui.QAction('bulk scan', self)
-        action_exit = QtGui.QAction('exit', self)
+        action_goTo_scanalyse = QtGui.QAction('Daily scan', self)
+        action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
+        action_exit = QtGui.QAction('Exit', self)
+
+        action_about = QtGui.QAction('About', self)
 
         action_goTo_scanalyse.triggered.connect(
             lambda: self.stack.setCurrentIndex(0))
         action_goTo_analyse.triggered.connect(
             lambda: self.stack.setCurrentIndex(1))
-        action_goTo_scan.triggered.connect(
-            lambda: self.stack.setCurrentIndex(2))
-
         action_exit.triggered.connect(app.quit)
+
+        action_about.triggered.connect(
+            lambda: QtGui.QMessageBox.about(
+                self,
+                "DigiSun",
+                "<h2 >About DigiSun </h2>"+
+                " <p> Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)" +
+                " <p> This is a software to transform sunspot drawings into exploitable data. " + 
+                " It allows to scan drawings, extract its information and store it in a database."))
 
         menu_mode.addAction(action_goTo_scanalyse)
         menu_mode.addAction(action_goTo_analyse)
-        menu_mode.addAction(action_goTo_scan)
         menu_mode.addAction(action_exit)
+        menu_help.addAction(action_about)
 
         menuBar.show()
 
