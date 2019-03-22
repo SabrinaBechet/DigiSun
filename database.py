@@ -34,6 +34,8 @@ class database():
         
         (config_host, config_user,
          config_passwd, config_db) = self.config.set_database()
+
+        print("database: ", config_db)
         if config_host:
             self.db = pymysql.connect(host=config_host,
                                       user=config_user,

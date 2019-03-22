@@ -89,11 +89,20 @@ class mainWindow(QtGui.QMainWindow):
         self.daily_scan.but_analyse.clicked.connect(
             self.daily_switch_to_drawing_analyse)
 
+        self.analyse_page.date_selection_page.but_select.clicked.connect(
+            self.selection_analyse_view)
+        
         self.analyse_page.month_list_page.but_select.clicked.connect(
             self.select_month_analyse_view)
         
         self.analyse_page.day_list_page.but_select.clicked.connect(
             self.select_day_analyse_view)
+
+    def selection_analyse_view(self):
+        good_selection = self.analyse_page.get_selection_interval()
+        if good_selection:
+            self.stack.setCurrentIndex(2)
+            self.bulk_switch_to_drawing_analyse()
         
     def select_day_analyse_view(self):
         day_selected = self.analyse_page.get_day()
@@ -136,6 +145,7 @@ class mainWindow(QtGui.QMainWindow):
 
         action_goTo_daily_scan= QtGui.QAction('Daily scan', self)
         action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
+        action_goTo_analyse.setShortcuts(QtGui.QKeySequence("b"))
         action_exit = QtGui.QAction('Exit', self)
 
         action_about = QtGui.QAction('About', self)

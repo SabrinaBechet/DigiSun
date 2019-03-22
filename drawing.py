@@ -437,7 +437,8 @@ class Drawing(QtCore.QObject):
              self._angle_L,
              self._path,
              self._operator,
-             self._last_update_time) = param
+             self._last_update_time,
+             self._area_done) = param
 
         except ValueError:
             print("problem to set the drawing parameters from the database")
@@ -462,6 +463,7 @@ class Drawing(QtCore.QObject):
             self._path = ''
             self._operator = None
             self._last_update_time = None
+            self._area_done = 0
 
         self._group_lst = []
         self.changed = False
