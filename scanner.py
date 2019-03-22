@@ -1,9 +1,25 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-The scanner object interact whit the scanner 
-via the TWAIN protocol (only working on Windows)
+DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)
+
+This file is part of DigiSun.
+
+DigiSun is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DigiSun is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
+
 
 import sys
 import os
@@ -15,6 +31,8 @@ if sys.platform == "win32":
 
 class scanner():
     """
+    The scanner object interact whit the scanner 
+    via the TWAIN protocol (only working on Windows)
     This class is strongly inspired by webagent-scanner on gitHub
     """
     def __init__(self):

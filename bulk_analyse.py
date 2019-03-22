@@ -22,6 +22,7 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 
 import time
 import sys
+import collections
 from datetime import datetime, timedelta
 import database
 import drawing
@@ -102,11 +103,14 @@ class DayListPage(ListPage):
         super(DayListPage, self).__init__()
         self.but_back = QtGui.QPushButton("remove day list view", self)
         self.but_back.setMaximumWidth(200)
+        self.but_select = QtGui.QPushButton("show drawing", self)
+        self.but_select.setMaximumWidth(200)
         self.but_delete = QtGui.QPushButton("delete drawing", self)
         self.but_delete.setMaximumWidth(200)
         
         day_list_layout = QtGui.QVBoxLayout()
         day_list_layout.addWidget(self.table)
+        day_list_layout.addWidget(self.but_select)
         day_list_layout.addWidget(self.but_delete)
         day_list_layout.addWidget(self.but_back)
         self.setLayout(day_list_layout)
@@ -252,25 +256,16 @@ class BulkViewPage(QtGui.QWidget):
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.widget_left_layout_up = QtGui.QVBoxLayout()
         self.widget_left_up.setLayout(self.widget_left_layout_up)
-        #my_font = QtGui.QFont("Comic Sans MS", 15)
-        self.label_left_up = QtGui.QLabel('Drawing selection per date')
-        #self.label_left_up.setFont(my_font)
-        #self.label_left_up.setContentsMargins(0, 5, 0, 5)
+        self.label_left_up = QtGui.QLabel('Drawing selection per date: ')
         self.widget_left_up.layout().addWidget(self.label_left_up)
         
         self.widget_left_down = QtGui.QWidget()
         self.widget_left_down.setStyleSheet("background-color:white;")
         self.widget_left_layout_down = QtGui.QVBoxLayout()
         self.widget_left_down.setLayout(self.widget_left_layout_down)
-        title_left = QtGui.QLabel("Drawing selection per year")
-        #title_left.setAlignment(QtCore.Qt.AlignCenter)
+        title_left = QtGui.QLabel("Drawing selection per year:")
         title_left.setContentsMargins(0, 5, 0, 5)
         self.widget_left_layout_down.addWidget(title_left)
-        
-        #self.label_left_down = QtGui.QLabel('Drawing selection per year')
-        #self.label_left_down.setFont(my_font)
-        #self.label_left_down.setContentsMargins(0, 0, 0, 0)
-        #self.widget_left_down.layout().addWidget(self.label_left_down)
         
         
         splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
@@ -298,6 +293,8 @@ class BulkAnalysePage(BulkViewPage):
         self.widget_left_up.setMaximumHeight(self.height()/2.)
         self.widget_left_down.setMinimumWidth(self.height()/2.)
 
+        self.widget_center.setMinimumHeight(self.height()*2.)
+        
         self.widget_left_layout_up.addWidget(self.date_selection_page)
         self.widget_left_layout_down.addWidget(self.year_list_page)
         
@@ -332,7 +329,12 @@ class BulkAnalysePage(BulkViewPage):
             .but_back\
             .clicked\
             .connect(self.reduce_day_widget)
-        
+
+        """self.day_list_page\
+            .but_select\
+            .clicked\
+            .connect(self.reduce_day_widget)
+        """
         self.date_selection_page\
             .but_select\
             .clicked\
@@ -445,6 +447,31 @@ class BulkAnalysePage(BulkViewPage):
                           "Please select a year.")
             return False
 
+    def get_day(self):
+        selection = self.day_list_page.table.selectionModel()
+        index_elSelectionne = selection.currentIndex()
+        try:
+            element_selectionne = self.day_list_page\
+                                      .table\
+                                      .item(index_elSelectionne.row(),
+                                            0).text()
+            self.selected_day = str(datetime.strptime(str(element_selectionne),'%d %b %H:%M').day)
+             
+            self.datetime_drawing_min_day = datetime(int(self.selected_year),
+                                                     int(self.selected_month),
+                                                     int(self.selected_day), 0, 0)
+            self.datetime_drawing_max_day = datetime(int(self.selected_year),
+                                                     int(self.selected_month),
+                                                     int(self.selected_day), 23, 59)
+            return True
+        
+        except AttributeError:
+            QtGui.QMessageBox\
+                 .warning(self,
+                          "Day selection",
+                          "Please select a day.")
+            return False    
+        
     def get_day_interval(self):
         """
         Return the datemin and datemax for a selected month
@@ -507,9 +534,6 @@ class BulkAnalysePage(BulkViewPage):
                                ' ' +
                                self.selected_year)
 
-        
-            #print(month_index, month_to_print, calib_count)
-
             self.dict_month[month_index] = (total_count, month_to_print, calib_count, analyzed_count)
 
 
@@ -520,33 +544,48 @@ class BulkAnalysePage(BulkViewPage):
             .get_all_in_time_interval("drawings",
                                       self.datetime_drawing_min_day,
                                       self.datetime_drawing_max_day)
-        day_lst = [el[1].day for el in tuple_drawings]
+        day_lst = [(el[1].day, el[1].hour, el[1].minute) for el in tuple_drawings]
 
         print("day list", day_lst)
         
         self.dict_day = {}
-
+        dict_day_tmp = {}
+        
         for day_index in day_lst:
-            total = [el for el in tuple_drawings if el[1].day==day_index]
+
+            total = [el for el in tuple_drawings if el[1].day==day_index[0] and
+                     el[1].hour==day_index[1] and
+                     el[1].minute==day_index[2]]
+                     
             total_count = len(total)
             
-            calib = [el for el in tuple_drawings if el[1].day==day_index and
+            calib = [el for el in tuple_drawings if el[1].day==day_index[0] and
+                     el[1].hour==day_index[1] and
+                     el[1].minute==day_index[2] and
                      el[7]==1]
             calib_count = len(calib)
 
-            analyzed = [el for el in tuple_drawings if el[1].day==day_index and
-                     el[8]==1]
+            analyzed = [el for el in tuple_drawings if el[1].day==day_index[0] and
+                        el[1].hour==day_index[1] and
+                        el[1].minute==day_index[2] and
+                        el[8]==1]
             analyzed_count = len(analyzed)
 
-            day_to_print = (str(day_index) +
-                            ' ' +
-                            datetime.strftime(datetime(2000,
-                                                       int(self.selected_month),
-                                                       1),
-                                              '%b') )
+            day_to_print = ( datetime.strftime(
+                datetime(2000,
+                         int(self.selected_month),
+                         day_index[0],
+                         day_index[1],
+                         day_index[2]),
+                '%d %b %H:%M'))
+            
 
-            self.dict_day[day_index] = (total_count, day_to_print, calib_count, analyzed_count)
+            # trick to separte two same days: add the hour in decimal:
+            dict_day_tmp[day_index[0] + day_index[1]/100.] = (total_count, day_to_print, calib_count, analyzed_count)
 
+            #OrderedDict remembers the order in which the elements have been inserted
+            self.dict_day = collections.OrderedDict(sorted(dict_day_tmp.items()))
+            
         print(self.dict_day)
         
     def drawing_selection_per_date(self):
@@ -629,9 +668,33 @@ class BulkAnalysePage(BulkViewPage):
                                                QtCore.Qt.AlignCenter)
 
     def delete_drawing(self):
-        selection = self.day_list_page.table.selectionModel()
-        index_elSelectionne = selection.currentIndex()
-        element_selectionne = self.day_list_page\
-                                  .table\
-                                  .item(index_elSelectionne.row(),
-                                        0).text()
+        try:
+            selection = self.day_list_page.table.selectionModel()
+            index_elSelectionne = selection.currentIndex()
+            element_selectionne = self.day_list_page\
+                                      .table\
+                                      .item(index_elSelectionne.row(),
+                                            0).text()
+            
+            datetime_select = datetime.strptime(str(element_selectionne),
+                                                '%d %b %H:%M')
+            
+            datetime_to_delete = datetime(int(self.selected_year),
+                                          datetime_select.month,
+                                          datetime_select.day,
+                                          datetime_select.hour,
+                                          datetime_select.minute)
+            
+            print("It seems that you want to delete this drawing", datetime_to_delete)
+            
+            
+            db = database.database()
+            db.delete_drawing("drawings", datetime_to_delete)
+            db.delete_drawing("groups", datetime_to_delete)
+            db.delete_drawing("calibrations", datetime_to_delete)
+
+        except AttributeError:
+            QtGui.QMessageBox\
+                 .warning(self,
+                          "Day selection",
+                          "Please select a day.")

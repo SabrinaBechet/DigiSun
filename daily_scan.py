@@ -301,7 +301,33 @@ class DailyScan(QtGui.QWidget):
             
         return [new_drawing]
             
-   
+
+    def check_scanned_drawing_direcotry(self):
+        """
+        - Check that the direcory given in the config file exist, 
+        otherwhise exits with a warning message
+        - Check that the substructure exists (year/month), 
+        otherwhise creates it
+        """
+        self.config.set_file_path(self.drawing_time)
+
+        if os.path.isdir(self.config.archdrawing_directory):
+            
+            if not os.path.isdir(self.config.directory):
+                print("foun the archrawing file but not the substructure..")
+                os.makedirs(self.config.directory)
+                print("directory " + self.config.directory + "created")
+            
+            return self.config.file_path        
+            
+        elif not os.path.isdir(self.config.archdrawing_directory):
+            
+            QtGui.QMessageBox\
+                 .warning(self,
+                          "Scan error",
+                          "The directory specified does not exist!.")
+            return None
+            
 
     def scan_drawing(self):
         """
@@ -319,36 +345,20 @@ class DailyScan(QtGui.QWidget):
         scanner_name = my_scanner.get_scanner_name()
         my_scanner.set_scanner(scanner_name[0])
         my_scanner.set_scan_area()
+        
+        drawing_path = self.check_scanned_drawing_direcotry()
 
-        """filename = self.get_filename()
-        def get_filename(self):
-        return (self.config.prefix +
-                self.drawing_time.strftime('%Y%m%d%H%M') +
-                self.config.suffix +
-                '.' +
-                self.config.extension)
-        
-        output_name = os.path.join(self.config.archdrawing_directory,
-                                   self.drawing_time.strftime('%Y'),
-                                   self.drawing_time.strftime('%m'),
-                                   filename)
-        """
-        self.config.set_file_path(self.drawing_time)
-        drawing_path = self.config.file_path
-        
-                
-        print('file path: ',drawing_path)
-        
-        if os.path.isfile(drawing_path):    
-            response = QtGui.QMessageBox.question(
-                self,
-                'same drawing found'
-                '',
-                'This drawing alreay exists. Re-scan?',
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-            if response == QtGui.QMessageBox.Yes:
-                pass
-            elif response == QtGui.QMessageBox.No:
-                return
-
-        my_scanner.scan(drawing_path)
+        if drawing_path:
+            if os.path.isfile(drawing_path):    
+                response = QtGui.QMessageBox.question(
+                    self,
+                    'same drawing found'
+                    '',
+                    'This drawing alreay exists. Re-scan?',
+                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                if response == QtGui.QMessageBox.Yes:
+                    pass
+                elif response == QtGui.QMessageBox.No:
+                    return
+            
+            my_scanner.scan(drawing_path)

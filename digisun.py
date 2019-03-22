@@ -53,8 +53,7 @@ class mainWindow(QtGui.QMainWindow):
     """ Represent the Qt interface. It consists of stacked pages:
     index 0 : daily scan
     index 1 : analyse page
-    index 2 : bulk scan
-    index 3 : drawing analyse
+    index 2 : drawing analyse
     """
     def __init__(self, operator=None, mode_index=0):
         super(mainWindow, self).__init__()
@@ -69,7 +68,7 @@ class mainWindow(QtGui.QMainWindow):
         self.stack = QtGui.QStackedLayout()
         self.daily_scan = daily_scan.DailyScan(self.operator)
         self.analyse_page = bulk_analyse.BulkAnalysePage()
-        self.bulk_scan_page = BulkScanPage(self.operator)
+        #self.bulk_scan_page = BulkScanPage(self.operator)
         self.drawing_analyse = drawing_analyse\
             .DrawingAnalysePage(self.operator)
 
@@ -79,28 +78,33 @@ class mainWindow(QtGui.QMainWindow):
 
         self.stack.addWidget(self.daily_scan)
         self.stack.addWidget(self.analyse_page)
-        self.stack.addWidget(self.bulk_scan_page)
         self.stack.addWidget(self.drawing_analyse)
-
+        #self.stack.addWidget(self.bulk_scan_page)
+        
         self.set_menuBar()
         self.stack.setCurrentIndex(mode_index)
 
         self.daily_scan.but_analyse.clicked.connect(
-            lambda: self.stack.setCurrentIndex(3))
+            lambda: self.stack.setCurrentIndex(2))
         self.daily_scan.but_analyse.clicked.connect(
             self.daily_switch_to_drawing_analyse)
 
         self.analyse_page.month_list_page.but_select.clicked.connect(
             self.select_month_analyse_view)
-        """ self.analyse_page.month_list_page.but_select.clicked.connect(
-        lambda: self.stack.setCurrentIndex(3))
-        self.analyse_page.month_list_page.but_select.clicked.connect(
-        self.bulk_switch_to_drawing_analyse)
-        """
+        
+        self.analyse_page.day_list_page.but_select.clicked.connect(
+            self.select_day_analyse_view)
+        
+    def select_day_analyse_view(self):
+        day_selected = self.analyse_page.get_day()
+        if day_selected:
+            self.stack.setCurrentIndex(2)
+            self.bulk_switch_to_drawing_analyse()
+        
     def select_month_analyse_view(self):
         month_selected = self.analyse_page.get_day_interval()
         if month_selected:
-            self.stack.setCurrentIndex(3)
+            self.stack.setCurrentIndex(2)
             self.bulk_switch_to_drawing_analyse()
             
     def center(self):
@@ -130,13 +134,13 @@ class mainWindow(QtGui.QMainWindow):
         menu_mode = menuBar.addMenu('Mode')
         menu_help = menuBar.addMenu('Help')
 
-        action_goTo_scanalyse = QtGui.QAction('Daily scan', self)
+        action_goTo_daily_scan= QtGui.QAction('Daily scan', self)
         action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
         action_exit = QtGui.QAction('Exit', self)
 
         action_about = QtGui.QAction('About', self)
 
-        action_goTo_scanalyse.triggered.connect(
+        action_goTo_daily_scan.triggered.connect(
             lambda: self.stack.setCurrentIndex(0))
         action_goTo_analyse.triggered.connect(
             lambda: self.stack.setCurrentIndex(1))
@@ -149,9 +153,10 @@ class mainWindow(QtGui.QMainWindow):
                 "<h2 >About DigiSun </h2>"+
                 " <p> Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)" +
                 " <p> This is a software to transform sunspot drawings into exploitable data. " + 
-                " It allows to scan drawings, extract its information and store it in a database."))
+                " It allows to scan drawings, extract its information and store it in a database." +
+                "<p> Contact: sabrina.bechet@oma.be "))
 
-        menu_mode.addAction(action_goTo_scanalyse)
+        menu_mode.addAction(action_goTo_daily_scan)
         menu_mode.addAction(action_goTo_analyse)
         menu_mode.addAction(action_exit)
         menu_help.addAction(action_about)

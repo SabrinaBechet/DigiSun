@@ -256,9 +256,17 @@ class database():
         results = result[0][0]
         return results
 
-    def count_field_in_time_interval(self, table_name, field, value_min,
+    def delete_drawing(self, table_name, drawing_datetime):
+
+       self.cursor.execute("DELETE FROM " + table_name +
+                           ' WHERE DateTime <=> %s; ',
+                           str(drawing_datetime))
+       
+       self.db.commit()
+    
+    """def count_field_in_time_interval(self, table_name, field, value_min,
                                      value_max, field2, value2):
-        """
+        
         Select the number of drawings in [date_min, date_max] &&
         field2==value2.
 
@@ -271,7 +279,7 @@ class database():
         field2 = Calibrated
         value_min = '2017-03-01'
         value_max = '2017-03-31'
-        """
+        
         self.cursor.execute('SELECT COUNT( ' + field +
                             ') FROM ' + table_name +
                             ' WHERE ' +
@@ -284,15 +292,15 @@ class database():
         self.db.commit()
         result = self.cursor.fetchall()
         return result[0][0]
-
-    def count_field_in_time_interval_area(self, table_name, field, value_min,
+    """
+    """def count_field_in_time_interval_area(self, table_name, field, value_min,
                                           value_max,
                                           field2, value2):
-        """
+        
         Join the drawings and the groups table.
         Select groups.surface=Null only for drawings.analyzed=1.
         Otherwhise count twice analyzed.
-        """
+        
 
         self.cursor.execute('SELECT COUNT( DISTINCT groups.DateTime) ' +
                             'from groups inner join drawings on ' +
@@ -306,8 +314,8 @@ class database():
         self.db.commit()
         result = self.cursor.fetchall()
         return result[0][0]
-
-    def count_year(self, table_name, field, value_min, value_max):
+    """
+    """def count_year(self, table_name, field, value_min, value_max):
         self.cursor.execute('SELECT COUNT(' + field +
                             ') FROM ' + table_name +
                             ' WHERE ' +
@@ -325,7 +333,7 @@ class database():
         self.db.commit()
         result = self.cursor.fetchall()
         return result
-
+    """
     def exist_in_db(self, table_name, field, value):
         self.cursor.execute('SELECT COUNT(' + field +
                             ') FROM ' + table_name +
