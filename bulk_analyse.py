@@ -79,7 +79,7 @@ class ListPage(QtGui.QWidget):
 
             count+=1
             
-        self.table.resizeColumnsToContents()
+        #self.table.resizeColumnsToContents()
                  
 class DayListPage(ListPage):
     """
@@ -293,7 +293,7 @@ class BulkAnalysePage(BulkViewPage):
         self.widget_left_up.setMaximumHeight(self.height()/2.)
         self.widget_left_down.setMinimumWidth(self.height()/2.)
 
-        self.widget_center.setMinimumHeight(self.height()*2.)
+        #self.widget_center.setMinimumHeight(self.height()*2.)
         
         self.widget_left_layout_up.addWidget(self.date_selection_page)
         self.widget_left_layout_down.addWidget(self.year_list_page)
@@ -361,9 +361,10 @@ class BulkAnalysePage(BulkViewPage):
 
     def set_drawing_information(self):
         """
-        Get the information of drawings for which datetime is
-        in [self.datetime_drawing_min, self.datetime_drawing_max].
-        return the list of drawing object.
+        Fonction used to extract the information from the database
+        for which datetime is
+        in [self.datetime_drawing_min, self.datetime_drawing_max]
+        and fill the Drawing object.
         """
         start_set_drawing = time.clock()
         db = database.database()

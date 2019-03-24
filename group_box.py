@@ -171,12 +171,14 @@ class GroupBox(QtGui.QWidget):
                                    grid_position[1] + 2)
 
     def set_spot_count(self, spot_count, grid_position):
-        self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
-        self.spot_number_linedit.setDisabled(True)
-        self.spot_number_linedit.setMaximumWidth(self.widget_maximum_width)
-        self.spot_number_linedit.setStyleSheet(
+        #self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
+        self.spot_number_spinbox = QtGui.QSpinBox(self)#LineEdit(str(spot_count))
+        self.spot_number_spinbox.setValue(spot_count)
+        self.spot_number_spinbox.setDisabled(True)
+        self.spot_number_spinbox.setMaximumWidth(self.widget_maximum_width)
+        self.spot_number_spinbox.setStyleSheet(
             "background-color: white; color: black")
-        self.grid_layout.addWidget(self.spot_number_linedit,
+        self.grid_layout.addWidget(self.spot_number_spinbox,
                                    grid_position[0],
                                    grid_position[1])
 
@@ -238,33 +240,87 @@ class GroupBox(QtGui.QWidget):
         index = self.McIntosh_combo.findText(mcIntosh_type)
         self.McIntosh_combo.setCurrentIndex(index)
 
+
+    def set_label_and_linedit(self, label, label_value,
+                              linedit, linedit_value, grid_position):
+        """
+        Standard function to add a label+linedit in the group box
+        """
+        label.setText(label_value)
+        linedit.setText(linedit_value)
+        linedit.setStyleSheet(
+            "background-color: white; color: black")
+        self.grid_layout.addWidget(label,
+                                   grid_position[0],
+                                   grid_position[1])
+        self.grid_layout.addWidget(linedit,
+                                   grid_position[0],
+                                   grid_position[1] + 1)
+        
     def set_longitude(self, longitude, grid_position):
 
-        self.longitude_label = QtGui.QLabel("Longitude")
+        self.longitude_label = QtGui.QLabel()
         self.longitude_linedit = QtGui.QLineEdit(self)
-        self.longitude_linedit.setText('{0:.2f}'.format(longitude))
-        self.longitude_linedit.setStyleSheet(
-            "background-color: white; color: black")
-        self.grid_layout.addWidget(self.longitude_label,
-                                   grid_position[0],
-                                   grid_position[1])
-        self.grid_layout.addWidget(self.longitude_linedit,
-                                   grid_position[0],
-                                   grid_position[1] + 1)
 
+        self.set_label_and_linedit(self.longitude_label,
+                                   "Longitude",
+                                   self.longitude_linedit,
+                                   '{0:.2f}'.format(longitude),
+                                   grid_position)
+    
     def set_latitude(self, latitude, grid_position):
-        self.latitude_label = QtGui.QLabel("Latitude")
+        self.latitude_label = QtGui.QLabel()
         self.latitude_linedit = QtGui.QLineEdit(self)
-        self.latitude_linedit.setText('{0:.2f}'.format(latitude))
-        self.latitude_linedit.setStyleSheet(
-            "background-color: white; color: black")
-        self.grid_layout.addWidget(self.latitude_label,
-                                   grid_position[0],
-                                   grid_position[1])
-        self.grid_layout.addWidget(self.latitude_linedit,
-                                   grid_position[0],
-                                   grid_position[1] + 1)
 
+        self.set_label_and_linedit(self.latitude_label,
+                                   "Latitude",
+                                   self.latitude_linedit,
+                                   '{0:.2f}'.format(latitude),
+                                   grid_position)
+
+    def set_group_nb(self, group_number, grid_position):
+        self.group_nb_label = QtGui.QLabel()
+        self.group_nb_linedit = QtGui.QLineEdit(self)
+
+
+        self.set_label_and_linedit(self.group_nb_label,
+                                   "Group nb",
+                                   self.group_nb_linedit,
+                                   str(group_number),
+                                   grid_position)
+        
+    def set_surface(self, surface, grid_position):
+        self.surface_label = QtGui.QLabel()
+        self.surface_linedit = QtGui.QLineEdit(self)
+
+        if surface is None:
+            surface = 0.
+        
+        self.set_label_and_linedit(self.surface_label,
+                                   "Surface",
+                                   self.surface_linedit,
+                                   '{0:.2f}'.format(surface),
+                                   grid_position)
+        
+        if surface == 0.:
+            self.surface_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+        else:
+            self.surface_linedit.setStyleSheet(
+                "background-color: white; color: black")
+
+
+    def set_extra_field1(self, extra1_value, extra1_name, grid_position):
+        self.extra1_label = QtGui.QLabel()
+        self.extra1_linedit = QtGui.QLineEdit(self)
+
+        self.set_label_and_linedit(self.extra1_label,
+                                   str(extra1_name),
+                                   self.extra1_linedit,
+                                   str(extra1_value),
+                                   grid_position)
+            
+            
     def update_largest_spot_buttons(self, largest_spot, zurich_type):
         """
         Update the colors of the LTS buttons if needed.
@@ -357,22 +413,4 @@ class GroupBox(QtGui.QWidget):
 
         self.update_largest_spot_buttons(largest_spot, zurich_type)
 
-    def set_surface(self, surface, grid_position):
-        self.surface_label = QtGui.QLabel("Surface")
-        self.surface_linedit = QtGui.QLineEdit(self)
-        self.grid_layout.addWidget(self.surface_label,
-                                   grid_position[0],
-                                   grid_position[1])
-        self.grid_layout.addWidget(self.surface_linedit,
-                                   grid_position[0],
-                                   grid_position[1] + 1)
-
-        if surface is None:
-            surface = 0.
-        self.surface_linedit.setText('{0:.2f}'.format(surface))
-        if surface == 0.:
-            self.surface_linedit.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
-        else:
-            self.surface_linedit.setStyleSheet(
-                "background-color: white; color: black")
+    

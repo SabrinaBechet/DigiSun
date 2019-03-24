@@ -65,8 +65,10 @@ class database():
         values = self.get_values(field, table_name)
         for el in values:
             linedit.addItem(el[0])
-            
+
+         
     def get_all_in_time_interval(self, table_name, date_min, date_max):
+        
         self.cursor.execute('SELECT * FROM ' + table_name +
                             ' WHERE DateTime >= %s && ' +
                             ' DateTime <= %s ;',

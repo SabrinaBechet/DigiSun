@@ -36,6 +36,21 @@ class Config():
         self.config_file = filename
         #self.set_configuration()
 
+    def set_drawing_analyse(self):
+        """
+        Configure the parameters related to level of details of
+        the drawing analyse
+        """
+        try:
+            with open(self.config_file) as config_file:
+                self.config.read_file(config_file)
+                self.extra1 = self.config['analyse']['extra1']
+                self.extra2 = self.config['analyse']['extra2']
+                self.extra3 = self.config['analyse']['extra3']
+                
+        except IOError:
+            print('IOError - config file not found !!')        
+
     def set_archdrawing(self):
         """
         Configure the parameters related to the drawing archive directory.
