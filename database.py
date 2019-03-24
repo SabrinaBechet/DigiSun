@@ -66,7 +66,14 @@ class database():
         for el in values:
             linedit.addItem(el[0])
 
-         
+    def get_all_fields(self, table_name):
+        self.cursor.execute('DESCRIBE ' + table_name )
+
+        self.db.commit()
+        result = self.cursor.fetchall()
+        result_lst = [x[0] for x in result]
+        return result_lst
+            
     def get_all_in_time_interval(self, table_name, date_min, date_max):
         
         self.cursor.execute('SELECT * FROM ' + table_name +

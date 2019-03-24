@@ -419,52 +419,62 @@ class Drawing(QtCore.QObject):
     def __init__(self, param=None):
 
         super(Drawing, self).__init__()
-        try:
-            (self._id_drawing,
-             self._datetime,
-             self._drawing_type,
-             self._quality,
-             self._observer,
-             self._carrington_rotation,
-             self._julian_date,
-             self._calibrated,
-             self._analyzed,
-             self._group_count,
-             self._spot_count,
-             self._wolf,
-             self._angle_P,
-             self._angle_B,
-             self._angle_L,
-             self._path,
-             self._operator,
-             self._last_update_time,
-             self._area_done) = param
+        
+        dict_drawing_database ={'id':0,
+                                'DateTime': datetime(2000, 1, 1, 00, 00),
+                                'TypeOfDrawing':'',
+                                'Quality':'',
+                                'Observer':None,
+                                'CarringtonRotation':0,
+                                'JulianDate':0.0,
+                                'Calibrated':0,
+                                'Analyzed':0,
+                                'GroupCount':0,
+                                'SpotCount':0,
+                                'Wolf':0,
+                                'AngleP':0,
+                                'AngleB':0,
+                                'AngleL':0,
+                                'Path':'',
+                                'Operator':None,
+                                'LastUpdateTime':None,
+                                'All_area_done':0,
+                                'Extra1':'',
+                                'Extra2':'',
+                                'Extra3':''}
 
-        except ValueError:
-            print("problem to set the drawing parameters from the database")
-
-        except TypeError:
-            print("no value for the initialisation of the drawing")
-            self._id_drawing = 0
-            self._datetime = datetime(2000, 1, 1, 00, 00)
-            self._drawing_type = ''
-            self._quality = ''
-            self._observer = None
-            self._carrington_rotation = 0
-            self._julian_date = 0.0
-            self._calibrated = 0
-            self._analyzed = 0
-            self._group_count = 0
-            self._spot_count = 0
-            self._wolf = 0
-            self._angle_P = 0
-            self._angle_B = 0
-            self._angle_L = 0
-            self._path = ''
-            self._operator = None
-            self._last_update_time = None
-            self._area_done = 0
-
+        for keys, values in dict_drawing_database.items():
+            try:
+                dict_drawing_database[keys] = param[keys]
+            except KeyError:
+                print("The following information is missing: {} ".format(keys) +
+                      " It will be set to {} ".format(values))
+                              
+            
+        self._id_drawing = dict_drawing_database['id']
+        self._datetime = dict_drawing_database['DateTime']
+        self._drawing_type = dict_drawing_database['TypeOfDrawing']
+        self._quality = dict_drawing_database['Quality']
+        self._observer = dict_drawing_database['Observer']
+        self._carrington_rotation = dict_drawing_database['CarringtonRotation']
+        self._julian_date = dict_drawing_database['JulianDate']
+        self._calibrated = dict_drawing_database['Calibrated']
+        self._analyzed = dict_drawing_database['Analyzed']
+        self._group_count = dict_drawing_database['GroupCount']
+        self._spot_count = dict_drawing_database['SpotCount']
+        self._wolf = dict_drawing_database['Wolf']
+        self._angle_P = dict_drawing_database['AngleP']
+        self._angle_B = dict_drawing_database['AngleB']
+        self._angle_L = dict_drawing_database['AngleL']
+        self._path = dict_drawing_database['Path']
+        self._operator = dict_drawing_database['Operator']
+        self._last_update_time = dict_drawing_database['LastUpdateTime']
+        self._area_done = dict_drawing_database['All_area_done']
+        self._extra_1 = dict_drawing_database['Extra1']
+        self._extra_2 = dict_drawing_database['Extra2']
+        self._extra_3 = dict_drawing_database['Extra3']
+        
+        
         self._group_lst = []
         self.changed = False
 
