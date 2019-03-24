@@ -44,9 +44,9 @@ class Config():
         try:
             with open(self.config_file) as config_file:
                 self.config.read_file(config_file)
-                self.extra1 = self.config['analyse']['extra1']
-                self.extra2 = self.config['analyse']['extra2']
-                self.extra3 = self.config['analyse']['extra3']
+                self.extra1 = self.config['analyse']['group_extra1']
+                self.extra2 = self.config['analyse']['group_extra2']
+                self.extra3 = self.config['analyse']['group_extra3']
                 
         except IOError:
             print('IOError - config file not found !!')        

@@ -380,8 +380,6 @@ class BulkAnalysePage(BulkViewPage):
                                           self.datetime_drawing_max_day)
             lst_drawings_field = db.get_all_fields("drawings")
 
-            print("****", lst_drawings_field)
-            
             tuple_calibrations = db\
                 .get_all_in_time_interval("calibrations",
                                           self.datetime_drawing_min_day,
@@ -390,6 +388,8 @@ class BulkAnalysePage(BulkViewPage):
                 .get_all_in_time_interval("groups",
                                           self.datetime_drawing_min_day,
                                           self.datetime_drawing_max_day)
+            lst_groups_field = db.get_all_fields("groups")
+            
         except AttributeError:
             QtGui.QMessageBox\
                  .warning(self,
@@ -404,8 +404,6 @@ class BulkAnalysePage(BulkViewPage):
         for el in lst_drawing:
 
             drawing_dict = dict(zip(lst_drawings_field, el))
-
-            #print(drawing_dict)
             
             drawing_tmp = drawing.Drawing(drawing_dict)
             drawing_type = lst_drawing[lst_drawing.index(el)][2]
@@ -419,8 +417,11 @@ class BulkAnalysePage(BulkViewPage):
                     break
 
             for group in lst_groups:
+
+                group_dict = dict(zip(lst_groups_field, group))
+                
                 if drawing_tmp.datetime == group[1]:
-                    drawing_tmp.set_group(group)
+                    drawing_tmp.set_group(group_dict)
 
             drawing_lst.append(drawing_tmp)
 
@@ -465,7 +466,8 @@ class BulkAnalysePage(BulkViewPage):
                                       .table\
                                       .item(index_elSelectionne.row(),
                                             0).text()
-            self.selected_day = str(datetime.strptime(str(element_selectionne),'%d %b %H:%M').day)
+            self.selected_day = str(datetime.strptime(str(element_selectionne),
+                                                      '%d %b %H:%M').day)
              
             self.datetime_drawing_min_day = datetime(int(self.selected_year),
                                                      int(self.selected_month),

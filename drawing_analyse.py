@@ -1019,7 +1019,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.group_toolbox.set_group_nb(
                 self.drawing_lst[self.current_count]\
-                .group_lst[n].number,
+                .group_lst[n].group_number,
                 grid_position)
 
             grid_position[0] += 1

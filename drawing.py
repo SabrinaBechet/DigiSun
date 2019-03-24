@@ -26,65 +26,76 @@ class Group(QtCore.QObject):
 
     def __init__(self, param=None):
         super(Group, self).__init__()
-        try:
-            (self._id_,
-             self._datetime,
-             self._number,
-             self._latitude,
-             self._longitude,
-             self._Lcm,
-             self._CenterToLimb_angle,
-             self._quadrant,
-             self._McIntosh,
-             self._zurich,
-             self._spots,
-             self._dipole1_lat,
-             self._dipole1_long,
-             self._dipole2_lat,
-             self._dipole2_long,
-             self._surface,
-             self._raw_surface_px,
-             self._raw_surface_msd,
-             self._g_spot,
-             self._posX,
-             self._posY,
-             self._dipole1_posX,
-             self._dipole1_posY,
-             self._dipole2_posX,
-             self._dipole2_posY,
-             self._largest_spot) = param
 
-        except ValueError:
-            print("problem to set the groups parameters from the database")
+        dict_group_database = {'id' : 0,
+                               'DateTime': datetime(2000, 1, 1, 00, 00),
+                               'Number': 0,
+                               'Latitude': None,
+                               'Longitude': None,
+                               'Lcm': None,
+                               'CenterToLimbAngle': None,
+                               'Quadrant': None,
+                               'McIntosh': 'Xxx',
+                               'Zurich': 'X',
+                               'Spots': 0,
+                               'Dipole1Lat': None,
+                               'Dipole1Long': None,
+                               'Dipole2Lat': None,
+                               'Dipole2Long': None,
+                               'Surface': None,
+                               'RawSurface_px': None,
+                               'RawSurface_msd': None,
+                               'GSpot': None,
+                               'PosX' : None,
+                               'PosY' : None,
+                               'Dipole1PosX': None,
+                               'Dipole1PosY': None,
+                               'Dipole2PosX': None,
+                               'Dipole2PosY': None,
+                               'LargestSpot': None,
+                               'GroupNumber' : None,
+                               'GroupExtra1' : '',
+                               'GroupExtra2' : '',
+                               'GroupExtra3' : ''}
 
-        except TypeError:
-            print("no value for the initialisation of the groups")
-            self._id_ = 0
-            self._datetime = datetime(2000, 1, 1, 00, 00)
-            self._number = 0
-            self._latitude = None
-            self._longitude = None
-            self._Lcm = None
-            self._CenterToLimb_angle = None
-            self._quadrant = None
-            self._McIntosh = 'Xxx'
-            self._zurich = 'X'
-            self._spots = 0
-            self._dipole1_lat = None
-            self._dipole1_long = None
-            self._dipole2_lat = None
-            self._dipole2_long = None
-            self._surface = None
-            self._raw_surface_px = None
-            self._raw_surface_msd = None
-            self._g_spot = None
-            self._posX = None
-            self._posY = None
-            self._dipole1_posX = None
-            self._dipole1_posY = None
-            self._dipole2_posX = None
-            self._dipole2_posY = None
-            self._largest_spot = None
+        for keys, values in dict_group_database.items():
+            try:
+                dict_group_database[keys] = param[keys]
+            except KeyError:
+                print("The following information is missing: {} ".format(keys) +
+                      " It will be set to {} ".format(values))
+
+                
+        self._id_ = dict_group_database['id']
+        self._datetime = dict_group_database['DateTime']
+        self._number = dict_group_database['Number']
+        self._latitude = dict_group_database['Latitude']
+        self._longitude = dict_group_database['Longitude']
+        self._Lcm = dict_group_database['Lcm']
+        self._CenterToLimb_angle = dict_group_database['CenterToLimbAngle']
+        self._quadrant = dict_group_database['Quadrant']
+        self._McIntosh = dict_group_database['McIntosh']
+        self._zurich = dict_group_database['Zurich']
+        self._spots = dict_group_database['Spots']
+        self._dipole1_lat = dict_group_database['Dipole1Lat']
+        self._dipole1_long = dict_group_database['Dipole1Long']
+        self._dipole2_lat = dict_group_database['Dipole2Lat']
+        self._dipole2_long = dict_group_database['Dipole2Long']
+        self._surface = dict_group_database['Surface']
+        self._raw_surface_px = dict_group_database['RawSurface_px']
+        self._raw_surface_msd = dict_group_database['RawSurface_msd']
+        self._g_spot = dict_group_database['GSpot']
+        self._posX = dict_group_database['PosX']
+        self._posY = dict_group_database['PosY']
+        self._dipole1_posX = dict_group_database['Dipole1PosX']
+        self._dipole1_posY = dict_group_database['Dipole1PosY']
+        self._dipole2_posX = dict_group_database['Dipole2PosX']
+        self._dipole2_posY = dict_group_database['Dipole2PosY']
+        self._largest_spot = dict_group_database['LargestSpot']
+        self._group_number = dict_group_database['GroupNumber']
+        self.group_extra_1 = dict_group_database['GroupExtra1']
+        self.group_extra_2 = dict_group_database['GroupExtra2']
+        self.group_extra_3 = dict_group_database['GroupExtra3']
 
         self.changed = False
 
@@ -316,6 +327,17 @@ class Group(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
 
+    @property
+    def group_number(self):
+        return self._group_number
+
+    @group_number.setter
+    def group_number(self, value):
+        # print("here we are changing the value of group number to ", value)
+        self._group_number = value
+        self.changed = True
+        self.value_changed.emit()
+
     def set_dipole_position(self, dipole_points, dipole_angles):
         """
         Add the dipole to the database by clicking on the drawing
@@ -438,10 +460,10 @@ class Drawing(QtCore.QObject):
                                 'Path':'',
                                 'Operator':None,
                                 'LastUpdateTime':None,
-                                'All_area_done':0,
-                                'Extra1':'',
-                                'Extra2':'',
-                                'Extra3':''}
+                                'AllAreaDone':0,
+                                'DrawingExtra1':'',
+                                'DrawingExtra2':'',
+                                'DrawingExtra3':''}
 
         for keys, values in dict_drawing_database.items():
             try:
@@ -450,7 +472,6 @@ class Drawing(QtCore.QObject):
                 print("The following information is missing: {} ".format(keys) +
                       " It will be set to {} ".format(values))
                               
-            
         self._id_drawing = dict_drawing_database['id']
         self._datetime = dict_drawing_database['DateTime']
         self._drawing_type = dict_drawing_database['TypeOfDrawing']
@@ -469,10 +490,10 @@ class Drawing(QtCore.QObject):
         self._path = dict_drawing_database['Path']
         self._operator = dict_drawing_database['Operator']
         self._last_update_time = dict_drawing_database['LastUpdateTime']
-        self._area_done = dict_drawing_database['All_area_done']
-        self._extra_1 = dict_drawing_database['Extra1']
-        self._extra_2 = dict_drawing_database['Extra2']
-        self._extra_3 = dict_drawing_database['Extra3']
+        self._area_done = dict_drawing_database['AllAreaDone']
+        self._drawing_extra_1 = dict_drawing_database['DrawingExtra1']
+        self._drawing_extra_2 = dict_drawing_database['DrawingExtra2']
+        self._drawing_extra_3 = dict_drawing_database['DrawingExtra3']
         
         
         self._group_lst = []
