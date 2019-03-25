@@ -131,6 +131,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.config = configuration.Config()
         self.config.set_archdrawing()
+        self.config.set_drawing_analyse()
 
         self.drawing_page = drawing_view_page.DrawingViewPage()
 
@@ -823,7 +824,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     "background-color: rgb(255, 165, 84)")
 
             if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
-                groupBoxLine.spot_number_linedit.setStyleSheet(
+                groupBoxLine.spot_number_spinbox.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
 
 
@@ -847,7 +848,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 groupBoxLine.area_button.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
 
-            groupBoxLine.spot_number_linedit.textEdited.connect(
+            groupBoxLine.spot_number_spinbox.valueChanged.connect(
                 lambda: self.modify_drawing_spot_number(
                     self.listWidget_groupBox.currentRow(),
                     False))
@@ -947,11 +948,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         # to change only the line on which the focus is
         for i in range(0, self.listWidget_groupBox.count()):
             if i == element_number:
-                self.groupBoxLineList[i].spot_number_linedit.setEnabled(True)
+                self.groupBoxLineList[i].spot_number_spinbox.setEnabled(True)
                 self.groupBoxLineList[i].zurich_combo.setEnabled(True)
                 self.groupBoxLineList[i].McIntosh_combo.setEnabled(True)
             else:
-                self.groupBoxLineList[i].spot_number_linedit.setEnabled(False)
+                self.groupBoxLineList[i].spot_number_spinbox.setEnabled(False)
                 self.groupBoxLineList[i].zurich_combo.setEnabled(False)
                 self.groupBoxLineList[i].McIntosh_combo.setEnabled(False)
                 
@@ -1015,6 +1016,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.group_toolbox.set_delete_group_button(grid_position)
 
             grid_position = [1, 0]
+
+            self.group_toolbox.set_group_nb(
+                self.drawing_lst[self.current_count]\
+                .group_lst[n].group_number,
+                grid_position)
+
+            grid_position[0] += 1
             self.group_toolbox.set_latitude(
                 self.drawing_lst[self.current_count]
                 .group_lst[n].latitude * 180/math.pi,
@@ -1038,12 +1046,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.drawing_lst[self.current_count].group_lst[n].zurich,
                 grid_position)
 
+            if self.config.extra1 :
+                grid_position[0] += 1
+                self.group_toolbox.set_extra_field1(
+                    None,
+                    self.config.extra1,
+                    grid_position)
+
             grid_position = [1, 2]
             self.group_toolbox.set_arrows_buttons(grid_position)
 
             self.group_toolbox\
-                .spot_number_linedit\
-                .textEdited\
+                .spot_number_spinbox\
+                .valueChanged\
                 .connect(lambda: self.modify_drawing_spot_number(
                     self.listWidget_groupBox.currentRow(),
                     True))
@@ -1288,11 +1303,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         TO DO: check that the value entered is a number!
         """
         if is_toolbox:
-            new_sunspot_number = self.group_toolbox.spot_number_linedit.text()
+            new_sunspot_number = self.group_toolbox.spot_number_spinbox.value()
 
         else:
             new_sunspot_number = self.groupBoxLineList[n]\
-                                     .spot_number_linedit.text()
+                                     .spot_number_spinbox.value()
 
         try:
             self.drawing_lst[self.current_count].update_spot_number(
@@ -1306,16 +1321,16 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                           "One of the sunspot number is not a number!")
 
         if self.drawing_lst[self.current_count].group_lst[n].spots == 0:
-            self.groupBoxLineList[n].spot_number_linedit.setStyleSheet(
+            self.groupBoxLineList[n].spot_number_spinbox.setStyleSheet(
                 "background-color: rgb(255, 165, 84)")
         else:
-            self.groupBoxLineList[n].spot_number_linedit.setStyleSheet(
+            self.groupBoxLineList[n].spot_number_spinbox.setStyleSheet(
                 "background-color: white")
 
-        self.groupBoxLineList[n].spot_number_linedit.setText(
-            str(self.drawing_lst[self.current_count].group_lst[n].spots))
-        self.group_toolbox.spot_number_linedit.setText(
-            str(self.drawing_lst[self.current_count].group_lst[n].spots))
+        self.groupBoxLineList[n].spot_number_spinbox.setValue(
+            self.drawing_lst[self.current_count].group_lst[n].spots)
+        self.group_toolbox.spot_number_spinbox.setValue(
+            self.drawing_lst[self.current_count].group_lst[n].spots)
 
         self.drawing_info.wolf_number.setText(
             str(self.drawing_lst[self.current_count].wolf))
@@ -1756,20 +1771,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         """
         if self.drawing_lst:
 
-            """filename = self.config.get_filename(self.drawing_lst[self.current_count].datetime)
-
-            directory = os.path.join(
-                self.config.archdrawing_directory,
-                str(self.drawing_lst[self.current_count].datetime.year),
-                self.drawing_lst[self.current_count].datetime.strftime('%m'))
-
-            self.label_right.file_path = os.path.join(directory,
-                                                      filename)
-            """
             self.config.set_file_path(self.drawing_lst[self.current_count].datetime)
             self.label_right.file_path = self.config.file_path
-
-            print("the path is", self.label_right.file_path)
 
     def set_drawing(self):
         """
