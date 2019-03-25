@@ -54,9 +54,9 @@ class ListPage(QtGui.QWidget):
         count = 0
         for dico_keys, dico_values in dico.items():
 
-            date_drawing = QtGui.QTableWidgetItem(str(dico_values[1]))
+            date_drawing = QtGui.QTableWidgetItem(str(dico_values[0]))
         
-            tot_number_drawing = QtGui.QTableWidgetItem(str(dico_values[0]))
+            tot_number_drawing = QtGui.QTableWidgetItem(str(dico_values[1]))
             
             self.table.setItem(count, 0, date_drawing)
             self.table.setItem(count, 1, tot_number_drawing)
@@ -65,21 +65,17 @@ class ListPage(QtGui.QWidget):
             progressBar_analysed = QtGui.QProgressBar()
             progressBar_area = QtGui.QProgressBar()
  
-            frac_calibrated = dico_values[2] * 100 / dico_values[0]
-            progressBar_calib.setValue(frac_calibrated)
-            frac_analysed = dico_values[3] * 100 / dico_values[0]
-            progressBar_analysed.setValue(frac_analysed)
-            frac_area = 100 
-            progressBar_area.setValue(frac_area)
+            progressBar_calib.setValue(dico_values[2])
+            progressBar_analysed.setValue(dico_values[3])
+            progressBar_area.setValue(dico_values[4])
             
-           
             self.table.setCellWidget(count, 2, progressBar_calib)
             self.table.setCellWidget(count, 3, progressBar_analysed)
             self.table.setCellWidget(count, 4, progressBar_area)
 
             count+=1
-            
-        self.table.resizeColumnsToContents()
+
+        #self.table.resizeColumnsToContents()
                  
 class DayListPage(ListPage):
     """
@@ -101,7 +97,7 @@ class DayListPage(ListPage):
         - the table widget
         """
         super(DayListPage, self).__init__()
-        self.but_back = QtGui.QPushButton("remove day list view", self)
+        self.but_back = QtGui.QPushButton("hide days list view", self)
         self.but_back.setMaximumWidth(200)
         self.but_select = QtGui.QPushButton("show drawing", self)
         self.but_select.setMaximumWidth(200)
@@ -135,7 +131,7 @@ class MonthListPage(ListPage):
         """
         super(MonthListPage, self).__init__()
         self.but_select = QtGui.QPushButton("show drawings", self)
-        self.but_all_day_drawings = QtGui.QPushButton("list all days", self)
+        self.but_all_day_drawings = QtGui.QPushButton("show days list view", self)
         
         if sys.platform=='darwin':
             self.but_select.setAttribute(QtCore.Qt.WA_MacNormalSize)
@@ -181,6 +177,7 @@ class YearListPage(ListPage):
             .get_all_in_time_interval("drawings",
                                       datetime_drawing_min,
                                       datetime_drawing_max)
+
         year_lst = set(el[1].year for el in tuple_drawings)
         self.dict_year = {}
 
@@ -190,15 +187,20 @@ class YearListPage(ListPage):
             
             calib = [el for el in tuple_drawings if el[1].year==year_index and
                      el[7]==1]
-            calib_count = len(calib)
+            frac_calibrated = len(calib) * 100./len(total)
 
             analyzed = [el for el in tuple_drawings if el[1].year==year_index and
                      el[8]==1]
-            analyzed_count = len(analyzed)
+            frac_analyzed = len(analyzed) * 100./len(total)
+
+            area_done = [el for el in tuple_drawings if el[1].year==year_index and
+                     el[18]==1]
+            frac_area_done = len(area_done) * 100./len(total)
 
             year_to_print = str(year_index)
 
-            self.dict_year[year_index] = ( total_count, year_to_print, calib_count, analyzed_count)
+            self.dict_year[year_index] = (year_to_print, total_count, frac_calibrated,
+                                          frac_analyzed, frac_area_done)
  
 
 class DateSelectionPage(QtGui.QWidget):
@@ -250,7 +252,7 @@ class BulkViewPage(QtGui.QWidget):
         self.widget_center.setStyleSheet("background-color:lightgray;")
         self.widget_center_layout = QtGui.QVBoxLayout()
         self.widget_center.setLayout(self.widget_center_layout)
-        #self.widget_center.setMaximumWidth(self.max_width)
+        self.widget_center.setMinimumWidth(200)
 
         self.widget_left_up = QtGui.QWidget()
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
@@ -300,21 +302,11 @@ class BulkAnalysePage(BulkViewPage):
         
         #self.datetime_min_lst, self.datetime_max_lst = [], []
 
-        """self.year_list_page\
-            .but_select\
-            .clicked\
-            .connect(self.drawing_selection_per_year)
-        """
         self.year_list_page\
             .but_select\
             .clicked\
             .connect(self.show_months_selection)
 
-        """self.month_list_page\
-            .but_all_day_drawings\
-            .clicked\
-            .connect(self.drawing_selection_per_month)
-        """
         self.month_list_page\
             .but_all_day_drawings\
             .clicked\
@@ -330,20 +322,10 @@ class BulkAnalysePage(BulkViewPage):
             .clicked\
             .connect(self.reduce_day_widget)
 
-        """self.day_list_page\
-            .but_select\
-            .clicked\
-            .connect(self.reduce_day_widget)
-        """
         self.date_selection_page\
             .but_select\
             .clicked\
             .connect(self.drawing_selection_per_date)
-        """self.date_selection_page\
-            .but_select\
-            .clicked\
-            .connect(self.clic_year_selection)
-        """
 
     def reduce_day_widget(self):
         self.widget_right.setMinimumWidth(0)
@@ -368,9 +350,9 @@ class BulkAnalysePage(BulkViewPage):
         start_set_drawing = time.clock()
         db = database.database()
 
-        print("check day interval",
-              self.datetime_drawing_min_day,
-              self.datetime_drawing_max_day)
+        #print("check day interval",
+        #      self.datetime_drawing_min_day,
+        #      self.datetime_drawing_max_day)
         
         try:
             tuple_drawings = db\
@@ -421,7 +403,22 @@ class BulkAnalysePage(BulkViewPage):
         drawing_lst.sort(key=lambda x : x.datetime)
         return drawing_lst
 
-     
+    def get_selection_interval(self):
+        self.datetime_min, self.datetime_max = [], []
+        date_min = self.date_selection_page.start_date.date().toPyDate()
+        date_max = self.date_selection_page.end_date.date().toPyDate()
+        self.datetime_drawing_min_day = datetime(date_min.year,
+                                                   date_min.month,
+                                                   date_min.day)
+        self.datetime_drawing_max_day = datetime(date_max.year,
+                                                   date_max.month,
+                                                   date_max.day)
+
+        # to do: check nb drawings<50 -> return true
+        # else : warning box and return false
+        return True
+                                                 
+
     def get_month_interval(self):
         """
         Return the datemin and datemax for a selected year
@@ -515,6 +512,7 @@ class BulkAnalysePage(BulkViewPage):
             .get_all_in_time_interval("drawings",
                                       self.datetime_drawing_min_month,
                                       self.datetime_drawing_max_month)
+
         month_lst = set(el[1].month for el in tuple_drawings)
         self.dict_month = {}
 
@@ -524,17 +522,24 @@ class BulkAnalysePage(BulkViewPage):
             
             calib = [el for el in tuple_drawings if el[1].month==month_index and
                      el[7]==1]
-            calib_count = len(calib)
-
+            frac_calibrated = len(calib) * 100./len(total)
+            
             analyzed = [el for el in tuple_drawings if el[1].month==month_index and
                      el[8]==1]
-            analyzed_count = len(analyzed)
+            frac_analyzed = len(analyzed) * 100./len(total)
+            
+            area_done = [el for el in tuple_drawings if el[1].month==month_index and
+                     el[18]==1]
+            frac_area_done = len(area_done) * 100./len(total)
+            
+
 
             month_to_print =  (datetime.strftime(datetime(2000, month_index, 1), '%b') +
                                ' ' +
                                self.selected_year)
 
-            self.dict_month[month_index] = (total_count, month_to_print, calib_count, analyzed_count)
+            self.dict_month[month_index] = (month_to_print, total_count, frac_calibrated,
+                                            frac_analyzed, frac_area_done)
 
 
     def get_day_dico(self):
@@ -544,9 +549,10 @@ class BulkAnalysePage(BulkViewPage):
             .get_all_in_time_interval("drawings",
                                       self.datetime_drawing_min_day,
                                       self.datetime_drawing_max_day)
+ 
         day_lst = [(el[1].day, el[1].hour, el[1].minute) for el in tuple_drawings]
 
-        print("day list", day_lst)
+        #print("day list", day_lst)
         
         self.dict_day = {}
         dict_day_tmp = {}
@@ -556,21 +562,26 @@ class BulkAnalysePage(BulkViewPage):
             total = [el for el in tuple_drawings if el[1].day==day_index[0] and
                      el[1].hour==day_index[1] and
                      el[1].minute==day_index[2]]
-                     
             total_count = len(total)
-            
+                     
             calib = [el for el in tuple_drawings if el[1].day==day_index[0] and
                      el[1].hour==day_index[1] and
                      el[1].minute==day_index[2] and
                      el[7]==1]
-            calib_count = len(calib)
-
+            frac_calibrated = len(calib) * 100./len(total)
+            
             analyzed = [el for el in tuple_drawings if el[1].day==day_index[0] and
                         el[1].hour==day_index[1] and
                         el[1].minute==day_index[2] and
                         el[8]==1]
-            analyzed_count = len(analyzed)
-
+            frac_analyzed = len(analyzed) * 100./len(total)
+            
+            
+            area_done = [el for el in tuple_drawings if el[1].day==day_index[0] and
+                         el[1].hour==day_index[1] and
+                         el[1].minute==day_index[2] and
+                         el[18]==1]
+            frac_area_done = len(area_done) * 100./len(total)
             day_to_print = ( datetime.strftime(
                 datetime(2000,
                          int(self.selected_month),
@@ -580,13 +591,19 @@ class BulkAnalysePage(BulkViewPage):
                 '%d %b %H:%M'))
             
 
-            # trick to separte two same days: add the hour in decimal:
-            dict_day_tmp[day_index[0] + day_index[1]/100.] = (total_count, day_to_print, calib_count, analyzed_count)
-
+            # trick to separte two same days: add the hour and minutes in decimal:
+            dict_day_tmp[
+                day_index[0] + day_index[1]/100. + day_index[2]/10000.] = (
+                    day_to_print,
+                    total_count,
+                    frac_calibrated,
+                    frac_analyzed,
+                    frac_area_done)
+            
             #OrderedDict remembers the order in which the elements have been inserted
             self.dict_day = collections.OrderedDict(sorted(dict_day_tmp.items()))
             
-        print(self.dict_day)
+        #print(self.dict_day)
         
     def drawing_selection_per_date(self):
         self.datetime_min, self.datetime_max = [], []
@@ -668,6 +685,9 @@ class BulkAnalysePage(BulkViewPage):
                                                QtCore.Qt.AlignCenter)
 
     def delete_drawing(self):
+        """
+        TO do: delete drawing from directory
+        """
         try:
             selection = self.day_list_page.table.selectionModel()
             index_elSelectionne = selection.currentIndex()
@@ -684,14 +704,27 @@ class BulkAnalysePage(BulkViewPage):
                                           datetime_select.day,
                                           datetime_select.hour,
                                           datetime_select.minute)
+
+            response = QtGui.QMessageBox.question(
+                self,
+                'drawing removal'
+                '',
+                'Do you confirm the removal from the database of the drawing made on the '+
+                datetime_to_delete.strftime('%d %b %Y %H:%M') + '?',
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+            if response == QtGui.QMessageBox.Yes:
+                
+                db = database.database()
+                db.delete_drawing("drawings", datetime_to_delete)
+                db.delete_drawing("groups", datetime_to_delete)
+                db.delete_drawing("calibrations", datetime_to_delete)
+                QtGui.QMessageBox.warning(self,
+                                      'drawing removal',
+                                      'Drawing successfully removed.')
+                self.reduce_day_widget()
+            elif response == QtGui.QMessageBox.No:
+                pass
             
-            print("It seems that you want to delete this drawing", datetime_to_delete)
-            
-            
-            db = database.database()
-            db.delete_drawing("drawings", datetime_to_delete)
-            db.delete_drawing("groups", datetime_to_delete)
-            db.delete_drawing("calibrations", datetime_to_delete)
 
         except AttributeError:
             QtGui.QMessageBox\
