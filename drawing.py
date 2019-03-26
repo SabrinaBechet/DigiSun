@@ -376,7 +376,7 @@ class Group(QtCore.QObject):
         """
         Add the dipole to the database by clicking on the drawing
         """
-        print("set the dipole position..", len(dipole_points))
+        # print("set the dipole position..", len(dipole_points))
         
         if len(dipole_points) == 4:
             self._dipole1_posX = dipole_points[0]
@@ -495,7 +495,7 @@ class Drawing(QtCore.QObject):
                                 'AngleP':0,
                                 'AngleB':0,
                                 'AngleL':0,
-                                'Path':'',
+                                'Filename':'',
                                 'Operator':None,
                                 'LastUpdateTime':None,
                                 'AllAreaDone':0,
@@ -507,8 +507,9 @@ class Drawing(QtCore.QObject):
             try:
                 dict_drawing_database[keys] = param[keys]
             except KeyError:
-                print("The following information is missing: {} ".format(keys) +
-                      " It will be set to {} ".format(values))
+                pass
+                #print("The following information is missing: {} ".format(keys) +
+                #      " It will be set to {} ".format(values))
                               
         self._id_drawing = dict_drawing_database['id']
         self._datetime = dict_drawing_database['DateTime']
@@ -525,7 +526,7 @@ class Drawing(QtCore.QObject):
         self._angle_P = dict_drawing_database['AngleP']
         self._angle_B = dict_drawing_database['AngleB']
         self._angle_L = dict_drawing_database['AngleL']
-        self._path = dict_drawing_database['Path']
+        self._path = dict_drawing_database['Filename']
         self._operator = dict_drawing_database['Operator']
         self._last_update_time = dict_drawing_database['LastUpdateTime']
         self._area_done = dict_drawing_database['AllAreaDone']

@@ -65,7 +65,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.center_x = 0
         self.center_y = 0
 
-        qlabel_title = QtGui.QLabel("Surface calculation")
+        qlabel_title = QtGui.QLabel("Area calculation")
         qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
         qlabel_title.setContentsMargins(0, 5, 0, 5)
 
@@ -88,45 +88,47 @@ class GroupSurfaceWidget(QtGui.QWidget):
        
         qlabel_general = QtGui.QLabel("General tools:")
 
+        button_size = 50
+        
         zoom_in_but = QtGui.QToolButton()
-        zoom_in_but.setToolTip("zoom in \'Ctrl++\'")
+        zoom_in_but.setToolTip("zoom in")
         zoom_in_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-in.png'))
         zoom_in_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(2.))
-        zoom_in_but.setShortcut(QtGui.QKeySequence("Ctrl++"))
-
+        zoom_in_but.setMinimumWidth(button_size)
+        
         zoom_out_but = QtGui.QToolButton()
-        zoom_out_but.setToolTip("zoom out \'Ctrl+-\'")
+        zoom_out_but.setToolTip("zoom out'")
         zoom_out_but.setIcon(QtGui.QIcon('icons/Smashicons/zoom-out.png'))
         zoom_out_but.clicked.connect(
             lambda: self.qlabel_group_surface.zoom_in(1/2.))
-        zoom_out_but.setShortcut(QtGui.QKeySequence("Ctrl+-"))
+        zoom_out_but.setMinimumWidth(button_size)
 
         reset_but = QtGui.QToolButton()
-        reset_but.setToolTip("reset \'Ctrl+z\'")
+        reset_but.setToolTip("reset'")
         reset_but.setIcon(QtGui.QIcon('icons/Pixel_perfect/settings.png'))
         reset_but.clicked.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
-        reset_but.setShortcut(QtGui.QKeySequence("Ctrl+z"))
+        reset_but.setMinimumWidth(button_size)
         
         bigger_frame_but = QtGui.QToolButton()
-        bigger_frame_but.setToolTip("expand frame \'Ctrl+e\'")
+        bigger_frame_but.setToolTip("expand frame")
         bigger_frame_but.setIcon(
-            QtGui.QIcon('icons/Linh_Pham/mine_bigger_frame.png'))
+            QtGui.QIcon('icons/Freepik/thin-expand-arrows.png'))
         bigger_frame_but.clicked.connect(
             lambda: self.bigger_frame.emit())
-        bigger_frame_but.setShortcut(QtGui.QKeySequence("Ctrl+e"))
+        bigger_frame_but.setMinimumWidth(button_size)
 
         smaller_frame_but = QtGui.QToolButton()
-        smaller_frame_but.setToolTip("reduce frame \'Ctrl+r\'")
+        smaller_frame_but.setToolTip("reduce frame")
         smaller_frame_but.setIcon(
-            QtGui.QIcon('icons/Linh_Pham/mine_smaller_frame.png'))
+            QtGui.QIcon('icons/Freepik/exit-full-screen-arrows.png'))
         smaller_frame_but.clicked.connect(
             lambda: self.smaller_frame.emit())
-        smaller_frame_but.setShortcut(QtGui.QKeySequence("Ctrl+r"))
+        smaller_frame_but.setMinimumWidth(button_size)
 
         draw_polygon_but = QtGui.QToolButton()
-        draw_polygon_but.setToolTip("draw polygon \'Ctrl+d\'")
+        draw_polygon_but.setToolTip("draw polygon")
         draw_polygon_but.setIcon(
             QtGui.QIcon('icons/Darrio_Ferrando/polygon.png'))
         draw_polygon_but.clicked.connect(
@@ -134,38 +136,38 @@ class GroupSurfaceWidget(QtGui.QWidget):
                 self.qlabel_group_surface.polygon_mode))
         draw_polygon_but.clicked.connect(
             self.qlabel_group_surface.draw_polygon)
-        draw_polygon_but.setShortcut(QtGui.QKeySequence("Ctrl+d"))
+        draw_polygon_but.setMinimumWidth(button_size)
 
         cut_polygon_but = QtGui.QToolButton()
-        cut_polygon_but.setToolTip("cut polygon \'Ctrl+c\'")
+        cut_polygon_but.setToolTip("cut polygon")
         cut_polygon_but.setIcon(
             QtGui.QIcon('icons/Freepik/crop.png'))
         cut_polygon_but.clicked.connect(
             lambda: self.cut_polygon(threshold_slider.value()))
-        cut_polygon_but.setShortcut(QtGui.QKeySequence("Ctrl+c"))
+        cut_polygon_but.setMinimumWidth(button_size)
 
         draw_1pixel_black_but = QtGui.QToolButton()
-        draw_1pixel_black_but.setToolTip("draw black pixel \'Ctrl+x\'")
+        draw_1pixel_black_but.setToolTip("draw black pixel")
         draw_1pixel_black_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_black_square.png'))
         draw_1pixel_black_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.black_pencil_mode))
         draw_1pixel_black_but.clicked.connect(lambda: self.draw_pencil(0))
-        draw_1pixel_black_but.setShortcut(QtGui.QKeySequence("Ctrl+x"))
+        draw_1pixel_black_but.setMinimumWidth(button_size)
 
         draw_1pixel_white_but = QtGui.QToolButton()
-        draw_1pixel_white_but.setToolTip("draw white pixel \'Ctrl+w\'")
+        draw_1pixel_white_but.setToolTip("draw white pixel")
         draw_1pixel_white_but.setIcon(
             QtGui.QIcon('icons/Freepik/1pix_white_square.png'))
         draw_1pixel_white_but.clicked.connect(
             lambda: self.set_opposite_value(
                 self.qlabel_group_surface.white_pencil_mode))
         draw_1pixel_white_but.clicked.connect(lambda: self.draw_pencil(255))
-        draw_1pixel_white_but.setShortcut(QtGui.QKeySequence("Ctrl+w"))
+        draw_1pixel_white_but.setMinimumWidth(button_size)
 
         bucket_white_fill_but = QtGui.QToolButton()
-        bucket_white_fill_but.setToolTip("white bucket fill \'Alt+w\'")
+        bucket_white_fill_but.setToolTip("white bucket fill")
         bucket_white_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/white-bucket.png'))
         bucket_white_fill_but.clicked.connect(
@@ -176,10 +178,10 @@ class GroupSurfaceWidget(QtGui.QWidget):
                 self.current_array,
                 0,
                 255))
-        bucket_white_fill_but.setShortcut(QtGui.QKeySequence("alt+w"))
+        bucket_white_fill_but.setMinimumWidth(button_size)
         
         bucket_black_fill_but = QtGui.QToolButton()
-        bucket_black_fill_but.setToolTip("black bucket fill \'alt+x\'" )
+        bucket_black_fill_but.setToolTip("black bucket fill" )
         bucket_black_fill_but.setIcon(
             QtGui.QIcon('icons/Freepik/black-bucket.png'))
         bucket_black_fill_but.clicked.connect(
@@ -190,8 +192,14 @@ class GroupSurfaceWidget(QtGui.QWidget):
                 self.current_array,
                 255,
                 0))
-        bucket_black_fill_but.setShortcut(QtGui.QKeySequence("alt+x"))
+        bucket_black_fill_but.setMinimumWidth(button_size)
 
+        save_but = QtGui.QPushButton("save area")
+        save_but.setToolTip("\'Ctrl+v\'")
+        save_but.setShortcut(QtGui.QKeySequence("Ctrl+v"))
+        save_but.clicked.connect(self.fill_surface_info)
+        
+        
         pixel_slider = QtGui.QSlider(QtCore.Qt.Horizontal)
         pixel_slider.setRange(0, 2)
         pixel_slider.setTickInterval(1)
@@ -260,8 +268,11 @@ class GroupSurfaceWidget(QtGui.QWidget):
         layout_general.addWidget(bucket_black_fill_but, 2, 1)
         layout_general.addWidget(draw_1pixel_white_but, 2, 2)
         layout_general.addWidget(draw_1pixel_black_but, 2, 3)
+        layout_general.addWidget(save_but, 2, 4, 1, -1)
+
         layout_general.addLayout(pencil_size_layout, 3, 0, 1, 4)
         layout_general.addWidget(pixel_slider, 3, 4, 1, 3)
+        
 
         form_layout = QtGui.QFormLayout()
         self.pixel_number_linedit = QtGui.QLineEdit()
@@ -270,16 +281,12 @@ class GroupSurfaceWidget(QtGui.QWidget):
 
         form_layout.addRow("Pixel Number:",
                            self.pixel_number_linedit)
-        form_layout.addRow("Projected surface (msd):",
+        form_layout.addRow("Projected area (msd):",
                            self.projected_surface_linedit)
-        form_layout.addRow("Deprojected surface (msh):",
+        form_layout.addRow("Deprojected area (msh):",
                            self.deprojected_surface_linedit)
 
-        save_but = QtGui.QPushButton("sa&ve surface")
-        save_but.setToolTip("\'Ctrl+v\'")
-        save_but.setShortcut(QtGui.QKeySequence("Ctrl+v"))
         
-        save_but.clicked.connect(self.fill_surface_info)
 
         self.layout.addWidget(qlabel_title)
         self.layout.addLayout(threshold_layout)
@@ -290,7 +297,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
 
         self.layout.addWidget(self.scroll)
         self.layout.addLayout(form_layout)
-        self.layout.addWidget(save_but)
+        #self.layout.addWidget(save_but)
 
         self.qlabel_group_surface.array_changed.connect(
             lambda: self.set_img(self.qlabel_group_surface.array))
@@ -329,6 +336,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.qlabel_group_surface.pointsList = []
 
     def set_array(self, np_array):
+        #self.qlabel_group_surface.zoom_in(2.)
         self.qlabel_group_surface.polygon_mode.value = False
         self.qlabel_group_surface.white_pencil_mode.value = False
         self.qlabel_group_surface.black_pencil_mode.value = False

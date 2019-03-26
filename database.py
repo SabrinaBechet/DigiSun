@@ -141,7 +141,7 @@ class database():
                             'Dipole1PosX, Dipole1PosY, Dipole2PosX, '
                             'Dipole2PosY, LargestSpot, GroupNumber, GroupExtra1, GroupExtra2, GroupExtra3 ) '
                             'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, '
-                            '%s, %s, %s, %s, %s, %s, %s,'
+                            '%s, %s, %s, %s, %s, %s, %s, %s,'
                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ',
                             var)
         self.db.commit()
@@ -166,7 +166,7 @@ class database():
                             'Observer, CarringtonRotation,'
                             'JulianDate, Calibrated, Analyzed, GroupCount, '
                             'SpotCount, Wolf, AngleP, '
-                            'AngleB, AngleL, Path, Operator, LastUpdateTime, '
+                            'AngleB, AngleL, Filename, Operator, LastUpdateTime, '
                             'DateTime) values '
                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
                             '%s, %s, %s, %s, %s, %s, %s)', var)

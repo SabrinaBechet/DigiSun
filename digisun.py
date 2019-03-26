@@ -59,6 +59,7 @@ class mainWindow(QtGui.QMainWindow):
         super(mainWindow, self).__init__()
         self.setWindowTitle("DigiSun")
         self.center()
+        #self.showMaximized()
         screen_available_geometry = QtGui.QDesktopWidget()\
                                          .availableGeometry()
         self.setMaximumWidth(screen_available_geometry.width())

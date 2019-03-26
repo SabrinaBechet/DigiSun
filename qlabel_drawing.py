@@ -170,8 +170,8 @@ class QLabelDrawing(QtGui.QLabel):
         
         if (self.helper_grid_position_clicked and
                 self.current_drawing.calibrated):
-            pen_helper_grid = QtGui.QPen(QtCore.Qt.gray)
-            pen_helper_grid.setWidth(self.pen_width)
+            pen_helper_grid = QtGui.QPen(QtCore.Qt.magenta)
+            pen_helper_grid.setWidth(self.pen_width/5.)
             pen_helper_grid.setStyle(QtCore.Qt.DotLine)
             painter.setPen(pen_helper_grid)
 
@@ -381,9 +381,9 @@ class QLabelDrawing(QtGui.QLabel):
             pen_selected = QtGui.QPen(QtCore.Qt.DotLine)
             pen_selected.setWidth(self.pen_width * 1.5)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
-            large_pen = QtGui.QPen(QtCore.Qt.blue)
-            large_pen.setWidth(self.pen_width * 2)
-            large_pen.setStyle(QtCore.Qt.SolidLine)
+            group_pen = QtGui.QPen(QtCore.Qt.blue)
+            group_pen.setWidth(self.pen_width )
+            group_pen.setStyle(QtCore.Qt.DotLine)
 
             for i in range(self.current_drawing.group_count):
                 if (self.current_drawing.group_lst[i].longitude and
@@ -394,9 +394,12 @@ class QLabelDrawing(QtGui.QLabel):
                     if self.group_visu_index == i:
                         painter.setPen(pen_selected)
                         radius = self.drawing_height / 50.
-                        pen_selected.setColor(QtGui.QColor(77, 185, 88))
+                        #pen_selected.setColor(QtGui.QColor(77, 185, 88))
+                        #group_pen.setColor(QtGui.QColor(77, 185, 88))
+                        pen_selected.setColor(QtGui.QColor(0, 179, 12))
+                        group_pen.setColor(QtGui.QColor(0, 179, 12))
                     else:
-                        large_pen.setColor(QtCore.Qt.blue)
+                        group_pen.setColor(QtCore.Qt.blue)
                         pen_selected.setColor(QtGui.QColor("transparent"))
 
                     # here we could directly take x, y from the database
@@ -424,11 +427,9 @@ class QLabelDrawing(QtGui.QLabel):
                         painter.drawRect(
                             x_min, y_min, self.frame_size, self.frame_size)
                     else:
-                        pen_point = QtGui.QPen(QtCore.Qt.blue)
-                        pen_point.setStyle(QtCore.Qt.SolidLine)
-                        pen_point.setWidth(50000 / (self.height_scale))
-                        painter.setPen(large_pen)
-                        painter.drawPoint(QtCore.QPointF(x, y))
+                        painter.setPen(group_pen)
+                        painter.drawLine(x, y - 10, x, y + 10)
+                        painter.drawLine(x-10, y, x+10, y)
 
                         painter.setPen(pen_selected)
                         painter.drawEllipse(
@@ -490,7 +491,10 @@ class QLabelDrawing(QtGui.QLabel):
                     painter.setPen(pen_line)
                     if self.group_visu_index == i:
                         painter.setPen(pen_line_selected)
-                    painter.drawLine(dip1_x, dip1_y, dip2_x, dip2_y)
+
+                    # remove the visualization of the previous dipole when click to add one.
+                    if len(self.dipole_points)!=2:
+                        painter.drawLine(dip1_x, dip1_y, dip2_x, dip2_y)
 
         if (self.add_dipole_mode.value and self.current_drawing.calibrated):
             pen_point = QtGui.QPen(QtCore.Qt.blue)
@@ -877,8 +881,8 @@ class QLabelDrawing(QtGui.QLabel):
                 self.add_dipole_mode.value and
                 self.current_drawing.calibrated):
 
-            # print("click on the drawing to add a dipole")
-            # print(len(self.dipole_points), len(self.dipole_angles))
+            print("click on the drawing to add a dipole")
+            print(len(self.dipole_points), len(self.dipole_angles))
 
             if (self.current_drawing.group_lst[self.group_visu_index]
                     .zurich.upper() in ["B", "C", "D", "E", "F", "G", "X"]):
@@ -886,6 +890,9 @@ class QLabelDrawing(QtGui.QLabel):
                 self.dipole_points.append(y_drawing)
                 self.dipole_angles.append(self.HGC_latitude)
                 self.dipole_angles.append(self.HGC_longitude)
+
+
+                
                 self.current_drawing\
                     .group_lst[self.group_visu_index]\
                     .set_dipole_position(self.dipole_points,

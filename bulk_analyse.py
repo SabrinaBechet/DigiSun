@@ -293,6 +293,7 @@ class BulkAnalysePage(BulkViewPage):
         self.date_selection_page = DateSelectionPage()
 
         self.widget_left_up.setMaximumHeight(self.height()/2.)
+        self.widget_left_up.setMaximumWidth(self.width() )
         self.widget_left_down.setMinimumWidth(self.height()/2.)
 
         #self.widget_center.setMinimumHeight(self.height()*2.)
@@ -544,8 +545,6 @@ class BulkAnalysePage(BulkViewPage):
                      el[18]==1]
             frac_area_done = len(area_done) * 100./len(total)
             
-
-
             month_to_print =  (datetime.strftime(datetime(2000, month_index, 1), '%b') +
                                ' ' +
                                self.selected_year)

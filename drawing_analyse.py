@@ -1663,7 +1663,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         layout_goto = self.jump_to_drawing_linedit()
 
-        self.but_save = QtGui.QPushButton('save', self)
+        self.but_save = QtGui.QPushButton('save in the database', self)
         self.but_save.setShortcut(QtGui.QKeySequence("Ctrl+s"))
         self.but_save.setToolTip('shortcut: \'Ctrl+s\'')                  
         self.but_save.clicked.connect(self.save_drawing)
