@@ -87,7 +87,7 @@ class DrawingViewPage(QtGui.QWidget):
 
         self.widget_left_down_bis = QtGui.QWidget()
         self.widget_left_down_bis.setMaximumWidth(left_column_maximum_width)
-        self.widget_left_down_bis.setMaximumHeight(200)
+        self.widget_left_down_bis.setMaximumHeight(250)
         self.widget_left_down_bis.setStyleSheet("background-color:lightblue;")
         self.widget_left_down_bis_layout = QtGui.QVBoxLayout()
         self.widget_left_down_bis_layout.setContentsMargins(0, 0, 0, 0)

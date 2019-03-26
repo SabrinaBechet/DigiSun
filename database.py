@@ -139,9 +139,9 @@ class database():
                             'Dipole2Long, Surface, RawSurface_px, '
                             'RawSurface_msd, GSpot, PosX, PosY, '
                             'Dipole1PosX, Dipole1PosY, Dipole2PosX, '
-                            'Dipole2PosY, LargestSpot) '
+                            'Dipole2PosY, LargestSpot, GroupNumber, GroupExtra1, GroupExtra2, GroupExtra3 ) '
                             'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, '
-                            '%s, %s, %s, %s, '
+                            '%s, %s, %s, %s, %s, %s, %s,'
                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ',
                             var)
         self.db.commit()

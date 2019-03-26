@@ -131,6 +131,15 @@ class QLabelDrawing(QtGui.QLabel):
             return
 
     def set_img(self):
+        """
+        The QPixmap class is an off-screen image representation 
+        that can be used as a paint device.
+        A QPixmap can easily be displayed on the screen using QLabel 
+        or one of QAbstractButton's subclasses
+        Here the pixmap is embeded in a qlabel, so the positions on the off-screen 
+        image are continuous (and not integer as it would be for a pixel-image (ex: ImageQt)
+        """
+        
         try:
             img = Image.open(self.file_path)
             self.drawing_width = img.size[0]
@@ -138,6 +147,8 @@ class QLabelDrawing(QtGui.QLabel):
             qim = ImageQt(img)  # convert PIL image to a PIL.ImageQt object
             self.drawing_pixMap = QtGui.QPixmap.fromImage(qim)
 
+            #print("img width: ", self.drawing_width, self.drawing_height)
+            
         except IOError:
             print("did not find the image!")
             return

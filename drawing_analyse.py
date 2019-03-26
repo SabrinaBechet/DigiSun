@@ -557,7 +557,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.label_right.surface_mode.set_opposite_value()
         self.statusBar().clean()
         surface_module_size_min = 380
-        surface_module_size_max = 580
+        surface_module_size_max = 640
 
         if self.label_right.surface_mode.value:
             self.drawing_page\
@@ -1049,10 +1049,33 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if self.config.extra1 :
                 grid_position[0] += 1
                 self.group_toolbox.set_extra_field1(
-                    None,
+                    self.drawing_lst[self.current_count].group_lst[n].group_extra1,
                     self.config.extra1,
                     grid_position)
-
+                self.group_toolbox.group_extra1_linedit.textChanged.connect(
+                lambda : self.modify_drawing_group_extra1(
+                    self.listWidget_groupBox.currentRow()))
+                
+            if self.config.extra2 :
+                grid_position[0] += 1
+                self.group_toolbox.set_extra_field2(
+                    self.drawing_lst[self.current_count].group_lst[n].group_extra2,
+                    self.config.extra2,
+                    grid_position)
+                self.group_toolbox.group_extra2_linedit.textChanged.connect(
+                lambda : self.modify_drawing_group_extra2(
+                    self.listWidget_groupBox.currentRow()))
+                
+            if self.config.extra3 :
+                grid_position[0] += 1
+                self.group_toolbox.set_extra_field3(
+                    self.drawing_lst[self.current_count].group_lst[n].group_extra3,
+                    self.config.extra3,
+                    grid_position)
+                self.group_toolbox.group_extra3_linedit.textChanged.connect(
+                    lambda : self.modify_drawing_group_extra3(
+                        self.listWidget_groupBox.currentRow()))
+                
             grid_position = [1, 2]
             self.group_toolbox.set_arrows_buttons(grid_position)
 
@@ -1078,6 +1101,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     True))
 
             self.group_toolbox.delete_button.clicked.connect(self.delete_group)
+
+            self.group_toolbox.group_nb_linedit.textChanged.connect(
+                lambda : self.modify_drawing_group_number(self.listWidget_groupBox.currentRow()))        
+
+            self.group_toolbox.latitude_linedit.textChanged.connect(
+                lambda: self.update_HGC_position('latitude', 0.0))
+            self.group_toolbox.longitude_linedit.textChanged.connect(
+                lambda: self.update_HGC_position('longitude', 0.0))
 
             position_step = 0.1 * math.pi/180
             self.group_toolbox.button_up.clicked.connect(
@@ -1236,6 +1267,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def update_HGC_position(self, coordinate, value):
         """
         Steps:
+         - if value >0 -> the value has been changed with the arrows
+
          - takes the current values of latitude/longitude.
          - Change it of a given value according to the user modification
          - Convert it to corresponding value of X and Y on the drawing
@@ -1252,21 +1285,29 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         longitude = self.drawing_lst[index].group_lst[group_index].longitude
         latitude = self.drawing_lst[index].group_lst[group_index].latitude
 
-        drawing_height = self.label_right.drawing_height
-
-        if coordinate == 'longitude':
-            longitude += value
-            longitude = longitude % (2 * math.pi)
-
-        if coordinate == 'latitude':
-            latitude += value
-
         if self.drawing_lst[index].p_oriented:
             angle_P_drawing = 0.0
         elif not self.drawing_lst[index].p_oriented:
             angle_P_drawing = self.drawing_lst[index].angle_P
+        
+        drawing_height = self.label_right.drawing_height
+
+        if value:
+        
+            if coordinate == 'longitude':
+                longitude += value
+                longitude = longitude % (2 * math.pi)
+
+            if coordinate == 'latitude':
+                latitude += value
+
+        elif value==0:
+            latitude = float(self.group_toolbox.
+                             latitude_linedit.text()) * math.pi/180. 
+            longitude = float(self.group_toolbox
+                            .longitude_linedit.text()) * math.pi/180.
             
-            
+               
         posX, posY, posZ = coordinates.cartesian_from_HGC_upper_left_origin(
             self.drawing_lst[index].calibrated_center.x,
             self.drawing_lst[index].calibrated_center.y,
@@ -1279,28 +1320,72 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_lst[index].angle_L,
             drawing_height)
 
+        posX_round = round(posX)
+        posY_round = round(posY)
+        
         self.drawing_lst[index].change_group_position(group_index,
                                                       latitude,
                                                       longitude,
-                                                      posX,
-                                                      posY)
+                                                      posX_round,
+                                                      posY_round)
 
-        self.group_toolbox.longitude_linedit.setText('{0:.2f}'.format(
-            self.drawing_lst[index].group_lst[group_index].longitude *
-            180/math.pi))
-        self.group_toolbox.latitude_linedit.setText('{0:.2f}'.format(
-            self.drawing_lst[index].group_lst[group_index].latitude *
-            180/math.pi))
-
+        if value:
+            self.group_toolbox.longitude_linedit.setText('{0:.2f}'.format(
+                self.drawing_lst[index].group_lst[group_index].longitude *
+                180/math.pi))
+            self.group_toolbox.latitude_linedit.setText('{0:.2f}'.format(
+                self.drawing_lst[index].group_lst[group_index].latitude *
+                180/math.pi))
+            
+        
+        
         self.label_right.set_img()
 
+    def modify_drawing_group_number(self, n):
+        """
+        Change the value of the group number by directing writing in the linedit.
+        """
+        self.drawing_lst[self.current_count]\
+            .group_lst[n].group_number = str(self.group_toolbox.group_nb_linedit.text())
+        self.group_toolbox.group_nb_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+
+    def modify_drawing_group_extra1(self, n):
+        """
+        Change the value of the group number by directing writing in the linedit.
+        """
+        self.drawing_lst[self.current_count]\
+            .group_lst[n].group_extra1 = str(self.group_toolbox.group_extra1_linedit.text())
+        self.group_toolbox.group_extra1_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+
+    def modify_drawing_group_extra2(self, n):
+        """
+        Change the value of the group number by directing writing in the linedit.
+        """
+        self.drawing_lst[self.current_count]\
+            .group_lst[n].group_extra2 = str(self.group_toolbox.group_extra2_linedit.text())
+        self.group_toolbox.group_extra2_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+
+    def modify_drawing_group_extra3(self, n):
+        """
+        Change the value of the group number by directing writing in the linedit.
+        """
+        self.drawing_lst[self.current_count]\
+            .group_lst[n].group_extra3 = str(self.group_toolbox.group_extra1_linedit.text())
+        self.group_toolbox.group_extra3_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+
+    
+        
+        
     def modify_drawing_spot_number(self, n, is_toolbox):
         """
         A change in the spots number consists in:
         - update the drawing object
         - display the right number in the toolbox and the groupbox
         - put the linedit in orange in case the number is 0, white otherwhise
-        TO DO: check that the value entered is a number!
         """
         if is_toolbox:
             new_sunspot_number = self.group_toolbox.spot_number_spinbox.value()
@@ -1318,7 +1403,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             QtGui.QMessageBox\
                  .warning(self,
                           "sunspot number value",
-                          "One of the sunspot number is not a number!")
+                          "Please enter a number for this sunspot.")
 
         if self.drawing_lst[self.current_count].group_lst[n].spots == 0:
             self.groupBoxLineList[n].spot_number_spinbox.setStyleSheet(
@@ -1398,6 +1483,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.check_dipole(n)
 
+        
     def modify_drawing_mcIntosh(self, n, is_toolbox):
         old_mcIntosh_type = self.drawing_lst[self.current_count]\
                                 .group_lst[self.listWidget_groupBox

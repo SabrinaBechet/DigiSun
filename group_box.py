@@ -174,7 +174,7 @@ class GroupBox(QtGui.QWidget):
         #self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
         self.spot_number_spinbox = QtGui.QSpinBox(self)#LineEdit(str(spot_count))
         self.spot_number_spinbox.setValue(spot_count)
-        self.spot_number_spinbox.setDisabled(True)
+        #self.spot_number_spinbox.setDisabled(True)
         self.spot_number_spinbox.setMaximumWidth(self.widget_maximum_width)
         self.spot_number_spinbox.setStyleSheet(
             "background-color: white; color: black")
@@ -261,7 +261,7 @@ class GroupBox(QtGui.QWidget):
 
         self.longitude_label = QtGui.QLabel()
         self.longitude_linedit = QtGui.QLineEdit(self)
-
+    
         self.set_label_and_linedit(self.longitude_label,
                                    "Longitude",
                                    self.longitude_linedit,
@@ -271,7 +271,7 @@ class GroupBox(QtGui.QWidget):
     def set_latitude(self, latitude, grid_position):
         self.latitude_label = QtGui.QLabel()
         self.latitude_linedit = QtGui.QLineEdit(self)
-
+    
         self.set_label_and_linedit(self.latitude_label,
                                    "Latitude",
                                    self.latitude_linedit,
@@ -311,13 +311,33 @@ class GroupBox(QtGui.QWidget):
 
 
     def set_extra_field1(self, extra1_value, extra1_name, grid_position):
-        self.extra1_label = QtGui.QLabel()
-        self.extra1_linedit = QtGui.QLineEdit(self)
+        self.group_extra1_label = QtGui.QLabel()
+        self.group_extra1_linedit = QtGui.QLineEdit(self)
 
-        self.set_label_and_linedit(self.extra1_label,
+        self.set_label_and_linedit(self.group_extra1_label,
                                    str(extra1_name),
-                                   self.extra1_linedit,
+                                   self.group_extra1_linedit,
                                    str(extra1_value),
+                                   grid_position)
+
+    def set_extra_field2(self, extra2_value, extra2_name, grid_position):
+        self.group_extra2_label = QtGui.QLabel()
+        self.group_extra2_linedit = QtGui.QLineEdit(self)
+
+        self.set_label_and_linedit(self.group_extra2_label,
+                                   str(extra2_name),
+                                   self.group_extra2_linedit,
+                                   str(extra2_value),
+                                   grid_position)
+
+    def set_extra_field3(self, extra3_value, extra3_name, grid_position):
+        self.group_extra3_label = QtGui.QLabel()
+        self.group_extra3_linedit = QtGui.QLineEdit(self)
+
+        self.set_label_and_linedit(self.group_extra3_label,
+                                   str(extra3_name),
+                                   self.group_extra3_linedit,
+                                   str(extra3_value),
                                    grid_position)
             
             

@@ -164,7 +164,8 @@ class mainWindow(QtGui.QMainWindow):
                 " <p> Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)" +
                 " <p> This is a software to transform sunspot drawings into exploitable data. " + 
                 " It allows to scan drawings, extract its information and store it in a database." +
-                "<p> Contact: sabrina.bechet@oma.be "))
+                "<p> Author : Sabrina Bechet "+
+                "<p> Contact: digisun@oma.be "))
 
         menu_mode.addAction(action_goTo_daily_scan)
         menu_mode.addAction(action_goTo_analyse)

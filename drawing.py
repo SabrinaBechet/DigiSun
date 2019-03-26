@@ -58,13 +58,14 @@ class Group(QtCore.QObject):
                                'GroupExtra2' : '',
                                'GroupExtra3' : ''}
 
-        for keys, values in dict_group_database.items():
-            try:
-                dict_group_database[keys] = param[keys]
-            except KeyError:
-                print("The following information is missing: {} ".format(keys) +
-                      " It will be set to {} ".format(values))
-
+        if param:
+            for keys, values in dict_group_database.items():
+                try:
+                    dict_group_database[keys] = param[keys]
+                except KeyError:
+                    print("The following information is missing: {} ".format(keys) +
+                          " It will be set to {} ".format(values))
+                    
                 
         self._id_ = dict_group_database['id']
         self._datetime = dict_group_database['DateTime']
@@ -93,9 +94,9 @@ class Group(QtCore.QObject):
         self._dipole2_posY = dict_group_database['Dipole2PosY']
         self._largest_spot = dict_group_database['LargestSpot']
         self._group_number = dict_group_database['GroupNumber']
-        self.group_extra_1 = dict_group_database['GroupExtra1']
-        self.group_extra_2 = dict_group_database['GroupExtra2']
-        self.group_extra_3 = dict_group_database['GroupExtra3']
+        self._group_extra1 = dict_group_database['GroupExtra1']
+        self._group_extra2 = dict_group_database['GroupExtra2']
+        self._group_extra3 = dict_group_database['GroupExtra3']
 
         self.changed = False
 
@@ -333,8 +334,41 @@ class Group(QtCore.QObject):
 
     @group_number.setter
     def group_number(self, value):
-        # print("here we are changing the value of group number to ", value)
+        print("here we are changing the value of group number to ", value)
         self._group_number = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property
+    def group_extra1(self):
+        return self._group_extra1
+
+    @group_extra1.setter
+    def group_extra1(self, value):
+        print("here we are changing the value of group extra 1 to ", value)
+        self._group_extra1 = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property
+    def group_extra2(self):
+        return self._group_extra2
+
+    @group_extra2.setter
+    def group_extra2(self, value):
+        print("here we are changing the value of group extra 2 to ", value)
+        self._group_extra2 = value
+        self.changed = True
+        self.value_changed.emit()
+
+    @property
+    def group_extra3(self):
+        return self._group_extra3
+
+    @group_extra3.setter
+    def group_extra3(self, value):
+        print("here we are changing the value of group extra 3 to ", value)
+        self._group_extra3 = value
         self.changed = True
         self.value_changed.emit()
 
@@ -396,8 +430,8 @@ class Group(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
 
-    def save_group_info(self, group_count):
-        # print("***** save the info of the group ", self._number, self._id_)
+    def save_group_info(self):
+        
         db = database.database()
         
         db.write_group_info(self._datetime,
@@ -424,7 +458,11 @@ class Group(QtCore.QObject):
                             self._dipole1_posY,
                             self._dipole2_posX,
                             self._dipole2_posY,
-                            self._largest_spot)
+                            self._largest_spot,
+                            self._group_number,
+                            self._group_extra1,
+                            self._group_extra2,
+                            self._group_extra3)
 
 
 class Drawing(QtCore.QObject):
@@ -491,9 +529,9 @@ class Drawing(QtCore.QObject):
         self._operator = dict_drawing_database['Operator']
         self._last_update_time = dict_drawing_database['LastUpdateTime']
         self._area_done = dict_drawing_database['AllAreaDone']
-        self._drawing_extra_1 = dict_drawing_database['DrawingExtra1']
-        self._drawing_extra_2 = dict_drawing_database['DrawingExtra2']
-        self._drawing_extra_3 = dict_drawing_database['DrawingExtra3']
+        self._drawing_extra1 = dict_drawing_database['DrawingExtra1']
+        self._drawing_extra2 = dict_drawing_database['DrawingExtra2']
+        self._drawing_extra3 = dict_drawing_database['DrawingExtra3']
         
         
         self._group_lst = []
@@ -1076,6 +1114,6 @@ class Drawing(QtCore.QObject):
         """            
         for el in self._group_lst:
             # print("save group info ", el)
-            el.save_group_info(self._group_count)
+            el.save_group_info()
 
         self.info_saved.emit()
