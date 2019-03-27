@@ -212,13 +212,22 @@ class GroupBox(QtGui.QWidget):
         zurich_McIntosh = {}
         zurich_McIntosh['X'] = ['Xxx']
         zurich_McIntosh['A'] = ['Axx']
-        zurich_McIntosh['B'] = ['Bxo', 'Bxi', 'Bxc']
-        zurich_McIntosh['C'] = ['Cro', 'Cri', 'Cso', 'Csi', 'Cao', 'Cai']
-        zurich_McIntosh['D'] = ['Dro', 'Dri', 'Drc',
-                                'Dso', 'Dsi', 'Dsc', 'Dao', 'Dai', 'Dac',
-                                'Dho', 'Dhi', 'Dhc', 'Dko', 'Dki', 'Dkc']
-        zurich_McIntosh['E'] = ['Esi', 'Esc', 'Eai', 'Eac',
-                                'Ehi', 'Ehc', 'Eki', 'Ekc']
+        zurich_McIntosh['B'] = ['Bxo', 'Bxi']
+        zurich_McIntosh['C'] = ['Cro', 'Cri',
+                                'Cso', 'Csi',
+                                'Cao', 'Cai',
+                                'Cho', 'Chi',
+                                'Cko', 'Cki']
+        zurich_McIntosh['D'] = ['Dro', 'Dri',
+                                'Dso', 'Dsi', 'Dsc',
+                                'Dao', 'Dai', 'Dac',
+                                'Dho', 'Dhi', 'Dhc',
+                                'Dko', 'Dki', 'Dkc']
+        zurich_McIntosh['E'] = ['Ero', 'Eri',
+                                'Eso', 'Esi', 'Esc',
+                                'Eao', 'Eai', 'Eac',
+                                'Eho', 'Ehi', 'Ehc',
+                                'Eko', 'Eki', 'Ekc']
         zurich_McIntosh['F'] = ['Fhi', 'Fhc', 'Fki', 'Fkc']
         zurich_McIntosh['G'] = ['Eso', 'Eao', 'Eho', 'Eko',
                                 'Fho', 'Fko']
@@ -407,16 +416,16 @@ class GroupBox(QtGui.QWidget):
         self.largest_spot_label = QtGui.QLabel("Lead/Trail")
 
         self.largest_spot_leading_but = QtGui.QPushButton("L")
-        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("w"))
-        self.largest_spot_leading_but.setToolTip('shortcut: \'w\'')
+        self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("f"))
+        self.largest_spot_leading_but.setToolTip('shortcut: \'f\'')
 
         self.largest_spot_egal_but = QtGui.QPushButton("=")
-        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("x"))
-        self.largest_spot_egal_but.setToolTip('shortcut: \'x\'')
+        self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("g"))
+        self.largest_spot_egal_but.setToolTip('shortcut: \'g\'')
         
         self.largest_spot_trailing_but = QtGui.QPushButton("T")
-        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("c"))
-        self.largest_spot_trailing_but.setToolTip('shortcut: \'c\'')
+        self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("h"))
+        self.largest_spot_trailing_but.setToolTip('shortcut: \'h\'')
 
         self.grid_layout.addWidget(self.largest_spot_label,
                                    grid_position[0],

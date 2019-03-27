@@ -26,6 +26,7 @@ import collections
 from datetime import datetime, timedelta
 import database
 import drawing
+import configuration
 from PyQt4 import QtGui, QtCore
 
 
@@ -36,8 +37,17 @@ class ListPage(QtGui.QWidget):
     """
     def __init__(self):
         super(ListPage, self).__init__()
+        self.config = configuration.Config()
+        self.config.set_drawing_analyse()
+        self.level_info = self.config.level
+        
         self.table = QtGui.QTableWidget()
-        self.table.setColumnCount(5)
+        if 'area' in self.level_info:
+            self.table.setColumnCount(5)
+        else:
+            self.table.setColumnCount(4)
+
+       
         
         if sys.platform=='darwin':
             self.setAttribute(QtCore.Qt.WA_MacNormalSize)
@@ -48,8 +58,12 @@ class ListPage(QtGui.QWidget):
         the fraction of calibrated/analysed/area done.
         """
         #self.table.horizontalHeader().setDefaultSectionSize(150)
-        self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
-                                              "analysed", "area"])
+        if 'area' in self.level_info:
+            self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
+                                                  "analysed", "area"])
+        else:
+            self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
+                                                  "analysed"])
 
         count = 0
         for dico_keys, dico_values in dico.items():
@@ -71,7 +85,8 @@ class ListPage(QtGui.QWidget):
             
             self.table.setCellWidget(count, 2, progressBar_calib)
             self.table.setCellWidget(count, 3, progressBar_analysed)
-            self.table.setCellWidget(count, 4, progressBar_area)
+            if 'area' in self.level_info:
+                self.table.setCellWidget(count, 4, progressBar_area)
 
             count+=1
 

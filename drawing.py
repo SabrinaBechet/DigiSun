@@ -29,7 +29,7 @@ class Group(QtCore.QObject):
 
         dict_group_database = {'id' : 0,
                                'DateTime': datetime(2000, 1, 1, 00, 00),
-                               'Number': 0,
+                               'DigiSunNumber': 0,
                                'Latitude': None,
                                'Longitude': None,
                                'Lcm': None,
@@ -42,9 +42,9 @@ class Group(QtCore.QObject):
                                'Dipole1Long': None,
                                'Dipole2Lat': None,
                                'Dipole2Long': None,
-                               'Surface': None,
-                               'RawSurface_px': None,
-                               'RawSurface_msd': None,
+                               'DeprojArea_msh': None,
+                               'RawArea_px': None,
+                               'ProjArea_msd': None,
                                'GSpot': None,
                                'PosX' : None,
                                'PosY' : None,
@@ -63,13 +63,14 @@ class Group(QtCore.QObject):
                 try:
                     dict_group_database[keys] = param[keys]
                 except KeyError:
-                    print("The following information is missing: {} ".format(keys) +
-                          " It will be set to {} ".format(values))
+                    pass
+                    #print("The following information is missing: {} ".format(keys) +
+                    #      " It will be set to {} ".format(values))
                     
                 
         self._id_ = dict_group_database['id']
         self._datetime = dict_group_database['DateTime']
-        self._number = dict_group_database['Number']
+        self._number = dict_group_database['DigiSunNumber']
         self._latitude = dict_group_database['Latitude']
         self._longitude = dict_group_database['Longitude']
         self._Lcm = dict_group_database['Lcm']
@@ -82,9 +83,9 @@ class Group(QtCore.QObject):
         self._dipole1_long = dict_group_database['Dipole1Long']
         self._dipole2_lat = dict_group_database['Dipole2Lat']
         self._dipole2_long = dict_group_database['Dipole2Long']
-        self._surface = dict_group_database['Surface']
-        self._raw_surface_px = dict_group_database['RawSurface_px']
-        self._raw_surface_msd = dict_group_database['RawSurface_msd']
+        self._surface = dict_group_database['DeprojArea_msh']
+        self._raw_surface_px = dict_group_database['RawArea_px']
+        self._raw_surface_msd = dict_group_database['ProjArea_msd']
         self._g_spot = dict_group_database['GSpot']
         self._posX = dict_group_database['PosX']
         self._posY = dict_group_database['PosY']
@@ -503,13 +504,14 @@ class Drawing(QtCore.QObject):
                                 'DrawingExtra2':'',
                                 'DrawingExtra3':''}
 
-        for keys, values in dict_drawing_database.items():
-            try:
-                dict_drawing_database[keys] = param[keys]
-            except KeyError:
-                pass
-                #print("The following information is missing: {} ".format(keys) +
-                #      " It will be set to {} ".format(values))
+        if param:
+            for keys, values in dict_drawing_database.items():
+                try:
+                    dict_drawing_database[keys] = param[keys]
+                except KeyError:
+                    pass
+                    # print("The following information is missing: {} ".format(keys) +
+                    #      " It will be set to {} ".format(values))
                               
         self._id_drawing = dict_drawing_database['id']
         self._datetime = dict_drawing_database['DateTime']

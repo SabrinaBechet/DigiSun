@@ -106,68 +106,69 @@ class Toolbar(QtGui.QToolBar):
             QtGui.QIcon('icons/Smashicons/share_1.png'))
         self.group_visu_but.setShortcut(QtGui.QKeySequence("Alt+r"))
 
-        self.dipole_visu_but = QtGui.QToolButton(self)
-        if sys.platform=='darwin':
-            self.dipole_visu_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-            self.dipole_visu_but.setToolTip("dipole visu: \'Alt+d\'")
-        else:
-            self.dipole_visu_but.setToolTip("\'Alt+d\'")
-            self.dipole_visu_but.setToolButtonStyle(
-                QtCore.Qt.ToolButtonTextUnderIcon)
-            self.dipole_visu_but.setText("&dipole view")
-        self.dipole_visu_but.setIcon(
-            QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
-        self.dipole_visu_but.setShortcut(QtGui.QKeySequence("Alt+d"))
+        if 'dipole' in level_info:
+            self.dipole_visu_but = QtGui.QToolButton(self)
+            if sys.platform=='darwin':
+                self.dipole_visu_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
+                self.dipole_visu_but.setToolTip("dipole visu: \'Alt+d\'")
+            else:
+                self.dipole_visu_but.setToolTip("\'Alt+d\'")
+                self.dipole_visu_but.setToolButtonStyle(
+                    QtCore.Qt.ToolButtonTextUnderIcon)
+                self.dipole_visu_but.setText("&dipole view")
+            self.dipole_visu_but.setIcon(
+                QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
+            self.dipole_visu_but.setShortcut(QtGui.QKeySequence("Alt+d"))
 
         self.helper_grid_but = QtGui.QToolButton(self)
         if sys.platform=='darwin':
             self.helper_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.helper_grid_but.setToolTip("helper grid: \'z\'")
         else:
-            self.helper_grid_but.setToolTip("\'z\'")
+            self.helper_grid_but.setToolTip("\'e\'")
             self.helper_grid_but.setToolButtonStyle(
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.helper_grid_but.setText("helper grid")
         self.helper_grid_but.setIcon(
             QtGui.QIcon('icons/Smashicons/internet.png'))
-        self.helper_grid_but.setShortcut(QtGui.QKeySequence("z"))
+        self.helper_grid_but.setShortcut(QtGui.QKeySequence("e"))
         
         self.calibration_but = QtGui.QToolButton(self)
         if sys.platform=='darwin':
             self.calibration_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-            #self.calibration_but.setToolTip("calibration: \'c\'")
+            self.calibration_but.setToolTip("calibration: \'c\'")
         else:
-            #self.calibration_but.setToolTip("\'c\'")
+            self.calibration_but.setToolTip("\'c\'")
             self.calibration_but.setToolButtonStyle(
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.calibration_but.setText("calibrate")
         self.calibration_but.setIcon(
             QtGui.QIcon('icons/Smashicons/target.png'))
-        #self.calibration_but.setShortcut(QtGui.QKeySequence("c"))
+        self.calibration_but.setShortcut(QtGui.QKeySequence("c"))
 
         self.add_group_but = QtGui.QToolButton(self)
         if sys.platform=='darwin':
             self.add_group_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-            self.add_group_but.setToolTip("add group: \'e\'")
+            self.add_group_but.setToolTip("add group: \'r\'")
         else:
-            self.add_group_but.setToolTip("\'e\'")
+            self.add_group_but.setToolTip("\'r\'")
             self.add_group_but.setToolButtonStyle(
                 QtCore.Qt.ToolButtonTextUnderIcon)
-            self.add_group_but.setText("add group")
+            self.add_group_but.setText("add g&roup")
         self.add_group_but.setIcon(QtGui.QIcon('icons/hospital.png'))
         self.add_group_but.setShortcut(QtGui.QKeySequence("r"))
 
         self.change_group_pos_but = QtGui.QToolButton(self)
         if sys.platform=='darwin':
             self.change_group_pos_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-            self.change_group_pos_but.setToolTip("group pos: \'r\'")
+            self.change_group_pos_but.setToolTip("group pos: \'z\'")
         else:
-            self.change_group_pos_but.setToolTip("\'r\'")
+            self.change_group_pos_but.setToolTip("\'z\'")
             self.change_group_pos_but.setToolButtonStyle(
                 QtCore.Qt.ToolButtonTextUnderIcon)
             self.change_group_pos_but.setText("group pos")
         self.change_group_pos_but.setIcon(QtGui.QIcon('icons/Smashicons/map-location.png'))
-        self.change_group_pos_but.setShortcut(QtGui.QKeySequence("r"))
+        self.change_group_pos_but.setShortcut(QtGui.QKeySequence("z"))
 
         vertical_line_widget = QtGui.QWidget()
         vertical_line_widget.setFixedWidth(2)
@@ -179,23 +180,26 @@ class Toolbar(QtGui.QToolBar):
         self.addWidget(self.large_grid_but)
         self.addWidget(self.small_grid_but)
         self.addWidget(self.group_visu_but)
-        self.addWidget(self.dipole_visu_but)
+        if 'dipole' in level_info:
+            self.addWidget(self.dipole_visu_but)
         self.addWidget(vertical_line_widget)
         self.addWidget(self.helper_grid_but)
         self.addWidget(self.calibration_but)
         self.addWidget(self.add_group_but)
         self.addWidget(self.change_group_pos_but)
 
+
+        
         if 'dipole' in level_info:
             self.add_dipole_but = QtGui.QToolButton(self)
             if sys.platform=='darwin':
                 self.add_dipole_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-                self.add_dipole_but.setToolTip("add dipole:\'t\'")
+                self.add_dipole_but.setToolTip("add dipole:\'d\'")
             else:
-                self.add_dipole_but.setToolTip("\'t\'")
+                self.add_dipole_but.setToolTip("\'d\'")
                 self.add_dipole_but.setToolButtonStyle(
                     QtCore.Qt.ToolButtonTextUnderIcon)
-                self.add_dipole_but.setText("add dipole")
+                self.add_dipole_but.setText("add &dipole")
             self.add_dipole_but.setIcon(
                 QtGui.QIcon('icons/mine/my_dipole_icon2.png'))
             self.add_dipole_but.setShortcut(QtGui.QKeySequence("d"))
@@ -205,14 +209,14 @@ class Toolbar(QtGui.QToolBar):
             self.surface_but = QtGui.QToolButton(self)
             if sys.platform=='darwin':
                 self.surface_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-                self.surface_but.setToolTip("Area: \'y\'")
+                self.surface_but.setToolTip("Area: \'a\'")
             else:
-                self.surface_but.setToolTip("\'y\'")
+                self.surface_but.setToolTip("\'a\'")
                 self.surface_but.setToolButtonStyle(
                     QtCore.Qt.ToolButtonTextUnderIcon)
-                self.surface_but.setText("group area")
+                self.surface_but.setText("group &area")
             self.surface_but.setIcon(QtGui.QIcon('icons/Freepik/layout.png'))
-            self.surface_but.setShortcut(QtGui.QKeySequence("y"))
+            self.surface_but.setShortcut(QtGui.QKeySequence("a"))
             self.addWidget(self.surface_but)
 
         label_right.quick_zoom.value_changed.connect(
@@ -243,12 +247,13 @@ class Toolbar(QtGui.QToolBar):
         if label_right.group_visu.value:
             self.group_visu_but.setStyleSheet("background-color: lightblue")
 
-        label_right.dipole_visu.value_changed.connect(
-            lambda: self.set_button_color(
-                label_right.dipole_visu.value,
-                self.dipole_visu_but))
-        if label_right.dipole_visu.value:
-            self.dipole_visu_but.setStyleSheet("background-color: lightblue")
+        if 'dipole' in level_info:
+            label_right.dipole_visu.value_changed.connect(
+                lambda: self.set_button_color(
+                    label_right.dipole_visu.value,
+                    self.dipole_visu_but))
+            if label_right.dipole_visu.value:
+                self.dipole_visu_but.setStyleSheet("background-color: lightblue")
 
         label_right.helper_grid.value_changed.connect(
             lambda: self.set_button_color(
@@ -278,19 +283,21 @@ class Toolbar(QtGui.QToolBar):
         if label_right.change_group_position_mode.value:
             self.change_group_pos_but.setStyleSheet("background-color: lightblue")
 
-        label_right.add_dipole_mode.value_changed.connect(
-            lambda: self.set_button_color(
-                label_right.add_dipole_mode.value,
-                self.add_dipole_but))
-        if label_right.add_dipole_mode.value:
-            self.add_dipole_but.setStyleSheet("background-color: lightblue")
+        if 'dipole' in level_info:    
+            label_right.add_dipole_mode.value_changed.connect(
+                lambda: self.set_button_color(
+                    label_right.add_dipole_mode.value,
+                    self.add_dipole_but))
+            if label_right.add_dipole_mode.value:
+                self.add_dipole_but.setStyleSheet("background-color: lightblue")
 
-        label_right.surface_mode.value_changed.connect(
-            lambda: self.set_button_color(
-                label_right.surface_mode.value,
-                self.surface_but))
-        if label_right.surface_mode.value:
-            self.surface_but.setStyleSheet("background-color: lightblue")
+        if 'area' in level_info:
+            label_right.surface_mode.value_changed.connect(
+                lambda: self.set_button_color(
+                    label_right.surface_mode.value,
+                    self.surface_but))
+            if label_right.surface_mode.value:
+                self.surface_but.setStyleSheet("background-color: lightblue")
 
     def set_button_color(self, mode_bool, but):
         if mode_bool is True:

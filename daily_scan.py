@@ -242,6 +242,8 @@ class DailyScan(QtGui.QWidget):
                 .get_all_in_time_interval("drawings",
                                           self.drawing_time,
                                           self.drawing_time)
+            lst_drawings_field = db.get_all_fields("drawings")
+            
             tuple_calibrations = db\
                 .get_all_in_time_interval("calibrations",
                                           self.drawing_time,
@@ -250,6 +252,8 @@ class DailyScan(QtGui.QWidget):
                     .get_all_in_time_interval("groups",
                                               self.drawing_time,
                                               self.drawing_time)
+            lst_groups_field = db.get_all_fields("groups")
+            
             lst_groups = [el for el in tuple_groups]
             drawing_type = tuple_drawings[0][2]
             tuple_drawing_type = db.get_drawing_information("drawing_type",
@@ -261,13 +265,20 @@ class DailyScan(QtGui.QWidget):
                           "An entry corresponding to this drawing was found in the database. "
                           "Do you want to delete previous data ?",
                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-             
-            new_drawing = drawing.Drawing(tuple_drawings[0])
+
+
+            drawing_dict = dict(zip(lst_drawings_field, tuple_drawings[0]))
+                                
+            new_drawing = drawing.Drawing(drawing_dict)
+                                
             new_drawing.set_drawing_type(tuple_drawing_type[0])
+                                
             if self.drawing_time == tuple_calibrations[0][1]:
                 new_drawing.set_calibration(tuple_calibrations[0])
+                
             for group in lst_groups:
-                new_drawing.set_group(group)
+                group_dict = dict(zip(lst_groups_field, group))
+                new_drawing.set_group(group_dict)
 
             if answer == QtGui.QMessageBox.No:
                 db.replace_drawing(new_drawing)

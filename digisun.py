@@ -28,7 +28,7 @@ import drawing_analyse
 from PyQt4 import QtGui, QtCore
 
 __author__ = "Sabrina Bechet"
-__email__ = "sabrina.bechet@oma.be"
+__email__ = "digisun@oma.be"
 __date__ = "February 2019"
 __version__ = "0.2.2"
 
@@ -62,6 +62,8 @@ class mainWindow(QtGui.QMainWindow):
         #self.showMaximized()
         screen_available_geometry = QtGui.QDesktopWidget()\
                                          .availableGeometry()
+        self.setMinimumWidth(screen_available_geometry.width()/2.)
+        self.setMinimumHeight(screen_available_geometry.height()/2.)
         self.setMaximumWidth(screen_available_geometry.width())
         self.setMaximumHeight(screen_available_geometry.height() - 50)
         self.operator = operator
@@ -165,7 +167,6 @@ class mainWindow(QtGui.QMainWindow):
                 " <p> Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)" +
                 " <p> This is a software to transform sunspot drawings into exploitable data. " + 
                 " It allows to scan drawings, extract its information and store it in a database." +
-                "<p> Author : Sabrina Bechet "+
                 "<p> Contact: digisun@oma.be "))
 
         menu_mode.addAction(action_goTo_daily_scan)

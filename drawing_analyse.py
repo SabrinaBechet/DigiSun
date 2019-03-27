@@ -19,6 +19,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
+__author__ = "Sabrina Bechet"
 
 import os
 from datetime import datetime
@@ -132,14 +133,17 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.config = configuration.Config()
         self.config.set_archdrawing()
         self.config.set_drawing_analyse()
-
+       
         self.drawing_page = drawing_view_page.DrawingViewPage()
 
         self.setCentralWidget(self.drawing_page)
 
         self.operator = operator
-        self.level_info = ['group', 'dipole', 'area']  # group always included
+        #self.level_info = ['group', 'dipole', 'area']  # group always included
+        self.level_info = self.config.level #['group']  # group always included
 
+        print("check level of analyse: ", self.level_info)
+        
         if (self.config.archdrawing_directory and os.path.isdir(
                 self.config.archdrawing_directory)):
 
@@ -258,8 +262,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         digisun_toolbar.small_grid_but.clicked.connect(self.set_small_grid)
         digisun_toolbar.group_visu_but.clicked\
                                       .connect(self.set_group_visualisation)
-        digisun_toolbar.dipole_visu_but.clicked\
-                                       .connect(self.set_dipole_visualisation)
         digisun_toolbar.helper_grid_but.clicked.connect(self.set_helper_grid)
         digisun_toolbar.calibration_but.clicked.connect(self.start_calibration)
         digisun_toolbar.add_group_but.clicked.connect(self.set_add_group_mode)
@@ -267,6 +269,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.set_change_group_position_mode)
 
         if 'dipole' in self.level_info:
+            digisun_toolbar.dipole_visu_but.clicked\
+                                           .connect(self.set_dipole_visualisation)
             digisun_toolbar.add_dipole_but.clicked\
                                           .connect(self.set_add_dipole_mode)
 
@@ -604,94 +608,97 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Update the QLabelGroupSurface object which represents
         an image of the drawing to calculate the surface.
         """
-        if step:
-            self.step += step
-        else:
-            self.step = 0
+        if 'area' in self.level_info:
+            if step:
+                self.step += step
+            else:
+                self.step = 0
 
-        if (self.drawing_lst[self.current_count].calibrated and
-                self.label_right.surface_mode and
-                self.label_right.get_img_array() is not None):
+            if (self.drawing_lst[self.current_count].calibrated and
+                    self.label_right.surface_mode and
+                    self.label_right.get_img_array() is not None):
 
-            if self.drawing_lst[self.current_count].group_count > 0:
-                posX = self.drawing_lst[self.current_count]\
-                           .group_lst[n]\
-                           .posX
-                posY = self.drawing_lst[self.current_count]\
-                           .group_lst[n]\
-                           .posY
+                if self.drawing_lst[self.current_count].group_count > 0:
+                    posX = self.drawing_lst[self.current_count]\
+                               .group_lst[n]\
+                               .posX
+                    posY = self.drawing_lst[self.current_count]\
+                               .group_lst[n]\
+                               .posY
 
-                # don't forget to document this:
-                # print("------------------------------------CHECK!!!!!!!",
-                #       self.label_right.pixmap().height(),
-                # self.label_right.drawing_pixMap.height())
+                    # don't forget to document this:
+                    # print("------------------------------------CHECK!!!!!!!",
+                    #       self.label_right.pixmap().height(),
+                    # self.label_right.drawing_pixMap.height())
 
-                """frame_size = self.group_surface_widget.update_frame_surface(
-                    self.drawing_lst[self.current_count].calibrated_radius,
-                    step)
+                    """frame_size = self.group_surface_widget.update_frame_surface(
+                        self.drawing_lst[self.current_count].calibrated_radius,
+                        step)
 
-                """
-                frame_size = group_frame.group_frame(
-                    self.drawing_lst[self.current_count].group_lst[n].zurich,
-                    self.drawing_lst[self.current_count].calibrated_radius,
-                    self.drawing_lst[self.current_count].group_lst[n].posX,
-                    self.drawing_lst[self.current_count].group_lst[n].posY,
-                    self.drawing_lst[self.current_count].calibrated_center.x,
-                    self.drawing_lst[self.current_count].calibrated_center.y)
+                    """
+                    frame_size = group_frame.group_frame(
+                        self.drawing_lst[self.current_count].group_lst[n].zurich,
+                        self.drawing_lst[self.current_count].calibrated_radius,
+                        self.drawing_lst[self.current_count].group_lst[n].posX,
+                        self.drawing_lst[self.current_count].group_lst[n].posY,
+                        self.drawing_lst[self.current_count].calibrated_center.x,
+                        self.drawing_lst[self.current_count].calibrated_center.y)
 
-                if self.step:
-                    frame_step = (self.step *
-                                  self.drawing_lst[self.current_count]
-                                  .calibrated_radius/30)
-
-                    if frame_size + frame_step > 0:
-                        frame_size += frame_step
-
-                    else:
-                        self.step -= step
+                    if self.step:
                         frame_step = (self.step *
                                       self.drawing_lst[self.current_count]
                                       .calibrated_radius/30)
-                        frame_size += frame_step
 
-                self.label_right.frame_size = frame_size
-                if step != 0:
-                    self.label_right.set_img()
+                        if frame_size + frame_step > 0:
+                            frame_size += frame_step
 
-                img_pix = self.label_right.get_img_array()
+                        else:
+                            self.step -= step
+                            frame_step = (self.step *
+                                          self.drawing_lst[self.current_count]
+                                          .calibrated_radius/30)
+                            frame_size += frame_step
 
-                # take a bigger matrix to have the border at 0
-                bigger_matrix = np.ones((img_pix.shape[0] + 200,
-                                         img_pix.shape[1] + 200),
-                                        dtype=np.uint8) * 255
-                bigger_matrix[100: 100 + img_pix.shape[0],
-                              100: 100 + img_pix.shape[1]] = img_pix
+                    self.label_right.frame_size = frame_size
+                    if step != 0:
+                        self.label_right.set_img()
 
-                x_min = int(100 + posX - frame_size/2)
-                x_max = int(100 + posX + frame_size/2)
-                y_min = int(100 + posY - frame_size/2)
-                y_max = int(100 + posY + frame_size/2)
+                    img_pix = self.label_right.get_img_array()
 
-                selection_array = bigger_matrix[y_min: y_max,
-                                                x_min: x_max]
-                # print("selection array: {}".format(selection_array.shape))
+                    # take a bigger matrix to have the border at 0
+                    bigger_matrix = np.ones((img_pix.shape[0] + 200,
+                                             img_pix.shape[1] + 200),
+                                            dtype=np.uint8) * 255
+                    bigger_matrix[100: 100 + img_pix.shape[0],
+                                  100: 100 + img_pix.shape[1]] = img_pix
 
-                self.group_surface_widget.set_group_info(
-                    self.drawing_lst[self.current_count],
-                    n,
-                    posX - frame_size/2,
-                    posY - frame_size/2)
+                    x_min = int(100 + posX - frame_size/2)
+                    x_max = int(100 + posX + frame_size/2)
+                    y_min = int(100 + posY - frame_size/2)
+                    y_max = int(100 + posY + frame_size/2)
 
-                self.group_surface_widget.set_array(selection_array)
+                    selection_array = bigger_matrix[y_min: y_max,
+                                                    x_min: x_max]
+                    # print("selection array: {}".format(selection_array.shape))
 
-            else:
+                    self.group_surface_widget.set_group_info(
+                        self.drawing_lst[self.current_count],
+                        n,
+                        posX - frame_size/2,
+                        posY - frame_size/2)
+
+                    self.group_surface_widget.set_array(selection_array)
+
+                else:
+                    self.group_surface_widget.qlabel_group_surface.setText(
+                        "No groups defined for this drawing!")
+
+            elif (not self.drawing_lst[self.current_count].calibrated and
+                  self.label_right.surface_mode):
                 self.group_surface_widget.qlabel_group_surface.setText(
-                    "No groups defined for this drawing!")
-
-        elif (not self.drawing_lst[self.current_count].calibrated and
-              self.label_right.surface_mode):
-            self.group_surface_widget.qlabel_group_surface.setText(
-                "No calibration done for this drawing!")
+                    "No calibration done for this drawing!")
+        else:
+            pass
 
     def scroll_position(self, pos_x, pos_y, extra_width=0, point_name=None):
         """
@@ -812,12 +819,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.drawing_lst[self.current_count].group_lst[i].McIntosh,
                 self.drawing_lst[self.current_count].group_lst[i].zurich,
                 grid_position)
+            
+            if 'dipole' in self.level_info:
+                grid_position[1] += 1
+                groupBoxLine.set_dipole_button(grid_position)
 
-            grid_position[1] += 1
-            groupBoxLine.set_dipole_button(grid_position)
-
-            grid_position[1] += 1
-            groupBoxLine.set_area_button(grid_position)
+            if 'area' in self.level_info:
+                grid_position[1] += 1
+                groupBoxLine.set_area_button(grid_position)
+                group_surface = self.drawing_lst[self.current_count]\
+                                .group_lst[i].surface
+                if (group_surface is None or group_surface == 0):
+                    groupBoxLine.area_button.setStyleSheet(
+                        "background-color: rgb(255, 165, 84)")
 
             if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
                 groupBoxLine.zurich_combo.setStyleSheet(
@@ -825,27 +839,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
                 groupBoxLine.spot_number_spinbox.setStyleSheet(
-                    "background-color: rgb(255, 165, 84)")
-
-
-            """group_zurich = self.drawing_lst[self.current_count]\
-                               .group_lst[i].zurich.upper()
-            group_g_spot = self.drawing_lst[self.current_count]\
-                               .group_lst[i].g_spot
-            group_dip1_lat = self.drawing_lst[self.current_count]\
-                                 .group_lst[i].dipole1_lat
-
-            if (group_zurich in self.zurich_dipolar and
-                    (group_g_spot == 0 or group_dip1_lat is None)):
-                groupBoxLine.dipole_button.setStyleSheet(
-                    "background-color: rgb(255, 165, 84)")
-            """
-            #self.update_dipole_button()
-
-            group_surface = self.drawing_lst[self.current_count]\
-                                .group_lst[i].surface
-            if (group_surface is None or group_surface == 0):
-                groupBoxLine.area_button.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
 
             groupBoxLine.spot_number_spinbox.valueChanged.connect(
@@ -1034,17 +1027,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 .group_lst[n].longitude * 180/math.pi,
                 grid_position)
 
-            grid_position[0] += 1
-            self.group_toolbox.set_surface(
-                self.drawing_lst[self.current_count].group_lst[n].surface,
-                grid_position)
+            if 'area' in self.level_info:
+                grid_position[0] += 1
+                self.group_toolbox.set_surface(
+                    self.drawing_lst[self.current_count].group_lst[n].surface,
+                    grid_position)
 
-            grid_position[0] += 1
-            grid_position[1] = 0
-            self.group_toolbox.set_largest_spot(
-                self.drawing_lst[self.current_count].group_lst[n].largest_spot,
-                self.drawing_lst[self.current_count].group_lst[n].zurich,
-                grid_position)
+            if 'dipole' in self.level_info:
+                grid_position[0] += 1
+                grid_position[1] = 0
+                self.group_toolbox.set_largest_spot(
+                    self.drawing_lst[self.current_count].group_lst[n].largest_spot,
+                    self.drawing_lst[self.current_count].group_lst[n].zurich,
+                    grid_position)
 
             if self.config.extra1 :
                 grid_position[0] += 1
@@ -1120,12 +1115,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.group_toolbox.button_right.clicked.connect(
                 lambda: self.update_HGC_position('longitude', -position_step))
 
-            self.group_toolbox.largest_spot_leading_but.clicked.connect(
-                lambda: self.update_largest_spot('L'))
-            self.group_toolbox.largest_spot_egal_but.clicked.connect(
-                lambda: self.update_largest_spot('E'))
-            self.group_toolbox.largest_spot_trailing_but.clicked.connect(
-                lambda: self.update_largest_spot('T'))
+            if 'dipole' in self.level_info:
+                self.group_toolbox.largest_spot_leading_but.clicked.connect(
+                    lambda: self.update_largest_spot('L'))
+                self.group_toolbox.largest_spot_egal_but.clicked.connect(
+                    lambda: self.update_largest_spot('E'))
+                self.group_toolbox.largest_spot_trailing_but.clicked.connect(
+                    lambda: self.update_largest_spot('T'))
 
         else:
             print("no toolbox because there are no groups")
@@ -1176,7 +1172,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             largest_spot,
             self.drawing_lst[self.current_count]
             .group_lst[group_index].zurich)
-
+        
         self.update_dipole_button(self.listWidget_groupBox.currentRow())
 
     def check_information_complete(self, index, level):
@@ -1188,43 +1184,34 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         group = self.drawing_lst[self.current_count].group_lst[index]
 
-        group_complete = {"posX": False, "posY": False,
-                          "zurich": False, "McIntosh": False, "spots": False}
-        dipole_complete = {"dipole1_posX": False, "dipole1_posY": False,
-                           "dipole2_posX": False, "dipole2_posY": False,
-                           "largest_spot": False}
-        area_complete = {"area": False}
+        group_complete = {"Group pos": False,
+                          "Zurich type": False, "McIntosh type": False, "Spots nb": False}
+        dipole_complete = {"Dipole pos": False, "Largest spot": False}
+        
+        area_complete = {"Area": False}
 
         if level == 'group' or level == 'dipole' or level == 'area':
             info_complete = group_complete
-            if group.posX:
-                info_complete["posX"] = True
-            if group.posY:
-                info_complete["posY"] = True
+            if group.posX and group.posY:
+                info_complete["Group pos"] = True
             if group.zurich != 'X':
-                info_complete["zurich"] = True
+                info_complete["Zurich type"] = True
             if group.McIntosh != 'Xxx':
-                info_complete["McIntosh"] = True
+                info_complete["McIntosh type"] = True
             if group.spots:
-                info_complete["spots"] = True
+                info_complete["Spots nb"] = True
 
         if level == 'dipole' and group.zurich.upper() in self.zurich_dipolar:
             info_complete.update(dipole_complete)
-            if group.dipole1_lat:
-                info_complete["dipole1_posX"] = True
-            if group.dipole1_long:
-                info_complete["dipole1_posY"] = True
-            if group.dipole2_lat:
-                info_complete["dipole2_posX"] = True
-            if group.dipole2_long:
-                info_complete["dipole2_posY"] = True
+            if group.dipole1_lat and group.dipole1_long and group.dipole2_lat and group.dipole2_long:
+                info_complete["Dipole pos"] = True
             if group.largest_spot:
-                info_complete["largest_spot"] = True
+                info_complete["Largest spot"] = True
 
         if level == 'area':
             info_complete.update(area_complete)
             if group.surface:
-                info_complete["area"] = True
+                info_complete["Area"] = True
 
         missing_info = []
         for key, value in info_complete.items():
@@ -1234,16 +1221,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         return missing_info
 
     def update_area_button(self):
-        
-        group_index = self.listWidget_groupBox.currentRow()
-        missing_info = self.check_information_complete(group_index,
-                                                       'area')
-        if missing_info:
-            self.groupBoxLineList[group_index].area_button.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
-        else:
-            self.groupBoxLineList[group_index].area_button.setStyleSheet(
+        if 'area' in self.level_info:
+            group_index = self.listWidget_groupBox.currentRow()
+            missing_info = self.check_information_complete(group_index,
+                                                           'area')
+            if missing_info:
+                self.groupBoxLineList[group_index].area_button.setStyleSheet(
+                    "background-color: rgb(255, 165, 84)")
+            else:
+                self.groupBoxLineList[group_index].area_button.setStyleSheet(
                     "background-color: transparent")
+        else:
+            pass
 
     def update_dipole_button(self, group_index):
         """
@@ -1254,15 +1243,18 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if one of the two condition is not met -> dipole button in orange
         else -> dipole button in green
         """
-        #group_index = self.listWidget_groupBox.currentRow()
-        missing_info = self.check_information_complete(group_index,
-                                                       'dipole')
-        if missing_info:
-            self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
-        else:
-            self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
+        if 'dipole' in self.level_info:
+            #group_index = self.listWidget_groupBox.currentRow()
+            missing_info = self.check_information_complete(group_index,
+                                                           'dipole')
+            if missing_info:
+                self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
+                    "background-color: rgb(255, 165, 84)")
+            else:
+                self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
                     "background-color: transparent")
+        else:
+            pass
 
     def update_HGC_position(self, coordinate, value):
         """
@@ -1720,7 +1712,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 x,
                 self.check_information_complete(x, level))
                              for x in missing_info_group]
-
+            
             missing_group.insert(0, " information incomplete for ")
 
             if sum(missing_info_len):

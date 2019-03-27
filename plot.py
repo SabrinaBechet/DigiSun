@@ -46,10 +46,15 @@ def get_date_lst(date_min, date_max):
 
 
 def match_group(uset_group, uset_dev_group):
+    """
+    Build the matrix of position difference 
+    between uset_group and uset_dev_group
+    """
 
+    #print("enter in the match group module...", len(uset_group), len(uset_dev_group))
+    
     diff_array = np.ones((len(uset_group), len(uset_dev_group))) * 100
     lst_index = None
-
     if len(uset_group) == len(uset_dev_group):
     
         for el_std in uset_group:
@@ -79,7 +84,7 @@ def match_group(uset_group, uset_dev_group):
             unique, counts = np.unique(lst_index, return_counts=True)
             tst = np.where(counts>1)
             if tst[0]>0:
-                print("BAM",counts, tst, uset_group[0])
+                print("BAM", unique, counts, tst, uset_group[0])
             
     return lst_index
     
@@ -106,7 +111,7 @@ if __name__=='__main__':
 
     lat_diff = []
     long_diff = []
-    surface_diff = []
+    surface_ratio = []
   
     for date in date_lst:
         all_uset_dev = get_fields_per_date_uset_dev(date, 'drawings')[0]
@@ -161,44 +166,47 @@ if __name__=='__main__':
                 
                     dev_lat = all_group_uset_dev[lst_index[index]][3]
                     dev_long = all_group_uset_dev[lst_index[index]][4]
-                    dev_surface = all_group_uset_dev[lst_index[index]][15]
+                    dev_surface = all_group_uset_dev[lst_index[index]][16]
                     
                     uset_lat = all_group_uset[index][4]
                     uset_long = all_group_uset[index][5]
-                    uset_surface = all_group_uset[index][18]
+                    uset_surface = all_group_uset[index][19]
                     
                     lat = (uset_lat - dev_lat) * 180/math.pi
                     lat_diff.append(lat)
-                    if abs(lat)>30:
+                    if abs(lat)>10:
                        print(lst_index)
-                       print('latitude: ', uset_lat, dev_lat, date)
+                       print('**latitude: ', uset_lat, dev_lat, date)
                        print(all_group_uset[index])
                        print(all_group_uset_dev[lst_index[index]])
                     
                     longi = (uset_long - dev_long) * 180/math.pi
                     long_diff.append(longi)
-                    if abs(longi)>30:
+                    if abs(longi)>10:
                         print(lst_index)
-                        print('longitude: ', uset_long, dev_long, date)
+                        print('**longitude: ', uset_long, dev_long, date)
                         print(all_group_uset[index])  
                         print(all_group_uset_dev[lst_index[index]])
 
                     if uset_surface and dev_surface:
-                        surface = (uset_surface - dev_surface)
-                        surface_diff.append(surface)
+                        surface = abs(uset_surface - dev_surface)*100/uset_surface
+                        surface_ratio.append(surface)
                         if abs(surface)>200:
                             print(lst_index)
                             print('**surface: ', uset_surface, dev_surface, date)
                             print(all_group_uset[index])  
                             print(all_group_uset_dev[lst_index[index]])
-                        
+                      
                     
-    surface_min = min(surface_diff)
-    surface_max = max(surface_diff)
+    surface_min = min(surface_ratio)
+    surface_max = 100 #max(surface_ratio)
     surface_bin = int(abs(surface_max - surface_min))/10
-    surface_mean = np.mean(surface_diff)
-    surface_std = np.std(surface_diff)
-    surface_len = len(surface_diff)
+
+    print("check surface ", surface_min, surface_max, surface_bin)
+    
+    surface_mean = np.mean(surface_ratio)
+    surface_std = np.std(surface_ratio)
+    surface_len = len(surface_ratio)
     f = plt.figure()
     ax = f.add_subplot(111)
     print('range', surface_min, surface_max)
@@ -214,16 +222,19 @@ if __name__=='__main__':
              horizontalalignment='center',
              verticalalignment='center',
              transform=ax.transAxes)
-    plt.hist(surface_diff, bins=surface_bin, range=(surface_min, surface_max))
-    plt.title('group surface difference')
+    plt.hist(surface_ratio, bins=surface_bin, range=(surface_min, surface_max))
+    plt.title('group surface ratio')
     plt.grid()
     plt.savefig("testing/plot/group_surface.jpg")
     plt.close()
-
+    
     
     lat_min = min(lat_diff)
     lat_max = max(lat_diff)
     lat_bin = int(abs(lat_max - lat_min)) * 10
+
+    print("check latitude ", lat_min, lat_max, lat_bin)
+    
     lat_mean = np.mean(lat_diff)
     lat_std = np.std(lat_diff)
     lat_len = len(lat_diff)
@@ -251,6 +262,9 @@ if __name__=='__main__':
     long_min = min(long_diff)
     long_max = max(long_diff)
     long_bin = int(abs(long_max - long_min)) * 10
+
+    print("check longitude ", long_min, long_max, long_bin)
+    
     long_mean = np.mean(long_diff)
     long_std = np.std(long_diff)
     long_len = len(long_diff)
@@ -268,7 +282,7 @@ if __name__=='__main__':
              horizontalalignment='center',
              verticalalignment='center',
              transform=ax.transAxes)
-    plt.hist(long_diff)
+    plt.hist(long_diff, bins = long_bin, range=(long_min, long_max))
     plt.title('group longitude difference')
     plt.grid()
     plt.xlabel('degree')
@@ -409,6 +423,7 @@ if __name__=='__main__':
              transform=ax.transAxes)
     plt.hist(angleP_diff, bins=angleP_bin, range=(angleP_min, angleP_max))
     plt.title('angle P difference')
+    plt.xlabel('degree')
     plt.grid()
     plt.savefig("testing/plot/angleP.jpg")
     plt.close()
@@ -436,6 +451,7 @@ if __name__=='__main__':
              transform=ax.transAxes)
     plt.hist(angleB_diff, bins=angleB_bin, range=(angleB_min, angleB_max))
     plt.title('angle B difference')
+    plt.xlabel('degree')
     plt.grid()
     plt.savefig("testing/plot/angleB.jpg")
     plt.close()
@@ -443,7 +459,7 @@ if __name__=='__main__':
     angleL_min = min(angleL_diff)
     angleL_max = max(angleL_diff)
     angleL_bin = int(abs(angleL_max - angleL_min) * 1000)
-    print("angleL bin", angleL_bin)
+    #print("angleL bin", angleL_bin)
     angleL_mean = np.mean(angleL_diff)
     angleL_std = np.std(angleL_diff)
     angleL_len = len(angleL_diff)
@@ -461,9 +477,10 @@ if __name__=='__main__':
              horizontalalignment='center',
              verticalalignment='center',
              transform=ax.transAxes)
-    plt.hist(angleL_diff, bins=100, range=(-0.05, 0.05))
+    plt.hist(angleL_diff, bins=angleL_bin, range=(angleL_min, angleL_max))
     plt.title('angle L difference')
     plt.grid()
+    plt.xlabel('degree')
     plt.savefig("testing/plot/angleL.jpg")
     plt.close()
     

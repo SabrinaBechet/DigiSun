@@ -20,6 +20,8 @@ You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+__author__ = "Sabrina Bechet"
+
 import os
 from backports import configparser
 import pymysql
@@ -44,6 +46,7 @@ class Config():
         try:
             with open(self.config_file) as config_file:
                 self.config.read_file(config_file)
+                self.level = self.config['analyse']['level']
                 self.extra1 = self.config['analyse']['group_extra1']
                 self.extra2 = self.config['analyse']['group_extra2']
                 self.extra3 = self.config['analyse']['group_extra3']
