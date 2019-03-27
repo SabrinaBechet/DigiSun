@@ -43,7 +43,9 @@ class DialogLogin(QtGui.QDialog):
         width_widget = 180
         sun_logo = QtGui.QLabel()
 
-        sun_logo.setPixmap(QtGui.QPixmap("DigiSun_logo2.png"))
+        sun_logo_path = "../data/DigiSun_logo.png"
+        
+        sun_logo.setPixmap(QtGui.QPixmap(sun_logo_path))
         sun_logo.setMinimumWidth(width_widget)
         sun_logo.setMaximumWidth(width_widget)
         sun_logo.setMaximumHeight(width_widget)
