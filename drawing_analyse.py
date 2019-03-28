@@ -136,13 +136,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
        
         self.drawing_page = drawing_view_page.DrawingViewPage()
 
+        self.target_cursor_path = "cursor/Pixel_perfect/target_24.png"
+        self.expand_cursor_path = "cursor/Dario_Ferrando/expand_16.png"
+        
         self.setCentralWidget(self.drawing_page)
 
         self.operator = operator
-        #self.level_info = ['group', 'dipole', 'area']  # group always included
-        self.level_info = self.config.level #['group']  # group always included
-
-        print("check level of analyse: ", self.level_info)
+        self.level_info = self.config.level 
         
         if (self.config.archdrawing_directory and os.path.isdir(
                 self.config.archdrawing_directory)):
@@ -400,9 +400,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             else:
                 self.statusBar().comment.setText("Click on a the group" +
                                                  " position to add it")
-                cursor_img = ("cursor/Pixel_perfect/target_24.png")
-                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
-                # QtGui.QApplication.setOverrideCursor(cursor_add_group)
+                
+                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(self.target_cursor_path))
                 self.label_right.setCursor(cursor_add_group)
 
             if self.label_right.calibration_mode.value:
@@ -443,8 +442,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             else:
                 self.statusBar().comment.setText("Click on a the group" +
                                                  " position to change it")
-                cursor_img = ("cursor/Pixel_perfect/target_24.png")
-                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(cursor_img))
+                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(self.target_cursor_path))
                 # QtGui.QApplication.setOverrideCursor(cursor_add_group)
                 self.label_right.setCursor(cursor_add_group)
 
@@ -527,12 +525,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             elif (self.drawing_lst[self.current_count].calibrated == 1 and
                   self.drawing_lst[self.current_count].group_count > 0):
-                cursor_img = ("cursor/Dario_Ferrando/expand_16.png")
-                cursor_add_dipole = QtGui.QCursor(QtGui.QPixmap(cursor_img))
-                # QtGui.QApplication.setOverrideCursor(cursor_add_group)
+                cursor_add_dipole = QtGui.QCursor(QtGui.QPixmap(self.expand_cursor_path))
                 self.label_right.setCursor(cursor_add_dipole)
-                # self.label_right.setCursor(
-                #    QtCore.Qt.SizeBDiagCursor)
                 self.check_dipole(self.listWidget_groupBox.currentRow())
 
             if self.label_right.calibration_mode.value:
