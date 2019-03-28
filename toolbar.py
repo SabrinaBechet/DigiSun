@@ -33,37 +33,37 @@ class Toolbar(QtGui.QToolBar):
 
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
 
-        zoom_in_dict = {'name':'zoom in', 'path':"../icons/Smashicons/zoom-in.png",
+        zoom_in_dict = {'name':'zoom in', 'path':"icons/Smashicons/zoom-in.png",
                         'tooltip': "\'+\'", 'shortcut' : "+"}
-        zoom_out_dict = {'name':'zoom out', 'path':"../icons/Smashicons/zoom-out.png",
+        zoom_out_dict = {'name':'zoom out', 'path':"icons/Smashicons/zoom-out.png",
                         'tooltip': "\'-\'", 'shortcut' : "-"}
-        zoom_to_fit_dict = {'name':'zoom to 5', 'path':'../icons/mine/zoom_5.png',
-                            'tooltip': "\'+\'", 'shortcut' : "+"}
-        large_grid_dict = {'name':'l&arge grid', 'path':'../icons/Smashicons/internet.png',
+        zoom_to_fit_dict = {'name':'zoom to 5', 'path':'icons/mine/zoom_5.png',
+                            'tooltip': "\'+\'", 'shortcut' : "5"}
+        large_grid_dict = {'name':'l&arge grid', 'path':'icons/Smashicons/internet.png',
                            'tooltip': "\'Alt+a\'", 'shortcut' : "Alt+a"}
         
-        small_grid_dict = {'name':'&small grid', 'path':'../icons/Smashicons/internet.png',
+        small_grid_dict = {'name':'&small grid', 'path':'icons/Smashicons/internet.png',
                            'tooltip': "\'Alt+s\'", 'shortcut' : "Alt+s"}
         
-        group_visu_dict = {'name':'g&roup view', 'path':'../icons/Smashicons/share_1.png',
+        group_visu_dict = {'name':'g&roup view', 'path':'icons/Smashicons/share_1.png',
                            'tooltip': "\'Alt+r\'", 'shortcut' : "Alt+r"}
         
-        dipole_visu_dict = {'name':'&dipole view', 'path':'../icons/mine/my_dipole_icon2.png',
+        dipole_visu_dict = {'name':'&dipole view', 'path':'icons/mine/my_dipole_icon2.png',
                            'tooltip': "\'Alt+d\'", 'shortcut' : "Alt+d"}
 
-        helper_grid_dict = {'name':'h&elper grid', 'path':'../icons/Smashicons/internet.png',
+        helper_grid_dict = {'name':'h&elper grid', 'path':'icons/Smashicons/internet.png',
                            'tooltip': "\'e\''", 'shortcut' : "e"}
         
-        calibration_dict = {'name':'&calibrate', 'path':'../icons/Smashicons/target.png',
+        calibration_dict = {'name':'&calibrate', 'path':'icons/Smashicons/target.png',
                            'tooltip': "\'c\'", 'shortcut' : "c"}
         
-        add_group_dict = {'name':'add g&roup', 'path':'../icons/hospital.png',
+        add_group_dict = {'name':'add g&roup', 'path':'icons/hospital.png',
                            'tooltip': "\'r\'", 'shortcut' : "r"}
-        change_group_pos_dict = {'name':'group pos', 'path':'../icons/Smashicons/map-location.png',
+        change_group_pos_dict = {'name':'group pos', 'path':'icons/Smashicons/map-location.png',
                            'tooltip': "\'z\'", 'shortcut' : "z"}
-        add_dipole_dict = {'name':'add &dipole', 'path':'../icons/mine/my_dipole_icon2.png',
+        add_dipole_dict = {'name':'add &dipole', 'path':'icons/mine/my_dipole_icon2.png',
                            'tooltip': "\'d\'", 'shortcut' : "d"}
-        area_dict = {'name':'group &area', 'path':'../icons/Freepik/layout.png',
+        area_dict = {'name':'group &area', 'path':'icons/Freepik/layout.png',
                            'tooltip': "\'a\'", 'shortcut' : "a"}
         
         

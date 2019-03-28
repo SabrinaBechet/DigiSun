@@ -28,7 +28,7 @@ import pymysql
 
 class Config():
 
-    def __init__(self, filename="../data/digisun.ini"):
+    def __init__(self, filename="data/digisun.ini"):
         """
         By default, the default file is digisun.ini but
         it can be different if specified.
@@ -166,5 +166,5 @@ class Config():
             else:
                 return False               
         except pymysql.Error:
-            print "ERROR IN CONNECTION"
+            print("ERROR IN CONNECTION")
         return False

@@ -12,7 +12,7 @@ class SunEphemeris():
     related to the sun. It depends only on the time of the observer.
     All the angles are expressed in degree.
     """
-    def __init__(self, obs_time):
+    def __init__(self, obs_time, file_path = 'VSOP87D.ear'):
 
         if isinstance(obs_time, datetime):
             self.obs_time = observer_time.ObserverTime(obs_time)
@@ -20,7 +20,7 @@ class SunEphemeris():
             self.T_j2000 = self.obs_time.julian_century_j2000()
             self.T_j1900 = self.obs_time.julian_century_j1900()
             self.inclinaison_solar_equator = 7.25
-
+            self.VSOP87file = file_path
         else:
             print("wrong time format! it should be in datetime format")
 
@@ -180,10 +180,12 @@ class SunEphemeris():
 
     def read_VSOP87(self):
 
-        current_directory = os.path.dirname(__file__)
-        filename = 'VSOP87D.ear'
-        file_path= os.path.join(current_directory, filename)
-        file = open(file_path, 'r')
+        #current_directory = os.path.dirname(__file__)
+        #filename = 'VSOP87D.ear'
+        #file_path= os.path.join(current_directory, filename)
+
+        print("file path: ", self.VSOP87file)
+        file = open(self.VSOP87file, 'r')
         lines = file.readlines()
 
         coeff_a = []
