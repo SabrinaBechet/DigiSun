@@ -324,7 +324,7 @@ class Group(QtCore.QObject):
         """
         TO DO: here check that is the value is either L, T or E
         """
-        print("here we are changing the value of the largest spot to ", value)
+        #print("here we are changing the value of the largest spot to ", value)
         self._largest_spot = value
         self.changed = True
         self.value_changed.emit()
@@ -423,7 +423,7 @@ class Group(QtCore.QObject):
 
     def set_surface(self, pixel_nb, proj_area, deproj_area):
 
-        print("here we are changing the value of the surface")
+        #print("here we are changing the value of the surface")
         self._raw_surface_px = pixel_nb
         self._surface = round(deproj_area, 2)
         self._raw_surface_msd = round(proj_area, 2)

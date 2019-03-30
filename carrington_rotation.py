@@ -24,7 +24,7 @@ from datetime import timedelta
 import sun_ephemeris
 
 
-def carrington_rotation(drawing_time):
+def carrington_rotation(drawing_time, file_path = 'VSOP87D.ear'):
     """
     A rotation starts when the heliographic prime meridian (L0)
     crosses the subterrestrial point of the solar disc.
@@ -34,12 +34,13 @@ def carrington_rotation(drawing_time):
     (ref: Heliospheric Coordinate systems, Franz & Harper 2002)
     """
 
-    sun = sun_ephemeris.SunEphemeris(drawing_time)
+    sun = sun_ephemeris.SunEphemeris(drawing_time, file_path)
 
     day_to_substract = (360 - sun.angle_L0())/13.19
     date_close_zero_meridian = drawing_time - timedelta(days=day_to_substract)
 
-    sun_zero_meridian = sun_ephemeris.SunEphemeris(date_close_zero_meridian)
+    sun_zero_meridian = sun_ephemeris.SunEphemeris(date_close_zero_meridian,
+                                                   file_path)
     angle_date_close_zero_meridian = sun_zero_meridian.angle_L0()
 
     angle_date_close_zero_meridian_tmp = angle_date_close_zero_meridian
@@ -58,7 +59,8 @@ def carrington_rotation(drawing_time):
         date_close_zero_meridian_tmp = (date_close_zero_meridian_tmp -
                                         timedelta(days=day_to_substract_tmp))
         sun_zero_meridian_tmp = sun_ephemeris.SunEphemeris(
-            date_close_zero_meridian_tmp)
+            date_close_zero_meridian_tmp,
+            file_path)
         angle_date_close_zero_meridian_tmp = sun_zero_meridian_tmp.angle_L0()
 
     # carrington_rotation_number = int((sun.julian_day -

@@ -23,7 +23,8 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Sabrina Bechet"
 
 import os
-from backports import configparser
+#from backports
+import configparser
 import pymysql
 
 class Config():

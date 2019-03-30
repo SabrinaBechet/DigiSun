@@ -223,14 +223,22 @@ class GroupBox(QtGui.QWidget):
                                 'Dao', 'Dai', 'Dac',
                                 'Dho', 'Dhi', 'Dhc',
                                 'Dko', 'Dki', 'Dkc']
-        zurich_McIntosh['E'] = ['Ero', 'Eri',
-                                'Eso', 'Esi', 'Esc',
-                                'Eao', 'Eai', 'Eac',
-                                'Eho', 'Ehi', 'Ehc',
-                                'Eko', 'Eki', 'Ekc']
-        zurich_McIntosh['F'] = ['Fhi', 'Fhc', 'Fki', 'Fkc']
-        zurich_McIntosh['G'] = ['Eso', 'Eao', 'Eho', 'Eko',
-                                'Fho', 'Fko']
+        zurich_McIntosh['E'] = ['Esi', 'Esc',
+                                'Eai', 'Eac',
+                                'Ehi', 'Ehc',
+                                'Eki', 'Ekc']
+        zurich_McIntosh['F'] = ['Fhi', 'Fhc',
+                                'Fki', 'Fkc']
+        zurich_McIntosh['G'] = ['Cho', 'Chi',
+                                'Cko', 'Cki',
+                                'Dho', 'Dhi',
+                                'Dko', 'Dki',
+                                'Eso', 'Esi',
+                                'Eko', 'Eki',
+                                'Eho', 'Ehi',
+                                'Eao', 'Eai',
+                                'Fhi', 'Fhc',
+                                'Fki', 'Fkc']
         zurich_McIntosh['H'] = ['Hkx', 'Hhx']
         zurich_McIntosh['J'] = ['Hsx', 'Hax']
 

@@ -21,6 +21,8 @@ class SunEphemeris():
             self.T_j1900 = self.obs_time.julian_century_j1900()
             self.inclinaison_solar_equator = 7.25
             self.VSOP87file = file_path
+
+            #print("****", self.VSOP87file)
         else:
             print("wrong time format! it should be in datetime format")
 
@@ -184,7 +186,7 @@ class SunEphemeris():
         #filename = 'VSOP87D.ear'
         #file_path= os.path.join(current_directory, filename)
 
-        print("file path: ", self.VSOP87file)
+        #print("file path: ", self.VSOP87file)
         file = open(self.VSOP87file, 'r')
         lines = file.readlines()
 

@@ -385,55 +385,62 @@ class QLabelDrawing(QtGui.QLabel):
             group_pen.setWidth(self.pen_width )
             group_pen.setStyle(QtCore.Qt.DotLine)
 
-            for i in range(self.current_drawing.group_count):
-                if (self.current_drawing.group_lst[i].longitude and
-                        self.current_drawing.group_lst[i].latitude):
-                    radius = self.drawing_height / 50.
-                    painter.setPen(pen_border)
-
-                    if self.group_visu_index == i:
-                        painter.setPen(pen_selected)
+            try : 
+                for i in range(self.current_drawing.group_count):
+                    if (self.current_drawing.group_lst[i].longitude and
+                            self.current_drawing.group_lst[i].latitude):
                         radius = self.drawing_height / 50.
-                        #pen_selected.setColor(QtGui.QColor(77, 185, 88))
-                        #group_pen.setColor(QtGui.QColor(77, 185, 88))
-                        pen_selected.setColor(QtGui.QColor(0, 179, 12))
-                        group_pen.setColor(QtGui.QColor(0, 179, 12))
-                    else:
-                        group_pen.setColor(QtCore.Qt.blue)
-                        pen_selected.setColor(QtGui.QColor("transparent"))
+                        painter.setPen(pen_border)
 
-                    # here we could directly take x, y from the database
-                    # posX = self.current_drawing.group_lst[i].posX
-                    # posY = self.current_drawing.group_lst[i].posY
-                    # but...
-                    # we calculate the x, y and uses it as a visual check that
-                    # the calcualtion is correct
-                    x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
-                        self.current_drawing.calibrated_center.x,
-                        self.current_drawing.calibrated_center.y,
-                        self.current_drawing.calibrated_north.x,
-                        self.current_drawing.calibrated_north.y,
-                        self.current_drawing.group_lst[i].longitude,
-                        self.current_drawing.group_lst[i].latitude,
-                        angle_P_drawing,
-                        self.current_drawing.angle_B,
-                        self.current_drawing.angle_L,
-                        self.drawing_height)
+                        if self.group_visu_index == i:
+                            painter.setPen(pen_selected)
+                            radius = self.drawing_height / 50.
+                            #pen_selected.setColor(QtGui.QColor(77, 185, 88))
+                            #group_pen.setColor(QtGui.QColor(77, 185, 88))
+                            pen_selected.setColor(QtGui.QColor(0, 179, 12))
+                            group_pen.setColor(QtGui.QColor(0, 179, 12))
+                        else:
+                            group_pen.setColor(QtCore.Qt.blue)
+                            pen_selected.setColor(QtGui.QColor("transparent"))
 
-                    if self.surface_mode.value:
-                        painter.setPen(pen_selected)
-                        x_min = int(x - self.frame_size/2)
-                        y_min = int(y - self.frame_size/2)
-                        painter.drawRect(
-                            x_min, y_min, self.frame_size, self.frame_size)
-                    else:
-                        painter.setPen(group_pen)
-                        painter.drawLine(x, y - 10, x, y + 10)
-                        painter.drawLine(x-10, y, x+10, y)
+                        # here we could directly take x, y from the database
+                        # posX = self.current_drawing.group_lst[i].posX
+                        # posY = self.current_drawing.group_lst[i].posY
+                        # but...
+                        # we calculate the x, y and uses it as a visual check that
+                        # the calcualtion is correct
+                        x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
+                            self.current_drawing.calibrated_center.x,
+                            self.current_drawing.calibrated_center.y,
+                            self.current_drawing.calibrated_north.x,
+                            self.current_drawing.calibrated_north.y,
+                            self.current_drawing.group_lst[i].longitude,
+                            self.current_drawing.group_lst[i].latitude,
+                            angle_P_drawing,
+                            self.current_drawing.angle_B,
+                            self.current_drawing.angle_L,
+                            self.drawing_height)
 
-                        painter.setPen(pen_selected)
-                        painter.drawEllipse(
-                            QtCore.QPointF(x, y), radius, radius)
+                        if self.surface_mode.value:
+                            painter.setPen(pen_selected)
+                            x_min = int(x - self.frame_size/2)
+                            y_min = int(y - self.frame_size/2)
+                            painter.drawRect(
+                                x_min, y_min, self.frame_size, self.frame_size)
+                        else:
+                            painter.setPen(group_pen)
+                            painter.drawLine(x, y - 10, x, y + 10)
+                            painter.drawLine(x-10, y, x+10, y)
+
+                            painter.setPen(pen_selected)
+                            painter.drawEllipse(
+                                QtCore.QPointF(x, y), radius, radius)
+            except IndexError:
+                QtGui.QMessageBox\
+                     .warning(self,
+                              "Index error",
+                              "<p> Your database seems corrupted", + 
+                              "<p> Did not find the corresponding group in the database")
 
         if (self.dipole_visu.value and self.current_drawing.calibrated):
             pen_point = QtGui.QPen(QtCore.Qt.blue)
@@ -523,8 +530,8 @@ class QLabelDrawing(QtGui.QLabel):
                 self.dipole_points = []
                 self.dipole_angles = []
             else:
-                print("problem with the number of points")
-                print(len(self.dipole_points))
+                #print("problem with the number of points")
+                #print(len(self.dipole_points))
                 self.dipole_points = []
                 self.dipole_angles = []
 
@@ -881,8 +888,8 @@ class QLabelDrawing(QtGui.QLabel):
                 self.add_dipole_mode.value and
                 self.current_drawing.calibrated):
 
-            print("click on the drawing to add a dipole")
-            print(len(self.dipole_points), len(self.dipole_angles))
+            #print("click on the drawing to add a dipole")
+            #print(len(self.dipole_points), len(self.dipole_angles))
 
             if (self.current_drawing.group_lst[self.group_visu_index]
                     .zurich.upper() in ["B", "C", "D", "E", "F", "G", "X"]):

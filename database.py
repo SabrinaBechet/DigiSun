@@ -35,7 +35,7 @@ class database():
         (config_host, config_user,
          config_passwd, config_db) = self.config.set_database()
 
-        print("database: ", config_db)
+        #print("database: ", config_db)
         if config_host:
             self.db = pymysql.connect(host=config_host,
                                       user=config_user,
@@ -105,7 +105,7 @@ class database():
 
         self.db.commit()
         result = self.cursor.fetchall()
-        print(result)
+        # print(result)
         return result
 
     def get_drawing_information(self, table_name, drawing_type):
