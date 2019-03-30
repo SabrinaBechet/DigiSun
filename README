@@ -1,0 +1,57 @@
+
+-------------------------------------------------------------------------------
+DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)
+
+This file is part of DigiSun.
+
+DigiSun is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+DigiSun is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
+
+
+-------------------------------------------------------------------------------
+
+Contributors: USET-SILSO team (ROB), Mael Panouillot.
+
+Icons contributions:
+
+- Icons designed by Smashicons from Flaticon:
+   - toolbar zoom-in
+   - toolbar zoom-out
+   - toolbar large grid
+   - toolbar small grid
+   - toolbar group visu
+   - toolbar helper grid
+   - toolbar calibration
+   - toolbar change group position
+   - surface module zoom-in
+   - surface module zoom-out
+
+- Icons designed by Freepik from Flaticon:
+   - toolbar (and group box) area
+   - surface module expand frame
+   - surface module reduce frame
+   - surface module cut polygon
+   - surface module draw black pixel
+   - surface module draw white pixel
+   - surface module white bucket
+   - surface module black bucket
+   
+
+- Icons designed by Pixel_perfect from Flaticon:
+   - surface module reset
+
+- Icons designed by Darrio_Ferrando from Flaticon:
+   - surface module draw polygon
+   - 
+   
