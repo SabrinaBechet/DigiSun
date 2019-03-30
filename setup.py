@@ -8,11 +8,7 @@ from cx_Freeze import setup, Executable
 # console application).
 base = None
 
-if sys.platform == "win32":
-    base = "Win32GUI"
 
-if sys.platform == 'win64':
-    base = "Win64GUI"
 
 """options = {
     'build_exe': {
@@ -25,7 +21,7 @@ if sys.platform == 'win64':
 """
 
 build_exe_options = {"packages": ["os",
-                                  "numpy"],
+                                  "numpy", "PIL"],
                      "includes":["numpy"],
                      "include_files":["VSOP87D.ear",
                                      "cursor",

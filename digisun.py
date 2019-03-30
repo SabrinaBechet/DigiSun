@@ -29,8 +29,8 @@ from PyQt4 import QtGui, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "digisun@oma.be"
-__date__ = "February 2019"
-__version__ = "0.2.2"
+__date__ = "Mars 2019"
+__version__ = "1.0.0"
 
 sys.stderr = open('data/err.txt', 'w')
 sys.stdout = open("data/file.txt", "w")
@@ -164,10 +164,12 @@ class mainWindow(QtGui.QMainWindow):
                 self,
                 "DigiSun",
                 "<h2 >About DigiSun </h2>"+
-                " <p> Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)" +
+                " <p> Copyright (c) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)." +
                 " <p> This is a software to transform sunspot drawings into exploitable data. " + 
                 " It allows to scan drawings, extract its information and store it in a database." +
-                "<p> Contact: digisun@oma.be "))
+                "<p> Version: 1.0.0. (30/03/2019)"+
+                "<p> Contact: digisun@oma.be " +
+                "<p> Contributors:  see README."))
 
         menu_mode.addAction(action_goTo_daily_scan)
         menu_mode.addAction(action_goTo_analyse)

@@ -1159,8 +1159,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_lst[self.current_count]\
             .group_lst[group_index].largest_spot = largest_spot
 
-        self.drawing_lst[self.current_count]\
-            .group_lst[group_index].update_g_spot()
+        if self.drawing_lst[self.current_count]\
+               .group_lst[group_index].McIntosh:
+            
+            self.drawing_lst[self.current_count]\
+                .group_lst[group_index].update_g_spot()
 
         self.group_toolbox.update_largest_spot_buttons(
             largest_spot,
