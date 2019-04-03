@@ -249,10 +249,10 @@ class DailyScan(QtGui.QWidget):
                                           self.drawing_time,
                                           self.drawing_time)
             tuple_groups = db\
-                    .get_all_in_time_interval("groups",
+                    .get_all_in_time_interval("sGroups",
                                               self.drawing_time,
                                               self.drawing_time)
-            lst_groups_field = db.get_all_fields("groups")
+            lst_groups_field = db.get_all_fields("sGroups")
             
             lst_groups = [el for el in tuple_groups]
             drawing_type = tuple_drawings[0][2]
