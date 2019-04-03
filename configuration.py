@@ -134,8 +134,9 @@ class Config():
                 self.user = self.config['database']['user']
                 self.passwd = self.config['database']['passwd']
                 self.db = self.config['database']['name']
+                self.port = int(self.config['database']['port'])
 
-                return self.host, self.user, self.passwd, self.db
+                return self.host, self.port, self.user, self.passwd, self.db
         except IOError:
             print('IOError - config file not found !!')
 
@@ -156,7 +157,8 @@ class Config():
             db = pymysql.connect(host=self.host,
                                  user=self.user,
                                  passwd=self.passwd,
-                                 db=self.db)
+                                 db=self.db,
+                                 port=self.port)
             
             cursor = db.cursor()        
             cursor.execute("SELECT VERSION()")

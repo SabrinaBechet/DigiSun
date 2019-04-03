@@ -68,7 +68,7 @@ class DialogLogin(QtGui.QDialog):
         config_database = QtGui.QLabel("Database name: ")
         self.config_database_name = QtGui.QLineEdit(self)
         self.config_database_name.setDisabled(True)
-        self.config_database_name.setText(config.db + '@ ' + config.host)
+        self.config_database_name.setText(config.db + '@ ' + config.host + ':' + str(config.port))
         self.config_database_name.setStyleSheet(
             "background-color: rgb(255, 165, 84); color:black")
         
