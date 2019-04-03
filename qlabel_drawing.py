@@ -378,12 +378,12 @@ class QLabelDrawing(QtGui.QLabel):
             pen_border = QtGui.QPen(QtCore.Qt.blue)
             pen_border.setWidth(self.pen_width)
             pen_border.setStyle(QtCore.Qt.DotLine)
-            pen_selected = QtGui.QPen(QtCore.Qt.DotLine)
+            pen_selected = QtGui.QPen(QtCore.Qt.SolidLine)
             pen_selected.setWidth(self.pen_width * 1.5)
             pen_selected.setColor(QtGui.QColor(77, 185, 88))
             group_pen = QtGui.QPen(QtCore.Qt.blue)
             group_pen.setWidth(self.pen_width )
-            group_pen.setStyle(QtCore.Qt.DotLine)
+            group_pen.setStyle(QtCore.Qt.SolidLine)
 
             try : 
                 for i in range(self.current_drawing.group_count):
