@@ -32,12 +32,13 @@ class database():
 
         self.config = configuration.Config()
         
-        (config_host, config_user,
+        (config_host, config_port, config_user,
          config_passwd, config_db) = self.config.set_database()
 
         #print("database: ", config_db)
         if config_host:
             self.db = pymysql.connect(host=config_host,
+                                      port=config_port,
                                       user=config_user,
                                       passwd=config_passwd,
                                       db=config_db)
