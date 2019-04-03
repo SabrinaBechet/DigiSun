@@ -32,8 +32,8 @@ __email__ = "digisun@oma.be"
 __date__ = "Mars 2019"
 __version__ = "1.0.0"
 
-sys.stderr = open('data/err.txt', 'w')
-sys.stdout = open("data/file.txt", "w")
+#sys.stderr = open('data/err.txt', 'w')
+#sys.stdout = open("data/file.txt", "w")
 
 class BulkScanPage(QtGui.QWidget):
     """

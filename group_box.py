@@ -254,8 +254,9 @@ class GroupBox(QtGui.QWidget):
         self.grid_layout.addWidget(self.McIntosh_combo,
                                    grid_position[0],
                                    grid_position[1])
-        index = self.McIntosh_combo.findText(mcIntosh_type)
-        self.McIntosh_combo.setCurrentIndex(index)
+        if mcIntosh_type:
+            index = self.McIntosh_combo.findText(mcIntosh_type)
+            self.McIntosh_combo.setCurrentIndex(index)
 
 
     def set_label_and_linedit(self, label, label_value,

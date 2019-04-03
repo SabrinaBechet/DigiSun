@@ -383,10 +383,10 @@ class BulkAnalysePage(BulkViewPage):
                                           self.datetime_drawing_min_day,
                                           self.datetime_drawing_max_day)
             tuple_groups = db\
-                .get_all_in_time_interval("groups",
+                .get_all_in_time_interval("sGroups",
                                           self.datetime_drawing_min_day,
                                           self.datetime_drawing_max_day)
-            lst_groups_field = db.get_all_fields("groups")
+            lst_groups_field = db.get_all_fields("sGroups")
             
         except AttributeError:
             QtGui.QMessageBox\
