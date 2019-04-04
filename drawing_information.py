@@ -135,7 +135,7 @@ class DrawingInformationWidget(QtGui.QWidget):
         form_layout.addRow('Last Operator:', self.drawing_operator)
         form_layout.addRow('Last Update:', self.drawing_last_update)
         form_layout.addRow('Calibrated:', self.calibrated)
-        form_layout.addRow('Group ready:', self.analyzed)
+        form_layout.addRow('All group marked:', self.analyzed)
 
         self.setLayout(form_layout)
 

@@ -1360,48 +1360,61 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         Note: only the group number can be modified, 
         the digisun number should be disabled!
         """
-        
-        self.drawing_lst[self.current_count].group_lst[n].group_number = int(str(
-            self.group_toolbox.group_number_linedit.text()))
-        
-        self.groupBoxLineList[n].group_number_linedit.setStyleSheet(
-                "background-color: white")
 
+        old_group_number = self.drawing_lst[self.current_count]\
+                               .group_lst[self.listWidget_groupBox
+                                          .currentRow()]\
+                               .group_number
+        if is_toolbox:
+            new_group_number = self.group_toolbox.group_number_linedit.text()
+        else:
+            new_group_number = self.groupBoxLineList[n]\
+                                     .group_number_linedit.text()
+
+        if new_group_number!=old_group_number:
+            self.drawing_lst[self.current_count]\
+                .group_lst[self.listWidget_groupBox
+                           .currentRow()]\
+                .group_number = str(new_group_number)
+        
+            
         self.groupBoxLineList[n].group_number_linedit.setText(
-            str(self.drawing_lst[self.current_count].group_lst[n].group_number))
-        #self.group_toolbox.group_number_linedit.setText(
-        #    self.drawing_lst[self.current_count].group_lst[n].group_number)
+            str(self.drawing_lst[self.current_count]\
+                .group_lst[n].group_number))
+        self.group_toolbox.group_number_linedit.setText(
+            self.drawing_lst[self.current_count]\
+            .group_lst[n].group_number)
 
-        
-        self.group_toolbox.group_number_linedit.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
-    
+            
     def modify_drawing_group_extra1(self, n):
         """
         Change the value of the group number by directing writing in the linedit.
         """
         self.drawing_lst[self.current_count]\
-            .group_lst[n].group_extra1 = str(self.group_toolbox.group_extra1_linedit.text())
-        self.group_toolbox.group_extra1_linedit.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
+            .group_lst[n].group_extra1 = str(
+                self.group_toolbox.group_extra1_linedit.text())
+        #self.group_toolbox.group_extra1_linedit.setStyleSheet(
+        #        "background-color: rgb(255, 165, 84)")
 
     def modify_drawing_group_extra2(self, n):
         """
         Change the value of the group number by directing writing in the linedit.
         """
         self.drawing_lst[self.current_count]\
-            .group_lst[n].group_extra2 = str(self.group_toolbox.group_extra2_linedit.text())
-        self.group_toolbox.group_extra2_linedit.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
+            .group_lst[n].group_extra2 = str(
+                self.group_toolbox.group_extra2_linedit.text())
+        #self.group_toolbox.group_extra2_linedit.setStyleSheet(
+        #        "background-color: rgb(255, 165, 84)")
 
     def modify_drawing_group_extra3(self, n):
         """
         Change the value of the group number by directing writing in the linedit.
         """
         self.drawing_lst[self.current_count]\
-            .group_lst[n].group_extra3 = str(self.group_toolbox.group_extra1_linedit.text())
-        self.group_toolbox.group_extra3_linedit.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
+            .group_lst[n].group_extra3 = str(
+                self.group_toolbox.group_extra1_linedit.text())
+        #self.group_toolbox.group_extra3_linedit.setStyleSheet(
+        #        "background-color: rgb(255, 165, 84)")
 
     
         
