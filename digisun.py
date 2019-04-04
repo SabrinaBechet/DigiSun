@@ -144,8 +144,12 @@ class mainWindow(QtGui.QMainWindow):
         self.setMenuBar(menuBar)
 
         menu_mode = menuBar.addMenu('Mode')
+        menu_parameters = menuBar.addMenu('Parameters')
         menu_help = menuBar.addMenu('Help')
 
+        action_change_directory = QtGui.QAction('Drawings directory', self)
+        #action_change_directory.triggered.connect(change_directory)
+        
         action_goTo_daily_scan= QtGui.QAction('Daily scan', self)
         action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
         action_goTo_analyse.setShortcuts(QtGui.QKeySequence("b"))
@@ -171,13 +175,15 @@ class mainWindow(QtGui.QMainWindow):
                 "<p> Contact: digisun@oma.be " +
                 "<p> Contributors:  see README."))
 
+        menu_parameters.addAction(action_change_directory)
+        
         menu_mode.addAction(action_goTo_daily_scan)
         menu_mode.addAction(action_goTo_analyse)
         menu_mode.addAction(action_exit)
+
         menu_help.addAction(action_about)
 
         menuBar.show()
-
         
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
