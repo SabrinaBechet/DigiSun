@@ -38,7 +38,7 @@ class Toolbar(QtGui.QToolBar):
         zoom_out_dict = {'name':'zoom out', 'path':"icons/Smashicons/zoom-out.png",
                         'tooltip': "\'-\'", 'shortcut' : "-"}
         zoom_to_fit_dict = {'name':'zoom to 5', 'path':'icons/mine/zoom_5.png',
-                            'tooltip': "\'+\'", 'shortcut' : "5"}
+                            'tooltip': "\'Alt+f\'", 'shortcut' : "Alt+f"}
         large_grid_dict = {'name':'l&arge grid', 'path':'icons/Smashicons/internet.png',
                            'tooltip': "\'Alt+a\'", 'shortcut' : "Alt+a"}
         
@@ -93,7 +93,7 @@ class Toolbar(QtGui.QToolBar):
         self.quick_zoom_but = QtGui.QToolButton(self)
         if sys.platform=='darwin':
             self.quick_zoom_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
-            self.quick_zoom_but.setToolTip("zoom-to-fit: \'5\'")
+            self.quick_zoom_but.setToolTip("zoom-to-fit: \'Alt+f\'")
         else:
             self.quick_zoom_but.setToolTip(zoom_to_fit_dict['tooltip'])
             self.quick_zoom_but.setToolButtonStyle(
