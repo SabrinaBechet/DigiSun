@@ -790,23 +790,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
         self.groupBoxLineList = []
 
-        show_group_number = False
-        
-        for i in range(group_count):
-            if self.drawing_lst[self.current_count].group_lst[i].group_number:
-                show_group_number = True
-
         for i in range(group_count):
             grid_position = [0, 0]
             groupBoxLine = group_box.GroupBox()
 
-            if show_group_number:
+            if self.config.group_number:
                 group_id = self.drawing_lst[self.current_count].group_lst[i].group_number
             else:
                 group_id = self.drawing_lst[self.current_count].group_lst[i].number
 
             groupBoxLine.set_title(str(group_id),
                                    grid_position)
+            if self.config.group_number:
+                groupBoxLine.group_number_linedit.setEnabled(True)
             
             #if show_group_number:
             #    groupBoxLine.group_number_linedit.setEnabled(True)
@@ -994,22 +990,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.widget_left_down_bis_layout\
                              .addWidget(self.group_toolbox)
 
-            show_group_number = False
+            
     
-            if self.drawing_lst[self.current_count].group_lst[n].group_number:
-                show_group_number = True
-
             # don't forget : [y, x]
             grid_position = [0, 0]
 
-            if show_group_number:
+            if self.config.group_number:
                 group_id = self.drawing_lst[self.current_count].group_lst[n].group_number
             else:
                 group_id = self.drawing_lst[self.current_count].group_lst[n].number
 
             self.group_toolbox.set_title(str(group_id),
                                         grid_position)
-            if show_group_number:
+            if self.config.group_number:
                 self.group_toolbox.group_number_linedit.setEnabled(True)
 
             grid_position[1] += 2
