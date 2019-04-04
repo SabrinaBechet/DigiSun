@@ -121,8 +121,9 @@ class QLabelDrawing(QtGui.QLabel):
             try:
                 if im_arr.shape[2] == 3:
                     im_arr = rgb2gray(im_arr)
-            except IndexError:
+            except IndexError:	
                 print("the original file is in L format..")
+		pass
 
             return im_arr
 
@@ -404,12 +405,12 @@ class QLabelDrawing(QtGui.QLabel):
                             pen_selected.setColor(QtGui.QColor("transparent"))
 
                         # here we could directly take x, y from the database
-                        # posX = self.current_drawing.group_lst[i].posX
-                        # posY = self.current_drawing.group_lst[i].posY
+                        x = self.current_drawing.group_lst[i].posX
+                        y = self.current_drawing.group_lst[i].posY
                         # but...
                         # we calculate the x, y and uses it as a visual check that
                         # the calcualtion is correct
-                        x, y, z = coordinates.cartesian_from_HGC_upper_left_origin(
+                        posx, posy, posz = coordinates.cartesian_from_HGC_upper_left_origin(
                             self.current_drawing.calibrated_center.x,
                             self.current_drawing.calibrated_center.y,
                             self.current_drawing.calibrated_north.x,
@@ -842,7 +843,8 @@ class QLabelDrawing(QtGui.QLabel):
                                            self.calib_pt1_y,
                                            calib_pt2_x,
                                            calib_pt2_y)
-
+	
+	    self.current_drawing.check_raw_positions(self.drawing_height)	
             self.zoom_in(1/5.)
             self.large_grid_overlay.value = True
             self.group_visu.value = True
