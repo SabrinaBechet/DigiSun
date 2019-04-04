@@ -789,16 +789,29 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             "QListView::item:selected {background : rgb(77, 185, 88);}")
 
         self.groupBoxLineList = []
-        for i in range(group_count):
 
+        show_group_number = False
+        
+        for i in range(group_count):
+            if self.drawing_lst[self.current_count].group_lst[i].group_number:
+                show_group_number = True
+
+        for i in range(group_count):
             grid_position = [0, 0]
             groupBoxLine = group_box.GroupBox()
-            groupBoxLine.set_title(
-                "Group " +
-                str(self.drawing_lst[self.current_count].group_lst[i].number),
-                grid_position)
 
-            grid_position[1] += 1
+            if show_group_number:
+                group_id = self.drawing_lst[self.current_count].group_lst[i].group_number
+            else:
+                group_id = self.drawing_lst[self.current_count].group_lst[i].number
+
+            groupBoxLine.set_title(str(group_id),
+                                   grid_position)
+            
+            #if show_group_number:
+            #    groupBoxLine.group_number_linedit.setEnabled(True)
+
+            grid_position[1] += 2
             groupBoxLine.set_spot_count(
                 self.drawing_lst[self.current_count].group_lst[i].spots,
                 grid_position)
@@ -834,6 +847,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
                 groupBoxLine.spot_number_spinbox.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
+
+            groupBoxLine.group_number_linedit.textChanged.connect(
+                lambda : self.modify_drawing_group_number(
+                    self.listWidget_groupBox.currentRow(), 
+                    False))    
 
             groupBoxLine.spot_number_spinbox.valueChanged.connect(
                 lambda: self.modify_drawing_spot_number(
@@ -976,14 +994,25 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.widget_left_down_bis_layout\
                              .addWidget(self.group_toolbox)
 
+            show_group_number = False
+    
+            if self.drawing_lst[self.current_count].group_lst[n].group_number:
+                show_group_number = True
+
             # don't forget : [y, x]
             grid_position = [0, 0]
-            self.group_toolbox.set_title(
-                "Group " +
-                str(self.drawing_lst[self.current_count].group_lst[n].number),
-                grid_position)
 
-            grid_position[1] += 1
+            if show_group_number:
+                group_id = self.drawing_lst[self.current_count].group_lst[n].group_number
+            else:
+                group_id = self.drawing_lst[self.current_count].group_lst[n].number
+
+            self.group_toolbox.set_title(str(group_id),
+                                        grid_position)
+            if show_group_number:
+                self.group_toolbox.group_number_linedit.setEnabled(True)
+
+            grid_position[1] += 2
             self.group_toolbox.set_spot_count(
                 self.drawing_lst[self.current_count].group_lst[n].spots,
                 grid_position)
@@ -1003,13 +1032,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.group_toolbox.set_delete_group_button(grid_position)
 
             grid_position = [1, 0]
-
-            self.group_toolbox.set_group_nb(
+            """self.group_toolbox.set_group_number(
                 self.drawing_lst[self.current_count]\
                 .group_lst[n].group_number,
                 grid_position)
-
+            
             grid_position[0] += 1
+            """
             self.group_toolbox.set_latitude(
                 self.drawing_lst[self.current_count]
                 .group_lst[n].latitude * 180/math.pi,
@@ -1091,9 +1120,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             self.group_toolbox.delete_button.clicked.connect(self.delete_group)
 
-            self.group_toolbox.group_nb_linedit.textChanged.connect(
-                lambda : self.modify_drawing_group_number(self.listWidget_groupBox.currentRow()))        
-
+            self.group_toolbox.group_number_linedit.textChanged.connect(
+                lambda : self.modify_drawing_group_number(
+                    self.listWidget_groupBox.currentRow(), 
+                    True))        
+            
             self.group_toolbox.latitude_linedit.textChanged.connect(
                 lambda: self.update_HGC_position('latitude', 0.0))
             self.group_toolbox.longitude_linedit.textChanged.connect(
@@ -1330,15 +1361,28 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         
         self.label_right.set_img()
 
-    def modify_drawing_group_number(self, n):
+    def modify_drawing_group_number(self, n, is_toolbox):
         """
         Change the value of the group number by directing writing in the linedit.
+        Note: only the group number can be modified, 
+        the digisun number should be disabled!
         """
-        self.drawing_lst[self.current_count]\
-            .group_lst[n].group_number = str(self.group_toolbox.group_nb_linedit.text())
-        self.group_toolbox.group_nb_linedit.setStyleSheet(
-                "background-color: rgb(255, 165, 84)")
+        
+        self.drawing_lst[self.current_count].group_lst[n].group_number = int(str(
+            self.group_toolbox.group_number_linedit.text()))
+        
+        self.groupBoxLineList[n].group_number_linedit.setStyleSheet(
+                "background-color: white")
 
+        self.groupBoxLineList[n].group_number_linedit.setText(
+            str(self.drawing_lst[self.current_count].group_lst[n].group_number))
+        #self.group_toolbox.group_number_linedit.setText(
+        #    self.drawing_lst[self.current_count].group_lst[n].group_number)
+
+        
+        self.group_toolbox.group_number_linedit.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+    
     def modify_drawing_group_extra1(self, n):
         """
         Change the value of the group number by directing writing in the linedit.

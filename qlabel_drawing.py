@@ -440,7 +440,7 @@ class QLabelDrawing(QtGui.QLabel):
                 QtGui.QMessageBox\
                      .warning(self,
                               "Index error",
-                              "<p> Your database seems corrupted", + 
+                              "<p> Your database seems corrupted" + 
                               "<p> Did not find the corresponding group in the database")
 
         if (self.dipole_visu.value and self.current_drawing.calibrated):
