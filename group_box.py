@@ -84,14 +84,26 @@ class GroupBox(QtGui.QWidget):
         self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
         self.widget_maximum_width = 60
 
-    def set_title(self, title, grid_position):
+    def set_title(self, group_id, grid_position):
         """ title on the top of the group box"""
-        title_label = QtGui.QLabel(title)
+        #title_label = QtGui.QLabel(title)
+        title_label = QtGui.QLabel("Group ")
+        #title_label.setMaximumWidth()
+        self.group_number_linedit = QtGui.QLineEdit(self)
+        self.group_number_linedit.setMaximumWidth(self.widget_maximum_width/2)
+        self.group_number_linedit.setDisabled(True)
         title_label.setStyleSheet("background-color: transparent")
+
+        self.group_number_linedit.setText(group_id)
+        self.group_number_linedit.setStyleSheet(
+            "background-color: white; color: black")
         self.grid_layout.addWidget(title_label,
                                    grid_position[0],
                                    grid_position[1])
-
+        self.grid_layout.addWidget(self.group_number_linedit,
+                                   grid_position[0],
+                                   grid_position[1] + 1)
+        
     def set_area_button(self, grid_position):
         """ button orange if surface not complete, transparent otherwhise"""
         self.area_button = QLabelClickable()
@@ -296,17 +308,17 @@ class GroupBox(QtGui.QWidget):
                                    '{0:.2f}'.format(latitude),
                                    grid_position)
 
-    def set_group_nb(self, group_number, grid_position):
-        self.group_nb_label = QtGui.QLabel()
-        self.group_nb_linedit = QtGui.QLineEdit(self)
+    """def set_group_number(self, group_number, grid_position):
+        self.group_number_label = QtGui.QLabel()
+        self.group_number_linedit = QtGui.QLineEdit(self)
 
 
-        self.set_label_and_linedit(self.group_nb_label,
+        self.set_label_and_linedit(self.group_number_label,
                                    "Group nb",
-                                   self.group_nb_linedit,
+                                   self.group_number_linedit,
                                    str(group_number),
                                    grid_position)
-        
+    """ 
     def set_surface(self, surface, grid_position):
         self.surface_label = QtGui.QLabel()
         self.surface_linedit = QtGui.QLineEdit(self)
