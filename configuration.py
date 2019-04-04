@@ -50,7 +50,7 @@ class Config():
                 self.extra1 = self.config['analyse']['group_extra1']
                 self.extra2 = self.config['analyse']['group_extra2']
                 self.extra3 = self.config['analyse']['group_extra3']
-                
+                self.group_number = self.config['analyse']['group_number']
         except IOError:
             print('IOError - config file not found !!')        
 
