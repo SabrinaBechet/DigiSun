@@ -639,7 +639,40 @@ class Drawing(QtCore.QObject):
 
         self.calibrated_angle_scan = self.calibrated_center.angle_from_y_axis(
             self.calibrated_north)
-        self.calibrated = 1
+	
+	self.calibrated = 1
+	
+    def check_raw_positions(self, drawing_height):
+	""" Check if the raw position (posx, posy) of all the groups are filled.
+	If not, fill it with values calculated from heliographic coordinates and
+	calibrated values.
+	"""
+	
+	if self.p_oriented:
+      	    angle_P_drawing = 0.0
+        elif not self.p_oriented:
+            angle_P_drawing = self.angle_P
+	
+	for el in self._group_lst:
+   	    if el.posX==0 and el.posY==0:
+		##print("calibration done but some groups have no positions")
+	       	posX, posY, posZ = coordinates.cartesian_from_HGC_upper_left_origin(
+                	    	        	self.calibrated_center.x,
+                        		    	self.calibrated_center.y,
+                            			self.calibrated_north.x,
+                            			self.calibrated_north.y,
+                            			el.longitude,	
+                            			el.latitude,
+                            			angle_P_drawing,
+                            			self.angle_B,
+                            			self.angle_L,
+                            			drawing_height)
+
+		digisun_group_number = self._group_lst.index(el)
+	 	self.change_group_position(digisun_group_number, el.latitude, el.longitude,
+                              		   posX, posY)		
+
+	
 
     def get_group_signal(self):
         self.changed = True
