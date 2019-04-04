@@ -47,8 +47,6 @@ class ListPage(QtGui.QWidget):
         else:
             self.table.setColumnCount(4)
 
-       
-        
         if sys.platform=='darwin':
             self.setAttribute(QtCore.Qt.WA_MacNormalSize)
             
@@ -173,7 +171,7 @@ class YearListPage(ListPage):
         """
         super(YearListPage, self).__init__()
         
-        self.get_dico()
+        self.get_year_dico()
         self.table.setRowCount(len(self.dict_year))
         self.draw_table(self.dict_year)
 
@@ -183,9 +181,9 @@ class YearListPage(ListPage):
         self.layout.addWidget(self.but_select)
         self.setLayout(self.layout)
 
-    def get_dico(self):
+    def get_year_dico(self):
         
-        datetime_drawing_min = datetime(1900,1,1)
+        datetime_drawing_min = datetime(1800,1,1)
         datetime_drawing_max = datetime.now()
         db = database.database()
         tuple_drawings = db\
@@ -216,7 +214,10 @@ class YearListPage(ListPage):
 
             self.dict_year[year_index] = (year_to_print, total_count, frac_calibrated,
                                           frac_analyzed, frac_area_done)
- 
+
+            # OrderedDict remembers the order in which the elements have been inserted
+            # and we use the sorted function to insert it by order of time
+            self.dict_year = collections.OrderedDict(sorted(self.dict_year.items()))
 
 class DateSelectionPage(QtGui.QWidget):
 
@@ -354,8 +355,6 @@ class BulkAnalysePage(BulkViewPage):
         last_day_current_month = next_month - timedelta(days=next_month.day)
 
         return int(last_day_current_month.day)
-
-   
 
     def set_drawing_information(self):
         """
@@ -567,6 +566,9 @@ class BulkAnalysePage(BulkViewPage):
             self.dict_month[month_index] = (month_to_print, total_count, frac_calibrated,
                                             frac_analyzed, frac_area_done)
 
+           # OrderedDict remembers the order in which the elements have been inserted
+           # and we use the sorted function to insert it by order of time
+            self.dict_month = collections.OrderedDict(sorted(self.dict_month.items())) 
 
     def get_day_dico(self):
       
@@ -616,7 +618,6 @@ class BulkAnalysePage(BulkViewPage):
                          day_index[2]),
                 '%d %b %H:%M'))
             
-
             # trick to separte two same days: add the hour and minutes in decimal:
             dict_day_tmp[
                 day_index[0] + day_index[1]/100. + day_index[2]/10000.] = (
@@ -626,8 +627,9 @@ class BulkAnalysePage(BulkViewPage):
                     frac_analyzed,
                     frac_area_done)
             
-            #OrderedDict remembers the order in which the elements have been inserted
-            self.dict_day = collections.OrderedDict(sorted(dict_day_tmp.items()))
+        # OrderedDict remembers the order in which the elements have been inserted
+        # and we use the sorted function to insert it by order of time
+        self.dict_day = collections.OrderedDict(sorted(dict_day_tmp.items()))
             
         #print(self.dict_day)
         

@@ -180,7 +180,6 @@ class mainWindow(QtGui.QMainWindow):
 
         
 if __name__ == '__main__':
-    print("started")
     app = QtGui.QApplication(sys.argv)
     login = login.DialogLogin()
     login.show()
