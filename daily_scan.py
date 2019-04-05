@@ -25,7 +25,7 @@ import sys
 import datetime
 import database
 import drawing
-import scanner
+#import scanner
 import configuration
 from PyQt4 import QtGui, QtCore
 
