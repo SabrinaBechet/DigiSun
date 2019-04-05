@@ -843,7 +843,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
                 groupBoxLine.spot_number_spinbox.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
-
+        
             groupBoxLine.group_number_linedit.textChanged.connect(
                 lambda : self.modify_drawing_group_number(
                     self.listWidget_groupBox.currentRow(), 
@@ -1356,11 +1356,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
     def modify_drawing_group_number(self, n, is_toolbox):
         """
-        Change the value of the group number by directing writing in the linedit.
+        Change the value of the group number (can be int or char)
+        by directing writing in the linedit.
         Note: only the group number can be modified, 
         the digisun number should be disabled!
         """
-
+        
         old_group_number = self.drawing_lst[self.current_count]\
                                .group_lst[self.listWidget_groupBox
                                           .currentRow()]\
