@@ -156,6 +156,8 @@ class DailyScan(QtGui.QWidget):
         self.but_scan.setDisabled(True)
         self.but_analyse = QtGui.QPushButton('Drawing analyse', self)
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
+        self.but_add = QtGui.QPushButton('Add drawing', self)
+        
 
         form_layout.addRow(scan_settings_title)
         form_layout.addRow('Scanner found:', self.scan_name_linedit)
@@ -170,6 +172,7 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow('Quality:', self.drawing_quality)
         form_layout.addRow(self.but_scan)
         form_layout.addRow(self.but_analyse)
+        form_layout.addRow(self.but_add)
 
         widget_form = QtGui.QWidget()
         widget_form.setMaximumWidth(column_maximum_width)
@@ -228,7 +231,9 @@ class DailyScan(QtGui.QWidget):
             self.drawing_time_linedit.setStyleSheet(
                     "background-color: rgb(255,165,84)")
 
-    def set_drawing_information(self):
+    
+
+    def set_drawing_information(self, loc=0):
         """
         Method that add an entry to the database
         corresponding to the new drawing scanned
@@ -309,10 +314,32 @@ class DailyScan(QtGui.QWidget):
                 "drawing_type",
                 str(self.drawing_type.currentText()))
             new_drawing.set_drawing_type(tuple_drawing_type[0])
+    
+        
+        if loc==1:
+            new_drawing = drawing.Drawing()
+            
+            self.config.set_file_path(self.drawing_time)
+            filename = self.config.filename
+            
+            new_drawing.fill_from_daily_scan(
+                drawing_datetime=self.drawing_time,
+                observer=str(self.drawing_observer_linedit.text()).upper(),
+                operator=str(self.drawing_operator_linedit.text()).upper(),
+                drawing_type=str(self.drawing_type.currentText()),
+                drawing_quality=str(self.drawing_quality.currentText()),
+                drawing_name=filename)
+            
+            # db.replace_drawing(new_drawing)                                                                                                              
+
+            tuple_drawing_type = db.get_drawing_information(
+                "drawing_type",
+                str(self.drawing_type.currentText()))
+            new_drawing.set_drawing_type(tuple_drawing_type[0])
             
         return [new_drawing]
+        
             
-
     def check_scanned_drawing_direcotry(self):
         """
         - Check that the direcory given in the config file exist, 
@@ -357,7 +384,7 @@ class DailyScan(QtGui.QWidget):
         my_scanner.set_scanner(scanner_name[0])
         my_scanner.set_scan_area()
         
-        drawing_path = self.check_scanned_drawing_direcotry()
+        drawing_path = self.check_scanned_drawing_directory
 
         if drawing_path:
             if os.path.isfile(drawing_path):    

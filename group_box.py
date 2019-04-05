@@ -94,7 +94,9 @@ class GroupBox(QtGui.QWidget):
         self.group_number_linedit.setDisabled(True)
         title_label.setStyleSheet("background-color: transparent")
 
-        self.group_number_linedit.setText(group_id)
+        if group_id: 
+            self.group_number_linedit.setText(group_id)
+
         self.group_number_linedit.setStyleSheet(
             "background-color: white; color: black")
         self.grid_layout.addWidget(title_label,
@@ -186,6 +188,7 @@ class GroupBox(QtGui.QWidget):
         #self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
         self.spot_number_spinbox = QtGui.QSpinBox(self)#LineEdit(str(spot_count))
         self.spot_number_spinbox.setValue(spot_count)
+        self.spot_number_spinbox.setMaximum(1000)
         #self.spot_number_spinbox.setDisabled(True)
         self.spot_number_spinbox.setMaximumWidth(self.widget_maximum_width)
         self.spot_number_spinbox.setStyleSheet(

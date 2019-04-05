@@ -82,7 +82,7 @@ class Config():
         if self.filename_structure=='YYYYmmddHHMM':
             filename_strftime = '%Y%m%d%H%M'
         elif self.filename_structure=='YYYYmmdd':
-            filename_strftime = '%Y%m%d'
+            filename_strftime = '%Y%m%d'            
         else:
             print("ERROR : filename structure unknown!!")
             
@@ -97,14 +97,19 @@ class Config():
             dir_strftime = '%Y/%m'
         elif self.directory_structure=='YYYY':
             dir_strftime = '%Y'
+        elif self.directory_structure=='':
+            dir_strftime =''
         else:
             print("ERROR : directory structure unknown!!")
             
+        
 
         self.directory = os.path.join(
             self.archdrawing_directory,
             my_datetime.strftime(dir_strftime))
         
+        print('directory structure: ', self.directory)
+
         self.file_path = os.path.join(self.directory, self.filename)
               
         
