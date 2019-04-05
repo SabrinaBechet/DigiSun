@@ -189,6 +189,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.north_clicked.connect(
                 lambda:  self.drawing_info.calibrated.setText(
                     str(self.drawing_lst[self.current_count].calibrated)))
+            
+            self.label_right.north_clicked.connect(self.update_all_dipole_button)
 
             scroll = QtGui.QScrollArea()
             scroll.setWidget(self.label_right)
@@ -1255,6 +1257,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             pass
 
+    def update_all_dipole_button(self):
+        print("update all dipole button")
+        group_count = self.drawing_lst[self.current_count].group_count
+        for i in range(group_count):
+            self.update_dipole_button(i)
+
     def update_dipole_button(self, group_index):
         """
         The information concerning the dipole (zurich in zurich dipolar)
@@ -1264,10 +1272,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if one of the two condition is not met -> dipole button in orange
         else -> dipole button in green
         """
+        
         if 'dipole' in self.level_info:
             #group_index = self.listWidget_groupBox.currentRow()
             missing_info = self.check_information_complete(group_index,
                                                            'dipole')
+
+            print(missing_info)
+
             if missing_info:
                 self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
