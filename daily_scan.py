@@ -317,28 +317,42 @@ class DailyScan(QtGui.QWidget):
     
         
         if loc==1:
-            new_drawing = drawing.Drawing()
             
             self.config.set_file_path(self.drawing_time)
             filename = self.config.filename
             
-            new_drawing.fill_from_daily_scan(
-                drawing_datetime=self.drawing_time,
-                observer=str(self.drawing_observer_linedit.text()).upper(),
-                operator=str(self.drawing_operator_linedit.text()).upper(),
-                drawing_type=str(self.drawing_type.currentText()),
-                drawing_quality=str(self.drawing_quality.currentText()),
-                drawing_name=filename)
+            print("check ", self.config.file_path)
+            if os.path.isfile(self.config.file_path):
+                new_drawing = drawing.Drawing()
+                new_drawing.fill_from_daily_scan(
+                    drawing_datetime=self.drawing_time,
+                    observer=str(self.drawing_observer_linedit.text()).upper(),
+                    operator=str(self.drawing_operator_linedit.text()).upper(),
+                    drawing_type=str(self.drawing_type.currentText()),
+                    drawing_quality=str(self.drawing_quality.currentText()),
+                    drawing_name=filename)
             
-            # db.replace_drawing(new_drawing)                                                                                                              
-
-            tuple_drawing_type = db.get_drawing_information(
-                "drawing_type",
-                str(self.drawing_type.currentText()))
-            new_drawing.set_drawing_type(tuple_drawing_type[0])
-            
-        return [new_drawing]
+                # db.replace_drawing(new_drawing)                                                                                                              
+                
+                tuple_drawing_type = db.get_drawing_information(
+                    "drawing_type",
+                    str(self.drawing_type.currentText()))
+                new_drawing.set_drawing_type(tuple_drawing_type[0])
+              
+                QtGui.QMessageBox\
+                     .information(self,
+                              "drawing addition",
+                                  "New drawing added in the database for the " + 
+                                  str(self.drawing_time))
         
+            else:
+                QtGui.QMessageBox\
+                     .warning(self,
+                              "drawing addition",
+                              "There is not drawing the image directory correspoding to this date")
+                return
+    
+        return [new_drawing]
             
     def check_scanned_drawing_direcotry(self):
         """
