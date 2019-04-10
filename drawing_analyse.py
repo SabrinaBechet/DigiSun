@@ -189,6 +189,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.label_right.north_clicked.connect(
                 lambda:  self.drawing_info.calibrated.setText(
                     str(self.drawing_lst[self.current_count].calibrated)))
+            
+            self.label_right.north_clicked.connect(self.update_all_dipole_button)
 
             scroll = QtGui.QScrollArea()
             scroll.setWidget(self.label_right)
@@ -782,126 +784,140 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.drawing_page.widget_left_down_layout.addWidget(title_left_down)
 
         group_count = self.drawing_lst[self.current_count].group_count
+        group_count_check = len(self.drawing_lst[self.current_count].group_lst)
 
-        self.listWidget_groupBox = QtGui.QListWidget(self)
-        #self.listWidget_groupBox.setTabKeyNavigation(True)
-        self.listWidget_groupBox.setStyleSheet(
-            "QListView::item:selected {background : rgb(77, 185, 88);}")
+        group_ok_in_database = True
+        if group_count != group_count_check:
+            group_ok_in_database = False
+            QtGui.QMessageBox\
+                 .warning(self,
+                          "Index error",
+                          "<p> Did not find all the groups for this drawing" + 
+                          "<p> Check your database for this day")
+            pass
+        
+        else:
+            self.listWidget_groupBox = QtGui.QListWidget(self)
+            #self.listWidget_groupBox.setTabKeyNavigation(True)
+            self.listWidget_groupBox.setStyleSheet(
+                "QListView::item:selected {background : rgb(77, 185, 88);}")
 
-        self.groupBoxLineList = []
+            self.groupBoxLineList = []
 
-        for i in range(group_count):
-            grid_position = [0, 0]
-            groupBoxLine = group_box.GroupBox()
-
-            if self.config.group_number:
-                group_id = self.drawing_lst[self.current_count].group_lst[i].group_number
-            else:
-                group_id = self.drawing_lst[self.current_count].group_lst[i].number
-
-            groupBoxLine.set_title(str(group_id),
-                                   grid_position)
-            if self.config.group_number:
-                groupBoxLine.group_number_linedit.setEnabled(True)
             
-            #if show_group_number:
-            #    groupBoxLine.group_number_linedit.setEnabled(True)
+            for i in range(group_count):
+                grid_position = [0, 0]
+                groupBoxLine = group_box.GroupBox()
 
-            grid_position[1] += 2
-            groupBoxLine.set_spot_count(
-                self.drawing_lst[self.current_count].group_lst[i].spots,
-                grid_position)
+                if self.config.group_number:
+                    group_id = self.drawing_lst[self.current_count].group_lst[i]\
+                                                                   .group_number
+                else:
+                    group_id = self.drawing_lst[self.current_count].group_lst[i].number
 
-            grid_position[1] += 1
-            groupBoxLine.set_zurich_combox_box(
-                self.drawing_lst[self.current_count].group_lst[i].zurich,
-                grid_position)
+                groupBoxLine.set_title(str(group_id),
+                                       grid_position)
+                if self.config.group_number:
+                    groupBoxLine.group_number_linedit.setEnabled(True)
 
-            grid_position[1] += 1
-            groupBoxLine.set_mcIntosh_combo_box(
-                self.drawing_lst[self.current_count].group_lst[i].McIntosh,
-                self.drawing_lst[self.current_count].group_lst[i].zurich,
-                grid_position)
-            
-            if 'dipole' in self.level_info:
+                #if show_group_number:
+                #    groupBoxLine.group_number_linedit.setEnabled(True)
+
+                grid_position[1] += 2
+                groupBoxLine.set_spot_count(
+                    self.drawing_lst[self.current_count].group_lst[i].spots,
+                    grid_position)
+
                 grid_position[1] += 1
-                groupBoxLine.set_dipole_button(grid_position)
+                groupBoxLine.set_zurich_combox_box(
+                    self.drawing_lst[self.current_count].group_lst[i].zurich,
+                    grid_position)
 
-            if 'area' in self.level_info:
                 grid_position[1] += 1
-                groupBoxLine.set_area_button(grid_position)
-                group_surface = self.drawing_lst[self.current_count]\
-                                .group_lst[i].surface
-                if (group_surface is None or group_surface == 0):
-                    groupBoxLine.area_button.setStyleSheet(
+                groupBoxLine.set_mcIntosh_combo_box(
+                    self.drawing_lst[self.current_count].group_lst[i].McIntosh,
+                    self.drawing_lst[self.current_count].group_lst[i].zurich,
+                    grid_position)
+
+                if 'dipole' in self.level_info:
+                    grid_position[1] += 1
+                    groupBoxLine.set_dipole_button(grid_position)
+
+                if 'area' in self.level_info:
+                    grid_position[1] += 1
+                    groupBoxLine.set_area_button(grid_position)
+                    group_surface = self.drawing_lst[self.current_count]\
+                                    .group_lst[i].surface
+                    if (group_surface is None or group_surface == 0):
+                        groupBoxLine.area_button.setStyleSheet(
+                            "background-color: rgb(255, 165, 84)")
+
+                if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
+                    groupBoxLine.zurich_combo.setStyleSheet(
                         "background-color: rgb(255, 165, 84)")
 
-            if self.drawing_lst[self.current_count].group_lst[i].zurich == "X":
-                groupBoxLine.zurich_combo.setStyleSheet(
-                    "background-color: rgb(255, 165, 84)")
+                if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
+                    groupBoxLine.spot_number_spinbox.setStyleSheet(
+                        "background-color: rgb(255, 165, 84)")
 
-            if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
-                groupBoxLine.spot_number_spinbox.setStyleSheet(
-                    "background-color: rgb(255, 165, 84)")
-        
-            groupBoxLine.group_number_linedit.textChanged.connect(
-                lambda : self.modify_drawing_group_number(
-                    self.listWidget_groupBox.currentRow(), 
-                    False))    
+                groupBoxLine.group_number_linedit.textChanged.connect(
+                    lambda : self.modify_drawing_group_number(
+                        self.listWidget_groupBox.currentRow(), 
+                        False))    
 
-            groupBoxLine.spot_number_spinbox.valueChanged.connect(
-                lambda: self.modify_drawing_spot_number(
-                    self.listWidget_groupBox.currentRow(),
-                    False))
-            groupBoxLine.zurich_combo.currentIndexChanged.connect(
-                lambda: self.modify_drawing_zurich(
-                    self.listWidget_groupBox.currentRow(),
-                    False))
-            groupBoxLine.McIntosh_combo.currentIndexChanged.connect(
-                lambda: self.modify_drawing_mcIntosh(
-                    self.listWidget_groupBox.currentRow(),
-                    False))
+                groupBoxLine.spot_number_spinbox.valueChanged.connect(
+                    lambda: self.modify_drawing_spot_number(
+                        self.listWidget_groupBox.currentRow(),
+                        False))
+                groupBoxLine.zurich_combo.currentIndexChanged.connect(
+                    lambda: self.modify_drawing_zurich(
+                        self.listWidget_groupBox.currentRow(),
+                        False))
+                groupBoxLine.McIntosh_combo.currentIndexChanged.connect(
+                    lambda: self.modify_drawing_mcIntosh(
+                        self.listWidget_groupBox.currentRow(),
+                        False))
 
-            self.groupBoxLineList.append(groupBoxLine)
+                self.groupBoxLineList.append(groupBoxLine)
 
-            item = QtGui.QListWidgetItem(self.listWidget_groupBox)
-            item.setSizeHint(groupBoxLine.sizeHint())
-            self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
+                item = QtGui.QListWidgetItem(self.listWidget_groupBox)
+                item.setSizeHint(groupBoxLine.sizeHint())
+                self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
 
-            self.update_dipole_button(i)
+                self.update_dipole_button(i)
 
-        self.drawing_page.widget_left_down_layout.addWidget(
-            self.listWidget_groupBox)
+            self.drawing_page.widget_left_down_layout.addWidget(
+                self.listWidget_groupBox)
 
-        # Signals related to the change of item in the group box
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.set_focus_group_box(
-                self.listWidget_groupBox.currentRow()))
+            # Signals related to the change of item in the group box
+            self.listWidget_groupBox.itemSelectionChanged.connect(
+                lambda: self.set_focus_group_box(
+                    self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.set_group_toolbox(
-                self.listWidget_groupBox.currentRow()))
+            self.listWidget_groupBox.itemSelectionChanged.connect(
+                lambda: self.set_group_toolbox(
+                    self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.update_surface_qlabel(
-                self.listWidget_groupBox.currentRow()))
+            self.listWidget_groupBox.itemSelectionChanged.connect(
+                lambda: self.update_surface_qlabel(
+                    self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.update_group_visu(
-                self.listWidget_groupBox.currentRow()))
+            self.listWidget_groupBox.itemSelectionChanged.connect(
+                lambda: self.update_group_visu(
+                    self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.check_dipole(
-                self.listWidget_groupBox.currentRow()))
+            self.listWidget_groupBox.itemSelectionChanged.connect(
+                lambda: self.check_dipole(
+                    self.listWidget_groupBox.currentRow()))
 
-        self.listWidget_groupBox.itemSelectionChanged.connect(
-            lambda: self.scroll_group_position(
-                self.listWidget_groupBox.currentRow()))
-        
-        self.group_box_shortcut.activated.connect(
-            lambda: self.set_focus_group_box(
-                self.listWidget_groupBox.currentRow()))
-        
+            self.listWidget_groupBox.itemSelectionChanged.connect(
+                lambda: self.scroll_group_position(
+                    self.listWidget_groupBox.currentRow()))
+
+            self.group_box_shortcut.activated.connect(
+                lambda: self.set_focus_group_box(
+                    self.listWidget_groupBox.currentRow()))
+
     def check_dipole(self, element_number):
         """
         Only for the add_dipole_mode.
@@ -1255,6 +1271,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             pass
 
+    def update_all_dipole_button(self):
+        print("update all dipole button")
+        group_count = self.drawing_lst[self.current_count].group_count
+        for i in range(group_count):
+            self.update_dipole_button(i)
+
     def update_dipole_button(self, group_index):
         """
         The information concerning the dipole (zurich in zurich dipolar)
@@ -1264,10 +1286,14 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if one of the two condition is not met -> dipole button in orange
         else -> dipole button in green
         """
+        
         if 'dipole' in self.level_info:
             #group_index = self.listWidget_groupBox.currentRow()
             missing_info = self.check_information_complete(group_index,
                                                            'dipole')
+
+            print(missing_info)
+
             if missing_info:
                 self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
@@ -1867,6 +1893,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else:
             self.but_next.setDisabled(True)
             self.but_previous.setDisabled(True)
+
+        print("check counter", self.current_count)
 
     def update_session_lineEdit(self):
         self.goto_drawing_linedit.setText(str(self.current_count + 1))
