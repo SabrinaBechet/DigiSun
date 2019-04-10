@@ -123,7 +123,7 @@ class QLabelDrawing(QtGui.QLabel):
                     im_arr = rgb2gray(im_arr)
             except IndexError:	
                 print("the original file is in L format..")
-		pass
+                pass
 
             return im_arr
 
@@ -844,7 +844,14 @@ class QLabelDrawing(QtGui.QLabel):
                                            calib_pt2_x,
                                            calib_pt2_y)
 	
-	    self.current_drawing.check_raw_positions(self.drawing_height)	
+            self.current_drawing.check_raw_positions(self.drawing_height)	
+            """for el in self.current_drawing.group_lst:
+                self.current_drawing.change_group_position(int(el.number), 
+                                                           float(el.latitude), 
+                                                           float(el.longitude), 
+                                                           int(el.posX), 
+                                                           int(el.posY))
+            """
             self.zoom_in(1/5.)
             self.large_grid_overlay.value = True
             self.group_visu.value = True

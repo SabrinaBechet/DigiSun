@@ -91,6 +91,8 @@ class mainWindow(QtGui.QMainWindow):
             lambda: self.stack.setCurrentIndex(2))
         self.daily_scan.but_analyse.clicked.connect(
             self.daily_switch_to_drawing_analyse)
+        self.daily_scan.but_add.clicked.connect(
+            lambda: self.daily_switch_to_drawing_analyse(loc=1))
 
         self.analyse_page.date_selection_page.but_select.clicked.connect(
             self.selection_analyse_view)
@@ -127,8 +129,9 @@ class mainWindow(QtGui.QMainWindow):
                                          center.y() - self.height()*0.5))
         self.move(frameGm.topLeft())
 
-    def daily_switch_to_drawing_analyse(self):
-        lst_drawing = self.daily_scan.set_drawing_information()
+    def daily_switch_to_drawing_analyse(self, loc=0):
+        lst_drawing = self.daily_scan.set_drawing_information(loc)
+        print(lst_drawing)
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()
         self.drawing_analyse.start_calibration()
