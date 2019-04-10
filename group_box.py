@@ -94,8 +94,8 @@ class GroupBox(QtGui.QWidget):
         self.group_number_linedit.setDisabled(True)
         title_label.setStyleSheet("background-color: transparent")
 
-        if group_id is not 'None': 
-            print("found a group id", group_id)
+        if group_id != 'None': 
+            print("found a group id", group_id, type(group_id))
             self.group_number_linedit.setText(group_id)
        
         
