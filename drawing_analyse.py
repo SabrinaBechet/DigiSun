@@ -220,7 +220,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
 
             self.step = 0
-            self.group_box_shortcut = QtGui.QShortcut(QtGui.QKeySequence("q"), self)
+            self.group_box_shortcut = QtGui.QShortcut(
+                QtGui.QKeySequence("Ctrl+q"), self)
             
 
         """else:
@@ -803,23 +804,23 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 "QListView::item:selected {background : rgb(77, 185, 88);}")
 
             self.groupBoxLineList = []
-
-            
+         
             for i in range(group_count):
                 grid_position = [0, 0]
                 groupBoxLine = group_box.GroupBox()
 
-                if self.config.group_number:
-                    group_id = self.drawing_lst[self.current_count].group_lst[i]\
-                                                                   .group_number
+                if self.config.group_number==1:
+                    group_id = self.drawing_lst[self.current_count]\
+                                   .group_lst[i].group_number
+                    groupBoxLine.group_number_linedit.setEnabled(True)
+                    
                 else:
-                    group_id = self.drawing_lst[self.current_count].group_lst[i].number
+                    group_id = self.drawing_lst[self.current_count]\
+                                   .group_lst[i].number
 
                 groupBoxLine.set_title(str(group_id),
                                        grid_position)
-                if self.config.group_number:
-                    groupBoxLine.group_number_linedit.setEnabled(True)
-
+                
                 #if show_group_number:
                 #    groupBoxLine.group_number_linedit.setEnabled(True)
 
@@ -1006,21 +1007,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.drawing_page.widget_left_down_bis_layout\
                              .addWidget(self.group_toolbox)
 
-            
-    
             # don't forget : [y, x]
             grid_position = [0, 0]
-
-            if self.config.group_number:
-                group_id = self.drawing_lst[self.current_count].group_lst[n].group_number
+                        
+            if self.config.group_number==1:
+                group_id = self.drawing_lst[self.current_count]\
+                               .group_lst[n].group_number
+                self.group_toolbox.group_number_linedit\
+                                  .setEnabled(True)
             else:
-                group_id = self.drawing_lst[self.current_count].group_lst[n].number
+                group_id = self.drawing_lst[self.current_count]\
+                               .group_lst[n].number
 
             self.group_toolbox.set_title(str(group_id),
                                         grid_position)
-            if self.config.group_number:
-                self.group_toolbox.group_number_linedit.setEnabled(True)
-
+            
             grid_position[1] += 2
             self.group_toolbox.set_spot_count(
                 self.drawing_lst[self.current_count].group_lst[n].spots,

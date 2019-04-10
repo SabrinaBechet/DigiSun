@@ -656,7 +656,9 @@ class Drawing(QtCore.QObject):
         for el in self._group_lst:
             if el.posX==0 and el.posY==0:
 		##print("calibration done but some groups have no positions")
-                posX, posY, posZ = coordinates.cartesian_from_HGC_upper_left_origin(
+                (posX,
+                 posY,
+                 posZ) = coordinates.cartesian_from_HGC_upper_left_origin(
                 	    	        	self.calibrated_center.x,
                         		    	self.calibrated_center.y,
                             			self.calibrated_north.x,
@@ -669,10 +671,12 @@ class Drawing(QtCore.QObject):
                             			drawing_height)
 
                 digisun_group_number = self._group_lst.index(el)
-                self.change_group_position(digisun_group_number, el.latitude, el.longitude,
-                              		   posX, posY)		
-
-	
+                self.change_group_position(
+                    digisun_group_number,
+                    el.latitude,
+                    el.longitude,
+                    posX,
+                    posY)		
 
     def get_group_signal(self):
         self.changed = True
