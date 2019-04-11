@@ -431,9 +431,9 @@ class Group(QtCore.QObject):
         self.changed = True
         self.value_changed.emit()
 
-    def save_group_info(self):
+    def save_group_info(self, config):
         
-        db = database.database()
+        db = database.database(config)
         
         db.write_group_info(self._datetime,
                             self._number,
@@ -1099,16 +1099,15 @@ class Drawing(QtCore.QObject):
         self.change_group_position(self.group_count - 1, latitude, longitude,
                                    posX, posY)
 
-    def delete_group(self, group_index):
+    def delete_group(self, config, group_index):
         """
         Delete a group among the list of groups
         """
-        
         self.update_spot_number(group_index, 0)
         self.update_group_number(self.group_count - 1)
         self._group_lst.pop(group_index)
 
-        db = database.database()
+        db = database.database(config)
         db.delete_group_info(self._datetime, group_index)
 
         for i in range(group_index, len(self._group_lst)):
@@ -1117,10 +1116,9 @@ class Drawing(QtCore.QObject):
         self._last_update_time = datetime.now()
         self.save_info()
         
-    def save_info(self):
-        # print("save the info of the drawing!")
+    def save_info(self, config):
         
-        db = database.database()
+        db = database.database(config)
         db.write_drawing_info(self._drawing_type,
                               self._quality,
                               self._observer.upper(),
@@ -1153,7 +1151,6 @@ class Drawing(QtCore.QObject):
             print("*********************extra group deleted!!", el)
         """            
         for el in self._group_lst:
-            # print("save group info ", el)
-            el.save_group_info()
+            el.save_group_info(config)
 
         self.info_saved.emit()

@@ -25,6 +25,9 @@ import database
 import configuration
 from PyQt4 import QtGui
 
+__author__ = "Sabrina Bechet"
+__date__ = "April 2019"
+
 
 class DialogLogin(QtGui.QDialog):
     """
@@ -49,33 +52,16 @@ class DialogLogin(QtGui.QDialog):
         sun_logo.setMinimumWidth(width_widget)
         sun_logo.setMaximumWidth(width_widget)
         sun_logo.setMaximumHeight(width_widget)
+    
+        self.config = configuration.Config()
+        self.config.set_archdrawing()
+        self.config.set_database()
 
-        # config_title = QtGui.QLabel("Configuration settings", self)
-        config = configuration.Config()
-        config.set_archdrawing()
-        config.set_database()
         config_archdrawing = QtGui.QLabel("Drawings directory: ")
         self.config_archdrawing_name = QtGui.QLineEdit(self)
-        self.config_archdrawing_name.setDisabled(True)
-        self.config_archdrawing_name.setText(config.archdrawing_directory)
-        self.config_archdrawing_name.setStyleSheet(
-            "background-color: rgb(255, 165, 84); color:black")
-        
-        if os.path.isdir(config.archdrawing_directory):
-            self.config_archdrawing_name.setStyleSheet(
-                "background-color: rgb(77, 185, 88); color:black")
         
         config_database = QtGui.QLabel("Database name: ")
         self.config_database_name = QtGui.QLineEdit(self)
-        self.config_database_name.setDisabled(True)
-        self.config_database_name.setText(config.db + '@ ' + config.host + ':' + str(config.port))
-        self.config_database_name.setStyleSheet(
-            "background-color: rgb(255, 165, 84); color:black")
-        
-        if (config.check_database_connection()):
-            self.config_database_name.setStyleSheet(
-                "background-color: rgb(77, 185, 88); color:black")
-        
         
         self.operator_name = QtGui.QLineEdit(self)
         self.operator_name.setMinimumWidth(width_widget)
@@ -88,7 +74,8 @@ class DialogLogin(QtGui.QDialog):
         application_selection = QtGui.QLabel('Applications: ', self)
         
         daily_scan_but = QtGui.QPushButton("Daily scan")
-        bulk_analyse_but = QtGui.QPushButton("bulk Analyse")
+        bulk_analyse_but = QtGui.QPushButton("Bulk analyse")
+        change_config_but = QtGui.QPushButton("Change config file")
         
         application_selection.setMinimumWidth(width_widget)
         application_selection.setMaximumWidth(width_widget)
@@ -109,6 +96,7 @@ class DialogLogin(QtGui.QDialog):
         self.layout.addWidget(application_selection, 5, 0)
         self.layout.addWidget(daily_scan_but, 5, 1)
         self.layout.addWidget(bulk_analyse_but, 5, 2)
+        self.layout.addWidget(change_config_but, 6, 1)
 
         daily_scan_but.setAutoDefault(True)
         bulk_analyse_but.setAutoDefault(True)
@@ -117,14 +105,51 @@ class DialogLogin(QtGui.QDialog):
         daily_scan_but.clicked.connect(lambda: self.set_mode(0))
         bulk_analyse_but.clicked.connect(self.handleLogin)
         bulk_analyse_but.clicked.connect(lambda: self.set_mode(1))
+        change_config_but.clicked.connect(self.change_config_file)
 
         self.center()
 
+        self.set_config_info()
+        
+    def set_config_info(self):
+        
+        self.config_database_name.setDisabled(True)
+        self.config_database_name.setText(self.config.db + '@ ' +
+                                          self.config.host + ':' +
+                                          str(self.config.port))
+        self.config_database_name.setStyleSheet(
+            "background-color: rgb(255, 165, 84); color:black")
+        if (self.config.check_database_connection()):
+            self.config_database_name.setStyleSheet(
+                "background-color: rgb(77, 185, 88); color:black")
+        
+        self.config_archdrawing_name.setDisabled(True)
+        self.config_archdrawing_name.setText(self.config.archdrawing_directory)
+        self.config_archdrawing_name.setStyleSheet(
+            "background-color: rgb(255, 165, 84); color:black")
+        if os.path.isdir(self.config.archdrawing_directory):
+            self.config_archdrawing_name.setStyleSheet(
+                "background-color: rgb(77, 185, 88); color:black")
+
+    def get_config(self):
+        return self.config
+        
+    def change_config_file(self):
+        config_filename = QtGui.QFileDialog.getOpenFileName(self,
+                                                            "configuration file",
+                                                            "",
+                                                            "Text files (*.ini)")
+        
+        self.config = configuration.Config(config_filename)
+        self.config.set_archdrawing()
+        self.config.set_database()
+        self.set_config_info()
+    
     def set_mode(self, mode):
         self.digiSun_mode = mode
 
     def handleLogin(self):
-        uset_db = database.database()
+        uset_db = database.database(self.config)
         if (uset_db.exist_in_db('observer',
                                 'name',
                                 self.operator_name.text())):
