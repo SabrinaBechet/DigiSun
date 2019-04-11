@@ -1,7 +1,8 @@
 # !/usr/bin/env python
 # -*-coding:utf-8-*-
 """
-DigiSun: a software to transform sunspot drawings into exploitable data. It allows to scan drawings, extract its information and store it in a database.
+DigiSun: a software to transform sunspot drawings into exploitable data. 
+It allows to scan drawings, extract its information and store it in a database.
 Copyright (C) 2019 Sabrina Bechet at Royal Observatory of Belgium (ROB)
 
 This file is part of DigiSun.
@@ -24,6 +25,11 @@ import math
 
 
 def group_frame(zurich, radius, posx, posy, center_x, center_y):
+    """
+    estimate the size of the frame side to contain a 
+    group of a given zurich type and a give position.
+    """
+    
     distance_from_center = math.sqrt((posx - center_x)**2 +
                                      (posy - center_y)**2)
 
@@ -34,11 +40,7 @@ def group_frame(zurich, radius, posx, posy, center_x, center_y):
     if distance_from_center < radius:
         center_to_limb = (math.asin(distance_from_center *
                                     1./radius))
-    """
-    print("distance from center: {} ".format(distance_from_center))
-    print("center to limb angle: {}".format(center_to_limb * 180/math.pi))
-    print("cos correction: {}".format(math.cos(float(center_to_limb))))
-    """
+        
     if zurich in ['A', 'J']:
         step = (radius/30.) * (math.cos(float(center_to_limb)))
     elif zurich in ['H']:

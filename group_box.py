@@ -86,19 +86,16 @@ class GroupBox(QtGui.QWidget):
 
     def set_title(self, group_id, grid_position):
         """ title on the top of the group box"""
-        #title_label = QtGui.QLabel(title)
+    
         title_label = QtGui.QLabel("Group ")
-        #title_label.setMaximumWidth()
         self.group_number_linedit = QtGui.QLineEdit(self)
         self.group_number_linedit.setMaximumWidth(self.widget_maximum_width)
         self.group_number_linedit.setDisabled(True)
         title_label.setStyleSheet("background-color: transparent")
 
         if group_id != 'None': 
-            print("found a group id", group_id, type(group_id))
             self.group_number_linedit.setText(group_id)
        
-        
         self.group_number_linedit.setStyleSheet(
             "background-color: white; color: black")
         self.grid_layout.addWidget(title_label,

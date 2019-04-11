@@ -24,12 +24,13 @@ import sys
 import login
 import daily_scan
 import bulk_analyse
+#import configuration
 import drawing_analyse
 from PyQt4 import QtGui, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "digisun@oma.be"
-__date__ = "Mars 2019"
+__date__ = "April 2019"
 __version__ = "1.0.0"
 
 #sys.stderr = open('data/err.txt', 'w')
@@ -55,7 +56,7 @@ class mainWindow(QtGui.QMainWindow):
     index 1 : analyse page
     index 2 : drawing analyse
     """
-    def __init__(self, operator=None, mode_index=0):
+    def __init__(self, config, operator=None, mode_index=0):
         super(mainWindow, self).__init__()
         self.setWindowTitle("DigiSun")
         self.center()
@@ -66,14 +67,17 @@ class mainWindow(QtGui.QMainWindow):
         self.setMinimumHeight(screen_available_geometry.height()/2.)
         self.setMaximumWidth(screen_available_geometry.width())
         self.setMaximumHeight(screen_available_geometry.height() - 50)
+
         self.operator = operator
 
+        self.config = config
+        
         self.stack = QtGui.QStackedLayout()
-        self.daily_scan = daily_scan.DailyScan(self.operator)
-        self.analyse_page = bulk_analyse.BulkAnalysePage()
+        self.daily_scan = daily_scan.DailyScan(self.config, self.operator)
+        self.analyse_page = bulk_analyse.BulkAnalysePage(self.config)
         #self.bulk_scan_page = BulkScanPage(self.operator)
         self.drawing_analyse = drawing_analyse\
-            .DrawingAnalysePage(self.operator)
+            .DrawingAnalysePage(config, self.operator)
 
         self.central_zone = QtGui.QWidget()
         self.central_zone.setLayout(self.stack)
@@ -141,17 +145,26 @@ class mainWindow(QtGui.QMainWindow):
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()
 
+    def change_config_file(self):
+        config_filename = QtGui.QFileDialog.getOpenFileName(self,
+                                                                "configuration file",
+                                                                "",
+                                                                "Text files (*.ini)")
+        
+        self.config = configuration.Config(config_filename)
+    
+
     def set_menuBar(self):
         menuBar = QtGui.QMenuBar()
         menuBar.setNativeMenuBar(False)
         self.setMenuBar(menuBar)
 
         menu_mode = menuBar.addMenu('Mode')
-        menu_parameters = menuBar.addMenu('Parameters')
+        menu_parameters = menuBar.addMenu('Config')
         menu_help = menuBar.addMenu('Help')
 
         action_change_directory = QtGui.QAction('Drawings directory', self)
-        #action_change_directory.triggered.connect(change_directory)
+        action_change_directory.triggered.connect(self.change_config_file)
         
         action_goTo_daily_scan= QtGui.QAction('Daily scan', self)
         action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
@@ -190,13 +203,18 @@ class mainWindow(QtGui.QMainWindow):
         
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
+
     login = login.DialogLogin()
     login.show()
 
     if login.exec_() == QtGui.QDialog.Accepted:
         operator_name = login.get_operator()
         mode_index = login.get_mode()
-        fen = mainWindow(operator_name, mode_index)
+        
+        config = login.get_config()
+        
+        fen = mainWindow(config, operator_name, mode_index)
+
         fen.show()
         sys.exit(app.exec_())
 

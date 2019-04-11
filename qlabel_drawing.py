@@ -103,9 +103,9 @@ class QLabelDrawing(QtGui.QLabel):
 
         self.frame_size = 0
 
-    def set_msg_no_entry(self):
+    def set_msg_no_entry(self, date):
         my_font = QtGui.QFont("Comic Sans MS", 20)
-        self.setText('No drawings corresponding to this entry')
+        self.setText('No drawings corresponding to the date ' + str(date))
         self.setFont(my_font)
 
         self.setContentsMargins(0, 0, 0, 0)

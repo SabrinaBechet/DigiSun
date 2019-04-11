@@ -33,10 +33,46 @@ class Config():
         By default, the default file is digisun.ini but
         it can be different if specified.
         """
-        
         self.config = configparser.ConfigParser()
         self.config_file = filename
-        #self.set_configuration()
+
+        if not os.path.isfile(filename):
+            self.write_empty_config()
+
+    def write_empty_config(self):
+
+        self.config.add_section('drawings')
+        self.config.set('drawings', 'path', '')
+        self.config.set('drawings', 'prefix', '')
+        self.config.set('drawings', 'suffix', '')
+        self.config.set('drawings', 'extension', '')
+        self.config.set('drawings', 'filename_structure', '')
+        self.config.set('drawings', 'directory_structure', '')
+
+        self.config.add_section('analyse')
+        self.config.set('analyse', 'group_extra1', '')
+        self.config.set('analyse', 'group_extra2', '')
+        self.config.set('analyse', 'group_extra3', '')
+        self.config.set('analyse', 'level', '')
+        self.config.set('analyse', 'group_number', '0')
+
+        self.config.add_section('scanner')
+        self.config.set('scanner', 'dpi', '300')
+        self.config.set('scanner', 'width', '28.2')
+        self.config.set('scanner', 'height', '36.0')
+        self.config.set('scanner', 'left', '0.0')
+        self.config.set('scanner', 'top', '0.0')
+        self.config.set('scanner', 'format', 'JPEG')
+
+        self.config.add_section('database')
+        self.config.set('database', 'host', '')
+        self.config.set('database', 'user', '')
+        self.config.set('database', 'passwd', '')
+        self.config.set('database', 'name', '')
+        self.config.set('database', 'port', '3306')
+
+        with open(self.config_file, 'wb') as configfile:
+            self.config.write(configfile)
 
     def set_drawing_analyse(self):
         """

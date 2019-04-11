@@ -21,16 +21,17 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import pymysql
-import configuration
 
+__author__ = "Sabrina Bechet"
+__date__ = "April 2019"
 
 class database():
     """
     Object to interact with the database.
     """
-    def __init__(self):
+    def __init__(self, config):
 
-        self.config = configuration.Config()
+        self.config = config #configuration.Config()
         
         (config_host, config_port, config_user,
          config_passwd, config_db) = self.config.set_database()

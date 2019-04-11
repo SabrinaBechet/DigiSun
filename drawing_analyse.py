@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 __author__ = "Sabrina Bechet"
+__date__ = "April 2019"
 
 import os
 from datetime import datetime
@@ -34,7 +35,6 @@ import statusbar
 import drawing_view_page
 import drawing_information
 import group_frame
-import configuration
 import numpy as np
 from PyQt4 import QtGui, QtCore
 
@@ -47,19 +47,21 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     - DrawingViewPage : the template of the DrawingViewPage
     - DrawingAnalysePage: the page itself with all the widgets
     Page that shows the drawing and where the analyse is done.
-    Depending on the info_analysed list,it will shows:
+    Depending on the level of analyse, it will show:
     - only the info related to groups
     - additional info related to dipoles
     - additional info related to area
 
     Attributes:
-    - config
+    - config : contains all the configuration information from digisun.ini
     - drawing_page : structure of the GUI
+    - target/expand cursor path : icon for the mouse when add group/dipole is activated
     - vertical_scroll_bar
     - horizontal_scroll_bar
     - operator : operator name
+    - label_right :  drawing qlabel
+    - drawing_lst : list of drawing in the buffer to be analyzed
     - zurich_dipolar : list of dipolar zurich type
-
 
     Methods:
     - setCentralWidget
@@ -125,12 +127,12 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     - set_green_frame_around_surface
 
     """
-    def __init__(self, operator=None):
+    def __init__(self, config, operator=None):
         super(DrawingAnalysePage, self).__init__()
         
         self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
         
-        self.config = configuration.Config()
+        self.config = config 
         self.config.set_archdrawing()
         self.config.set_drawing_analyse()
        
@@ -142,11 +144,9 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         self.setCentralWidget(self.drawing_page)
 
         self.operator = operator
-        self.level_info = self.config.level 
         
         if (self.config.archdrawing_directory and os.path.isdir(
                 self.config.archdrawing_directory)):
-
             self.add_drawing_information()
             self.add_current_session()
             self.label_right = qlabel_drawing.QLabelDrawing()
@@ -194,7 +194,6 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
             scroll = QtGui.QScrollArea()
             scroll.setWidget(self.label_right)
-
             scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
             scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
             scroll.setWidgetResizable(True)
@@ -202,7 +201,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.horizontal_scroll_bar = scroll.horizontalScrollBar()
             self.drawing_page.widget_right_layout.addWidget(scroll)
 
-            if 'area' in self.level_info:
+            if 'area' in self.config.level:
                 self.add_surface_widget()
 
             self.drawing_lst = []
@@ -219,7 +218,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
             self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
 
-            self.step = 0
+            self.surface_frame_step = 0
+            
             self.group_box_shortcut = QtGui.QShortcut(
                 QtGui.QKeySequence("Ctrl+q"), self)
             
@@ -245,7 +245,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         if surface in the level of info -> surface button
         """
 
-        digisun_toolbar = toolbar.Toolbar(self.label_right, self.level_info)
+        digisun_toolbar = toolbar.Toolbar(self.label_right, self.config.level)
         self.addToolBar(digisun_toolbar)
 
         digisun_toolbar.zoom_in_but.clicked.connect(
@@ -271,13 +271,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         digisun_toolbar.change_group_pos_but.clicked.connect(
             self.set_change_group_position_mode)
 
-        if 'dipole' in self.level_info:
+        if 'dipole' in self.config.level:
             digisun_toolbar.dipole_visu_but.clicked\
                                            .connect(self.set_dipole_visualisation)
             digisun_toolbar.add_dipole_but.clicked\
                                           .connect(self.set_add_dipole_mode)
 
-        if 'area' in self.level_info:
+        if 'area' in self.config.level:
             digisun_toolbar.surface_but.clicked.connect(
                 lambda: self.set_surface_mode(
                     self.listWidget_groupBox.currentRow()))
@@ -603,13 +603,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
     def update_surface_qlabel(self, n, step=0):
         """
         Update the QLabelGroupSurface object which represents
-        an image of the drawing to calculate the surface.
+        an image of the group to calculate the its surface.
         """
-        if 'area' in self.level_info:
+        if 'area' in self.config.level:
             if step:
-                self.step += step
+                self.surface_frame_step += step
             else:
-                self.step = 0
+                self.surface_frame_step = 0
 
             if (self.drawing_lst[self.current_count].calibrated and
                     self.label_right.surface_mode and
@@ -628,12 +628,8 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     #       self.label_right.pixmap().height(),
                     # self.label_right.drawing_pixMap.height())
 
-                    """frame_size = self.group_surface_widget.update_frame_surface(
-                        self.drawing_lst[self.current_count].calibrated_radius,
-                        step)
-
-                    """
-                    frame_size = group_frame.group_frame(
+                    
+                    frame_size_pixel = group_frame.group_frame(
                         self.drawing_lst[self.current_count].group_lst[n].zurich,
                         self.drawing_lst[self.current_count].calibrated_radius,
                         self.drawing_lst[self.current_count].group_lst[n].posX,
@@ -641,22 +637,22 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                         self.drawing_lst[self.current_count].calibrated_center.x,
                         self.drawing_lst[self.current_count].calibrated_center.y)
 
-                    if self.step:
-                        frame_step = (self.step *
-                                      self.drawing_lst[self.current_count]
-                                      .calibrated_radius/30)
+                    if self.surface_frame_step:
+                        frame_step_pixel = (self.surface_frame_step *
+                                            self.drawing_lst[self.current_count]
+                                            .calibrated_radius/30)
 
-                        if frame_size + frame_step > 0:
-                            frame_size += frame_step
+                        if frame_size_pixel + frame_step_pixel > 0:
+                            frame_size_pixel += frame_step_pixel
 
                         else:
-                            self.step -= step
-                            frame_step = (self.step *
-                                          self.drawing_lst[self.current_count]
-                                          .calibrated_radius/30)
-                            frame_size += frame_step
+                            self.surface_frame_step -= step
+                            frame_step_pixel = (self.surface_frame_step *
+                                                self.drawing_lst[self.current_count]
+                                                .calibrated_radius/30)
+                            frame_size_pixel += frame_step_pixel
 
-                    self.label_right.frame_size = frame_size
+                    self.label_right.frame_size = frame_size_pixel
                     if step != 0:
                         self.label_right.set_img()
 
@@ -669,20 +665,19 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     bigger_matrix[100: 100 + img_pix.shape[0],
                                   100: 100 + img_pix.shape[1]] = img_pix
 
-                    x_min = int(100 + posX - frame_size/2)
-                    x_max = int(100 + posX + frame_size/2)
-                    y_min = int(100 + posY - frame_size/2)
-                    y_max = int(100 + posY + frame_size/2)
+                    x_min = int(100 + posX - frame_size_pixel/2)
+                    x_max = int(100 + posX + frame_size_pixel/2)
+                    y_min = int(100 + posY - frame_size_pixel/2)
+                    y_max = int(100 + posY + frame_size_pixel/2)
 
                     selection_array = bigger_matrix[y_min: y_max,
                                                     x_min: x_max]
                     # print("selection array: {}".format(selection_array.shape))
-
                     self.group_surface_widget.set_group_info(
                         self.drawing_lst[self.current_count],
                         n,
-                        posX - frame_size/2,
-                        posY - frame_size/2)
+                        posX - frame_size_pixel/2,
+                        posY - frame_size_pixel/2)
 
                     self.group_surface_widget.set_array(selection_array)
 
@@ -840,11 +835,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                     self.drawing_lst[self.current_count].group_lst[i].zurich,
                     grid_position)
 
-                if 'dipole' in self.level_info:
+                if 'dipole' in self.config.level:
                     grid_position[1] += 1
                     groupBoxLine.set_dipole_button(grid_position)
 
-                if 'area' in self.level_info:
+                if 'area' in self.config.level:
                     grid_position[1] += 1
                     groupBoxLine.set_area_button(grid_position)
                     group_surface = self.drawing_lst[self.current_count]\
@@ -1060,13 +1055,13 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 .group_lst[n].longitude * 180/math.pi,
                 grid_position)
 
-            if 'area' in self.level_info:
+            if 'area' in self.config.level:
                 grid_position[0] += 1
                 self.group_toolbox.set_surface(
                     self.drawing_lst[self.current_count].group_lst[n].surface,
                     grid_position)
 
-            if 'dipole' in self.level_info:
+            if 'dipole' in self.config.level:
                 grid_position[0] += 1
                 grid_position[1] = 0
                 self.group_toolbox.set_largest_spot(
@@ -1150,7 +1145,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.group_toolbox.button_right.clicked.connect(
                 lambda: self.update_HGC_position('longitude', -position_step))
 
-            if 'dipole' in self.level_info:
+            if 'dipole' in self.config.level:
                 self.group_toolbox.largest_spot_leading_but.clicked.connect(
                     lambda: self.update_largest_spot('L'))
                 self.group_toolbox.largest_spot_egal_but.clicked.connect(
@@ -1178,7 +1173,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             index = self.current_count
             group_index = self.listWidget_groupBox.currentRow()
             
-            self.drawing_lst[index].delete_group(group_index)
+            self.drawing_lst[index].delete_group(self.config, group_index)
             self.set_group_widget()
             self.set_focus_group_box(0)
             self.set_group_toolbox()
@@ -1259,7 +1254,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         return missing_info
 
     def update_area_button(self):
-        if 'area' in self.level_info:
+        if 'area' in self.config.level:
             group_index = self.listWidget_groupBox.currentRow()
             missing_info = self.check_information_complete(group_index,
                                                            'area')
@@ -1288,7 +1283,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         else -> dipole button in green
         """
         
-        if 'dipole' in self.level_info:
+        if 'dipole' in self.config.level:
             #group_index = self.listWidget_groupBox.currentRow()
             missing_info = self.check_information_complete(group_index,
                                                            'dipole')
@@ -1613,7 +1608,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         title_left_up.setContentsMargins(0, 5, 0, 5)
         self.drawing_page.widget_left_up_layout.addWidget(title_left_up)
 
-        self.drawing_info = drawing_information.DrawingInformationWidget()
+        self.drawing_info = drawing_information.DrawingInformationWidget(self.config)
 
         self.drawing_info.drawing_observer.textEdited.connect(
             lambda: self.update_linedit_drawing('observer',
@@ -1772,7 +1767,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
         return layout_goto
 
     def warning_box_info_incomplete(self, level):
-        if level in self.level_info:
+        if level in self.config.level:
 
             missing_info_len = [len(self.check_information_complete(x, level))
                                 for x in
@@ -1825,7 +1820,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 self.drawing_lst[self.current_count].group_count > 0):
                 self.drawing_lst[self.current_count].analyzed = 1
 
-        self.drawing_lst[self.current_count].save_info()
+        self.drawing_lst[self.current_count].save_info(self.config)
         self.drawing_info\
             .set_drawing_linedit(self.drawing_lst[self.current_count])
 
@@ -1972,7 +1967,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.statusBar().comment.setText("")
 
         else:
-            self.label_right.set_msg_no_entry()
+            self.label_right.set_msg_no_entry(self.drawing_lst[self.current_count].datetime)
             self.drawing_info.set_empty()
             self.goto_drawing_linedit.setText("0")
             self.goto_drawing_label2.setText("out of 0")
