@@ -54,7 +54,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.scroll_widget_left_up.setWidgetResizable(True)
         self.widget_left_up = QtGui.QWidget()
         self.scroll_widget_left_up.setMinimumWidth(left_column_maximum_width)
-        self.scroll_widget_left_up.setMaximumHeight(self.height())
+        self.scroll_widget_left_up.setMaximumHeight(self.height()/2.)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.scroll_widget_left_up.setWidget(self.widget_left_up)
 
