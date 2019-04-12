@@ -351,7 +351,7 @@ class DailyScan(QtGui.QWidget):
     
         return [new_drawing]
             
-    def check_scanned_drawing_direcotry(self):
+    def check_scanned_drawing_directory(self):
         """
         - Check that the direcory given in the config file exist, 
         otherwhise exits with a warning message
@@ -390,13 +390,14 @@ class DailyScan(QtGui.QWidget):
                                       'One of the information is not correct')
             return
 
-        my_scanner = scanner.scanner()
+        my_scanner = scanner.scanner(self.config)
         scanner_name = my_scanner.get_scanner_name()
         my_scanner.set_scanner(scanner_name[0])
         my_scanner.set_scan_area()
         
-        drawing_path = self.check_scanned_drawing_directory
+        drawing_path = self.check_scanned_drawing_directory()
 
+        print(drawing_path, type(drawing_path))
         if drawing_path:
             if os.path.isfile(drawing_path):    
                 response = QtGui.QMessageBox.question(
