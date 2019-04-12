@@ -1114,7 +1114,7 @@ class Drawing(QtCore.QObject):
             self._group_lst[i].number = i
 
         self._last_update_time = datetime.now()
-        self.save_info()
+        self.save_info(config)
         
     def save_info(self, config):
         

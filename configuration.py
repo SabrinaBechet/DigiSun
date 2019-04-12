@@ -144,7 +144,7 @@ class Config():
             self.archdrawing_directory,
             my_datetime.strftime(dir_strftime))
         
-        print('directory structure: ', self.directory)
+        # print('directory structure: ', self.directory)
 
         self.file_path = os.path.join(self.directory, self.filename)
               
