@@ -1268,7 +1268,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             pass
 
     def update_all_dipole_button(self):
-        print("update all dipole button")
+        # print("update all dipole button")
         group_count = self.drawing_lst[self.current_count].group_count
         for i in range(group_count):
             self.update_dipole_button(i)
@@ -1288,7 +1288,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             missing_info = self.check_information_complete(group_index,
                                                            'dipole')
 
-            print(missing_info)
+            # print(missing_info)
 
             if missing_info:
                 self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
@@ -1890,7 +1890,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             self.but_next.setDisabled(True)
             self.but_previous.setDisabled(True)
 
-        print("check counter", self.current_count)
+        # print("check counter", self.current_count)
 
     def update_session_lineEdit(self):
         self.goto_drawing_linedit.setText(str(self.current_count + 1))

@@ -145,14 +145,6 @@ class mainWindow(QtGui.QMainWindow):
         self.drawing_analyse.set_drawing_lst(lst_drawing)
         self.drawing_analyse.set_drawing()
 
-    def change_config_file(self):
-        config_filename = QtGui.QFileDialog.getOpenFileName(self,
-                                                                "configuration file",
-                                                                "",
-                                                                "Text files (*.ini)")
-        
-        self.config = configuration.Config(config_filename)
-    
 
     def set_menuBar(self):
         menuBar = QtGui.QMenuBar()
@@ -160,11 +152,11 @@ class mainWindow(QtGui.QMainWindow):
         self.setMenuBar(menuBar)
 
         menu_mode = menuBar.addMenu('Mode')
-        menu_parameters = menuBar.addMenu('Config')
+        #menu_parameters = menuBar.addMenu('Config')
         menu_help = menuBar.addMenu('Help')
 
-        action_change_directory = QtGui.QAction('Drawings directory', self)
-        action_change_directory.triggered.connect(self.change_config_file)
+        #action_change_directory = QtGui.QAction('Drawings directory', self)
+        #action_change_directory.triggered.connect(self.change_config_file)
         
         action_goTo_daily_scan= QtGui.QAction('Daily scan', self)
         action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
@@ -191,7 +183,7 @@ class mainWindow(QtGui.QMainWindow):
                 "<p> Contact: digisun@oma.be " +
                 "<p> Contributors:  see README."))
 
-        menu_parameters.addAction(action_change_directory)
+        #menu_parameters.addAction(action_change_directory)
         
         menu_mode.addAction(action_goTo_daily_scan)
         menu_mode.addAction(action_goTo_analyse)
