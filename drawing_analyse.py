@@ -804,10 +804,10 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 grid_position = [0, 0]
                 groupBoxLine = group_box.GroupBox()
 
-                if self.config.group_number==1:
+                if int(self.config.group_number)==1:
                     group_id = self.drawing_lst[self.current_count]\
                                    .group_lst[i].group_number
-                    groupBoxLine.group_number_linedit.setEnabled(True)
+                    
                     
                 else:
                     group_id = self.drawing_lst[self.current_count]\
@@ -815,7 +815,11 @@ class DrawingAnalysePage(QtGui.QMainWindow):
 
                 groupBoxLine.set_title(str(group_id),
                                        grid_position)
-                
+
+                if int(self.config.group_number)==1:
+                    groupBoxLine.group_number_linedit.setEnabled(True)
+
+                    
                 #if show_group_number:
                 #    groupBoxLine.group_number_linedit.setEnabled(True)
 
