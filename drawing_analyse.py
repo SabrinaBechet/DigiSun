@@ -819,10 +819,7 @@ class DrawingAnalysePage(QtGui.QMainWindow):
                 if int(self.config.group_number)==1:
                     groupBoxLine.group_number_linedit.setEnabled(True)
 
-                    
-                #if show_group_number:
-                #    groupBoxLine.group_number_linedit.setEnabled(True)
-
+            
                 grid_position[1] += 2
                 groupBoxLine.set_spot_count(
                     self.drawing_lst[self.current_count].group_lst[i].spots,
@@ -1009,17 +1006,20 @@ class DrawingAnalysePage(QtGui.QMainWindow):
             # don't forget : [y, x]
             grid_position = [0, 0]
                         
-            if self.config.group_number==1:
+            if int(self.config.group_number)==1:
                 group_id = self.drawing_lst[self.current_count]\
                                .group_lst[n].group_number
-                self.group_toolbox.group_number_linedit\
-                                  .setEnabled(True)
             else:
                 group_id = self.drawing_lst[self.current_count]\
                                .group_lst[n].number
 
+                
             self.group_toolbox.set_title(str(group_id),
                                         grid_position)
+
+            if int(self.config.group_number)==1:
+                    self.group_toolbox.group_number_linedit\
+                                  .setEnabled(True)
             
             grid_position[1] += 2
             self.group_toolbox.set_spot_count(
