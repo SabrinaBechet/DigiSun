@@ -1,10 +1,10 @@
 [drawings]
-path=/Volumes/INTENSO/disrid
-#path=/Volumes/INTENSO/eth-redfiles
-prefix=loc-d
-#prefix=zloc
+#path=/Volumes/INTENSO/disrid
+path=/Volumes/INTENSO/eth-redfiles
+#prefix=loc-d
+prefix=zloc
 suffix=
-extension=JPG
+extension=jpg
 filename_structure=YYYYmmdd
 directory_structure=YYYY
 
@@ -27,5 +27,5 @@ format=JPEG
 host=digisun.host.irsol.ch
 user=digisun19user
 passwd=digisun19pasw
-name=digisun19db5
+name=digisun19db
 port=36036
