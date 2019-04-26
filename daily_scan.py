@@ -25,20 +25,20 @@ import sys
 import datetime
 import database
 import drawing
-#import scanner
-import configuration
+import scanner
+#import configuration
 from PyQt4 import QtGui, QtCore
 
 class DailyScan(QtGui.QWidget):
 
-    def __init__(self, operator=None):
+    def __init__(self, config, operator=None):
         super(DailyScan, self).__init__()
 
         self.daily_scan_layout = QtGui.QVBoxLayout()
         self.daily_scan_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.setLayout(self.daily_scan_layout)
 
-        self.config = configuration.Config()
+        self.config = config #configuration.Config()
         self.config.set_archdrawing()
         self.config.set_scanner()
         
@@ -56,14 +56,13 @@ class DailyScan(QtGui.QWidget):
         # self.widget_left_layout.addWidget(self.but_scan)
 
     
-        
     def check_scanner(self):
         """
         Check if there is a scanner connected and
         print the settings of the scan.
         """
         if sys.platform == "win32":
-            my_scanner = scanner.scanner()
+            my_scanner = scanner.scanner(self.config)
             scanner_name = my_scanner.get_scanner_name()
             if scanner_name:
                 self.scan_name_linedit.setText(scanner_name[0])
@@ -104,7 +103,7 @@ class DailyScan(QtGui.QWidget):
         my_font = QtGui.QFont("Comic Sans MS", 10)
         title.setFont(my_font)
 
-        uset_db = database.database()
+        uset_db = database.database(self.config)
 
         self.drawing_operator_linedit = QtGui.QLineEdit(self)
         self.drawing_operator_linedit.setText(str(self.operator).upper())
@@ -186,7 +185,7 @@ class DailyScan(QtGui.QWidget):
         Check if the name of the observer and
         operator are valid in the database
         """
-        uset_db = database.database()
+        uset_db = database.database(self.config)
         if (uset_db.exist_in_db(table_name, field, value)):
             self.info_complete[info_name] = True
             if info_name == 'observer':
@@ -238,7 +237,7 @@ class DailyScan(QtGui.QWidget):
         Method that add an entry to the database
         corresponding to the new drawing scanned
         """
-        db = database.database()
+        db = database.database(self.config)
         answer = QtGui.QMessageBox.Yes
         lst_groups = []
         
@@ -291,7 +290,7 @@ class DailyScan(QtGui.QWidget):
             if answer == QtGui.QMessageBox.Yes:
                 # delete the existing groups
                 for index in reversed(range(0, len(lst_groups))):
-                    new_drawing.delete_group(index)
+                    new_drawing.delete_group(self.config, index)
                     
                 
         if answer == QtGui.QMessageBox.Yes:
@@ -317,11 +316,9 @@ class DailyScan(QtGui.QWidget):
     
         
         if loc==1:
-            
             self.config.set_file_path(self.drawing_time)
             filename = self.config.filename
             
-            print("check ", self.config.file_path)
             if os.path.isfile(self.config.file_path):
                 new_drawing = drawing.Drawing()
                 new_drawing.fill_from_daily_scan(
@@ -354,7 +351,7 @@ class DailyScan(QtGui.QWidget):
     
         return [new_drawing]
             
-    def check_scanned_drawing_direcotry(self):
+    def check_scanned_drawing_directory(self):
         """
         - Check that the direcory given in the config file exist, 
         otherwhise exits with a warning message
@@ -393,13 +390,14 @@ class DailyScan(QtGui.QWidget):
                                       'One of the information is not correct')
             return
 
-        my_scanner = scanner.scanner()
+        my_scanner = scanner.scanner(self.config)
         scanner_name = my_scanner.get_scanner_name()
         my_scanner.set_scanner(scanner_name[0])
         my_scanner.set_scan_area()
         
-        drawing_path = self.check_scanned_drawing_directory
+        drawing_path = self.check_scanned_drawing_directory()
 
+        print(drawing_path, type(drawing_path))
         if drawing_path:
             if os.path.isfile(drawing_path):    
                 response = QtGui.QMessageBox.question(

@@ -23,7 +23,7 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 
 import sys
 import os
-import configuration
+#import configuration
 from PIL import Image
 if sys.platform == "win32":
     import twain
@@ -35,9 +35,9 @@ class scanner():
     via the TWAIN protocol (only working on Windows)
     This class is strongly inspired by webagent-scanner on gitHub
     """
-    def __init__(self):
+    def __init__(self, config):
     
-        self.config = configuration.Config()
+        self.config = config
         self.config.set_scanner()
         
 
