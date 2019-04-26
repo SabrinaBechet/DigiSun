@@ -187,8 +187,8 @@ class YearListPage(ListPage):
 
     def get_year_dico(self):
         
-        datetime_drawing_min = datetime(1800,1,1)
-        datetime_drawing_max = datetime.now()
+        datetime_drawing_min = datetime(1800, 1, 1)
+        datetime_drawing_max = datetime(2100, 1, 1)#.now()
         db = database.database(self.config)
         tuple_drawings = db\
             .get_all_in_time_interval("drawings",
