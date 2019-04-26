@@ -26,7 +26,6 @@ import collections
 from datetime import datetime, timedelta
 import database
 import drawing
-import configuration
 from PyQt4 import QtGui, QtCore
 
 
@@ -37,29 +36,31 @@ class ListPage(QtGui.QWidget):
     """
     def __init__(self):
         super(ListPage, self).__init__()
-        self.config = configuration.Config()
-        self.config.set_drawing_analyse()
-        self.level_info = self.config.level
+        #self.config = configuration.Config()
+        #self.config.set_drawing_analyse()
+        #self.level_info = self.config.level
         
         self.table = QtGui.QTableWidget()
-        if 'area' in self.level_info:
+        """if 'area' in self.level_info:
             self.table.setColumnCount(5)
         else:
             self.table.setColumnCount(4)
-
+        """
         if sys.platform=='darwin':
             self.setAttribute(QtCore.Qt.WA_MacNormalSize)
             
-    def draw_table(self, dico):
+    def draw_table(self, dico, level_info):
         """
         Method that draws the table with the list of drawings and
         the fraction of calibrated/analysed/area done.
         """
         #self.table.horizontalHeader().setDefaultSectionSize(150)
-        if 'area' in self.level_info:
+        if 'area' in level_info:
+            self.table.setColumnCount(5)
             self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
                                                   "analysed", "area"])
         else:
+            self.table.setColumnCount(4)
             self.table.setHorizontalHeaderLabels(["date", " # total", "calibrated",
                                                   "analysed"])
 
@@ -83,7 +84,7 @@ class ListPage(QtGui.QWidget):
             
             self.table.setCellWidget(count, 2, progressBar_calib)
             self.table.setCellWidget(count, 3, progressBar_analysed)
-            if 'area' in self.level_info:
+            if 'area' in level_info:
                 self.table.setCellWidget(count, 4, progressBar_area)
 
             count+=1
@@ -163,7 +164,7 @@ class YearListPage(ListPage):
     - draw_table
     - get_lst_from_database
     """
-    def __init__(self):
+    def __init__(self, config):
         """
         Define the QVBoxLayout and add two widgets:
         - the 'select' button
@@ -171,9 +172,12 @@ class YearListPage(ListPage):
         """
         super(YearListPage, self).__init__()
         
+        self.config = config
+        self.config.set_drawing_analyse()
+        
         self.get_year_dico()
         self.table.setRowCount(len(self.dict_year))
-        self.draw_table(self.dict_year)
+        self.draw_table(self.dict_year, self.config.level)
 
         self.but_select = QtGui.QPushButton("select year", self)
         self.layout = QtGui.QVBoxLayout()
@@ -185,7 +189,7 @@ class YearListPage(ListPage):
         
         datetime_drawing_min = datetime(1800,1,1)
         datetime_drawing_max = datetime.now()
-        db = database.database()
+        db = database.database(self.config)
         tuple_drawings = db\
             .get_all_in_time_interval("drawings",
                                       datetime_drawing_min,
@@ -251,7 +255,7 @@ class BulkViewPage(QtGui.QWidget):
     - center :  selection per month for a given date/year
     - right : selection of days for a given month
     """
-    def __init__(self):
+    def __init__(self, config):
         super(BulkViewPage, self).__init__()
         self.setLayout(QtGui.QVBoxLayout())
 
@@ -300,10 +304,13 @@ class BulkViewPage(QtGui.QWidget):
 
 class BulkAnalysePage(BulkViewPage):
 
-    def __init__(self):
-        super(BulkAnalysePage, self).__init__()
+    def __init__(self, config):
+        super(BulkAnalysePage, self).__init__(config)
 
-        self.year_list_page = YearListPage()
+        self.config = config
+        #self.config.set_drawing_analyse()
+        
+        self.year_list_page = YearListPage(self.config)
         self.month_list_page = MonthListPage()
         self.day_list_page = DayListPage()
         self.date_selection_page = DateSelectionPage()
@@ -364,7 +371,7 @@ class BulkAnalysePage(BulkViewPage):
         and fill the Drawing object.
         """
         start_set_drawing = time.clock()
-        db = database.database()
+        db = database.database(self.config)
 
         #print("check day interval",
         #      self.datetime_drawing_min_day,
@@ -534,7 +541,7 @@ class BulkAnalysePage(BulkViewPage):
         nb of calibrated/analyzed drawings
         """
     
-        db = database.database()
+        db = database.database(self.config)
         tuple_drawings = db\
             .get_all_in_time_interval("drawings",
                                       self.datetime_drawing_min_month,
@@ -572,7 +579,7 @@ class BulkAnalysePage(BulkViewPage):
 
     def get_day_dico(self):
       
-        db = database.database()
+        db = database.database(self.config)
         tuple_drawings = db\
             .get_all_in_time_interval("drawings",
                                       self.datetime_drawing_min_day,
@@ -689,7 +696,7 @@ class BulkAnalysePage(BulkViewPage):
         if year_selected:
             self.get_month_dico()
             self.month_list_page.table.setRowCount(len(self.dict_month))
-            self.month_list_page.draw_table(self.dict_month)
+            self.month_list_page.draw_table(self.dict_month, self.config.level)
             self.month_list_page.setMinimumWidth(self.width()/2.)
             self.month_list_page.setMinimumHeight(self.height()/2.)
             self.widget_center_layout.addWidget(self.month_list_page,
@@ -704,7 +711,7 @@ class BulkAnalysePage(BulkViewPage):
             self.widget_right.setMaximumWidth(580)
             self.get_day_dico()
             self.day_list_page.table.setRowCount(len(self.dict_day))
-            self.day_list_page.draw_table(self.dict_day)
+            self.day_list_page.draw_table(self.dict_day, self.config.level)
             
             self.day_list_page.setMinimumWidth(self.width()/2.)
             self.day_list_page.setMinimumHeight(self.height()/2.)
@@ -714,7 +721,8 @@ class BulkAnalysePage(BulkViewPage):
 
     def delete_drawing(self):
         """
-        TO do: delete drawing from directory
+        This method delete the entry of the selected drawing in the database.
+        Note: it does NOT delete the drawing from its directory.
         """
         try:
             selection = self.day_list_page.table.selectionModel()
@@ -742,9 +750,9 @@ class BulkAnalysePage(BulkViewPage):
                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
             if response == QtGui.QMessageBox.Yes:
                 
-                db = database.database()
+                db = database.database(self.config)
                 db.delete_drawing("drawings", datetime_to_delete)
-                db.delete_drawing("groups", datetime_to_delete)
+                db.delete_drawing("sGroups", datetime_to_delete)
                 db.delete_drawing("calibrations", datetime_to_delete)
                 QtGui.QMessageBox.warning(self,
                                       'drawing removal',
