@@ -1,0 +1,12 @@
+NEXT VERSION : v2.0.0 (Carmina Camelia)
+new functionnalities:
+- Version that works in Uccle and Locarno
+- Validation ok? -> need more test!!!!
+- if not group number, digisun number
+- recalibration -> update group position
+- create digisun.ini file the first time, stop tracking digisun.ini
+- new table with date and version
+- structure different for the config file -> read it only in one place
+
+LAST VERSION : v1.0.0 (Busy Bee)
+First functionnal version.

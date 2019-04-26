@@ -26,7 +26,7 @@ from PyQt4 import QtGui, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "sabrina.bechet@oma.be"
-__date__ = "February 2019"
+__date__ = "April 2019"
 
 
 def inputVoid(self):
@@ -35,12 +35,12 @@ def inputVoid(self):
 
 class DrawingInformationWidget(QtGui.QWidget):
 
-    def __init__(self):
+    def __init__(self, config):
         super(DrawingInformationWidget, self).__init__()
         form_layout = QtGui.QFormLayout()
         form_layout.setSpacing(10)
 
-        uset_db = database.database()
+        uset_db = database.database(config)
 
         self.drawing_operator = QtGui.QLineEdit(self)
         self.drawing_operator.setEnabled(True)

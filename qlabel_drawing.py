@@ -103,9 +103,9 @@ class QLabelDrawing(QtGui.QLabel):
 
         self.frame_size = 0
 
-    def set_msg_no_entry(self):
+    def set_msg_no_entry(self, date):
         my_font = QtGui.QFont("Comic Sans MS", 20)
-        self.setText('No drawings corresponding to this entry')
+        self.setText('No drawings corresponding to the date ' + str(date))
         self.setFont(my_font)
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -845,13 +845,27 @@ class QLabelDrawing(QtGui.QLabel):
                                            calib_pt2_y)
 	
             self.current_drawing.check_raw_positions(self.drawing_height)	
-            """for el in self.current_drawing.group_lst:
-                self.current_drawing.change_group_position(int(el.number), 
-                                                           float(el.latitude), 
-                                                           float(el.longitude), 
-                                                           int(el.posX), 
-                                                           int(el.posY))
-            """
+            for el in self.current_drawing.group_lst:
+
+                posx, posy, posz = coordinates.cartesian_from_HGC_upper_left_origin(
+                    self.current_drawing.calibrated_center.x,
+                    self.current_drawing.calibrated_center.y,
+                    self.current_drawing.calibrated_north.x,
+                    self.current_drawing.calibrated_north.y,
+                    el.longitude,
+                    el.latitude,
+                    angle_P_drawing,
+                    self.current_drawing.angle_B,
+                    self.current_drawing.angle_L,
+                    self.drawing_height)
+                
+                self.current_drawing.change_group_position(
+                    int(el.number), 
+                    float(el.latitude), 
+                    float(el.longitude), 
+                    int(posx), 
+                    int(posy))
+            
             self.zoom_in(1/5.)
             self.large_grid_overlay.value = True
             self.group_visu.value = True
