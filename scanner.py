@@ -117,15 +117,3 @@ class scanner():
             self.scanner.destroy()
         self.scanner = None
 
-
-if __name__ == '__main__':
-    print('started..')
-    my_scanner = scanner()
-    scanner_name = my_scanner.get_scanner_name()
-    my_scanner.set_scanner(scanner_name[0])
-    my_scanner.set_scan_area()
-    dir_name = os.path.join('C:\Users',
-                            'USET - SILSO',
-                            'DigiSun_2018',
-                            'first.jpg')
-    my_scanner.scan(dir_name)
