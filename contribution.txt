@@ -1,0 +1,33 @@
+Contributors: USET-SILSO team (ROB), Mael Panouillot.
+
+Icons contributions:
+
+- Icons designed by Smashicons from Flaticon:
+   - toolbar zoom-in
+   - toolbar zoom-out
+   - toolbar large grid
+   - toolbar small grid
+   - toolbar group visu
+   - toolbar helper grid
+   - toolbar calibration
+   - toolbar change group position
+   - surface module zoom-in
+   - surface module zoom-out
+
+- Icons designed by Freepik from Flaticon:
+   - toolbar (and group box) area
+   - surface module expand frame
+   - surface module reduce frame
+   - surface module cut polygon
+   - surface module draw black pixel
+   - surface module draw white pixel
+   - surface module white bucket
+   - surface module black bucket
+   
+
+- Icons designed by Pixel_perfect from Flaticon:
+   - surface module reset
+
+- Icons designed by Darrio_Ferrando from Flaticon:
+   - surface module draw polygon
+
