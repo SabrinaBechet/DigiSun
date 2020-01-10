@@ -166,7 +166,7 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow('Operator:', self.drawing_operator_linedit)
         form_layout.addRow('Observer:', self.drawing_observer_linedit)
         form_layout.addRow('Date:', self.drawing_date_linedit)
-        form_layout.addRow('Time:', self.drawing_time_linedit)
+        form_layout.addRow('Time (UT):', self.drawing_time_linedit)
         form_layout.addRow('Type:', self.drawing_type)
         form_layout.addRow('Quality:', self.drawing_quality)
         form_layout.addRow(self.but_scan)
