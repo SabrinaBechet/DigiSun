@@ -19,7 +19,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
-
+import digisun
 import pymysql
 
 __author__ = "Sabrina Bechet"
@@ -77,7 +77,6 @@ class database():
         return result_lst
             
     def get_all_in_time_interval(self, table_name, date_min, date_max):
-        
         self.cursor.execute('SELECT * FROM ' + table_name +
                             ' WHERE DateTime >= %s && ' +
                             ' DateTime <= %s ;',
@@ -99,15 +98,12 @@ class database():
         result = self.cursor.fetchall()
         return result
 
-
-    
     def get_values(self, field, table_name):
         self.cursor.execute('SELECT ' + field + ' FROM ' +
                             table_name)
 
         self.db.commit()
         result = self.cursor.fetchall()
-        # print(result)
         return result
 
     def get_drawing_information(self, table_name, drawing_type):
@@ -120,8 +116,6 @@ class database():
         return result
     
     def delete_group_info(self, datetime, number):
-        
-
         self.cursor.execute('DELETE FROM  sGroups where DateTime <=> %s and '
                             'DigiSunNumber >= %s; ',
                             (str(datetime), str(number)))
@@ -141,7 +135,8 @@ class database():
                             'Dipole2Long, DeprojArea_msh, RawArea_px, '
                             'ProjArea_msd, GSpot, PosX, PosY, '
                             'Dipole1PosX, Dipole1PosY, Dipole2PosX, '
-                            'Dipole2PosY, LargestSpot, GroupNumber, GroupExtra1, GroupExtra2, GroupExtra3 ) '
+                            'Dipole2PosY, LargestSpot, GroupNumber, '
+                            'GroupExtra1, GroupExtra2, GroupExtra3 ) '
                             'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, '
                             '%s, %s, %s, %s, %s, %s, %s, %s,'
                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ',
@@ -159,6 +154,26 @@ class database():
                             '(%s, %s, %s, %s, %s, %s, %s) ', var)
         self.db.commit()
 
+    def write_digisun_history(self, drawing_datetime):
+
+        self.cursor.execute('select version_firstUpdate from digisun_history '
+                            'where DateTime <=> %s',
+                            str(drawing_datetime))
+        self.db.commit()
+        result = self.cursor.fetchall()
+
+        if len(result)<1:
+            self.cursor.execute('REPLACE INTO digisun_history (DateTime, version_firstUpdate) '
+                                'values '
+                                '(%s, %s) ', (drawing_datetime, digisun.__version__))
+            self.db.commit()
+
+        else:
+            self.cursor.execute('UPDATE digisun_history set version_lastUpdate=%s'
+                                'where datetime <=>%s',
+                                (digisun.__version__, drawing_datetime))
+            self.db.commit()
+    
     def write_drawing_info(self, *var):
         """
         Write in the database all the info related
@@ -235,13 +250,14 @@ class database():
         self.db.commit()
         result = self.cursor.fetchall()
         return result
-
+    
+    """
     def replace_drawing(self, drawing):
-        """
+        
         REPLACE works exactly like INSERT, except that if an old row
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
-        """
+        
         self.cursor.execute('REPLACE INTO drawings (Datetime, TypeOfDrawing,'
                             'Quality, Observer, CarringtonRotation, JulianDate,'
                             'Calibrated, Analyzed, GroupCount, SpotCount,'
@@ -259,7 +275,8 @@ class database():
                              drawing.path, drawing.operator,
                              drawing.last_update_time))
         self.db.commit()
-
+    """
+        
     def get_variable_settings(self, variable):
         self.cursor.execute('SELECT usetvalue FROM technical_settings'
                             'WHERE usetkey=%s',
