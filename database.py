@@ -128,7 +128,7 @@ class database():
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
         """
-        self.cursor.execute('REPLACE INTO sGroups (DateTime, DigiSunNumber, Latitude, '
+        """self.cursor.execute('REPLACE INTO sGroups (DateTime, DigiSunNumber, Latitude, '
                             'Longitude, Lcm, CenterToLimbAngle, Quadrant, '
                             'McIntosh, Zurich, Spots, '
                             'Dipole1Lat, Dipole1Long, Dipole2Lat, '
@@ -141,6 +141,47 @@ class database():
                             '%s, %s, %s, %s, %s, %s, %s, %s,'
                             '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ',
                             var)
+        """
+        self.cursor.execute('INSERT INTO sGroups (DateTime, DigiSunNumber, Latitude, '
+                            'Longitude, Lcm, CenterToLimbAngle, Quadrant, '
+                            'McIntosh, Zurich, Spots, '
+                            'Dipole1Lat, Dipole1Long, Dipole2Lat, '
+                            'Dipole2Long, DeprojArea_msh, RawArea_px, '
+                            'ProjArea_msd, GSpot, PosX, PosY, '
+                            'Dipole1PosX, Dipole1PosY, Dipole2PosX, '
+                            'Dipole2PosY, LargestSpot, GroupNumber, '
+                            'GroupExtra1, GroupExtra2, GroupExtra3 ) '
+                            'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, '
+                            '%s, %s, %s, %s, %s, %s, %s, %s,'
+                            '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) '
+                            'ON DUPLICATE KEY UPDATE '
+                            'DigiSunNumber=VALUES(DigiSunNumber), '
+                            'Latitude=VALUES(Latitude), Longitude=VALUES(Longitude), '
+                            'Lcm=VALUES(Lcm), '
+                            'CenterToLimbAngle=VALUES(CenterToLimbAngle), '
+                            'Quadrant=VALUES(Quadrant), '
+                            'McIntosh=VALUES(McIntosh), Zurich=VALUES(Zurich), '
+                            'Spots=VALUES(Spots), '
+                            'Dipole1Lat=VALUES(Dipole1Lat), '
+                            'Dipole1Long=VALUES(Dipole1Long), '
+                            'Dipole2Lat=VALUES(Dipole2Lat), '
+                            'Dipole2Long=VALUES(Dipole2Long), '
+                            'DeprojArea_msh=VALUES(DeprojArea_msh), '
+                            'RawArea_px=VALUES(RawArea_px), '
+                            'ProjArea_msd=VALUES(ProjArea_msd), '
+                            'GSpot=VALUES(GSpot), '
+                            'PosX=VALUES(PosX), PosY=VALUES(PosY), '
+                            'Dipole1PosX=VALUES(Dipole1PosX), '
+                            'Dipole1PosY=VALUES(Dipole1PosY), '
+                            'Dipole2PosX=VALUES(Dipole2PosX), '
+                            'Dipole2PosY=VALUES(Dipole2PosY), '
+                            'LargestSpot=VALUES(LargestSpot), '
+                            'GroupNumber=VALUES(GroupNumber), '
+                            'GroupExtra1=VALUES(GroupExtra1), '
+                            'GroupExtra2=VALUES(GroupExtra2), '
+                            'GroupExtra3=VALUES(GroupExtra3) ',
+                            var)
+        
         self.db.commit()
 
     def write_calibration_info(self, *var):
@@ -148,10 +189,24 @@ class database():
         Write in the database all the info related
         to the calibration identified by its datetime
         """
-        self.cursor.execute('REPLACE INTO calibrations (NorthX, NorthY, '
+        """self.cursor.execute('REPLACE INTO calibrations (NorthX, NorthY, '
                             'CenterX, CenterY, Radius, AngleScan, DateTime) '
                             'values '
                             '(%s, %s, %s, %s, %s, %s, %s) ', var)
+        """
+        self.cursor.execute('INSERT INTO calibrations (NorthX, NorthY, '
+                            'CenterX, CenterY, Radius, AngleScan, DateTime) '
+                            'values '
+                            '(%s, %s, %s, %s, %s, %s, %s) '
+                            'ON DUPLICATE KEY UPDATE '
+                            'NorthX=VALUES(NorthX), '
+                            'NorthY=VALUES(NorthY), '
+                            'CenterX=VALUES(CenterX), '
+                            'CenterY=VALUES(CenterY), '
+                            'Radius=VALUES(Radius), '
+                            'AngleScan=VALUES(AngleScan)',
+                            var)
+        
         self.db.commit()
 
     def write_digisun_history(self, drawing_datetime):
@@ -163,9 +218,10 @@ class database():
         result = self.cursor.fetchall()
 
         if len(result)<1:
-            self.cursor.execute('REPLACE INTO digisun_history (DateTime, version_firstUpdate) '
+            self.cursor.execute('INSERT INTO digisun_history (DateTime, version_firstUpdate) '
                                 'values '
-                                '(%s, %s) ', (drawing_datetime, digisun.__version__))
+                                '(%s, %s) ',
+                                (drawing_datetime, digisun.__version__))
             self.db.commit()
 
         else:
@@ -179,14 +235,30 @@ class database():
         Write in the database all the info related
         to a drawing identified by its datetime
         """
-        self.cursor.execute('REPLACE into drawings (TypeOfDrawing, Quality, '
+        self.cursor.execute('INSERT into drawings (TypeOfDrawing, Quality, '
                             'Observer, CarringtonRotation,'
                             'JulianDate, Calibrated, Analyzed, GroupCount, '
                             'SpotCount, Wolf, AngleP, '
                             'AngleB, AngleL, Filename, Operator, LastUpdateTime, '
                             'DateTime) values '
                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
-                            '%s, %s, %s, %s, %s, %s, %s)', var)
+                            '%s, %s, %s, %s, %s, %s, %s) '
+                            'ON DUPLICATE KEY UPDATE '
+                            'TypeOfDrawing=VALUES(TypeOfDrawing), '
+                            'Quality=VALUES(Quality), '
+                            'Observer=VALUES(Observer), '
+                            'CarringtonRotation=VALUES(CarringtonRotation), '
+                            'JulianDate=VALUES(JulianDate), '
+                            'Calibrated=VALUES(Calibrated), '
+                            'Analyzed=VALUES(Analyzed), '
+                            'GroupCount=VALUES(GroupCount), '
+                            'SpotCount=VALUES(SpotCount), '
+                            'Wolf=VALUES(Wolf), AngleP=VALUES(AngleP), '
+                            'AngleB=VALUES(AngleB), AngleL=VALUES(AngleL), '
+                            'Filename=VALUES(Filename), '
+                            'Operator=VALUES(Operator), '
+                            'LastUpdateTime=VALUES(LastUpdateTime) ',
+                            var)
 
         self.db.commit()
 
