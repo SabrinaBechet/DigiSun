@@ -21,3 +21,19 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 
 -------------------------------------------------------------------------------
 
+REQUIRED DEPENDENCIES:
+
+* python3 
+
+Which can be downloaded and installed from https://www.python.org
+
+* pyqt5 
+* pymysql
+* configparser
+* numpy
+* pillow 
+* shapely 
+
+Which can be installed with pip (pip3) in a shell with:
+
+pip3 install pyqt5 pymysql configparser numpy pillow shapely
