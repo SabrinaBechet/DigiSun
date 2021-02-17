@@ -68,7 +68,7 @@ class Toolbar(QtWidgets.QToolBar):
         
         
         
-        self.zoom_in_but = QtGui.QToolButton(self)
+        self.zoom_in_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.zoom_in_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.zoom_in_but.setToolTip("zoom in: \'+\'")
@@ -79,7 +79,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.zoom_in_but.setIcon(QtGui.QIcon(zoom_in_dict['path']))
         self.zoom_in_but.setShortcut(QtGui.QKeySequence(zoom_in_dict['shortcut']))
         
-        self.zoom_out_but = QtGui.QToolButton(self)
+        self.zoom_out_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.zoom_out_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.zoom_out_but.setToolTip("zoom out: \'-\'")            
@@ -90,7 +90,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.zoom_out_but.setIcon(QtGui.QIcon(zoom_out_dict['path']))
         self.zoom_out_but.setShortcut(QtGui.QKeySequence(zoom_out_dict['shortcut']))
 
-        self.quick_zoom_but = QtGui.QToolButton(self)
+        self.quick_zoom_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.quick_zoom_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.quick_zoom_but.setToolTip("zoom-to-fit: \'Alt+f\'")
@@ -102,7 +102,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.quick_zoom_but.setIcon(QtGui.QIcon(zoom_to_fit_dict['path']))
         self.quick_zoom_but.setShortcut(QtGui.QKeySequence(zoom_to_fit_dict['shortcut']))
 
-        self.large_grid_but = QtGui.QToolButton(self)
+        self.large_grid_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.large_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.large_grid_but.setToolTip("large grid: \'Alt+a\'")
@@ -114,7 +114,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.large_grid_but.setIcon(QtGui.QIcon(large_grid_dict['path']))
         self.large_grid_but.setShortcut(QtGui.QKeySequence("Alt+a"))
              
-        self.small_grid_but = QtGui.QToolButton(self)
+        self.small_grid_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.small_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.small_grid_but.setToolTip("small grid: \'Alt+s\'")
@@ -126,7 +126,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.small_grid_but.setIcon(QtGui.QIcon(small_grid_dict['path']))
         self.small_grid_but.setShortcut(QtGui.QKeySequence("Alt+s"))
 
-        self.group_visu_but = QtGui.QToolButton(self)
+        self.group_visu_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.group_visu_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.group_visu_but.setToolTip("group visu: \'Alt+r\'")
@@ -139,7 +139,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.group_visu_but.setShortcut(QtGui.QKeySequence("Alt+r"))
 
         if 'dipole' in level_info:
-            self.dipole_visu_but = QtGui.QToolButton(self)
+            self.dipole_visu_but = QtWidgets.QToolButton(self)
             if sys.platform=='darwin':
                 self.dipole_visu_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
                 self.dipole_visu_but.setToolTip("dipole visu: \'Alt+d\'")
@@ -151,7 +151,7 @@ class Toolbar(QtWidgets.QToolBar):
             self.dipole_visu_but.setIcon(QtGui.QIcon(dipole_visu_dict['path']))
             self.dipole_visu_but.setShortcut(QtGui.QKeySequence("Alt+d"))
 
-        self.helper_grid_but = QtGui.QToolButton(self)
+        self.helper_grid_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.helper_grid_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.helper_grid_but.setToolTip("helper grid: \'z\'")
@@ -163,7 +163,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.helper_grid_but.setIcon(QtGui.QIcon(helper_grid_dict['path']))
         self.helper_grid_but.setShortcut(QtGui.QKeySequence("e"))
         
-        self.calibration_but = QtGui.QToolButton(self)
+        self.calibration_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.calibration_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.calibration_but.setToolTip("calibration: \'c\'")
@@ -175,7 +175,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.calibration_but.setIcon(QtGui.QIcon(calibration_dict['path']))
         self.calibration_but.setShortcut(QtGui.QKeySequence("c"))
 
-        self.add_group_but = QtGui.QToolButton(self)
+        self.add_group_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.add_group_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.add_group_but.setToolTip("add group: \'r\'")
@@ -187,7 +187,7 @@ class Toolbar(QtWidgets.QToolBar):
         self.add_group_but.setIcon(QtGui.QIcon(add_group_dict['path']))
         self.add_group_but.setShortcut(QtGui.QKeySequence("r"))
 
-        self.change_group_pos_but = QtGui.QToolButton(self)
+        self.change_group_pos_but = QtWidgets.QToolButton(self)
         if sys.platform=='darwin':
             self.change_group_pos_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
             self.change_group_pos_but.setToolTip("group pos: \'z\'")
@@ -220,7 +220,7 @@ class Toolbar(QtWidgets.QToolBar):
 
         
         if 'dipole' in level_info:
-            self.add_dipole_but = QtGui.QToolButton(self)
+            self.add_dipole_but = QtWidgets.QToolButton(self)
             if sys.platform=='darwin':
                 self.add_dipole_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
                 self.add_dipole_but.setToolTip("add dipole:\'d\'")
@@ -234,7 +234,7 @@ class Toolbar(QtWidgets.QToolBar):
             self.addWidget(self.add_dipole_but)
 
         if 'area' in level_info:
-            self.surface_but = QtGui.QToolButton(self)
+            self.surface_but = QtWidgets.QToolButton(self)
             if sys.platform=='darwin':
                 self.surface_but.setAttribute(QtCore.Qt.WA_MacNormalSize)
                 self.surface_but.setToolTip("Area: \'a\'")

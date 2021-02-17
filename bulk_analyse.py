@@ -40,7 +40,7 @@ class ListPage(QtWidgets.QWidget):
         #self.config.set_drawing_analyse()
         #self.level_info = self.config.level
         
-        self.table = QtGui.QTableWidget()
+        self.table = QtWidgets.QTableWidget()
         """if 'area' in self.level_info:
             self.table.setColumnCount(5)
         else:
@@ -67,16 +67,16 @@ class ListPage(QtWidgets.QWidget):
         count = 0
         for dico_keys, dico_values in dico.items():
 
-            date_drawing = QtGui.QTableWidgetItem(str(dico_values[0]))
+            date_drawing = QtWidgets.QTableWidgetItem(str(dico_values[0]))
         
-            tot_number_drawing = QtGui.QTableWidgetItem(str(dico_values[1]))
+            tot_number_drawing = QtWidgets.QTableWidgetItem(str(dico_values[1]))
             
             self.table.setItem(count, 0, date_drawing)
             self.table.setItem(count, 1, tot_number_drawing)
             
-            progressBar_calib = QtGui.QProgressBar()
-            progressBar_analysed = QtGui.QProgressBar()
-            progressBar_area = QtGui.QProgressBar()
+            progressBar_calib = QtWidgets.QProgressBar()
+            progressBar_analysed = QtWidgets.QProgressBar()
+            progressBar_area = QtWidgets.QProgressBar()
  
             progressBar_calib.setValue(dico_values[2])
             progressBar_analysed.setValue(dico_values[3])
@@ -118,7 +118,7 @@ class DayListPage(ListPage):
         self.but_delete = QtWidgets.QPushButton("delete drawing", self)
         self.but_delete.setMaximumWidth(200)
         
-        day_list_layout = QtGui.QVBoxLayout()
+        day_list_layout = QtWidgets.QVBoxLayout()
         day_list_layout.addWidget(self.table)
         day_list_layout.addWidget(self.but_select)
         day_list_layout.addWidget(self.but_delete)
@@ -150,7 +150,7 @@ class MonthListPage(ListPage):
         if sys.platform=='darwin':
             self.but_select.setAttribute(QtCore.Qt.WA_MacNormalSize)
 
-        month_list_layout = QtGui.QVBoxLayout()
+        month_list_layout = QtWidgets.QVBoxLayout()
         month_list_layout.addWidget(self.table)
         month_list_layout.addWidget(self.but_select)
         month_list_layout.addWidget(self.but_all_day_drawings)
@@ -180,7 +180,7 @@ class YearListPage(ListPage):
         self.draw_table(self.dict_year, self.config.level)
 
         self.but_select = QtWidgets.QPushButton("select year", self)
-        self.layout = QtGui.QVBoxLayout()
+        self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.table)
         self.layout.addWidget(self.but_select)
         self.setLayout(self.layout)
@@ -228,13 +228,13 @@ class DateSelectionPage(QtWidgets.QWidget):
     def __init__(self):
         super(DateSelectionPage, self).__init__()
 
-        layout_date_selection = QtGui.QHBoxLayout()
+        layout_date_selection = QtWidgets.QHBoxLayout()
 
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
 
-        self.start_date = QtGui.QDateEdit()
+        self.start_date = QtWidgets.QDateEdit()
         self.start_date.setDisplayFormat("dd/MM/yyyy")
-        self.end_date = QtGui.QDateEdit()
+        self.end_date = QtWidgets.QDateEdit()
         self.end_date.setDisplayFormat("dd/MM/yyyy")
 
         self.but_select = QtWidgets.QPushButton("select")
@@ -257,45 +257,45 @@ class BulkViewPage(QtWidgets.QWidget):
     """
     def __init__(self, config):
         super(BulkViewPage, self).__init__()
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
         self.max_width = 600
 
         self.widget_right = QtWidgets.QWidget()
         self.widget_right.setStyleSheet("background-color:lightgray;")
-        self.widget_right_layout = QtGui.QVBoxLayout()
+        self.widget_right_layout = QtWidgets.QVBoxLayout()
         self.widget_right.setLayout(self.widget_right_layout)
         self.widget_right.setMinimumWidth(0)
         self.widget_right.setMaximumWidth(10)
         
         self.widget_center = QtWidgets.QWidget()
         self.widget_center.setStyleSheet("background-color:lightgray;")
-        self.widget_center_layout = QtGui.QVBoxLayout()
+        self.widget_center_layout = QtWidgets.QVBoxLayout()
         self.widget_center.setLayout(self.widget_center_layout)
         self.widget_center.setMinimumWidth(200)
 
         self.widget_left_up = QtWidgets.QWidget()
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
-        self.widget_left_layout_up = QtGui.QVBoxLayout()
+        self.widget_left_layout_up = QtWidgets.QVBoxLayout()
         self.widget_left_up.setLayout(self.widget_left_layout_up)
         self.label_left_up = QtWidgets.QLabel('Drawing selection per date: ')
         self.widget_left_up.layout().addWidget(self.label_left_up)
         
         self.widget_left_down = QtWidgets.QWidget()
         self.widget_left_down.setStyleSheet("background-color:white;")
-        self.widget_left_layout_down = QtGui.QVBoxLayout()
+        self.widget_left_layout_down = QtWidgets.QVBoxLayout()
         self.widget_left_down.setLayout(self.widget_left_layout_down)
         title_left = QtWidgets.QLabel("Drawing selection per year:")
         title_left.setContentsMargins(0, 5, 0, 5)
         self.widget_left_layout_down.addWidget(title_left)
         
         
-        splitter_left = QtGui.QSplitter(QtCore.Qt.Vertical, self)
+        splitter_left = QtWidgets.QSplitter(QtCore.Qt.Vertical, self)
         self.layout().addWidget(splitter_left)
         splitter_left.addWidget(self.widget_left_up)
         splitter_left.addWidget(self.widget_left_down)
 
-        splitter_main = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
+        splitter_main = QtWidgets.QSplitter(QtCore.Qt.Horizontal, self)
         self.layout().addWidget(splitter_main)
         splitter_main.addWidget(splitter_left)
         splitter_main.addWidget(self.widget_center)
@@ -370,7 +370,7 @@ class BulkAnalysePage(BulkViewPage):
         in [self.datetime_drawing_min, self.datetime_drawing_max]
         and fill the Drawing object.
         """
-        start_set_drawing = time.clock()
+        start_set_drawing = time.process_time()
         db = database.database(self.config)
 
         #print("check day interval",
@@ -395,7 +395,7 @@ class BulkAnalysePage(BulkViewPage):
             lst_groups_field = db.get_all_fields("sGroups")
             
         except AttributeError:
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Month selection",
                           "You did not specify a month!")
@@ -429,7 +429,7 @@ class BulkAnalysePage(BulkViewPage):
 
             drawing_lst.append(drawing_tmp)
 
-        end_set_drawing = time.clock()
+        end_set_drawing = time.process_time()
         # print("time for set drawing: ",
         #      end_set_drawing - start_set_drawing)
 
@@ -471,7 +471,7 @@ class BulkAnalysePage(BulkViewPage):
                                                        12, 31, 23, 59)
             return True
         except AttributeError:
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Year selection",
                           "Please select a year.")
@@ -497,7 +497,7 @@ class BulkAnalysePage(BulkViewPage):
             return True
         
         except AttributeError:
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Day selection",
                           "Please select a day.")
@@ -529,7 +529,7 @@ class BulkAnalysePage(BulkViewPage):
             return True
         
         except AttributeError:
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Month selection",
                           "Please select a month.")
@@ -741,29 +741,29 @@ class BulkAnalysePage(BulkViewPage):
                                           datetime_select.hour,
                                           datetime_select.minute)
 
-            response = QtGui.QMessageBox.question(
+            response = QtWidgets.QMessageBox.question(
                 self,
                 'drawing removal'
                 '',
                 'Do you confirm the removal from the database of the drawing made on the '+
                 datetime_to_delete.strftime('%d %b %Y %H:%M') + '?',
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-            if response == QtGui.QMessageBox.Yes:
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+            if response == QtWidgets.QMessageBox.Yes:
                 
                 db = database.database(self.config)
                 db.delete_drawing("drawings", datetime_to_delete)
                 db.delete_drawing("sGroups", datetime_to_delete)
                 db.delete_drawing("calibrations", datetime_to_delete)
-                QtGui.QMessageBox.warning(self,
+                QtWidgets.QMessageBox.warning(self,
                                       'drawing removal',
                                       'Drawing successfully removed.')
                 self.reduce_day_widget()
-            elif response == QtGui.QMessageBox.No:
+            elif response == QtWidgets.QMessageBox.No:
                 pass
             
 
         except AttributeError:
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Day selection",
                           "Please select a day.")

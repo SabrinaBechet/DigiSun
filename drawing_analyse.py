@@ -192,7 +192,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             
             self.label_right.north_clicked.connect(self.update_all_dipole_button)
 
-            scroll = QtGui.QScrollArea()
+            scroll = QtWidgets.QScrollArea()
             scroll.setWidget(self.label_right)
             scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
             scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
@@ -220,7 +220,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
             self.surface_frame_step = 0
             
-            self.group_box_shortcut = QtGui.QShortcut(
+            self.group_box_shortcut = QtWidgets.QShortcut(
                 QtGui.QKeySequence("Ctrl+q"), self)
             
 
@@ -404,7 +404,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                 self.statusBar().comment.setText("Click on a the group" +
                                                  " position to add it")
                 
-                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(self.target_cursor_path))
+                cursor_add_group = QtWidgets.QCursor(QtGui.QPixmap(self.target_cursor_path))
                 self.label_right.setCursor(cursor_add_group)
 
             if self.label_right.calibration_mode.value:
@@ -445,7 +445,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             else:
                 self.statusBar().comment.setText("Click on a the group" +
                                                  " position to change it")
-                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(self.target_cursor_path))
+                cursor_add_group = QtWidgets.QCursor(QtGui.QPixmap(self.target_cursor_path))
                 # QtWidgets.QApplication.setOverrideCursor(cursor_add_group)
                 self.label_right.setCursor(cursor_add_group)
 
@@ -528,7 +528,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
             elif (self.drawing_lst[self.current_count].calibrated == 1 and
                   self.drawing_lst[self.current_count].group_count > 0):
-                cursor_add_dipole = QtGui.QCursor(QtGui.QPixmap(self.expand_cursor_path))
+                cursor_add_dipole = QtWidgets.QCursor(QtGui.QPixmap(self.expand_cursor_path))
                 self.label_right.setCursor(cursor_add_dipole)
                 self.check_dipole(self.listWidget_groupBox.currentRow())
 
@@ -785,7 +785,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         group_ok_in_database = True
         if group_count != group_count_check:
             group_ok_in_database = False
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Index error",
                           "<p> Did not find all the groups for this drawing" + 
@@ -793,7 +793,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             pass
         
         else:
-            self.listWidget_groupBox = QtGui.QListWidget(self)
+            self.listWidget_groupBox = QtWidgets.QListWidget(self)
             #self.listWidget_groupBox.setTabKeyNavigation(True)
             self.listWidget_groupBox.setStyleSheet(
                 "QListView::item:selected {background : rgb(77, 185, 88);}")
@@ -877,7 +877,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
                 self.groupBoxLineList.append(groupBoxLine)
 
-                item = QtGui.QListWidgetItem(self.listWidget_groupBox)
+                item = QtWidgets.QListWidgetItem(self.listWidget_groupBox)
                 item.setSizeHint(groupBoxLine.sizeHint())
                 self.listWidget_groupBox.setItemWidget(item, groupBoxLine)
 
@@ -1171,9 +1171,9 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                       "delete group",
                       "This will delete the group permanently from the database. "
                       "Do you confirm your action?",
-                      QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                      QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
 
-        if reponse == QtGui.QMessageBox.Yes:
+        if reponse == QtWidgets.QMessageBox.Yes:
             index = self.current_count
             group_index = self.listWidget_groupBox.currentRow()
             
@@ -1466,7 +1466,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                 int(new_sunspot_number))
 
         except ValueError:
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "sunspot number value",
                           "Please enter a number for this sunspot.")
@@ -1694,7 +1694,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
     def add_current_session(self):
 
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setSpacing(5)
 
         title_left_middle = QtWidgets.QLabel("Current session")
@@ -1723,7 +1723,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             lambda: self.update_counter(self.current_count-1))
         self.but_previous.clicked.connect(self.set_drawing)
 
-        layout_but = QtGui.QHBoxLayout()
+        layout_but = QtWidgets.QHBoxLayout()
         layout_but.addWidget(self.but_previous)
         layout_but.addWidget(self.but_next)
 
@@ -1735,9 +1735,9 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         self.but_save.clicked.connect(self.save_drawing)
 
         form_layout.addRow("Current operator: ", current_operator_linedit)
-        form_layout.setLayout(1, QtGui.QFormLayout.SpanningRole, layout_goto)
-        form_layout.setLayout(2, QtGui.QFormLayout.SpanningRole, layout_but)
-        form_layout.setWidget(3, QtGui.QFormLayout.SpanningRole, self.but_save)
+        form_layout.setLayout(1, QtWidgets.QFormLayout.SpanningRole, layout_goto)
+        form_layout.setLayout(2, QtWidgets.QFormLayout.SpanningRole, layout_but)
+        form_layout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.but_save)
 
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout)
 
@@ -1763,7 +1763,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         self.goto_drawing_button.clicked.connect(
             lambda: self.update_surface_qlabel(0))
 
-        layout_goto = QtGui.QHBoxLayout()
+        layout_goto = QtWidgets.QHBoxLayout()
         layout_goto.addWidget(self.goto_drawing_label1)
         layout_goto.addWidget(self.goto_drawing_linedit)
         layout_goto.addWidget(self.goto_drawing_label2)
@@ -1790,7 +1790,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             missing_group.insert(0, " information incomplete for ")
 
             if sum(missing_info_len):
-                QtGui.QMessageBox.warning(self,
+                QtWidgets.QMessageBox.warning(self,
                                           "save information",
                                           level +
                                           "\n".join(missing_group))
@@ -1814,8 +1814,8 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                           "save information",
                           "There is no groups recorded for this drawing. "
                           "Do you confirm that the analyse is finished?",
-                          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-            if reponse == QtGui.QMessageBox.Yes:
+                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+            if reponse == QtWidgets.QMessageBox.Yes:
                 self.drawing_lst[self.current_count].analyzed = 1
             else:
                 self.drawing_lst[self.current_count].analyzed = 0

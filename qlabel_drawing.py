@@ -282,7 +282,7 @@ class QLabelDrawing(QtWidgets.QLabel):
                     0)
 
                 if self.grid_interpolate_point:
-                    start_interpol = time.clock()
+                    start_interpol = time.process_time()
                     if len(x_lst_0_180) > 0:
                         path_0_180 = self.set_drawing_path(x_lst_0_180,
                                                            y_lst_0_180)
@@ -294,12 +294,12 @@ class QLabelDrawing(QtWidgets.QLabel):
                             y_lst_minus180_0)
                         painter.drawPath(path_minus180_0)
 
-                    end_interpol = time.clock()
+                    end_interpol = time.process_time()
                     # print("********time for interpolation for longitude",
                     # end_interpol - start_interpol)
 
                 if self.grid_draw_point:
-                    start_draw_point = time.clock()
+                    start_draw_point = time.process_time()
                     for i in range(len(x_lst_0_180)):
                         painter.drawPoint(
                             self.current_drawing.calibrated_center.x +
@@ -312,7 +312,7 @@ class QLabelDrawing(QtWidgets.QLabel):
                                 x_lst_minus180_0[i],
                                 self.current_drawing.calibrated_center.y +
                                 y_lst_minus180_0[i])
-                    end_draw_point = time.clock()
+                    end_draw_point = time.process_time()
                     # print("********time for draw point ",
                     # end_draw_point - start_draw_point)
 
@@ -338,7 +338,7 @@ class QLabelDrawing(QtWidgets.QLabel):
                     0)
 
                 if self.grid_interpolate_point:
-                    start_interpol = time.clock()
+                    start_interpol = time.process_time()
                     if len(x_lst_0_90) > 0:
                         path_0_90 = self.set_drawing_path(x_lst_0_90,
                                                           y_lst_0_90)
@@ -349,7 +349,7 @@ class QLabelDrawing(QtWidgets.QLabel):
                                                                y_lst_minus90_0)
                         painter.drawPath(path_minus90_0)
 
-                    end_interpol = time.clock()
+                    end_interpol = time.process_time()
                     # print("********time for interpolation for latitude",
                     # end_interpol - start_interpol)
 
@@ -437,7 +437,7 @@ class QLabelDrawing(QtWidgets.QLabel):
                             painter.drawEllipse(
                                 QtCore.QPointF(x, y), radius, radius)
             except IndexError:
-                QtGui.QMessageBox\
+                QtWidgets.QMessageBox\
                      .warning(self,
                               "Index error",
                               "<p> Your database seems corrupted" + 

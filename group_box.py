@@ -185,7 +185,7 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_spot_count(self, spot_count, grid_position):
         #self.spot_number_linedit = QtWidgets.QLineEdit(str(spot_count))
-        self.spot_number_spinbox = QtGui.QSpinBox(self)#LineEdit(str(spot_count))
+        self.spot_number_spinbox = QtWidgets.QSpinBox(self)#LineEdit(str(spot_count))
         self.spot_number_spinbox.setMinimum(0)
         self.spot_number_spinbox.setMaximum(1000)
         self.spot_number_spinbox.setValue(spot_count)
@@ -199,7 +199,7 @@ class GroupBox(QtWidgets.QWidget):
                                    grid_position[1])
 
     def set_zurich_combox_box(self, group_zurich_type, grid_position):
-        self.zurich_combo = QtGui.QComboBox(self)
+        self.zurich_combo = QtWidgets.QComboBox(self)
         self.zurich_combo.setStyleSheet("background-color: white; color:black")
         # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.zurich_combo.wheelEvent = inputVoid
@@ -263,7 +263,7 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_mcIntosh_combo_box(self, mcIntosh_type, zurich_type,
                                grid_position):
-        self.McIntosh_combo = QtGui.QComboBox(self)
+        self.McIntosh_combo = QtWidgets.QComboBox(self)
         self.update_McIntosh_combo_box(zurich_type)
         self.McIntosh_combo.setStyleSheet(
             "background-color: white; color: black")

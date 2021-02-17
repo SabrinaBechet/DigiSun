@@ -34,7 +34,7 @@ class DailyScan(QtWidgets.QWidget):
     def __init__(self, config, operator=None):
         super(DailyScan, self).__init__()
 
-        self.daily_scan_layout = QtGui.QVBoxLayout()
+        self.daily_scan_layout = QtWidgets.QVBoxLayout()
         self.daily_scan_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.setLayout(self.daily_scan_layout)
 
@@ -80,7 +80,7 @@ class DailyScan(QtWidgets.QWidget):
         """
         column_maximum_width = 600
 
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setAlignment(self, QtCore.Qt.AlignCenter)
         form_layout.setSpacing(10)
 
@@ -109,20 +109,20 @@ class DailyScan(QtWidgets.QWidget):
         self.drawing_operator_linedit.setText(str(self.operator).upper())
         self.drawing_observer_linedit = QtWidgets.QLineEdit(self)
         self.drawing_observer_linedit.setText(str(self.operator).upper())
-        self.drawing_type = QtGui.QComboBox(self)
+        self.drawing_type = QtWidgets.QComboBox(self)
         uset_db.set_combo_box_drawing('name',
                                       'drawing_type',
                                       self.drawing_type)
-        self.drawing_quality = QtGui.QComboBox(self)
+        self.drawing_quality = QtWidgets.QComboBox(self)
         uset_db.set_combo_box_drawing('name',
                                       'quality',
                                       self.drawing_quality)
 
-        self.drawing_date_linedit = QtGui.QDateEdit()
+        self.drawing_date_linedit = QtWidgets.QDateEdit()
         self.drawing_date_linedit.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date_linedit.setDate(today)
-        self.drawing_time_linedit = QtGui.QTimeEdit(self)
+        self.drawing_time_linedit = QtWidgets.QTimeEdit(self)
         self.drawing_time_linedit.setDisplayFormat("hh:mm")
 
         self.drawing_time = datetime.datetime(
@@ -238,7 +238,7 @@ class DailyScan(QtWidgets.QWidget):
         corresponding to the new drawing scanned
         """
         db = database.database(self.config)
-        answer = QtGui.QMessageBox.Yes
+        answer = QtWidgets.QMessageBox.Yes
         lst_groups = []
         
         if db.exist_in_db('drawings', 'DateTime', self.drawing_time):
@@ -268,7 +268,7 @@ class DailyScan(QtWidgets.QWidget):
                           "new drawing",
                           "An entry corresponding to this drawing was found in the database. "
                           "Do you want to delete previous data ?",
-                          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
 
 
             drawing_dict = dict(zip(lst_drawings_field, tuple_drawings[0]))
@@ -284,16 +284,16 @@ class DailyScan(QtWidgets.QWidget):
                 group_dict = dict(zip(lst_groups_field, group))
                 new_drawing.set_group(group_dict)
 
-            if answer == QtGui.QMessageBox.No:
+            if answer == QtWidgets.QMessageBox.No:
                 db.replace_drawing(new_drawing)
 
-            if answer == QtGui.QMessageBox.Yes:
+            if answer == QtWidgets.QMessageBox.Yes:
                 # delete the existing groups
                 for index in reversed(range(0, len(lst_groups))):
                     new_drawing.delete_group(self.config, index)
                     
                 
-        if answer == QtGui.QMessageBox.Yes:
+        if answer == QtWidgets.QMessageBox.Yes:
             new_drawing = drawing.Drawing()
 
             self.config.set_file_path(self.drawing_time)
@@ -336,14 +336,14 @@ class DailyScan(QtWidgets.QWidget):
                     str(self.drawing_type.currentText()))
                 new_drawing.set_drawing_type(tuple_drawing_type[0])
               
-                QtGui.QMessageBox\
+                QtWidgets.QMessageBox\
                      .information(self,
                               "drawing addition",
                                   "New drawing added in the database for the " + 
                                   str(self.drawing_time))
         
             else:
-                QtGui.QMessageBox\
+                QtWidgets.QMessageBox\
                      .warning(self,
                               "drawing addition",
                               "There is not drawing the image directory correspoding to this date")
@@ -371,7 +371,7 @@ class DailyScan(QtWidgets.QWidget):
             
         elif not os.path.isdir(self.config.archdrawing_directory):
             
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Scan error",
                           "The directory specified does not exist!.")
@@ -385,7 +385,7 @@ class DailyScan(QtWidgets.QWidget):
         it does not stay in the memory.
         """
         if False in self.info_complete.values():
-            QtGui.QMessageBox.warning(self,
+            QtWidgets.QMessageBox.warning(self,
                                       'information incomplete',
                                       'One of the information is not correct')
             return
@@ -400,15 +400,15 @@ class DailyScan(QtWidgets.QWidget):
         print(drawing_path, type(drawing_path))
         if drawing_path:
             if os.path.isfile(drawing_path):    
-                response = QtGui.QMessageBox.question(
+                response = QtWidgets.QMessageBox.question(
                     self,
                     'same drawing found'
                     '',
                     'This drawing alreay exists. Re-scan?',
-                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-                if response == QtGui.QMessageBox.Yes:
+                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+                if response == QtWidgets.QMessageBox.Yes:
                     pass
-                elif response == QtGui.QMessageBox.No:
+                elif response == QtWidgets.QMessageBox.No:
                     return
             
             my_scanner.scan(drawing_path)

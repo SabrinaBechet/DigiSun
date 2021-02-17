@@ -135,7 +135,7 @@ class DialogLogin(QtWidgets.QDialog):
         return self.config
         
     def change_config_file(self):
-        config_filename = QtGui.QFileDialog.getOpenFileName(self,
+        config_filename = QtWidgets.QFileDialog.getOpenFileName(self,
                                                             "configuration file",
                                                             "",
                                                             "Text files (*.ini)")
@@ -155,7 +155,7 @@ class DialogLogin(QtWidgets.QDialog):
                                 self.operator_name.text())):
             self.accept()
         else:
-            QtGui.QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self, 'Error', 'Bad operator name')
 
     def get_operator(self):

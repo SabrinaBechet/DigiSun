@@ -37,7 +37,7 @@ class DrawingInformationWidget(QtWidgets.QWidget):
 
     def __init__(self, config):
         super(DrawingInformationWidget, self).__init__()
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setSpacing(10)
 
         uset_db = database.database(config)
@@ -56,7 +56,7 @@ class DrawingInformationWidget(QtWidgets.QWidget):
         self.drawing_observer.setStyleSheet(
             "background-color: white; color:black")
 
-        self.drawing_date = QtGui.QDateEdit()
+        self.drawing_date = QtWidgets.QDateEdit()
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         self.drawing_date.setEnabled(False)
         self.drawing_date.setStyleSheet(
@@ -68,7 +68,7 @@ class DrawingInformationWidget(QtWidgets.QWidget):
         self.drawing_time.setStyleSheet(
             "background-color: lightgray; color:black")
 
-        self.drawing_quality = QtGui.QComboBox(self)
+        self.drawing_quality = QtWidgets.QComboBox(self)
         # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.drawing_quality.wheelEvent = inputVoid
         uset_db.set_combo_box_drawing('name', 'quality', self.drawing_quality)
@@ -76,7 +76,7 @@ class DrawingInformationWidget(QtWidgets.QWidget):
         self.drawing_quality.setStyleSheet(
             "background-color: white; color:black")
 
-        self.drawing_type = QtGui.QComboBox(self)
+        self.drawing_type = QtWidgets.QComboBox(self)
          # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.drawing_type.wheelEvent = inputVoid
         uset_db.set_combo_box_drawing('name',
