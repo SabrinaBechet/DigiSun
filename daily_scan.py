@@ -27,9 +27,9 @@ import database
 import drawing
 import scanner
 #import configuration
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
-class DailyScan(QtGui.QWidget):
+class DailyScan(QtWidgets.QWidget):
 
     def __init__(self, config, operator=None):
         super(DailyScan, self).__init__()
@@ -84,7 +84,7 @@ class DailyScan(QtGui.QWidget):
         form_layout.setAlignment(self, QtCore.Qt.AlignCenter)
         form_layout.setSpacing(10)
 
-        scan_settings_title = QtGui.QLabel("Scanner settings")
+        scan_settings_title = QtWidgets.QLabel("Scanner settings")
         scan_settings_title.setAlignment(QtCore.Qt.AlignCenter)
         scan_settings_title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
@@ -97,7 +97,7 @@ class DailyScan(QtGui.QWidget):
         self.drawing_directory = QtGui.QLineEdit(self)
         self.drawing_directory.setDisabled(True)
 
-        title = QtGui.QLabel("Drawing information")
+        title = QtWidgets.QLabel("Drawing information")
         title.setAlignment(QtCore.Qt.AlignCenter)
         title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
@@ -173,7 +173,7 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow(self.but_analyse)
         form_layout.addRow(self.but_add)
 
-        widget_form = QtGui.QWidget()
+        widget_form = QtWidgets.QWidget()
         widget_form.setMaximumWidth(column_maximum_width)
         form_layout.setAlignment(QtCore.Qt.AlignCenter)
         widget_form.setLayout(form_layout)

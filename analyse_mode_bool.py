@@ -20,7 +20,7 @@ You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 
 class analyseModeBool(QtCore.QObject):

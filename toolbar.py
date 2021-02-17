@@ -21,10 +21,10 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-class Toolbar(QtGui.QToolBar):
+class Toolbar(QtWidgets.QToolBar):
     """Note : The QToolBar class inherit from QWidget.
     """
 
@@ -199,7 +199,7 @@ class Toolbar(QtGui.QToolBar):
         self.change_group_pos_but.setIcon(QtGui.QIcon(change_group_pos_dict['path']))
         self.change_group_pos_but.setShortcut(QtGui.QKeySequence("z"))
 
-        vertical_line_widget = QtGui.QWidget()
+        vertical_line_widget = QtWidgets.QWidget()
         vertical_line_widget.setFixedWidth(2)
         vertical_line_widget.setStyleSheet("background-color: black")
 

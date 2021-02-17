@@ -25,7 +25,7 @@ import numpy as np
 import math
 import coordinates
 import analyse_mode_bool
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 from PIL import Image
 from PIL.ImageQt import ImageQt
 
@@ -34,7 +34,7 @@ def rgb2gray(rgb):
     return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
 
 
-class QLabelDrawing(QtGui.QLabel):
+class QLabelDrawing(QtWidgets.QLabel):
     """
     Class to show the drawing,
     display the grid, groups, dipoles,..
@@ -871,7 +871,7 @@ class QLabelDrawing(QtGui.QLabel):
             self.group_visu.value = True
             self.set_img()
             self.calibration_mode.value = False
-            QtGui.QApplication.restoreOverrideCursor()
+            QtWidgets.QApplication.restoreOverrideCursor()
             self.north_clicked.emit()
 
         elif (QMouseEvent.button() == QtCore.Qt.LeftButton and

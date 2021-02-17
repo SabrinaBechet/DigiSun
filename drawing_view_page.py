@@ -20,10 +20,10 @@ You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-class DrawingViewPage(QtGui.QWidget):
+class DrawingViewPage(QtWidgets.QWidget):
     """
     Contains the template of the DrawingViewPage
     The attribute are:
@@ -52,7 +52,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.scroll_widget_left_up\
             .setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scroll_widget_left_up.setWidgetResizable(True)
-        self.widget_left_up = QtGui.QWidget()
+        self.widget_left_up = QtWidgets.QWidget()
         self.scroll_widget_left_up.setMinimumWidth(left_column_maximum_width)
         self.scroll_widget_left_up.setMaximumHeight(self.height()/2.)
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
@@ -64,7 +64,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_left_up.setLayout(self.widget_left_up_layout)
 
-        self.widget_left_middle = QtGui.QWidget()
+        self.widget_left_middle = QtWidgets.QWidget()
         self.widget_left_middle.setMaximumHeight(self.height()/3.)
         self.widget_left_middle.setStyleSheet("background-color:lightgray;")
         self.widget_left_middle_layout = QtGui.QVBoxLayout()
@@ -74,7 +74,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_left_middle.setLayout(self.widget_left_middle_layout)
         self.widget_left_middle_layout.setMargin(10)
 
-        self.widget_left_down = QtGui.QWidget()
+        self.widget_left_down = QtWidgets.QWidget()
         self.widget_left_down.setMaximumWidth(left_column_maximum_width)
         self.widget_left_down.setMinimumHeight(self.height()/3.)
         self.widget_left_down.setStyleSheet("background-color:lightblue;")
@@ -85,7 +85,7 @@ class DrawingViewPage(QtGui.QWidget):
                                                   QtCore.Qt.AlignRight)
         self.widget_left_down.setLayout(self.widget_left_down_layout)
 
-        self.widget_left_down_bis = QtGui.QWidget()
+        self.widget_left_down_bis = QtWidgets.QWidget()
         self.widget_left_down_bis.setMaximumWidth(left_column_maximum_width)
         self.widget_left_down_bis.setMaximumHeight(250)
         self.widget_left_down_bis.setStyleSheet("background-color:lightblue;")
@@ -96,7 +96,7 @@ class DrawingViewPage(QtGui.QWidget):
                                                       QtCore.Qt.AlignRight)
         self.widget_left_down_bis.setLayout(self.widget_left_down_bis_layout)
 
-        self.widget_middle_up = QtGui.QWidget()
+        self.widget_middle_up = QtWidgets.QWidget()
         self.widget_middle_up.setMaximumWidth(left_column_maximum_width)
         # trick to keep the surface panel closed by default
         self.widget_middle_up.setMaximumWidth(10)
@@ -107,7 +107,7 @@ class DrawingViewPage(QtGui.QWidget):
         self.widget_middle_up_layout.setAlignment(QtCore.Qt.AlignTop)
         self.widget_middle_up.setLayout(self.widget_middle_up_layout)
 
-        self.widget_right = QtGui.QWidget()
+        self.widget_right = QtWidgets.QWidget()
         self.widget_right.setStyleSheet("background-color:gray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
         self.widget_right_layout.setContentsMargins(0, 0, 0, 0)

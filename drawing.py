@@ -33,7 +33,7 @@ import coordinates
 import database
 import carrington_rotation
 import sun_ephemeris
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 
 class Group(QtCore.QObject):

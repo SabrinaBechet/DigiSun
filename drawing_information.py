@@ -22,7 +22,7 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 
 import database
 from datetime import datetime
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "sabrina.bechet@oma.be"
@@ -33,7 +33,7 @@ def inputVoid(self):
     pass
 
 
-class DrawingInformationWidget(QtGui.QWidget):
+class DrawingInformationWidget(QtWidgets.QWidget):
 
     def __init__(self, config):
         super(DrawingInformationWidget, self).__init__()

@@ -26,10 +26,10 @@ import collections
 from datetime import datetime, timedelta
 import database
 import drawing
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 
-class ListPage(QtGui.QWidget):
+class ListPage(QtWidgets.QWidget):
     """
     Mother class that shows a list (of years or months)
     with the percentage of drawing calibrated/analysed/with area done
@@ -223,7 +223,7 @@ class YearListPage(ListPage):
             # and we use the sorted function to insert it by order of time
             self.dict_year = collections.OrderedDict(sorted(self.dict_year.items()))
 
-class DateSelectionPage(QtGui.QWidget):
+class DateSelectionPage(QtWidgets.QWidget):
 
     def __init__(self):
         super(DateSelectionPage, self).__init__()
@@ -247,7 +247,7 @@ class DateSelectionPage(QtGui.QWidget):
         self.setLayout(layout_date_selection)
 
 
-class BulkViewPage(QtGui.QWidget):
+class BulkViewPage(QtWidgets.QWidget):
     """ Template for the BulkAnalysePage.
     It contains three sections:
     - left_up : selection per date
@@ -261,31 +261,31 @@ class BulkViewPage(QtGui.QWidget):
 
         self.max_width = 600
 
-        self.widget_right = QtGui.QWidget()
+        self.widget_right = QtWidgets.QWidget()
         self.widget_right.setStyleSheet("background-color:lightgray;")
         self.widget_right_layout = QtGui.QVBoxLayout()
         self.widget_right.setLayout(self.widget_right_layout)
         self.widget_right.setMinimumWidth(0)
         self.widget_right.setMaximumWidth(10)
         
-        self.widget_center = QtGui.QWidget()
+        self.widget_center = QtWidgets.QWidget()
         self.widget_center.setStyleSheet("background-color:lightgray;")
         self.widget_center_layout = QtGui.QVBoxLayout()
         self.widget_center.setLayout(self.widget_center_layout)
         self.widget_center.setMinimumWidth(200)
 
-        self.widget_left_up = QtGui.QWidget()
+        self.widget_left_up = QtWidgets.QWidget()
         self.widget_left_up.setStyleSheet("background-color:lightgray;")
         self.widget_left_layout_up = QtGui.QVBoxLayout()
         self.widget_left_up.setLayout(self.widget_left_layout_up)
-        self.label_left_up = QtGui.QLabel('Drawing selection per date: ')
+        self.label_left_up = QtWidgets.QLabel('Drawing selection per date: ')
         self.widget_left_up.layout().addWidget(self.label_left_up)
         
-        self.widget_left_down = QtGui.QWidget()
+        self.widget_left_down = QtWidgets.QWidget()
         self.widget_left_down.setStyleSheet("background-color:white;")
         self.widget_left_layout_down = QtGui.QVBoxLayout()
         self.widget_left_down.setLayout(self.widget_left_layout_down)
-        title_left = QtGui.QLabel("Drawing selection per year:")
+        title_left = QtWidgets.QLabel("Drawing selection per year:")
         title_left.setContentsMargins(0, 5, 0, 5)
         self.widget_left_layout_down.addWidget(title_left)
         

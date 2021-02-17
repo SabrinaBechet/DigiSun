@@ -26,7 +26,7 @@ import numpy as np
 import analyse_mode_bool
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 from PIL import Image, ImageQt
 
 __author__ = "Mael Panouillot, Sabrina Bechet"
@@ -34,7 +34,7 @@ __author__ = "Mael Panouillot, Sabrina Bechet"
 sys.setrecursionlimit(10000)
 
 
-class GroupSurfaceWidget(QtGui.QWidget):
+class GroupSurfaceWidget(QtWidgets.QWidget):
     bigger_frame = QtCore.pyqtSignal()
     smaller_frame = QtCore.pyqtSignal()
     surface_saved = QtCore.pyqtSignal()
@@ -65,7 +65,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         self.center_x = 0
         self.center_y = 0
 
-        qlabel_title = QtGui.QLabel("Area calculation")
+        qlabel_title = QtWidgets.QLabel("Area calculation")
         qlabel_title.setAlignment(QtCore.Qt.AlignCenter)
         qlabel_title.setContentsMargins(0, 5, 0, 5)
 
@@ -86,7 +86,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         threshold_layout.addRow("Threshold selection:",
                                 self.threshold_linedit)
        
-        qlabel_general = QtGui.QLabel("General tools:")
+        qlabel_general = QtWidgets.QLabel("General tools:")
 
         button_size = 50
         
@@ -266,7 +266,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         if self.qlabel_group_surface.black_bucket_mode.value:
             bucket_black_fill_but.setStyleSheet("background-color: lightblue")
 
-        layout_general = QtGui.QGridLayout()
+        layout_general = QtWidgets.QGridLayout()
         layout_general.addWidget(qlabel_general, 0, 0, 1, -1)
         layout_general.addWidget(zoom_in_but, 1, 0)
         layout_general.addWidget(zoom_out_but, 1, 1)
@@ -442,7 +442,7 @@ class GroupSurfaceWidget(QtGui.QWidget):
         return frame_size
 
 
-class QLabelGroupSurface(QtGui.QLabel):
+class QLabelGroupSurface(QtWidgets.QLabel):
 
     array_changed = QtCore.pyqtSignal()
 

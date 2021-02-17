@@ -19,7 +19,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 __author__ = "Mael Panouillot, Sabrina Bechet"
 
@@ -27,20 +27,20 @@ def inputVoid(self):
     pass
 
 
-class QLabelClickable(QtGui.QLabel):
+class QLabelClickable(QtWidgets.QLabel):
     """
     Label on which one can click (used to delete group)
     """
     clicked = QtCore.pyqtSignal()
 
     def __init__(self):
-        super(QtGui.QLabel, self).__init__()
+        super(QtWidgets.QLabel, self).__init__()
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.clicked.emit()
 
 
-class GroupBox(QtGui.QWidget):
+class GroupBox(QtWidgets.QWidget):
     """
     Represent the box associated to a group.
     It is used in the group_widget and in the group_toolbox.
@@ -78,7 +78,7 @@ class GroupBox(QtGui.QWidget):
 
     def __init__(self):
         super(GroupBox, self).__init__()
-        self.grid_layout = QtGui.QGridLayout()
+        self.grid_layout = QtWidgets.QGridLayout()
         self.setStyleSheet("color: darkblue")
         self.setLayout(self.grid_layout)
         self.zurich_dipolar = ["B", "C", "D", "E", "F", "G", "X"]
@@ -87,7 +87,7 @@ class GroupBox(QtGui.QWidget):
     def set_title(self, group_id, grid_position):
         """ title on the top of the group box"""
     
-        title_label = QtGui.QLabel("Group ")
+        title_label = QtWidgets.QLabel("Group ")
         self.group_number_linedit = QtGui.QLineEdit(self)
         self.group_number_linedit.setMaximumWidth(self.widget_maximum_width)
         self.group_number_linedit.setDisabled(True)
@@ -293,7 +293,7 @@ class GroupBox(QtGui.QWidget):
         
     def set_longitude(self, longitude, grid_position):
 
-        self.longitude_label = QtGui.QLabel()
+        self.longitude_label = QtWidgets.QLabel()
         self.longitude_linedit = QtGui.QLineEdit(self)
     
         self.set_label_and_linedit(self.longitude_label,
@@ -303,7 +303,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position)
     
     def set_latitude(self, latitude, grid_position):
-        self.latitude_label = QtGui.QLabel()
+        self.latitude_label = QtWidgets.QLabel()
         self.latitude_linedit = QtGui.QLineEdit(self)
     
         self.set_label_and_linedit(self.latitude_label,
@@ -313,7 +313,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position)
 
     """def set_group_number(self, group_number, grid_position):
-        self.group_number_label = QtGui.QLabel()
+        self.group_number_label = QtWidgets.QLabel()
         self.group_number_linedit = QtGui.QLineEdit(self)
 
 
@@ -324,7 +324,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position)
     """ 
     def set_surface(self, surface, grid_position):
-        self.surface_label = QtGui.QLabel()
+        self.surface_label = QtWidgets.QLabel()
         self.surface_linedit = QtGui.QLineEdit(self)
 
         if surface is None:
@@ -345,7 +345,7 @@ class GroupBox(QtGui.QWidget):
 
 
     def set_extra_field1(self, extra1_value, extra1_name, grid_position):
-        self.group_extra1_label = QtGui.QLabel()
+        self.group_extra1_label = QtWidgets.QLabel()
         self.group_extra1_linedit = QtGui.QLineEdit(self)
 
         self.set_label_and_linedit(self.group_extra1_label,
@@ -355,7 +355,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position)
 
     def set_extra_field2(self, extra2_value, extra2_name, grid_position):
-        self.group_extra2_label = QtGui.QLabel()
+        self.group_extra2_label = QtWidgets.QLabel()
         self.group_extra2_linedit = QtGui.QLineEdit(self)
 
         self.set_label_and_linedit(self.group_extra2_label,
@@ -365,7 +365,7 @@ class GroupBox(QtGui.QWidget):
                                    grid_position)
 
     def set_extra_field3(self, extra3_value, extra3_name, grid_position):
-        self.group_extra3_label = QtGui.QLabel()
+        self.group_extra3_label = QtWidgets.QLabel()
         self.group_extra3_linedit = QtGui.QLineEdit(self)
 
         self.set_label_and_linedit(self.group_extra3_label,
@@ -438,7 +438,7 @@ class GroupBox(QtGui.QWidget):
         """
         Create the widget and update the value of it.
         """
-        self.largest_spot_label = QtGui.QLabel("Lead/Trail")
+        self.largest_spot_label = QtWidgets.QLabel("Lead/Trail")
 
         self.largest_spot_leading_but = QtGui.QPushButton("L")
         self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("f"))

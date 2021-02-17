@@ -26,7 +26,7 @@ import daily_scan
 import bulk_analyse
 #import configuration
 import drawing_analyse
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "digisun@oma.be"
@@ -36,7 +36,7 @@ __version__ = "1.0.0"
 #sys.stderr = open('data/err.txt', 'w')
 #sys.stdout = open("data/file.txt", "w")
 
-class BulkScanPage(QtGui.QWidget):
+class BulkScanPage(QtWidgets.QWidget):
     """
     Module to make many scans in a row.
     If needed, should be expanded later
@@ -44,13 +44,13 @@ class BulkScanPage(QtGui.QWidget):
     def __init__(self, operator=None):
         super(BulkScanPage, self).__init__()
 
-        welcome_msg = QtGui.QLabel('bulk scan...' + operator, self)
-        self.layout = QtGui.QGridLayout()
+        welcome_msg = QtWidgets.QLabel('bulk scan...' + operator, self)
+        self.layout = QtWidgets.QGridLayout()
         self.layout.addWidget(welcome_msg, 0, 0, 1, 3)
         self.setLayout(self.layout)
 
 
-class mainWindow(QtGui.QMainWindow):
+class mainWindow(QtWidgets.QMainWindow):
     """ Represent the Qt interface. It consists of stacked pages:
     index 0 : daily scan
     index 1 : analyse page
@@ -79,7 +79,7 @@ class mainWindow(QtGui.QMainWindow):
         self.drawing_analyse = drawing_analyse\
             .DrawingAnalysePage(config, self.operator)
 
-        self.central_zone = QtGui.QWidget()
+        self.central_zone = QtWidgets.QWidget()
         self.central_zone.setLayout(self.stack)
         self.setCentralWidget(self.central_zone)
 
@@ -194,12 +194,12 @@ class mainWindow(QtGui.QMainWindow):
         menuBar.show()
         
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
 
     login = login.DialogLogin()
     login.show()
 
-    if login.exec_() == QtGui.QDialog.Accepted:
+    if login.exec_() == QtWidgets.QDialog.Accepted:
         operator_name = login.get_operator()
         mode_index = login.get_mode()
         
