@@ -111,11 +111,11 @@ class DayListPage(ListPage):
         - the table widget
         """
         super(DayListPage, self).__init__()
-        self.but_back = QtGui.QPushButton("hide days list view", self)
+        self.but_back = QtWidgets.QPushButton("hide days list view", self)
         self.but_back.setMaximumWidth(200)
-        self.but_select = QtGui.QPushButton("show drawing", self)
+        self.but_select = QtWidgets.QPushButton("show drawing", self)
         self.but_select.setMaximumWidth(200)
-        self.but_delete = QtGui.QPushButton("delete drawing", self)
+        self.but_delete = QtWidgets.QPushButton("delete drawing", self)
         self.but_delete.setMaximumWidth(200)
         
         day_list_layout = QtGui.QVBoxLayout()
@@ -144,8 +144,8 @@ class MonthListPage(ListPage):
         - the table widget
         """
         super(MonthListPage, self).__init__()
-        self.but_select = QtGui.QPushButton("show drawings", self)
-        self.but_all_day_drawings = QtGui.QPushButton("show days list view", self)
+        self.but_select = QtWidgets.QPushButton("show drawings", self)
+        self.but_all_day_drawings = QtWidgets.QPushButton("show days list view", self)
         
         if sys.platform=='darwin':
             self.but_select.setAttribute(QtCore.Qt.WA_MacNormalSize)
@@ -179,7 +179,7 @@ class YearListPage(ListPage):
         self.table.setRowCount(len(self.dict_year))
         self.draw_table(self.dict_year, self.config.level)
 
-        self.but_select = QtGui.QPushButton("select year", self)
+        self.but_select = QtWidgets.QPushButton("select year", self)
         self.layout = QtGui.QVBoxLayout()
         self.layout.addWidget(self.table)
         self.layout.addWidget(self.but_select)
@@ -237,7 +237,7 @@ class DateSelectionPage(QtWidgets.QWidget):
         self.end_date = QtGui.QDateEdit()
         self.end_date.setDisplayFormat("dd/MM/yyyy")
 
-        self.but_select = QtGui.QPushButton("select")
+        self.but_select = QtWidgets.QPushButton("select")
 
         form_layout.addRow('start date: ', self.start_date)
         form_layout.addRow('end date: ', self.end_date)

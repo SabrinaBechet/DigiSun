@@ -1703,16 +1703,16 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         self.drawing_page.widget_left_middle_layout\
                          .addWidget(title_left_middle)
 
-        current_operator_linedit = QtGui.QLineEdit(
+        current_operator_linedit = QtWidgets.QLineEdit(
             str(self.operator).upper(), self)
         current_operator_linedit.setEnabled(False)
         current_operator_linedit.setStyleSheet(
             "background-color: lightgray; color: black")
 
-        self.but_previous = QtGui.QPushButton('previous', self)
+        self.but_previous = QtWidgets.QPushButton('previous', self)
         self.but_previous.setShortcut(QtGui.QKeySequence("Left"))
         self.but_previous.setToolTip("\'Left\'")
-        self.but_next = QtGui.QPushButton('next', self)
+        self.but_next = QtWidgets.QPushButton('next', self)
         self.but_next.setShortcut(QtGui.QKeySequence("Right"))
         self.but_next.setToolTip("\'Right\'")
         
@@ -1729,7 +1729,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
         layout_goto = self.jump_to_drawing_linedit()
 
-        self.but_save = QtGui.QPushButton('save in the database', self)
+        self.but_save = QtWidgets.QPushButton('save in the database', self)
         self.but_save.setShortcut(QtGui.QKeySequence("Ctrl+s"))
         self.but_save.setToolTip('shortcut: \'Ctrl+s\'')                  
         self.but_save.clicked.connect(self.save_drawing)
@@ -1742,10 +1742,10 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         self.drawing_page.widget_left_middle_layout.addLayout(form_layout)
 
     def jump_to_drawing_linedit(self):
-        self.goto_drawing_linedit = QtGui.QLineEdit()
+        self.goto_drawing_linedit = QtWidgets.QLineEdit()
         self.goto_drawing_label1 = QtWidgets.QLabel()
         self.goto_drawing_label2 = QtWidgets.QLabel()
-        self.goto_drawing_button = QtGui.QPushButton()
+        self.goto_drawing_button = QtWidgets.QPushButton()
 
         self.goto_drawing_label1.setText("Jump to drawing")
         self.goto_drawing_linedit.setText("1")

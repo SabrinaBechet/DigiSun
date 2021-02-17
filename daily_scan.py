@@ -52,7 +52,7 @@ class DailyScan(QtWidgets.QWidget):
         self.check_scanner()
 
         # to do: height plus grand pour le bouton du scan. Icon de scanner?
-        # self.but_scan = QtGui.QPushButton('Scan and save', self)
+        # self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         # self.widget_left_layout.addWidget(self.but_scan)
 
     
@@ -90,11 +90,11 @@ class DailyScan(QtWidgets.QWidget):
         my_font = QtGui.QFont("Comic Sans MS", 10)
         scan_settings_title.setFont(my_font)
 
-        self.scan_name_linedit = QtGui.QLineEdit(self)
+        self.scan_name_linedit = QtWidgets.QLineEdit(self)
         self.scan_name_linedit.setDisabled(True)
-        self.scan_dpi = QtGui.QLineEdit(self)
+        self.scan_dpi = QtWidgets.QLineEdit(self)
         self.scan_dpi.setDisabled(True)
-        self.drawing_directory = QtGui.QLineEdit(self)
+        self.drawing_directory = QtWidgets.QLineEdit(self)
         self.drawing_directory.setDisabled(True)
 
         title = QtWidgets.QLabel("Drawing information")
@@ -105,9 +105,9 @@ class DailyScan(QtWidgets.QWidget):
 
         uset_db = database.database(self.config)
 
-        self.drawing_operator_linedit = QtGui.QLineEdit(self)
+        self.drawing_operator_linedit = QtWidgets.QLineEdit(self)
         self.drawing_operator_linedit.setText(str(self.operator).upper())
-        self.drawing_observer_linedit = QtGui.QLineEdit(self)
+        self.drawing_observer_linedit = QtWidgets.QLineEdit(self)
         self.drawing_observer_linedit.setText(str(self.operator).upper())
         self.drawing_type = QtGui.QComboBox(self)
         uset_db.set_combo_box_drawing('name',
@@ -151,11 +151,11 @@ class DailyScan(QtWidgets.QWidget):
         self.drawing_time_linedit.timeChanged.connect(self.update_datetime)
         self.drawing_date_linedit.dateChanged.connect(self.update_datetime)
 
-        self.but_scan = QtGui.QPushButton('Scan and save', self)
+        self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         self.but_scan.setDisabled(True)
-        self.but_analyse = QtGui.QPushButton('Drawing analyse', self)
+        self.but_analyse = QtWidgets.QPushButton('Drawing analyse', self)
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
-        self.but_add = QtGui.QPushButton('Add drawing', self)
+        self.but_add = QtWidgets.QPushButton('Add drawing', self)
         
 
         form_layout.addRow(scan_settings_title)

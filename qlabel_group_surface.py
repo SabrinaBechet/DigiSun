@@ -77,7 +77,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         threshold_slider.setValue(self.default_threshold)
         threshold_slider.valueChanged.connect(
             lambda: self.update_img_threshold_value(threshold_slider.value()))
-        self.threshold_linedit = QtGui.QLineEdit(str(self.default_threshold))
+        self.threshold_linedit = QtWidgets.QLineEdit(str(self.default_threshold))
         self.threshold_linedit.setDisabled(True)
         self.threshold_linedit.setStyleSheet(
             "background-color: lightgray; color:black")
@@ -205,7 +205,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         bucket_black_fill_but.setMinimumWidth(button_size)
         bucket_black_fill_but.setShortcut(QtGui.QKeySequence("alt+x"))
 
-        save_but = QtGui.QPushButton("sa&ve area")
+        save_but = QtWidgets.QPushButton("sa&ve area")
         save_but.setToolTip("\'Ctrl+v\'")
         save_but.setShortcut(QtGui.QKeySequence("Ctrl+v"))
         save_but.clicked.connect(self.fill_surface_info)
@@ -216,7 +216,7 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         pixel_slider.setTickInterval(1)
         pixel_slider.setTickPosition(QtGui.QSlider.TicksBelow)
 
-        self.pixel_linedit = QtGui.QLineEdit(str(1))
+        self.pixel_linedit = QtWidgets.QLineEdit(str(1))
         self.pixel_linedit.setDisabled(True)
         self.pixel_linedit.setStyleSheet(
             "background-color: lightgray; color:black")
@@ -286,9 +286,9 @@ class GroupSurfaceWidget(QtWidgets.QWidget):
         
 
         form_layout = QtGui.QFormLayout()
-        self.pixel_number_linedit = QtGui.QLineEdit()
-        self.projected_surface_linedit = QtGui.QLineEdit()
-        self.deprojected_surface_linedit = QtGui.QLineEdit()
+        self.pixel_number_linedit = QtWidgets.QLineEdit()
+        self.projected_surface_linedit = QtWidgets.QLineEdit()
+        self.deprojected_surface_linedit = QtWidgets.QLineEdit()
 
         form_layout.addRow("Pixel Number:",
                            self.pixel_number_linedit)

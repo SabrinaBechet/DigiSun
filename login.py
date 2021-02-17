@@ -58,12 +58,12 @@ class DialogLogin(QtWidgets.QDialog):
         self.config.set_database()
 
         config_archdrawing = QtWidgets.QLabel("Drawings directory: ")
-        self.config_archdrawing_name = QtGui.QLineEdit(self)
+        self.config_archdrawing_name = QtWidgets.QLineEdit(self)
         
         config_database = QtWidgets.QLabel("Database name: ")
-        self.config_database_name = QtGui.QLineEdit(self)
+        self.config_database_name = QtWidgets.QLineEdit(self)
         
-        self.operator_name = QtGui.QLineEdit(self)
+        self.operator_name = QtWidgets.QLineEdit(self)
         self.operator_name.setMinimumWidth(width_widget)
         self.operator_name.setMaximumWidth(width_widget)
 
@@ -73,9 +73,9 @@ class DialogLogin(QtWidgets.QDialog):
         
         application_selection = QtWidgets.QLabel('Applications: ', self)
         
-        daily_scan_but = QtGui.QPushButton("Daily scan")
-        bulk_analyse_but = QtGui.QPushButton("Bulk analyse")
-        change_config_but = QtGui.QPushButton("Change config file")
+        daily_scan_but = QtWidgets.QPushButton("Daily scan")
+        bulk_analyse_but = QtWidgets.QPushButton("Bulk analyse")
+        change_config_but = QtWidgets.QPushButton("Change config file")
         
         application_selection.setMinimumWidth(width_widget)
         application_selection.setMaximumWidth(width_widget)

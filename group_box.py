@@ -88,7 +88,7 @@ class GroupBox(QtWidgets.QWidget):
         """ title on the top of the group box"""
     
         title_label = QtWidgets.QLabel("Group ")
-        self.group_number_linedit = QtGui.QLineEdit(self)
+        self.group_number_linedit = QtWidgets.QLineEdit(self)
         self.group_number_linedit.setMaximumWidth(self.widget_maximum_width)
         self.group_number_linedit.setDisabled(True)
         title_label.setStyleSheet("background-color: transparent")
@@ -148,22 +148,22 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_arrows_buttons(self, grid_position):
 
-        self.button_up = QtGui.QPushButton()
+        self.button_up = QtWidgets.QPushButton()
         arrow_up_pix = QtGui.QPixmap("icons/arrow_up.png")
         arrow_up = QtGui.QIcon(arrow_up_pix)
         self.button_up.setIcon(arrow_up)
 
-        self.button_down = QtGui.QPushButton()
+        self.button_down = QtWidgets.QPushButton()
         arrow_down_pix = QtGui.QPixmap("icons/arrow_down.png")
         arrow_down = QtGui.QIcon(arrow_down_pix)
         self.button_down.setIcon(arrow_down)
 
-        self.button_left = QtGui.QPushButton()
+        self.button_left = QtWidgets.QPushButton()
         arrow_left_pix = QtGui.QPixmap("icons/arrow_left.png")
         arrow_left = QtGui.QIcon(arrow_left_pix)
         self.button_left.setIcon(arrow_left)
 
-        self.button_right = QtGui.QPushButton()
+        self.button_right = QtWidgets.QPushButton()
         self.button_right.setMinimumWidth(self.widget_maximum_width)
         self.button_right.setMaximumWidth(self.widget_maximum_width)
         arrow_right_pix = QtGui.QPixmap("icons/arrow_right.png")
@@ -184,7 +184,7 @@ class GroupBox(QtWidgets.QWidget):
                                    grid_position[1] + 2)
 
     def set_spot_count(self, spot_count, grid_position):
-        #self.spot_number_linedit = QtGui.QLineEdit(str(spot_count))
+        #self.spot_number_linedit = QtWidgets.QLineEdit(str(spot_count))
         self.spot_number_spinbox = QtGui.QSpinBox(self)#LineEdit(str(spot_count))
         self.spot_number_spinbox.setMinimum(0)
         self.spot_number_spinbox.setMaximum(1000)
@@ -294,7 +294,7 @@ class GroupBox(QtWidgets.QWidget):
     def set_longitude(self, longitude, grid_position):
 
         self.longitude_label = QtWidgets.QLabel()
-        self.longitude_linedit = QtGui.QLineEdit(self)
+        self.longitude_linedit = QtWidgets.QLineEdit(self)
     
         self.set_label_and_linedit(self.longitude_label,
                                    "Longitude",
@@ -304,7 +304,7 @@ class GroupBox(QtWidgets.QWidget):
     
     def set_latitude(self, latitude, grid_position):
         self.latitude_label = QtWidgets.QLabel()
-        self.latitude_linedit = QtGui.QLineEdit(self)
+        self.latitude_linedit = QtWidgets.QLineEdit(self)
     
         self.set_label_and_linedit(self.latitude_label,
                                    "Latitude",
@@ -314,7 +314,7 @@ class GroupBox(QtWidgets.QWidget):
 
     """def set_group_number(self, group_number, grid_position):
         self.group_number_label = QtWidgets.QLabel()
-        self.group_number_linedit = QtGui.QLineEdit(self)
+        self.group_number_linedit = QtWidgets.QLineEdit(self)
 
 
         self.set_label_and_linedit(self.group_number_label,
@@ -325,7 +325,7 @@ class GroupBox(QtWidgets.QWidget):
     """ 
     def set_surface(self, surface, grid_position):
         self.surface_label = QtWidgets.QLabel()
-        self.surface_linedit = QtGui.QLineEdit(self)
+        self.surface_linedit = QtWidgets.QLineEdit(self)
 
         if surface is None:
             surface = 0.
@@ -346,7 +346,7 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_extra_field1(self, extra1_value, extra1_name, grid_position):
         self.group_extra1_label = QtWidgets.QLabel()
-        self.group_extra1_linedit = QtGui.QLineEdit(self)
+        self.group_extra1_linedit = QtWidgets.QLineEdit(self)
 
         self.set_label_and_linedit(self.group_extra1_label,
                                    str(extra1_name),
@@ -356,7 +356,7 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_extra_field2(self, extra2_value, extra2_name, grid_position):
         self.group_extra2_label = QtWidgets.QLabel()
-        self.group_extra2_linedit = QtGui.QLineEdit(self)
+        self.group_extra2_linedit = QtWidgets.QLineEdit(self)
 
         self.set_label_and_linedit(self.group_extra2_label,
                                    str(extra2_name),
@@ -366,7 +366,7 @@ class GroupBox(QtWidgets.QWidget):
 
     def set_extra_field3(self, extra3_value, extra3_name, grid_position):
         self.group_extra3_label = QtWidgets.QLabel()
-        self.group_extra3_linedit = QtGui.QLineEdit(self)
+        self.group_extra3_linedit = QtWidgets.QLineEdit(self)
 
         self.set_label_and_linedit(self.group_extra3_label,
                                    str(extra3_name),
@@ -403,7 +403,7 @@ class GroupBox(QtWidgets.QWidget):
             self.largest_spot_leading_but.setDisabled(False)
             self.largest_spot_trailing_but.setDisabled(False)
             self.largest_spot_egal_but.setDisabled(False)
-        elif largest_spot is 'L':
+        elif largest_spot == 'L':
             self.largest_spot_leading_but.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
             self.largest_spot_trailing_but.setStyleSheet(
@@ -413,7 +413,7 @@ class GroupBox(QtWidgets.QWidget):
             self.largest_spot_leading_but.setDisabled(False)
             self.largest_spot_trailing_but.setDisabled(False)
             self.largest_spot_egal_but.setDisabled(False)
-        elif largest_spot is 'T':
+        elif largest_spot == 'T':
             self.largest_spot_trailing_but.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
             self.largest_spot_leading_but.setStyleSheet(
@@ -423,7 +423,7 @@ class GroupBox(QtWidgets.QWidget):
             self.largest_spot_leading_but.setDisabled(False)
             self.largest_spot_trailing_but.setDisabled(False)
             self.largest_spot_egal_but.setDisabled(False)
-        elif largest_spot is 'E':
+        elif largest_spot == 'E':
             self.largest_spot_egal_but.setStyleSheet(
                 "background-color: rgb(77, 185, 88)")
             self.largest_spot_leading_but.setStyleSheet(
@@ -440,15 +440,15 @@ class GroupBox(QtWidgets.QWidget):
         """
         self.largest_spot_label = QtWidgets.QLabel("Lead/Trail")
 
-        self.largest_spot_leading_but = QtGui.QPushButton("L")
+        self.largest_spot_leading_but = QtWidgets.QPushButton("L")
         self.largest_spot_leading_but.setShortcut(QtGui.QKeySequence("f"))
         self.largest_spot_leading_but.setToolTip('shortcut: \'f\'')
 
-        self.largest_spot_egal_but = QtGui.QPushButton("=")
+        self.largest_spot_egal_but = QtWidgets.QPushButton("=")
         self.largest_spot_egal_but.setShortcut(QtGui.QKeySequence("g"))
         self.largest_spot_egal_but.setToolTip('shortcut: \'g\'')
         
-        self.largest_spot_trailing_but = QtGui.QPushButton("T")
+        self.largest_spot_trailing_but = QtWidgets.QPushButton("T")
         self.largest_spot_trailing_but.setShortcut(QtGui.QKeySequence("h"))
         self.largest_spot_trailing_but.setToolTip('shortcut: \'h\'')
 
