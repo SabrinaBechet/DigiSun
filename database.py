@@ -323,13 +323,13 @@ class database():
         result = self.cursor.fetchall()
         return result
     
-    """
+    
     def replace_drawing(self, drawing):
-        
+        """
         REPLACE works exactly like INSERT, except that if an old row
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
-        
+        """
         self.cursor.execute('REPLACE INTO drawings (Datetime, TypeOfDrawing,'
                             'Quality, Observer, CarringtonRotation, JulianDate,'
                             'Calibrated, Analyzed, GroupCount, SpotCount,'
@@ -347,7 +347,7 @@ class database():
                              drawing.path, drawing.operator,
                              drawing.last_update_time))
         self.db.commit()
-    """
+    
         
     def get_variable_settings(self, variable):
         self.cursor.execute('SELECT usetvalue FROM technical_settings'

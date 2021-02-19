@@ -1165,7 +1165,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         Delete a group by clicking on the red cross in the group_toolbox.
         """
 
-        reponse = QtGui\
+        reponse = QtWidgets\
             .QMessageBox\
             .question(self,
                       "delete group",
