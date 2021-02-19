@@ -1156,7 +1156,7 @@ class Drawing(QtCore.QObject):
                               self._last_update_time,
                               self._datetime)
 
-        db.write_digisun_history(self._datetime)
+        # db.write_digisun_history(self._datetime)
 
         self._datetime_calibration = self._datetime
         db.write_calibration_info(self._calibrated_north.x,

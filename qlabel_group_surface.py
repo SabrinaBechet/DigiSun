@@ -488,7 +488,7 @@ class QLabelGroupSurface(QtWidgets.QLabel):
     def np2qpixmap(self, np_img):
         """convert np array into pixmap"""
         im8 = Image.fromarray(np_img)
-        imQt = QtWidgets.QImage(ImageQt.ImageQt(im8))
+        imQt = QtGui.QImage(ImageQt.ImageQt(im8))
 
         return QtGui.QPixmap.fromImage(imQt)
 

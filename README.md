@@ -20,7 +20,6 @@ You should have received a copy of the GNU General Public License
 along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 
 ---------------
-<br />
 
 # Requirements and Installation
 To run this version of Digisun, you will need:
@@ -52,8 +51,6 @@ which should output something like:
 If you haven't already, clone this repository:
 
 `git clone https://gitlab.com/locarno/digisun_2018.git`
-
-<br />
 
 # Running Digisun
 After the installation of Python 3, Digisun and its dependencies (libraries), the program can be run in its folder (the one you cloned) as follows:

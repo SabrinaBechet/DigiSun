@@ -262,7 +262,7 @@ class DailyScan(QtWidgets.QWidget):
             drawing_type = tuple_drawings[0][2]
             tuple_drawing_type = db.get_drawing_information("drawing_type",
                                                                 drawing_type)
-            answer = QtGui\
+            answer = QtWidgets\
                 .QMessageBox\
                 .question(self,
                           "new drawing",

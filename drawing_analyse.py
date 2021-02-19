@@ -404,7 +404,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                 self.statusBar().comment.setText("Click on a the group" +
                                                  " position to add it")
                 
-                cursor_add_group = QtWidgets.QCursor(QtGui.QPixmap(self.target_cursor_path))
+                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(self.target_cursor_path))
                 self.label_right.setCursor(cursor_add_group)
 
             if self.label_right.calibration_mode.value:
@@ -445,7 +445,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             else:
                 self.statusBar().comment.setText("Click on a the group" +
                                                  " position to change it")
-                cursor_add_group = QtWidgets.QCursor(QtGui.QPixmap(self.target_cursor_path))
+                cursor_add_group = QtGui.QCursor(QtGui.QPixmap(self.target_cursor_path))
                 # QtWidgets.QApplication.setOverrideCursor(cursor_add_group)
                 self.label_right.setCursor(cursor_add_group)
 
@@ -528,7 +528,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
             elif (self.drawing_lst[self.current_count].calibrated == 1 and
                   self.drawing_lst[self.current_count].group_count > 0):
-                cursor_add_dipole = QtWidgets.QCursor(QtGui.QPixmap(self.expand_cursor_path))
+                cursor_add_dipole = QtGui.QCursor(QtGui.QPixmap(self.expand_cursor_path))
                 self.label_right.setCursor(cursor_add_dipole)
                 self.check_dipole(self.listWidget_groupBox.currentRow())
 
@@ -1808,7 +1808,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
         if (self.drawing_lst[self.current_count].calibrated == 1 and
                 self.drawing_lst[self.current_count].group_count == 0):
-            reponse = QtGui\
+            reponse = QtWidgets\
                 .QMessageBox\
                 .question(self,
                           "save information",
