@@ -1375,8 +1375,6 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             self.group_toolbox.latitude_linedit.setText('{0:.2f}'.format(
                 self.drawing_lst[index].group_lst[group_index].latitude *
                 180/math.pi))
-            
-        
         
         self.label_right.set_img()
 

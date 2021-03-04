@@ -227,25 +227,25 @@ class GroupBox(QtWidgets.QWidget):
         
         zurich_McIntosh = {}
         zurich_McIntosh['X'] = ['Xxx']
-        zurich_McIntosh['A'] = ['   ','Axx']
-        zurich_McIntosh['B'] = ['   ','Bxo', 'Bxi']
-        zurich_McIntosh['C'] = ['   ','Cro', 'Cri',
+        zurich_McIntosh['A'] = ['Axx']
+        zurich_McIntosh['B'] = ['Bxo', 'Bxi']
+        zurich_McIntosh['C'] = ['Cro', 'Cri',
                                 'Cso', 'Csi',
                                 'Cao', 'Cai',
                                 'Cho', 'Chi',
                                 'Cko', 'Cki']
-        zurich_McIntosh['D'] = ['   ','Dro', 'Dri',
+        zurich_McIntosh['D'] = ['Dro', 'Dri',
                                 'Dso', 'Dsi', 'Dsc',
                                 'Dao', 'Dai', 'Dac',
                                 'Dho', 'Dhi', 'Dhc',
                                 'Dko', 'Dki', 'Dkc']
-        zurich_McIntosh['E'] = ['   ','Esi', 'Esc',
+        zurich_McIntosh['E'] = ['Esi', 'Esc',
                                 'Eai', 'Eac',
                                 'Ehi', 'Ehc',
                                 'Eki', 'Ekc']
-        zurich_McIntosh['F'] = ['   ','Fhi', 'Fhc',
+        zurich_McIntosh['F'] = ['Fhi', 'Fhc',
                                 'Fki', 'Fkc']
-        zurich_McIntosh['G'] = ['   ','Cho', 'Chi',
+        zurich_McIntosh['G'] = ['Cho', 'Chi',
                                 'Cko', 'Cki',
                                 'Dho', 'Dhi',
                                 'Dko', 'Dki',
@@ -255,8 +255,8 @@ class GroupBox(QtWidgets.QWidget):
                                 'Eao', 'Eai',
                                 'Fhi', 'Fhc',
                                 'Fki', 'Fkc']
-        zurich_McIntosh['H'] = ['   ','Hkx', 'Hhx']
-        zurich_McIntosh['J'] = ['   ','Hsx', 'Hax']
+        zurich_McIntosh['H'] = ['Hkx', 'Hhx']
+        zurich_McIntosh['J'] = ['Hsx', 'Hax']
 
         for el in zurich_McIntosh[str(zurich_type)]:
                 self.McIntosh_combo.addItem(el)
