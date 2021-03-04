@@ -115,10 +115,15 @@ class database():
         result = self.cursor.fetchall()
         return result
     
-    def delete_group_info(self, datetime, number):
+    def delete_group_info(self, datetime, number, group_nb):
         self.cursor.execute('DELETE FROM  sGroups where DateTime <=> %s and '
-                            'DigiSunNumber >= %s; ',
+                            'DigiSunNumber = %s; ',
                             (str(datetime), str(number)))
+        
+        for i in range(number, group_nb):
+            self.cursor.execute('update sGroups set DigiSunNumber = %s where '
+                                'DateTime <=> %s and DigiSunNumber = %s;',
+                                (str(i), str(datetime), str(i+1)))
         self.db.commit()
 
     def write_group_info(self, *var):

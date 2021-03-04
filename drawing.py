@@ -555,7 +555,6 @@ class Drawing(QtCore.QObject):
         self._drawing_extra2 = dict_drawing_database['DrawingExtra2']
         self._drawing_extra3 = dict_drawing_database['DrawingExtra3']
         
-        
         self._group_lst = []
         self.changed = False
 
@@ -1127,7 +1126,7 @@ class Drawing(QtCore.QObject):
         self._group_lst.pop(group_index)
 
         db = database.database(config)
-        db.delete_group_info(self._datetime, group_index)
+        db.delete_group_info(self._datetime, group_index, len(self._group_lst))
 
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
@@ -1170,7 +1169,7 @@ class Drawing(QtCore.QObject):
         """for el in self.index_to_delete:
             db.delete_group_info(self._datetime, el)
             print("*********************extra group deleted!!", el)
-        """            
+        """
         for el in self._group_lst:
             el.save_group_info(config)
 
