@@ -853,6 +853,11 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                     groupBoxLine.zurich_combo.setStyleSheet(
                         "background-color: rgb(255, 165, 84)")
 
+                if (self.drawing_lst[self.current_count].group_lst[i].McIntosh == "Xxx" or
+                    self.drawing_lst[self.current_count].group_lst[i].McIntosh == "   " ):
+                    groupBoxLine.McIntosh_combo.setStyleSheet(
+                        "background-color: rgb(255, 165, 84)")
+                    
                 if self.drawing_lst[self.current_count].group_lst[i].spots == 0:
                     groupBoxLine.spot_number_spinbox.setStyleSheet(
                         "background-color: rgb(255, 165, 84)")
@@ -1233,13 +1238,14 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                 info_complete["Group pos"] = True
             if group.zurich != 'X':
                 info_complete["Zurich type"] = True
-            if group.McIntosh != 'Xxx':
+            if group.McIntosh != 'Xxx': # and group.McIntosh !='   ':
                 info_complete["McIntosh type"] = True
             if group.spots:
                 info_complete["Spots nb"] = True
 
         if level == 'dipole' and group.zurich.upper() in self.zurich_dipolar:
             info_complete.update(dipole_complete)
+            #info_complete = dipole_complete
             if group.dipole1_lat and group.dipole1_long and group.dipole2_lat and group.dipole2_long:
                 info_complete["Dipole pos"] = True
             if group.largest_spot:
@@ -1247,6 +1253,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
 
         if level == 'area':
             info_complete.update(area_complete)
+            #info_complete = area_complete
             if group.surface:
                 info_complete["Area"] = True
 
@@ -1258,10 +1265,15 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         return missing_info
 
     def update_area_button(self):
+        
         if 'area' in self.config.level:
             group_index = self.listWidget_groupBox.currentRow()
             missing_info = self.check_information_complete(group_index,
                                                            'area')
+
+            print(missing_info)
+
+            
             if missing_info:
                 self.groupBoxLineList[group_index].area_button.setStyleSheet(
                     "background-color: rgb(255, 165, 84)")
@@ -1292,7 +1304,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             missing_info = self.check_information_complete(group_index,
                                                            'dipole')
 
-            # print(missing_info)
+             #print(missing_info)
 
             if missing_info:
                 self.groupBoxLineList[group_index].dipole_button.setStyleSheet(
@@ -1442,8 +1454,6 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         #        "background-color: rgb(255, 165, 84)")
 
     
-        
-        
     def modify_drawing_spot_number(self, n, is_toolbox):
         """
         A change in the spots number consists in:
@@ -1569,17 +1579,30 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
             self.drawing_lst[self.current_count]\
                 .group_lst[self.listWidget_groupBox.currentRow()]\
                 .McIntosh = new_mcIntosh_type
-
+    
+        if new_mcIntosh_type == "Xxx" or new_mcIntosh_type == "   ":
+            self.groupBoxLineList[n].McIntosh_combo.setStyleSheet(
+                "background-color: orange")
+            self.group_toolbox.McIntosh_combo.setStyleSheet(
+                "background-color: rgb(255, 165, 84)")
+        else:
+            self.groupBoxLineList[n].McIntosh_combo.setStyleSheet(
+                "background-color: white")
+            self.group_toolbox.McIntosh_combo.setStyleSheet(
+                "background-color: white")
+            
         self.groupBoxLineList[n].McIntosh_combo.setCurrentIndex(
             new_mcIntosh_index)
-        self.group_toolbox.McIntosh_combo.setCurrentIndex(new_mcIntosh_index)
+        self.group_toolbox.McIntosh_combo.setCurrentIndex(
+            new_mcIntosh_index)
 
     def update_surface(self):
         """
         Display the surface value in the appropriate linedit
         """
         surface = self.drawing_lst[self.current_count]\
-                      .group_lst[self.listWidget_groupBox.currentRow()].surface
+                      .group_lst[self.listWidget_groupBox.currentRow()]\
+                      .surface
 
         if isinstance(surface, float):
             self.group_toolbox.surface_linedit.setText(
