@@ -139,8 +139,7 @@ class DialogLogin(QtWidgets.QDialog):
                                                             "configuration file",
                                                             "",
                                                             "Text files (*.ini)")
-        
-        self.config = configuration.Config(config_filename)
+        self.config = configuration.Config(config_filename[0])
         self.config.set_archdrawing()
         self.config.set_database()
         self.set_config_info()
