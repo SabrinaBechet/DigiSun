@@ -754,6 +754,17 @@ class Drawing(QtCore.QObject):
         return self._julian_date
 
     @property
+    def area_done(self):
+        return self._area_done
+
+    @drawing_type.setter
+    def area_done(self, value):
+        #print("here we are changing the value of area done to ", value)
+        self._area_done = value
+        self.changed = True
+        self.value_changed.emit()
+    
+    @property
     def calibrated(self):
         return self._calibrated
 
@@ -1144,6 +1155,7 @@ class Drawing(QtCore.QObject):
                               self._julian_date,
                               self._calibrated,
                               self._analyzed,
+                              self._area_done,
                               self._group_count,
                               self._spot_count,
                               self._wolf,

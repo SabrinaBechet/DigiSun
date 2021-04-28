@@ -1827,6 +1827,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
         self.drawing_lst[self.current_count].operator = operator_name
         self.drawing_lst[self.current_count].last_update_time = datetime.now()
 
+        # update analysed
         if (self.drawing_lst[self.current_count].calibrated == 1 and
                 self.drawing_lst[self.current_count].group_count == 0):
             reponse = QtWidgets\
@@ -1840,11 +1841,27 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                 self.drawing_lst[self.current_count].analyzed = 1
             else:
                 self.drawing_lst[self.current_count].analyzed = 0
-
         if (self.drawing_lst[self.current_count].calibrated == 1 and
                 self.drawing_lst[self.current_count].group_count > 0):
                 self.drawing_lst[self.current_count].analyzed = 1
 
+        # update all_area done
+        group_count = self.drawing_lst[self.current_count].group_count
+        analysed = self.drawing_lst[self.current_count].analyzed
+
+        if analysed==0:
+            self.drawing_lst[self.current_count].area_done = 0
+        
+        if (analysed>0):
+            if group_count==0:
+                self.drawing_lst[self.current_count].area_done = 1
+            elif group_count>0:
+                area_lst = [el.surface for el in self.drawing_lst[self.current_count].group_lst]
+                if (0 in area_lst) or (None in area_lst):
+                    self.drawing_lst[self.current_count].area_done = 0
+                else:
+                    self.drawing_lst[self.current_count].area_done = 1 
+                
         self.drawing_lst[self.current_count].save_info(self.config)
         self.drawing_info\
             .set_drawing_linedit(self.drawing_lst[self.current_count])
