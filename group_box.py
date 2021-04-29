@@ -256,7 +256,7 @@ class GroupBox(QtWidgets.QWidget):
                                 'Fhi', 'Fhc',
                                 'Fki', 'Fkc']
         zurich_McIntosh['H'] = ['   ', 'Hkx', 'Hhx']
-        zurich_McIntosh['J'] = ['   ', 'Hsx', 'Hax']
+        zurich_McIntosh['J'] = ['   ', 'Hsx', 'Hax', 'Hrx']
 
         for el in zurich_McIntosh[str(zurich_type)]:
                 self.McIntosh_combo.addItem(el)
@@ -466,5 +466,3 @@ class GroupBox(QtWidgets.QWidget):
                                    grid_position[1] + 3)
 
         self.update_largest_spot_buttons(largest_spot, zurich_type)
-
-    
