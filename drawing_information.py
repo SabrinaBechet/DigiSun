@@ -22,7 +22,7 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 
 import database
 from datetime import datetime
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "sabrina.bechet@oma.be"
@@ -33,42 +33,42 @@ def inputVoid(self):
     pass
 
 
-class DrawingInformationWidget(QtGui.QWidget):
+class DrawingInformationWidget(QtWidgets.QWidget):
 
     def __init__(self, config):
         super(DrawingInformationWidget, self).__init__()
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setSpacing(10)
 
         uset_db = database.database(config)
 
-        self.drawing_operator = QtGui.QLineEdit(self)
+        self.drawing_operator = QtWidgets.QLineEdit(self)
         self.drawing_operator.setEnabled(True)
         self.drawing_operator.setStyleSheet(
             "background-color: lightgray; color:black")
 
-        self.drawing_last_update = QtGui.QLineEdit(self)
+        self.drawing_last_update = QtWidgets.QLineEdit(self)
         self.drawing_last_update.setEnabled(True)
         self.drawing_last_update.setStyleSheet(
             "background-color: lightgray; color:black")
-        self.drawing_observer = QtGui.QLineEdit(self)
+        self.drawing_observer = QtWidgets.QLineEdit(self)
         self.drawing_observer.setEnabled(True)
         self.drawing_observer.setStyleSheet(
             "background-color: white; color:black")
 
-        self.drawing_date = QtGui.QDateEdit()
+        self.drawing_date = QtWidgets.QDateEdit()
         self.drawing_date.setDisplayFormat("dd/MM/yyyy")
         self.drawing_date.setEnabled(False)
         self.drawing_date.setStyleSheet(
             "background-color: lightgray; color:black")
 
-        self.drawing_time = QtGui.QLineEdit("00:00", self)
+        self.drawing_time = QtWidgets.QLineEdit("00:00", self)
         self.drawing_time.setInputMask("99:99")
         self.drawing_time.setEnabled(False)
         self.drawing_time.setStyleSheet(
             "background-color: lightgray; color:black")
 
-        self.drawing_quality = QtGui.QComboBox(self)
+        self.drawing_quality = QtWidgets.QComboBox(self)
         # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.drawing_quality.wheelEvent = inputVoid
         uset_db.set_combo_box_drawing('name', 'quality', self.drawing_quality)
@@ -76,7 +76,7 @@ class DrawingInformationWidget(QtGui.QWidget):
         self.drawing_quality.setStyleSheet(
             "background-color: white; color:black")
 
-        self.drawing_type = QtGui.QComboBox(self)
+        self.drawing_type = QtWidgets.QComboBox(self)
          # Cancel the usual Mouse Wheel Event by giving to it a void function
         self.drawing_type.wheelEvent = inputVoid
         uset_db.set_combo_box_drawing('name',
@@ -86,37 +86,37 @@ class DrawingInformationWidget(QtGui.QWidget):
         self.drawing_type.setStyleSheet(
             "background-color: white; color:black")
 
-        self.wolf_number = QtGui.QLineEdit(self)
+        self.wolf_number = QtWidgets.QLineEdit(self)
         self.wolf_number.setEnabled(False)
         self.wolf_number.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.angleP = QtGui.QLineEdit(self)
+        self.angleP = QtWidgets.QLineEdit(self)
         self.angleP.setEnabled(False)
         self.angleP.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.angleB = QtGui.QLineEdit(self)
+        self.angleB = QtWidgets.QLineEdit(self)
         self.angleB.setEnabled(False)
         self.angleB.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.angleL = QtGui.QLineEdit(self)
+        self.angleL = QtWidgets.QLineEdit(self)
         self.angleL.setEnabled(False)
         self.angleL.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.rotation_number = QtGui.QLineEdit(self)
+        self.rotation_number = QtWidgets.QLineEdit(self)
         self.rotation_number.setEnabled(False)
         self.rotation_number.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.calibrated = QtGui.QLineEdit(self)
+        self.calibrated = QtWidgets.QLineEdit(self)
         self.calibrated.setEnabled(False)
         self.calibrated.setStyleSheet(
             "background-color: lightgrey; color:black")
 
-        self.analyzed = QtGui.QLineEdit(self)
+        self.analyzed = QtWidgets.QLineEdit(self)
         self.analyzed.setEnabled(False)
         self.analyzed.setStyleSheet(
             "background-color: lightgrey; color:black")

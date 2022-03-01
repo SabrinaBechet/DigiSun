@@ -22,6 +22,16 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import math
+import numpy as np
+
+def group_frame(zurich, radius, latitude, longitude, center_x, center_y):
+    """
+    estimate the size of the frame side to contain a 
+    group of a given zurich type and a given position.
+    """
+    
+    #distance_from_center = math.sqrt((posx - center_x)**2 +
+    #                                 (posy - center_y)**2)
 
 
 def group_frame(zurich, radius, posx, posy, center_x, center_y):
@@ -33,23 +43,30 @@ def group_frame(zurich, radius, posx, posy, center_x, center_y):
     distance_from_center = math.sqrt((posx - center_x)**2 +
                                      (posy - center_y)**2)
 
-    if posx==0.0 and posy==0.0:
+    if latitude==0.0 and longitude==0.0:
         print('hey the positions are nul!')
         return int(radius/6.)
     
-    if distance_from_center < radius:
-        center_to_limb = (math.asin(distance_from_center *
-                                    1./radius))
+    #if distance_from_center < radius:
+        #center_to_limb = (math.asin(distance_from_center *
+        #                            1./radius))
         
     if zurich in ['A', 'J']:
-        step = (radius/30.) * (math.cos(float(center_to_limb)))
+        step_x = (radius/30.) * abs(math.cos(float(longitude)))
+        step_y = (radius/30.) * abs(math.cos(float(latitude)))
     elif zurich in ['H']:
-        step = (radius/18.) * (math.cos(float(center_to_limb)))
+        step_x = (radius/18.) * abs(math.cos(float(longitude)))
+        step_y = (radius/18.) * abs(math.cos(float(latitude)))
     elif zurich in ['B', 'C', 'D']:
-        step = (radius/9.) * (math.cos(float(center_to_limb)))
+        step_x = (radius/9.) * abs(math.cos(float(longitude)))
+        step_y = (radius/9.) * abs(math.cos(float(latitude)))
     elif zurich in ['E']:
-        step = (radius/6.) * (math.cos(float(center_to_limb)))
+        step_x = (radius/6.) * abs(math.cos(float(longitude)))
+        step_y = (radius/6.) * abs(math.cos(float(latitude)))
     elif zurich in ['F', 'G', 'X']:
-        step = (radius/4.) * (math.cos(float(center_to_limb)))
+        step_x = (radius/4.) * abs(math.cos(float(longitude)))
+        step_y = (radius/4.) * abs(math.cos(float(latitude)))
 
-    return int(step * 2)
+    max_step = np.max([step_x, step_y])
+    
+    return int(step_x * 2)

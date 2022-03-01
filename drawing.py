@@ -33,7 +33,7 @@ import coordinates
 import database
 import carrington_rotation
 import sun_ephemeris
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
 
 class Group(QtCore.QObject):
@@ -555,7 +555,6 @@ class Drawing(QtCore.QObject):
         self._drawing_extra2 = dict_drawing_database['DrawingExtra2']
         self._drawing_extra3 = dict_drawing_database['DrawingExtra3']
         
-        
         self._group_lst = []
         self.changed = False
 
@@ -754,6 +753,17 @@ class Drawing(QtCore.QObject):
     def julian_date(self):
         return self._julian_date
 
+    @property
+    def area_done(self):
+        return self._area_done
+
+    @drawing_type.setter
+    def area_done(self, value):
+        #print("here we are changing the value of area done to ", value)
+        self._area_done = value
+        self.changed = True
+        self.value_changed.emit()
+    
     @property
     def calibrated(self):
         return self._calibrated
@@ -1127,7 +1137,9 @@ class Drawing(QtCore.QObject):
         self._group_lst.pop(group_index)
 
         db = database.database(config)
+
         db.delete_group_info(self._datetime, group_index)
+
 
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
@@ -1145,6 +1157,7 @@ class Drawing(QtCore.QObject):
                               self._julian_date,
                               self._calibrated,
                               self._analyzed,
+                              self._area_done,
                               self._group_count,
                               self._spot_count,
                               self._wolf,
@@ -1155,6 +1168,7 @@ class Drawing(QtCore.QObject):
                               self._operator.upper(),
                               self._last_update_time,
                               self._datetime)
+
 
         db.write_digisun_history(self._datetime)
 
@@ -1170,7 +1184,7 @@ class Drawing(QtCore.QObject):
         """for el in self.index_to_delete:
             db.delete_group_info(self._datetime, el)
             print("*********************extra group deleted!!", el)
-        """            
+        """
         for el in self._group_lst:
             el.save_group_info(config)
 

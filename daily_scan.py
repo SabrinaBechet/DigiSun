@@ -27,14 +27,15 @@ import database
 import drawing
 import scanner
 #import configuration
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
-class DailyScan(QtGui.QWidget):
+
+class DailyScan(QtWidgets.QWidget):
 
     def __init__(self, config, operator=None):
         super(DailyScan, self).__init__()
 
-        self.daily_scan_layout = QtGui.QVBoxLayout()
+        self.daily_scan_layout = QtWidgets.QVBoxLayout()
         self.daily_scan_layout.setAlignment(QtCore.Qt.AlignCenter)
         self.setLayout(self.daily_scan_layout)
 
@@ -52,7 +53,7 @@ class DailyScan(QtGui.QWidget):
         self.check_scanner()
 
         # to do: height plus grand pour le bouton du scan. Icon de scanner?
-        # self.but_scan = QtGui.QPushButton('Scan and save', self)
+        # self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         # self.widget_left_layout.addWidget(self.but_scan)
 
     
@@ -67,7 +68,8 @@ class DailyScan(QtGui.QWidget):
             if scanner_name:
                 self.scan_name_linedit.setText(scanner_name[0])
                 self.scan_dpi.setText(str(self.config.dpi))
-                self.drawing_directory.setText(self.config.archdrawing_directory)
+                self.drawing_directory.setText(
+                    self.config.archdrawing_directory)
                 self.but_scan.setEnabled(True)
         else:
             self.scan_name_linedit.setText("Not working on Unix system")
@@ -80,24 +82,24 @@ class DailyScan(QtGui.QWidget):
         """
         column_maximum_width = 600
 
-        form_layout = QtGui.QFormLayout()
+        form_layout = QtWidgets.QFormLayout()
         form_layout.setAlignment(self, QtCore.Qt.AlignCenter)
         form_layout.setSpacing(10)
 
-        scan_settings_title = QtGui.QLabel("Scanner settings")
+        scan_settings_title = QtWidgets.QLabel("Scanner settings")
         scan_settings_title.setAlignment(QtCore.Qt.AlignCenter)
         scan_settings_title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
         scan_settings_title.setFont(my_font)
 
-        self.scan_name_linedit = QtGui.QLineEdit(self)
+        self.scan_name_linedit = QtWidgets.QLineEdit(self)
         self.scan_name_linedit.setDisabled(True)
-        self.scan_dpi = QtGui.QLineEdit(self)
+        self.scan_dpi = QtWidgets.QLineEdit(self)
         self.scan_dpi.setDisabled(True)
-        self.drawing_directory = QtGui.QLineEdit(self)
+        self.drawing_directory = QtWidgets.QLineEdit(self)
         self.drawing_directory.setDisabled(True)
 
-        title = QtGui.QLabel("Drawing information")
+        title = QtWidgets.QLabel("Drawing information")
         title.setAlignment(QtCore.Qt.AlignCenter)
         title.setContentsMargins(10, 10, 10, 10)
         my_font = QtGui.QFont("Comic Sans MS", 10)
@@ -105,24 +107,24 @@ class DailyScan(QtGui.QWidget):
 
         uset_db = database.database(self.config)
 
-        self.drawing_operator_linedit = QtGui.QLineEdit(self)
+        self.drawing_operator_linedit = QtWidgets.QLineEdit(self)
         self.drawing_operator_linedit.setText(str(self.operator).upper())
-        self.drawing_observer_linedit = QtGui.QLineEdit(self)
+        self.drawing_observer_linedit = QtWidgets.QLineEdit(self)
         self.drawing_observer_linedit.setText(str(self.operator).upper())
-        self.drawing_type = QtGui.QComboBox(self)
+        self.drawing_type = QtWidgets.QComboBox(self)
         uset_db.set_combo_box_drawing('name',
                                       'drawing_type',
                                       self.drawing_type)
-        self.drawing_quality = QtGui.QComboBox(self)
+        self.drawing_quality = QtWidgets.QComboBox(self)
         uset_db.set_combo_box_drawing('name',
                                       'quality',
                                       self.drawing_quality)
 
-        self.drawing_date_linedit = QtGui.QDateEdit()
+        self.drawing_date_linedit = QtWidgets.QDateEdit()
         self.drawing_date_linedit.setDisplayFormat("dd/MM/yyyy")
         today = QtCore.QDate.currentDate()
         self.drawing_date_linedit.setDate(today)
-        self.drawing_time_linedit = QtGui.QTimeEdit(self)
+        self.drawing_time_linedit = QtWidgets.QTimeEdit(self)
         self.drawing_time_linedit.setDisplayFormat("hh:mm")
 
         self.drawing_time = datetime.datetime(
@@ -151,12 +153,11 @@ class DailyScan(QtGui.QWidget):
         self.drawing_time_linedit.timeChanged.connect(self.update_datetime)
         self.drawing_date_linedit.dateChanged.connect(self.update_datetime)
 
-        self.but_scan = QtGui.QPushButton('Scan and save', self)
+        self.but_scan = QtWidgets.QPushButton('Scan and save', self)
         self.but_scan.setDisabled(True)
-        self.but_analyse = QtGui.QPushButton('Drawing analyse', self)
+        self.but_analyse = QtWidgets.QPushButton('Drawing analyse', self)
         self.but_scan.clicked.connect(lambda: self.scan_drawing())
-        self.but_add = QtGui.QPushButton('Add drawing', self)
-        
+        self.but_add = QtWidgets.QPushButton('Add drawing', self)
 
         form_layout.addRow(scan_settings_title)
         form_layout.addRow('Scanner found:', self.scan_name_linedit)
@@ -173,7 +174,7 @@ class DailyScan(QtGui.QWidget):
         form_layout.addRow(self.but_analyse)
         form_layout.addRow(self.but_add)
 
-        widget_form = QtGui.QWidget()
+        widget_form = QtWidgets.QWidget()
         widget_form.setMaximumWidth(column_maximum_width)
         form_layout.setAlignment(QtCore.Qt.AlignCenter)
         widget_form.setLayout(form_layout)
@@ -238,7 +239,8 @@ class DailyScan(QtGui.QWidget):
         corresponding to the new drawing scanned
         """
         db = database.database(self.config)
-        answer = QtGui.QMessageBox.Yes
+        answer = QtWidgets.QMessageBox.Yes
+
         lst_groups = []
         
         if db.exist_in_db('drawings', 'DateTime', self.drawing_time):
@@ -262,13 +264,14 @@ class DailyScan(QtGui.QWidget):
             drawing_type = tuple_drawings[0][2]
             tuple_drawing_type = db.get_drawing_information("drawing_type",
                                                                 drawing_type)
-            answer = QtGui\
+            answer = QtWidgets\
                 .QMessageBox\
                 .question(self,
                           "new drawing",
-                          "An entry corresponding to this drawing was found in the database. "
+                          "An entry corresponding to this "
+                          "drawing was found in the database. "
                           "Do you want to delete previous data ?",
-                          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
 
 
             drawing_dict = dict(zip(lst_drawings_field, tuple_drawings[0]))
@@ -284,16 +287,16 @@ class DailyScan(QtGui.QWidget):
                 group_dict = dict(zip(lst_groups_field, group))
                 new_drawing.set_group(group_dict)
 
-            if answer == QtGui.QMessageBox.No:
+            if answer == QtWidgets.QMessageBox.No:
                 db.replace_drawing(new_drawing)
 
-            if answer == QtGui.QMessageBox.Yes:
+            if answer == QtWidgets.QMessageBox.Yes:
                 # delete the existing groups
                 for index in reversed(range(0, len(lst_groups))):
                     new_drawing.delete_group(self.config, index)
                     
                 
-        if answer == QtGui.QMessageBox.Yes:
+        if answer == QtWidgets.QMessageBox.Yes:
             new_drawing = drawing.Drawing()
 
             self.config.set_file_path(self.drawing_time)
@@ -336,17 +339,20 @@ class DailyScan(QtGui.QWidget):
                     str(self.drawing_type.currentText()))
                 new_drawing.set_drawing_type(tuple_drawing_type[0])
               
-                QtGui.QMessageBox\
-                     .information(self,
-                              "drawing addition",
-                                  "New drawing added in the database for the " + 
-                                  str(self.drawing_time))
+                QtWidgets.QMessageBox\
+                     .information(
+                         self,
+                         "drawing addition",
+                         "New drawing added in the database for the " + 
+                         str(self.drawing_time))
         
             else:
-                QtGui.QMessageBox\
+
+                QtWidgets.QMessageBox\
                      .warning(self,
                               "drawing addition",
-                              "There is not drawing the image directory correspoding to this date")
+                              "There is not drawing in the image "
+                              "directory correspoding to this date")
                 return
     
         return [new_drawing]
@@ -371,7 +377,7 @@ class DailyScan(QtGui.QWidget):
             
         elif not os.path.isdir(self.config.archdrawing_directory):
             
-            QtGui.QMessageBox\
+            QtWidgets.QMessageBox\
                  .warning(self,
                           "Scan error",
                           "The directory specified does not exist!.")
@@ -385,7 +391,7 @@ class DailyScan(QtGui.QWidget):
         it does not stay in the memory.
         """
         if False in self.info_complete.values():
-            QtGui.QMessageBox.warning(self,
+            QtWidgets.QMessageBox.warning(self,
                                       'information incomplete',
                                       'One of the information is not correct')
             return
@@ -400,15 +406,15 @@ class DailyScan(QtGui.QWidget):
         print(drawing_path, type(drawing_path))
         if drawing_path:
             if os.path.isfile(drawing_path):    
-                response = QtGui.QMessageBox.question(
+                response = QtWidgets.QMessageBox.question(
                     self,
                     'same drawing found'
                     '',
                     'This drawing alreay exists. Re-scan?',
-                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
-                if response == QtGui.QMessageBox.Yes:
+                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+                if response == QtWidgets.QMessageBox.Yes:
                     pass
-                elif response == QtGui.QMessageBox.No:
+                elif response == QtWidgets.QMessageBox.No:
                     return
             
             my_scanner.scan(drawing_path)
