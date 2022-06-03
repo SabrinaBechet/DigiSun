@@ -23,13 +23,12 @@ along with DigiSun.  If not, see <https://www.gnu.org/licenses/>.
 import os
 import database
 import configuration
-from PyQt4 import QtGui
+from PyQt5 import QtGui, QtWidgets
 
 __author__ = "Sabrina Bechet"
 __date__ = "April 2019"
 
-
-class DialogLogin(QtGui.QDialog):
+class DialogLogin(QtWidgets.QDialog):
     """
     The DialogLogin class represents the dialog box to enter to DigiSun.
     It displays the archdrawings directory and the database name and
@@ -40,11 +39,11 @@ class DialogLogin(QtGui.QDialog):
         super(DialogLogin, self).__init__()
         self.setWindowTitle("DigiSun")
 
-        self.layout = QtGui.QGridLayout()
+        self.layout = QtWidgets.QGridLayout()
         self.setLayout(self.layout)
-        welcome_msg = QtGui.QLabel('Welcome to DigiSun!', self)
+        welcome_msg = QtWidgets.QLabel('Welcome to DigiSun!', self)
         width_widget = 180
-        sun_logo = QtGui.QLabel()
+        sun_logo = QtWidgets.QLabel()
 
         sun_logo_path = "icons/DigiSun_logo.png"
         
@@ -57,25 +56,25 @@ class DialogLogin(QtGui.QDialog):
         self.config.set_archdrawing()
         self.config.set_database()
 
-        config_archdrawing = QtGui.QLabel("Drawings directory: ")
-        self.config_archdrawing_name = QtGui.QLineEdit(self)
+        config_archdrawing = QtWidgets.QLabel("Drawings directory: ")
+        self.config_archdrawing_name = QtWidgets.QLineEdit(self)
         
-        config_database = QtGui.QLabel("Database name: ")
-        self.config_database_name = QtGui.QLineEdit(self)
+        config_database = QtWidgets.QLabel("Database name: ")
+        self.config_database_name = QtWidgets.QLineEdit(self)
         
-        self.operator_name = QtGui.QLineEdit(self)
+        self.operator_name = QtWidgets.QLineEdit(self)
         self.operator_name.setMinimumWidth(width_widget)
         self.operator_name.setMaximumWidth(width_widget)
 
-        operator_selection = QtGui.QLabel('Operator name: ', self)
+        operator_selection = QtWidgets.QLabel('Operator name: ', self)
         operator_selection.setMinimumWidth(width_widget)
         operator_selection.setMaximumWidth(width_widget)
         
-        application_selection = QtGui.QLabel('Applications: ', self)
+        application_selection = QtWidgets.QLabel('Applications: ', self)
         
-        daily_scan_but = QtGui.QPushButton("Daily scan")
-        bulk_analyse_but = QtGui.QPushButton("Bulk analyse")
-        change_config_but = QtGui.QPushButton("Change config file")
+        daily_scan_but = QtWidgets.QPushButton("Daily scan")
+        bulk_analyse_but = QtWidgets.QPushButton("Bulk analyse")
+        change_config_but = QtWidgets.QPushButton("Change config file")
         
         application_selection.setMinimumWidth(width_widget)
         application_selection.setMaximumWidth(width_widget)
@@ -135,12 +134,14 @@ class DialogLogin(QtGui.QDialog):
         return self.config
         
     def change_config_file(self):
-        config_filename = QtGui.QFileDialog.getOpenFileName(self,
-                                                            "configuration file",
-                                                            "",
-                                                            "Text files (*.ini)")
-        
-        self.config = configuration.Config(config_filename)
+
+        config_filename = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "configuration file",
+            "",
+            "Text files (*.ini)")
+        self.config = configuration.Config(config_filename[0])
+
         self.config.set_archdrawing()
         self.config.set_database()
         self.set_config_info()
@@ -155,7 +156,7 @@ class DialogLogin(QtGui.QDialog):
                                 self.operator_name.text())):
             self.accept()
         else:
-            QtGui.QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self, 'Error', 'Bad operator name')
 
     def get_operator(self):
@@ -166,11 +167,11 @@ class DialogLogin(QtGui.QDialog):
 
     def center(self):
         frameGm = self.frameGeometry()
-        screen = QtGui.QApplication\
+        screen = QtWidgets.QApplication\
                       .desktop()\
                       .screenNumber(
-                          QtGui.QApplication.desktop().cursor().pos())
-        centerPoint = QtGui.QApplication\
+                          QtWidgets.QApplication.desktop().cursor().pos())
+        centerPoint = QtWidgets.QApplication\
                            .desktop().screenGeometry(screen).center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())

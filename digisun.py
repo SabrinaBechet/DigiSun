@@ -26,7 +26,7 @@ import daily_scan
 import bulk_analyse
 #import configuration
 import drawing_analyse
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtGui, QtWidgets, QtCore
 
 __author__ = "Sabrina Bechet"
 __email__ = "digisun@oma.be"
@@ -36,7 +36,7 @@ __version__ = "1.0.0"
 #sys.stderr = open('data/err.txt', 'w')
 #sys.stdout = open("data/file.txt", "w")
 
-class BulkScanPage(QtGui.QWidget):
+class BulkScanPage(QtWidgets.QWidget):
     """
     Module to make many scans in a row.
     If needed, should be expanded later
@@ -44,13 +44,13 @@ class BulkScanPage(QtGui.QWidget):
     def __init__(self, operator=None):
         super(BulkScanPage, self).__init__()
 
-        welcome_msg = QtGui.QLabel('bulk scan...' + operator, self)
-        self.layout = QtGui.QGridLayout()
+        welcome_msg = QtWidgets.QLabel('bulk scan...' + operator, self)
+        self.layout = QtWidgets.QGridLayout()
         self.layout.addWidget(welcome_msg, 0, 0, 1, 3)
         self.setLayout(self.layout)
 
 
-class mainWindow(QtGui.QMainWindow):
+class mainWindow(QtWidgets.QMainWindow):
     """ Represent the Qt interface. It consists of stacked pages:
     index 0 : daily scan
     index 1 : analyse page
@@ -61,7 +61,7 @@ class mainWindow(QtGui.QMainWindow):
         self.setWindowTitle("DigiSun")
         self.center()
         #self.showMaximized()
-        screen_available_geometry = QtGui.QDesktopWidget()\
+        screen_available_geometry = QtWidgets.QDesktopWidget()\
                                          .availableGeometry()
         self.setMinimumWidth(screen_available_geometry.width()/2.)
         self.setMinimumHeight(screen_available_geometry.height()/2.)
@@ -72,14 +72,15 @@ class mainWindow(QtGui.QMainWindow):
 
         self.config = config
         
-        self.stack = QtGui.QStackedLayout()
+
+        self.stack = QtWidgets.QStackedLayout()
         self.daily_scan = daily_scan.DailyScan(self.config, self.operator)
         self.analyse_page = bulk_analyse.BulkAnalysePage(self.config)
         #self.bulk_scan_page = BulkScanPage(self.operator)
         self.drawing_analyse = drawing_analyse\
             .DrawingAnalysePage(config, self.operator)
 
-        self.central_zone = QtGui.QWidget()
+        self.central_zone = QtWidgets.QWidget()
         self.central_zone.setLayout(self.stack)
         self.setCentralWidget(self.central_zone)
 
@@ -127,7 +128,7 @@ class mainWindow(QtGui.QMainWindow):
             
     def center(self):
         frameGm = self.frameGeometry()
-        desktop_rect = QtGui.QDesktopWidget().availableGeometry()
+        desktop_rect = QtWidgets.QDesktopWidget().availableGeometry()
         center = desktop_rect.center()
         frameGm.moveCenter(QtCore.QPoint(center.x() - self.width()*0.5,
                                          center.y() - self.height()*0.5))
@@ -147,7 +148,7 @@ class mainWindow(QtGui.QMainWindow):
 
 
     def set_menuBar(self):
-        menuBar = QtGui.QMenuBar()
+        menuBar = QtWidgets.QMenuBar()
         menuBar.setNativeMenuBar(False)
         self.setMenuBar(menuBar)
 
@@ -155,15 +156,16 @@ class mainWindow(QtGui.QMainWindow):
         #menu_parameters = menuBar.addMenu('Config')
         menu_help = menuBar.addMenu('Help')
 
-        #action_change_directory = QtGui.QAction('Drawings directory', self)
+        #action_change_directory = QtWidgets.QAction('Drawings directory', self)
         #action_change_directory.triggered.connect(self.change_config_file)
         
-        action_goTo_daily_scan= QtGui.QAction('Daily scan', self)
-        action_goTo_analyse = QtGui.QAction('Bulk analyse', self)
-        action_goTo_analyse.setShortcuts(QtGui.QKeySequence("b"))
-        action_exit = QtGui.QAction('Exit', self)
+        action_goTo_daily_scan= QtWidgets.QAction('Daily scan', self)
+        action_goTo_analyse = QtWidgets.QAction('Bulk analyse', self)
 
-        action_about = QtGui.QAction('About', self)
+        action_goTo_analyse.setShortcuts(QtGui.QKeySequence("b"))
+        action_exit = QtWidgets.QAction('Exit', self)
+
+        action_about = QtWidgets.QAction('About', self)
 
         action_goTo_daily_scan.triggered.connect(
             lambda: self.stack.setCurrentIndex(0))
@@ -172,7 +174,7 @@ class mainWindow(QtGui.QMainWindow):
         action_exit.triggered.connect(app.quit)
 
         action_about.triggered.connect(
-            lambda: QtGui.QMessageBox.about(
+            lambda: QtWidgets.QMessageBox.about(
                 self,
                 "DigiSun",
                 "<h2 >About DigiSun </h2>"+
@@ -194,12 +196,13 @@ class mainWindow(QtGui.QMainWindow):
         menuBar.show()
         
 if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
+
+    app = QtWidgets.QApplication(sys.argv)
 
     login = login.DialogLogin()
     login.show()
 
-    if login.exec_() == QtGui.QDialog.Accepted:
+    if login.exec_() == QtWidgets.QDialog.Accepted:
         operator_name = login.get_operator()
         mode_index = login.get_mode()
         

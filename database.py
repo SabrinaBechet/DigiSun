@@ -115,10 +115,16 @@ class database():
         result = self.cursor.fetchall()
         return result
     
-    def delete_group_info(self, datetime, number):
+
+    def delete_group_info(self, datetime, number, group_nb):
         self.cursor.execute('DELETE FROM  sGroups where DateTime <=> %s and '
-                            'DigiSunNumber >= %s; ',
+                            'DigiSunNumber = %s; ',
                             (str(datetime), str(number)))
+        
+        for i in range(number, group_nb):
+            self.cursor.execute('update sGroups set DigiSunNumber = %s where '
+                                'DateTime <=> %s and DigiSunNumber = %s;',
+                                (str(i), str(datetime), str(i+1)))
         self.db.commit()
 
     def write_group_info(self, *var):
@@ -128,7 +134,8 @@ class database():
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
         """
-        """self.cursor.execute('REPLACE INTO sGroups (DateTime, DigiSunNumber, Latitude, '
+        """self.cursor.execute('REPLACE INTO 
+        sGroups (DateTime, DigiSunNumber, Latitude, '
                             'Longitude, Lcm, CenterToLimbAngle, Quadrant, '
                             'McIntosh, Zurich, Spots, '
                             'Dipole1Lat, Dipole1Long, Dipole2Lat, '
@@ -208,6 +215,15 @@ class database():
                             var)
         
         self.db.commit()
+        result = self.cursor.fetchall()
+
+        if len(result)<1:
+            self.cursor.execute('INSERT INTO digisun_history (DateTime, version_firstUpdate) '
+                                'values '
+                                '(%s, %s) ',
+                                (drawing_datetime, digisun.__version__))
+            self.db.commit()
+
 
     def write_digisun_history(self, drawing_datetime):
 
@@ -224,6 +240,7 @@ class database():
                                 (drawing_datetime, digisun.__version__))
             self.db.commit()
 
+
         else:
             self.cursor.execute('UPDATE digisun_history set version_lastUpdate=%s'
                                 'where datetime <=>%s',
@@ -237,12 +254,13 @@ class database():
         """
         self.cursor.execute('INSERT into drawings (TypeOfDrawing, Quality, '
                             'Observer, CarringtonRotation,'
-                            'JulianDate, Calibrated, Analyzed, GroupCount, '
+                            'JulianDate, Calibrated, Analyzed, AllAreaDone, GroupCount, '
                             'SpotCount, Wolf, AngleP, '
                             'AngleB, AngleL, Filename, Operator, LastUpdateTime, '
                             'DateTime) values '
                             '(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '
-                            '%s, %s, %s, %s, %s, %s, %s) '
+                            '%s, %s, %s, %s, %s, %s, %s, %s) '
+
                             'ON DUPLICATE KEY UPDATE '
                             'TypeOfDrawing=VALUES(TypeOfDrawing), '
                             'Quality=VALUES(Quality), '
@@ -251,6 +269,7 @@ class database():
                             'JulianDate=VALUES(JulianDate), '
                             'Calibrated=VALUES(Calibrated), '
                             'Analyzed=VALUES(Analyzed), '
+                            'AllAreaDone=VALUES(AllAreaDone), '
                             'GroupCount=VALUES(GroupCount), '
                             'SpotCount=VALUES(SpotCount), '
                             'Wolf=VALUES(Wolf), AngleP=VALUES(AngleP), '
@@ -323,7 +342,7 @@ class database():
         result = self.cursor.fetchall()
         return result
     
-    """
+
     def replace_drawing(self, drawing):
         
         REPLACE works exactly like INSERT, except that if an old row
@@ -347,7 +366,7 @@ class database():
                              drawing.path, drawing.operator,
                              drawing.last_update_time))
         self.db.commit()
-    """
+
         
     def get_variable_settings(self, variable):
         self.cursor.execute('SELECT usetvalue FROM technical_settings'
