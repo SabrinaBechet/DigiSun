@@ -344,11 +344,11 @@ class database():
     
 
     def replace_drawing(self, drawing):
-        
+        """
         REPLACE works exactly like INSERT, except that if an old row
         in the table has the same value as a new row for a PRIMARY key or
         a UNIQUE index, the old row is deleted before the new row is inserted.
-        
+        """
         self.cursor.execute('REPLACE INTO drawings (Datetime, TypeOfDrawing,'
                             'Quality, Observer, CarringtonRotation, JulianDate,'
                             'Calibrated, Analyzed, GroupCount, SpotCount,'
