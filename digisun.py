@@ -137,9 +137,12 @@ class mainWindow(QtWidgets.QMainWindow):
     def daily_switch_to_drawing_analyse(self, loc=0):
         lst_drawing = self.daily_scan.set_drawing_information(loc)
         print(lst_drawing)
-        self.drawing_analyse.set_drawing_lst(lst_drawing)
-        self.drawing_analyse.set_drawing()
-        self.drawing_analyse.start_calibration()
+        try:
+            self.drawing_analyse.set_drawing_lst(lst_drawing)
+            self.drawing_analyse.set_drawing()
+            self.drawing_analyse.start_calibration()
+        except TypeError:
+            pass
 
     def bulk_switch_to_drawing_analyse(self):
         lst_drawing = self.analyse_page.set_drawing_information()
