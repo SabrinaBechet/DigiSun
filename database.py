@@ -215,15 +215,7 @@ class database():
                             var)
         
         self.db.commit()
-        result = self.cursor.fetchall()
-
-        if len(result)<1:
-            self.cursor.execute('INSERT INTO digisun_history (DateTime, version_firstUpdate) '
-                                'values '
-                                '(%s, %s) ',
-                                (drawing_datetime, digisun.__version__))
-            self.db.commit()
-
+        
 
     def write_digisun_history(self, drawing_datetime):
 

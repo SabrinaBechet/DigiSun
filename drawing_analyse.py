@@ -810,13 +810,15 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                     group_id = self.drawing_lst[self.current_count]\
                                    .group_lst[i].group_number
                     
-                    
                 else:
                     group_id = self.drawing_lst[self.current_count]\
-                                   .group_lst[i].number
+                                   .group_lst[i].number + 1
 
                 groupBoxLine.set_title(str(group_id),
                                        grid_position)
+                
+                groupBoxLine.group_number_linedit.setStyleSheet(
+                    "background-color: lightgray")
 
                 if int(self.config.group_number)==1:
                     groupBoxLine.group_number_linedit.setEnabled(True)
@@ -1021,7 +1023,7 @@ class DrawingAnalysePage(QtWidgets.QMainWindow):
                                .group_lst[n].group_number
             else:
                 group_id = self.drawing_lst[self.current_count]\
-                               .group_lst[n].number
+                               .group_lst[n].number 
 
                 
             self.group_toolbox.set_title(str(group_id),

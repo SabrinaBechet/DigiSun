@@ -243,6 +243,7 @@ class GroupBox(QtWidgets.QWidget):
                                 'Dko', 'Dki', 'Dkc']
 
         zurich_McIntosh['E'] = ['   ', 'Esi', 'Esc',
+                                'Eri',
                                 'Eai', 'Eac',
                                 'Ehi', 'Ehc',
                                 'Eki', 'Ekc']
@@ -252,6 +253,7 @@ class GroupBox(QtWidgets.QWidget):
                                 'Cko', 'Cki',
                                 'Dho', 'Dhi',
                                 'Dko', 'Dki',
+                                'Ero',
                                 'Eso', 'Esi',
                                 'Eko', 'Eki',
                                 'Eho', 'Ehi',

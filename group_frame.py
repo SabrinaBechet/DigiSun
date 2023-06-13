@@ -33,16 +33,6 @@ def group_frame(zurich, radius, latitude, longitude, center_x, center_y):
     #distance_from_center = math.sqrt((posx - center_x)**2 +
     #                                 (posy - center_y)**2)
 
-
-def group_frame(zurich, radius, posx, posy, center_x, center_y):
-    """
-    estimate the size of the frame side to contain a 
-    group of a given zurich type and a give position.
-    """
-    
-    distance_from_center = math.sqrt((posx - center_x)**2 +
-                                     (posy - center_y)**2)
-
     if latitude==0.0 and longitude==0.0:
         print('hey the positions are nul!')
         return int(radius/6.)

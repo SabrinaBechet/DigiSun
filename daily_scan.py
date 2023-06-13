@@ -321,6 +321,8 @@ class DailyScan(QtWidgets.QWidget):
         if loc==1:
             self.config.set_file_path(self.drawing_time)
             filename = self.config.filename
+
+            print(f'filename : {filename}')
             
             if os.path.isfile(self.config.file_path):
                 new_drawing = drawing.Drawing()
@@ -351,8 +353,8 @@ class DailyScan(QtWidgets.QWidget):
                 QtWidgets.QMessageBox\
                      .warning(self,
                               "drawing addition",
-                              "There is not drawing in the image "
-                              "directory correspoding to this date")
+                              "There is no drawing in the image "
+                              "directory corresponding to this date")
                 return
     
         return [new_drawing]
