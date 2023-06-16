@@ -1138,8 +1138,9 @@ class Drawing(QtCore.QObject):
 
         db = database.database(config)
 
-        db.delete_group_info(self._datetime, group_index)
-
+        db.delete_group_info(self._datetime,
+                             group_index,
+                             self.group_count)
 
         for i in range(group_index, len(self._group_lst)):
             self._group_lst[i].number = i
