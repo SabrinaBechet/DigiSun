@@ -50,7 +50,7 @@ class DailyScan(QtWidgets.QWidget):
                               "date": True,
                               "time": False}
 
-        self.check_scanner()
+        #self.check_scanner()
 
         # to do: height plus grand pour le bouton du scan. Icon de scanner?
         # self.but_scan = QtWidgets.QPushButton('Scan and save', self)
